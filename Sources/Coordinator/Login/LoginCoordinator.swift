@@ -9,14 +9,10 @@
 import UIKit
 
 final class LoginCoordinator: Coordinator {
-    var delegate: CoordinatorFinishDelegate?
-    var presenter: UINavigationController
-    var childCoordinators: [Coordinator]
-    weak var parentCoordinator: AppCoordinator?
+    weak var presenter: UINavigationController?
     
     init(presenter: UINavigationController) {
         self.presenter = presenter
-        self.childCoordinators = []
     }
     
     func start() {

@@ -60,15 +60,13 @@ final class MainCoordinator: Coordinator {
         }
     }
     
-    var delegate: CoordinatorFinishDelegate?
-    var presenter: UINavigationController
-    var childCoordinators: [Coordinator]
+    weak var presenter: UINavigationController?
+    
     var tabBarController: UITabBarController
     var tabBarItems: [TabBarItem] = [ .home, .search, .feed, .profile]
     
-    init(presenter: UINavigationController) {
+    init(presenter: UINavigationController?) {
         self.presenter = presenter
-        self.childCoordinators = []
         self.tabBarController = UITabBarController()
     }
     
@@ -87,14 +85,13 @@ extension MainCoordinator {
         navigationController.tabBarItem = tabItem
         
         let coordinator = item.getCoordinator(presenter: navigationController)
-        coordinator.delegate = self
-        childCoordinators.append(coordinator)
         coordinator.start()
         
         return navigationController
     }
     
     private func prepareTabBarController(with tabControllers: [UIViewController]) {
+        guard let presenter = presenter else { return }
         tabBarController.setViewControllers(tabControllers, animated: false)
         presenter.viewControllers = [tabBarController]
     }

@@ -9,14 +9,10 @@
 import UIKit
 
 final class FeedCoordinator: Coordinator {
-    var delegate: CoordinatorFinishDelegate?
-    var presenter: UINavigationController
-    var childCoordinators: [Coordinator]
-    weak var parentCoordinator: MainCoordinator?
+    weak var presenter: UINavigationController?
     
     init(presenter: UINavigationController) {
         self.presenter = presenter
-        self.childCoordinators = []
     }
     
     func start() {
