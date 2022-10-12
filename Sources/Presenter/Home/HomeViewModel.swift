@@ -9,5 +9,5 @@
 import Combine
 
 final class HomeViewModel: BaseViewModel {
-
+    var isSolo = false
 }
