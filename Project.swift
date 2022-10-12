@@ -1,4 +1,5 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
 let projectName: String = "MatStar"
 
@@ -19,6 +20,7 @@ let project = Project(
             infoPlist: .file(path: "SupportingFiles/\(projectName)-Info.plist"),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
+            scripts: [.SwiftLintShell],
             dependencies: [
                 .external(name: "CancelBag"),
                 .external(name: "FlexLayout"),

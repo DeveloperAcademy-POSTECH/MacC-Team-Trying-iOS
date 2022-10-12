@@ -1,0 +1,25 @@
+included:
+    - Sources
+    
+excluded:
+    - Tuist
+
+disabled_rules:
+    - todo
+    - trailing_whitespace
+
+opt_in_rules:
+
+
+# Configure
+line_length: 150
+
+nesting:
+    type_level:
+        warning: 3
+    statement_level:
+        warning: 5
+    
+identifier_name:
+    excluded:
+        - id
