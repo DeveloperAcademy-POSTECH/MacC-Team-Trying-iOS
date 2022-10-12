@@ -8,6 +8,8 @@
 
 import Combine
 
+import CancelBag
+
 final class ___VARIABLE_sceneName___ViewModel: BaseViewModel {
 
 }
