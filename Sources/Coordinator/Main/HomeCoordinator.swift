@@ -9,16 +9,14 @@
 import UIKit
 
 final class HomeCoordinator: Coordinator {
-    var delegate: CoordinatorFinishDelegate?
-    var presenter: UINavigationController
-    var childCoordinators: [Coordinator]
+    weak var presenter: UINavigationController?
     
     init(presenter: UINavigationController) {
         self.presenter = presenter
-        self.childCoordinators = []
     }
     
     func start() {
+        guard let presenter = presenter else { return }
         let viewController = TestViewController()
         let viewModel = TestViewModel()
         viewController.viewModel = viewModel

@@ -9,10 +9,8 @@
 import UIKit
 
 class AppCoordinator: Coordinator {
-    var delegate: CoordinatorFinishDelegate?
     let window: UIWindow
-    var presenter: UINavigationController
-    var childCoordinators: [Coordinator]
+    weak var presenter: UINavigationController?
 
     init(window: UIWindow) {
         self.window = window
@@ -20,8 +18,6 @@ class AppCoordinator: Coordinator {
         let navigationController = UINavigationController()
         navigationController.setNavigationBarHidden(true, animated: true)
         self.presenter = navigationController
-        
-        self.childCoordinators = []
     }
     
     func start() {
@@ -29,8 +25,6 @@ class AppCoordinator: Coordinator {
         
         // TODO: 로그인 분기처리
         let coordinator = MainCoordinator(presenter: presenter)
-        coordinator.delegate = self
-        childCoordinators.append(coordinator)
         coordinator.start()
         
         window.makeKeyAndVisible()
