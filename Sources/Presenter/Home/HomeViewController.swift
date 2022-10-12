@@ -128,11 +128,13 @@ extension HomeViewController {
 }
 
 extension String {
-    static func makeAtrributedString(name: String, appendString: String, changeAppendStringSize: CGFloat, changeAppendStringWieght: UIFont.Weight) -> String {
+    static func makeAtrributedString(name: String, appendString: String, changeAppendStringSize: CGFloat, changeAppendStringWieght: UIFont.Weight) -> NSMutableAttributedString {
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
         let profileString = name + appendString
+        print(profileString)
         let attributedQuote = NSMutableAttributedString(string: profileString)
-        attributedQuote.addAttribute(.foregroundColor, value: UIColor.black, range: (profileString as NSString).range(of: appendString))
+        attributedQuote.addAttribute(.foregroundColor, value: UIColor.red, range: (profileString as NSString).range(of: appendString))
         attributedQuote.addAttribute(.font, value: UIFont.systemFont(ofSize: changeAppendStringSize, weight: .regular), range: (profileString as NSString).range(of: appendString))
-        return attributedQuote.string as! String
+        return attributedQuote
     }
 }
