@@ -35,7 +35,7 @@ final class ___VARIABLE_sceneName___ViewController: BaseViewController {
 extension ___VARIABLE_sceneName___ViewController {
     private func setUI() {
         setAttributes()
-        setConstraints()
+        setLayout()
     }
     
     /// Attributes를 설정합니다.
@@ -44,7 +44,7 @@ extension ___VARIABLE_sceneName___ViewController {
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setConstraints() {
+    private func setLayout() {
         
     }
 }
