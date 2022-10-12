@@ -6,8 +6,6 @@
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
-import UIKit
-
 protocol Coordinator: AnyObject {
     func start()
 }

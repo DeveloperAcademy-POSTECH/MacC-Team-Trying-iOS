@@ -7,6 +7,7 @@
 //
 
 struct Constants {
+    // Coordinator에서 사용하는 문자열 상수들입니다.
     struct Coordinator {
         static let home = "Home"
         static let search = "Search"
