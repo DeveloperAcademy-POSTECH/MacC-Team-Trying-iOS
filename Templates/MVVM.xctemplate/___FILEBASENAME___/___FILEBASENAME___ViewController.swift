@@ -14,35 +14,37 @@ import SnapKit
 
 final class ___VARIABLE_sceneName___ViewController: BaseViewController {
     var viewModel: ___VARIABLE_sceneName___ViewModel?
+    
+    /// View Model과 bind 합니다.
+    private func bind() {
+        // input
+        
+        // output
+        
+    }
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setUI()
-        setConstraints()
         bind()
     }
 }
 
 // MARK: - UI
 extension ___VARIABLE_sceneName___ViewController {
-    /// 화면에 그려질 View들을 추가합니다.
     private func setUI() {
+        setAttributes()
+        setConstraints()
+    }
+    
+    /// Attributes를 설정합니다.
+    private func setAttributes() {
         
     }
     
-    /// 화면에 그려진 View들의 Constraints를 SnapKit을 사용하여 설정합니다.
+    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
         
-    }
-}
-
-// MARK: - Bind
-extension ___VARIABLE_sceneName___ViewController {
-    /// View Model과 bind 합니다.
-    private func bind() {
-        // input
-        
-        // output
     }
 }
