@@ -6,8 +6,8 @@ let project = Project(
     name: projectName,
     organizationName: "Try-ing",
     options: .options(
-        disableBundleAccessors: true
-//        disableSynthesizedResourceAccessors: true
+        disableBundleAccessors: true,
+        disableSynthesizedResourceAccessors: true
     ),
     targets: [
         Target(
