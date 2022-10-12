@@ -16,6 +16,11 @@ final class SearchCoordinator: Coordinator {
     }
     
     func start() {
+        guard let presenter = presenter else { return }
+        let viewController = SearchTestViewController()
+        let viewModel = SearchTestViewModel()
+        viewController.viewModel = viewModel
         
+        presenter.pushViewController(viewController, animated: true)
     }
 }

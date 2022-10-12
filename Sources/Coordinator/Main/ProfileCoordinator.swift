@@ -16,6 +16,11 @@ final class ProfileCoordinator: Coordinator {
     }
     
     func start() {
+        guard let presenter = presenter else { return }
+        let viewController = ProfileTestViewController()
+        let viewModel = ProfileTestViewModel()
+        viewController.viewModel = viewModel
         
+        presenter.pushViewController(viewController, animated: true)
     }
 }

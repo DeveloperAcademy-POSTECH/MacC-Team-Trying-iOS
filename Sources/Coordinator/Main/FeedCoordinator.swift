@@ -16,6 +16,11 @@ final class FeedCoordinator: Coordinator {
     }
     
     func start() {
+        guard let presenter = presenter else { return }
+        let viewController = FeedTestViewController()
+        let viewModel = FeedTestViewModel()
+        viewController.viewModel = viewModel
         
+        presenter.pushViewController(viewController, animated: true)
     }
 }
