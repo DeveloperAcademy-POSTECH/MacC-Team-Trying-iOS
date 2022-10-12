@@ -30,19 +30,14 @@ final class MainCoordinator: Coordinator {
         
         var tabBarIconName: String {
             switch self {
-                // TODO: Asset에 이미지 추가 후 주석 코드로 변경 예정입니다.
             case .home:
-                return "house"
-//                return Constants.Coordinator.homeIcon
+                return Constants.Coordinator.homeIcon
             case .search:
-                return "magnifyingglass"
-//                return Constants.Coordinator.searchIcon
+                return Constants.Coordinator.searchIcon
             case .feed:
-                return "map"
-//                return Constants.Coordinator.feedIcon
+                return Constants.Coordinator.feedIcon
             case .profile:
-                return "person"
-//                return Constants.Coordinator.profileIcon
+                return Constants.Coordinator.profileIcon
             }
         }
         
@@ -80,9 +75,7 @@ final class MainCoordinator: Coordinator {
 extension MainCoordinator {
     private func getTabController(item: TabBarItem) -> UINavigationController {
         let navigationController = UINavigationController()
-        // TODO: Asset에 이미지 추가 후 주석 코드로 변경 예정입니다.
-//        let tabItem = UITabBarItem(title: item.title, image: UIImage(named: item.tabBarIconName), selectedImage: nil)
-        let tabItem = UITabBarItem(title: item.title, image: UIImage(systemName: item.tabBarIconName), selectedImage: nil)
+        let tabItem = UITabBarItem(title: item.title, image: UIImage(named: item.tabBarIconName), selectedImage: nil)
         navigationController.tabBarItem = tabItem
         
         let coordinator = item.getCoordinator(presenter: navigationController)
