@@ -29,7 +29,7 @@ final class HomeTestViewController: BaseViewController {
         
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()

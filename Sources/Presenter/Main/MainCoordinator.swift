@@ -19,10 +19,13 @@ final class MainCoordinator: Coordinator {
             switch self {
             case .home:
                 return Constants.Coordinator.home
+                
             case .search:
                 return Constants.Coordinator.search
+                
             case .feed:
                 return Constants.Coordinator.feed
+                
             case .profile:
                 return Constants.Coordinator.profile
             }
@@ -32,10 +35,13 @@ final class MainCoordinator: Coordinator {
             switch self {
             case .home:
                 return Constants.Coordinator.homeIcon
+                
             case .search:
                 return Constants.Coordinator.searchIcon
+                
             case .feed:
                 return Constants.Coordinator.feedIcon
+                
             case .profile:
                 return Constants.Coordinator.profileIcon
             }
@@ -45,10 +51,13 @@ final class MainCoordinator: Coordinator {
             switch self {
             case .home:
                 return HomeCoordinator(navigationController: navigationController)
+                
             case .search:
                 return SearchCoordinator(navigationController: navigationController)
+                
             case .feed:
                 return FeedCoordinator(navigationController: navigationController)
+                
             case .profile:
                 return ProfileCoordinator(navigationController: navigationController)
             }
