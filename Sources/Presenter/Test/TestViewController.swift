@@ -21,7 +21,7 @@ final class TestViewController: BaseViewController {
         return label
     }()
     
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         setUI()

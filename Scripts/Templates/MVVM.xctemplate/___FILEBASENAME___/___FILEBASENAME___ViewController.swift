@@ -23,7 +23,7 @@ final class ___VARIABLE_sceneName___ViewController: BaseViewController {
         
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()
