@@ -81,7 +81,7 @@ opt_in_rules:
 
 
 # Configure
-line_length: 140            # line length를 140글자로 설정합니다.
+line_length: 160            # line length를 160글자로 설정합니다.
 
 nesting:                    # nesting을 설정합니다.
     type_level:
