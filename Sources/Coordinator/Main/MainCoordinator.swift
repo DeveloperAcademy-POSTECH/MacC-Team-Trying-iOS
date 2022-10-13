@@ -41,27 +41,27 @@ final class MainCoordinator: Coordinator {
             }
         }
         
-        func getCoordinator(presenter: UINavigationController) -> Coordinator {
+        func getCoordinator(navigationController: UINavigationController) -> Coordinator {
             switch self {
             case .home:
-                return HomeCoordinator(presenter: presenter)
+                return HomeCoordinator(navigationController: navigationController)
             case .search:
-                return SearchCoordinator(presenter: presenter)
+                return SearchCoordinator(navigationController: navigationController)
             case .feed:
-                return FeedCoordinator(presenter: presenter)
+                return FeedCoordinator(navigationController: navigationController)
             case .profile:
-                return ProfileCoordinator(presenter: presenter)
+                return ProfileCoordinator(navigationController: navigationController)
             }
         }
     }
     
-    weak var presenter: UINavigationController?
+    weak var navigationController: UINavigationController?
     
     let tabBarController: UITabBarController
     let tabBarItems: [TabBarItem] = [ .home, .search, .feed, .profile]
     
-    init(presenter: UINavigationController?) {
-        self.presenter = presenter
+    init(navigationController: UINavigationController?) {
+        self.navigationController = navigationController
         self.tabBarController = UITabBarController()
     }
     
@@ -78,15 +78,15 @@ extension MainCoordinator {
         let tabItem = UITabBarItem(title: item.title, image: UIImage(named: item.tabBarIconName), selectedImage: nil)
         navigationController.tabBarItem = tabItem
         
-        let coordinator = item.getCoordinator(presenter: navigationController)
+        let coordinator = item.getCoordinator(navigationController: navigationController)
         coordinator.start()
         
         return navigationController
     }
     
     private func prepareTabBarController(with tabControllers: [UIViewController]) {
-        guard let presenter = presenter else { return }
+        guard let navigationController = navigationController else { return }
         tabBarController.setViewControllers(tabControllers, animated: false)
-        presenter.viewControllers = [tabBarController]
+        navigationController.viewControllers = [tabBarController]
     }
 }

@@ -10,21 +10,21 @@ import UIKit
 
 class AppCoordinator: Coordinator {
     let window: UIWindow
-    weak var presenter: UINavigationController?
+    weak var navigationController: UINavigationController?
 
     init(window: UIWindow) {
         self.window = window
         
         let navigationController = UINavigationController()
         navigationController.setNavigationBarHidden(true, animated: true)
-        self.presenter = navigationController
+        self.navigationController = navigationController
     }
     
     func start() {
-        window.rootViewController = presenter
+        window.rootViewController = navigationController
         
         // TODO: 로그인 분기처리
-        let coordinator = MainCoordinator(presenter: presenter)
+        let coordinator = MainCoordinator(navigationController: navigationController)
         coordinator.start()
         
         window.makeKeyAndVisible()

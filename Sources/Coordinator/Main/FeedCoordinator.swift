@@ -9,18 +9,18 @@
 import UIKit
 
 final class FeedCoordinator: Coordinator {
-    weak var presenter: UINavigationController?
+    weak var navigationController: UINavigationController?
     
-    init(presenter: UINavigationController) {
-        self.presenter = presenter
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
     }
     
     func start() {
-        guard let presenter = presenter else { return }
+        guard let navigationController = navigationController else { return }
         let viewController = FeedTestViewController()
         let viewModel = FeedTestViewModel()
         viewController.viewModel = viewModel
         
-        presenter.pushViewController(viewController, animated: true)
+        navigationController.pushViewController(viewController, animated: true)
     }
 }
