@@ -9,10 +9,10 @@
 import UIKit
 
 final class LoginCoordinator: Coordinator {
-    weak var presenter: UINavigationController?
+    weak var navigationController: UINavigationController?
     
-    init(presenter: UINavigationController) {
-        self.presenter = presenter
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
     }
     
     func start() {
