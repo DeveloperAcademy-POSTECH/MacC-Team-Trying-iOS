@@ -57,8 +57,8 @@ final class MainCoordinator: Coordinator {
     
     weak var presenter: UINavigationController?
     
-    var tabBarController: UITabBarController
-    var tabBarItems: [TabBarItem] = [ .home, .search, .feed, .profile]
+    let tabBarController: UITabBarController
+    let tabBarItems: [TabBarItem] = [ .home, .search, .feed, .profile]
     
     init(presenter: UINavigationController?) {
         self.presenter = presenter
