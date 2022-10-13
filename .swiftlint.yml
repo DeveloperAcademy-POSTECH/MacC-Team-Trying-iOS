@@ -1,78 +1,89 @@
+# Rules : https://realm.github.io/SwiftLint/rule-directory.html
+
+# Lint 검사를 하는 항목
 included:
     - Sources
-    
+
+
+# Lint 검사를 제외하는 항목 (included보다 우선시)
 excluded:
     - Tuist
     - Sources/App/AppDelegate.swift
+    
 
+# Default Rules 가운데 제외시키는 Rules
 disabled_rules:
-    - todo
-    - trailing_whitespace
+    - todo                            # TODOs, FIXMEs 에 대하여 warning을 띄우지 않습니다.
+    - trailing_whitespace             # Trailing whitespace를 허용합니다.
 
+
+# Option Rules 가운데 적용시키는 Rules
 opt_in_rules:
-    - anonymous_argument_in_multiline_closure
-    - anyobject_protocol
-    - array_init
-    - attributes
-    - closure_body_length
-    - closure_end_indentation
-    - closure_spacing
-    - collection_alignment
-    - comma_inheritance
-    - contains_over_filter_count
-    - contains_over_filter_is_empty
-    - contains_over_first_not_nil
-    - contains_over_range_nil_comparison
-    - discouraged_none_name
-    - discouraged_optional_boolean
-    - discouraged_optional_collection
-    - empty_collection_literal
-    - empty_count
-    - empty_string
-    - explicit_init
-    - explicit_self
-    - fallthrough
-    - file_name
-    - file_name_no_space
-    - first_where
-    - flatmap_over_map_reduce
-    - force_unwrapping
-    - identical_operands
-    - implicit_return
-    - implicitly_unwrapped_optional
-    - indentation_width
-    - last_where
-    - let_var_whitespace
-    - literal_expression_end_indentation
-    - lower_acl_than_parent
-    - modifier_order
-    - multiline_arguments
-    - multiline_arguments_brackets
-    - multiline_function_chains
-    - multiline_literal_brackets
-    - multiline_parameters
-    - multiline_parameters_brackets
-    - no_extension_access_modifier
-    - operator_usage_whitespace
-    - overridden_super_call
-    - pattern_matching_keywords
-    - return_value_from_void_function
-    - self_binding
-    - sorted_first_last
-    - static_operator
-    - toggle_bool
-    - unneeded_parentheses_in_closure_argument
-    - unowned_variable_capture
-    - unused_declaration
-    - unused_import
-    - vertical_parameter_alignment_on_call
-    - vertical_whitespace_between_cases
-    - yoda_condition
+    - anonymous_argument_in_multiline_closure       # Multiline closure에서 arguments는 _로 작성하지 말고 이름을 명시해야합니다.
+    - anyobject_protocol                            # Class-only protocol에서는 class보다 AnyObject를 사용해야합니다.
+    - array_init                                    # 배열 초기화 시 .map() 사용보다는 Array(seq)을 권장합니다.
+    - attributes                                    # 함수, 타입에서는 다른 줄에, 변수, import에서는 같은 줄에 attribute를 작성합니다.
+    - closure_body_length                           # closure가 20줄 이상이면 warning, 100줄 이상이면 error
+    - closure_end_indentation                       # closure를 닫을 때 처음과 같은 indent여야 합니다.
+    - closure_spacing                               # closure를 열고 닫을 때 한 칸씩 띄웁니다.
+    - collection_alignment                          # collection의 요소들은 vertically 정렬되어야 합니다.
+    - comma_inheritance                             # 상속 리스트를 작성할 때 comma를 통해 구분해야 합니다.
+    - contains_over_filter_count                    # filter(where: ).count 말고 contains를 사용합니다.
+    - contains_over_filter_is_empty                 # filter(where: ).isEmpty 말고 contains를 사용합니다.
+    - contains_over_first_not_nil                   # first(where: ) != nil, firstIndex(where: ) != nil 말고 contains를 사용합니다.
+    - contains_over_range_nil_comparison            # range(of:) != nil, range(of: ) == nil 말고 contains를 사용합니다.
+    - discouraged_none_name                         # case 또는 static member 이름으로 none을 사용하지 않습니다.
+    - discouraged_optional_boolean                  # Bool타입은 non-optional을 권장합니다.
+    - discouraged_optional_collection               # Collection타입은 optional보다 비어있는 Collection을 권장합니다.
+    - empty_collection_literal                      # Collection에서 ==, !=의 사용보다 isEmpty를 권장합니다.
+    - empty_count                                   # count == 0 말고 isEmpty를 사용합니다.
+    - empty_string                                  # String에서 isEmpty를 사용합니다.
+    - explicit_init                                 # 명시적으로 .init()을 호출하는 것은 지양합니다.
+    - explicit_self                                 # 인스턴스 변수와 함수는 명시적으로 self를 적고 접근합니다.
+    - fallthrough                                   # Fallthrough를 지양합니다.
+    - file_name                                     # 파일 이름은 파일에 선언된 타입이나 extension의 이름과 같아야합니다.
+    - file_name_no_space                            # 파일 이름에는 빈 칸이 있으면 안됩니다.
+    - first_where                                   # Collection에서 .filter { }.first 말고 .first(where: )를 사용합니다.
+    - flatmap_over_map_reduce                       # map과 reduce를 같이 사용할 때에는 flatMap을 사용합니다.
+    - force_unwrapping                              # 강제 언래핑을 지양합니다.
+    - identical_operands                            # 같은 것을 비교할 필요 없습니다.
+    - implicit_return                               # closure, functions, getter에서 암묵적 return을 지향합니다.
+    - implicitly_unwrapped_optional                 # 암시적 언래핑을 지양합니다. (IBOutlet은 예외)
+    - indentation_width                             # 첫째줄에서는 indent를 금지하고, indent는 4칸으로 설정합니다.
+    - last_where                                    # Collection에서 .filter { }.last 말고 .last(where: )를 사용합니다.
+    - let_var_whitespace                            # let, var 프로퍼티들은 다른 statement들과 한 줄을 띄워서 작성합니다.
+    - literal_expression_end_indentation            # 배열, Dictionary의 마지막 indentation은 처음과 같아야합니다.
+    - lower_acl_than_parent                         # Parent보다 낮은 접근지정자를 보장합니다.
+    - modifier_order                                # Modifier의 순서를 정합니다. 순서는 아래와 같습니다.
+                                                    # override, ACL, setterACL, dynamic, mutators, lazy, final, required, convenience, typeMethods, owned
+    - multiline_arguments                           # arguments들은 한 줄에 작성되거나 한 줄에 하나씩 작성되어야 합니다.
+    - multiline_arguments_brackets                  # multiline일 시 arguments의 brackets는 다른 줄에 작성되어야 합니다.
+    - multiline_function_chains                     # function들을 chain할 시 한 줄에 하나의 function을 작성합니다.
+    - multiline_literal_brackets                    # multiline literals들은 다른 줄에 작성된 brackets로 감싸져야 합니다.
+    - multiline_parameters                          # 함수, 메소드들의 parameters들은 한 줄에 작성되거나 한 줄에 하나씩 작성되어야 합니다.
+    - multiline_parameters_brackets                 # multiline parameters들은 다른 줄에 작성된 brackets로 감싸져야 합니다.
+    - no_extension_access_modifier                  # extension에는 access modifier를 사용하지 않습니다.
+    - operator_usage_whitespace                     # 연산자는 앞뒤로 한 칸씩 띄어서 사용합니다.
+    - overridden_super_call                         # override methods들은 항상 super를 호출합니다.
+    - pattern_matching_keywords                     # tuple 밖으로 keyword를 빼서 한번에 매칭합니다. (case let)
+    - return_value_from_void_function               # void function에서 value를 return하지 않습니다.
+    - self_binding                                  # self binding 시 같은 이름을 사용합니다.
+    - sorted_first_last                             # sorted().first, sorted().last 말고 min(), max()를 사용합니다.
+    - static_operator                               # operators들은 static으로 선언되어야 합니다.
+    - toggle_bool                                   # Bool값을 바꿀 때 .toggle()을 사용합니다.
+    - unneeded_parentheses_in_closure_argument      # clousre의 arguments에 대해서는 parentheses를 사용할 필요 없습니다.
+    - unowned_variable_capture                      # capture 시 weak을 선호합니다.
+    - unused_declaration                            # 선언된 것은 최소 한번은 사용되어야 합니다.
+    - unused_import                                 # 사용되지 않는 모듈의 import는 작성하지 않습니다.
+    - vertical_parameter_alignment_on_call          # 함수를 호출할 때 parameters들은 한 줄에 모두, 또는 한 줄에 하나씩 vertically 정렬되어 호출해야 합니다.
+    - vertical_whitespace_between_cases             # 각 case 사이에 한 줄을 띄워서 작성합니다.
+    - yoda_condition                                # constant literal은 비교 연산자의 오른쪽에 위치해야 합니다.
+
 
 # Configure
-line_length: 140
+line_length: 140            # line length를 140글자로 설정합니다.
 
-nesting:
+nesting:                    # nesting을 설정합니다.
     type_level:
         warning: 3
     statement_level:
@@ -80,4 +91,4 @@ nesting:
     
 identifier_name:
     excluded:
-        - id
+        - id                # id라는 변수명에 대해서는 identifier_name rule을 적용하지 않습니다.
