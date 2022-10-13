@@ -14,33 +14,37 @@ import SnapKit
 
 final class HomeViewController: BaseViewController {
     
-    var viewModel: HomeViewModel?
+    var viewModel = HomeViewModel()
     
-    let myProfileImage: UIImageView = {
-        let image = UIImageView()
-        image.clipsToBounds = true
-        image.layer.cornerRadius = 25
-        image.backgroundColor = .red
-        return image
+    private let myProfileImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "ProfileImage")
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 25
+        return imageView
     }()
     
-    let otherProfileImage: UIImageView = {
-        let image = UIImageView()
-        image.clipsToBounds = true
-        image.layer.cornerRadius = 25
-        image.backgroundColor = .blue
-        return image
+    
+    
+    private let otherProfileImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "ProfileImage")
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 25
+        return imageView
     }()
     
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .heavy)
-        label.text = String.makeAtrributedString(name: "카리나", appendString: "와 함께", changeAppendStringSize: 15, changeAppendStringWieght: .regular)
+        label.textColor = .white
+        label.attributedText = String.makeAtrributedString(name: "카리나", appendString: " 와 함께", changeAppendStringSize: 15, changeAppendStringWieght: .regular, changeAppendStringColor: .white)
         return label
     }()
     
     private let ddayLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .white
         label.text = "D+273"
         return label
     }()
@@ -50,25 +54,40 @@ final class HomeViewController: BaseViewController {
         stackView.spacing = 0
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.backgroundColor = .red
         return stackView
     }()
     
     private lazy var profileStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: viewModel?.isSolo ?? true ? [myProfileImage, otherProfileImage] : [myProfileImage])
+        let stackView = UIStackView(arrangedSubviews: viewModel.isSingled ?? true ? [myProfileImage, otherProfileImage] : [myProfileImage])
         stackView.spacing = -10
         stackView.axis = .horizontal
         stackView.alignment = .fill
         stackView.distribution = .fill
-        stackView.backgroundColor = .yellow
         return stackView
     }()
     
     private let alarmButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "flame.fill"), for: .normal)
+        button.setImage(UIImage(named: "AlarmImage"), for: .normal)
         button.tintColor = .white
         return button
+    }()
+    
+    private let constellationCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 50, left: 20, bottom: 20, right: 20)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(ConstellationCollectionViewCell.self, forCellWithReuseIdentifier: ConstellationCollectionViewCell.identifier)
+        collectionView.backgroundColor = .clear
+        return collectionView
+    }()
+    
+    
+    
+    private let myPlanetImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "MyPlanetImage")
+        return imageView
     }()
     
     
@@ -86,6 +105,26 @@ final class HomeViewController: BaseViewController {
         setUI()
         bind()
     }
+    
+    @objc func handlePanGesture(gesture: UIPanGestureRecognizer) {
+        if gesture.state == .began {
+            print("Began")
+        } else if gesture.state == .changed {
+            let translation = gesture.translation(in: self.view)
+            UIView.animate(withDuration: 0.8) {
+                self.constellationCollectionView.alpha = 0
+                let scale = CGAffineTransform(scaleX: 0.5, y: 0.5).translatedBy(x: 0, y: -800)
+                self.myPlanetImage.transform = scale
+            }
+        } else if gesture.state == .ended {
+            self.constellationCollectionView.isHidden = true
+            self.myPlanetImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(myPlanetImageTappedAfterSmaller)))
+        }
+    }
+    
+    @objc func myPlanetImageTappedAfterSmaller() {
+        print("작아진 지구가 tap되었습니다")
+    }
 }
 
 // MARK: - UI
@@ -94,13 +133,19 @@ extension HomeViewController {
         setAttributes()
         setConstraints()
         view.backgroundColor = UIColor(named: "MainBlack")
+        myPlanetImage.isUserInteractionEnabled = true
+        myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
     }
     
     /// Attributes를 설정합니다.
     private func setAttributes() {
         view.addSubview(labelStackView)
         view.addSubview(profileStackView)
-        
+        view.addSubview(alarmButton)
+        view.addSubview(myPlanetImage)
+        view.addSubview(constellationCollectionView)
+        constellationCollectionView.dataSource = self
+        constellationCollectionView.delegate = self
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -124,17 +169,51 @@ extension HomeViewController {
             make.height.equalTo(50)
             make.centerY.equalTo(profileStackView.snp.centerY)
         }
+        
+        alarmButton.snp.makeConstraints { make in
+            make.right.equalToSuperview().inset(20)
+            make.width.equalTo(19)
+            make.height.equalTo(22)
+            make.centerY.equalTo(labelStackView.snp.centerY)
+        }
+        
+        constellationCollectionView.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.top.equalTo(labelStackView.snp.bottom)
+            make.bottom.equalTo(myPlanetImage.snp.top)
+        }
+        
+        myPlanetImage.snp.makeConstraints { make in
+            var bounds = UIScreen.main.bounds
+            make.centerY.equalTo(view.snp.bottom)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(bounds.width * 1.2)
+            make.height.equalTo(bounds.width * 1.2)
+        }
     }
 }
 
-extension String {
-    static func makeAtrributedString(name: String, appendString: String, changeAppendStringSize: CGFloat, changeAppendStringWieght: UIFont.Weight) -> NSMutableAttributedString {
-        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
-        let profileString = name + appendString
-        print(profileString)
-        let attributedQuote = NSMutableAttributedString(string: profileString)
-        attributedQuote.addAttribute(.foregroundColor, value: UIColor.red, range: (profileString as NSString).range(of: appendString))
-        attributedQuote.addAttribute(.font, value: UIFont.systemFont(ofSize: changeAppendStringSize, weight: .regular), range: (profileString as NSString).range(of: appendString))
-        return attributedQuote
+extension HomeViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.constellations.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ConstellationCollectionViewCell.identifier, for: indexPath) as! ConstellationCollectionViewCell
+        cell.constellationImage.image = viewModel.constellations[indexPath.row]
+        return cell
+    }
+    
+}
+
+extension HomeViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let tmpLabel : UIImageView = UIImageView()
+        tmpLabel.image = viewModel.constellations[indexPath.row]
+        return CGSize(width: tmpLabel.intrinsicContentSize.width / 5, height: 100)
+        
     }
 }
+

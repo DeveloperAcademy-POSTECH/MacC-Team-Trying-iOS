@@ -6,8 +6,20 @@
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
+import UIKit
 import Combine
 
 final class HomeViewModel: BaseViewModel {
-    var isSolo = false
+    var isSingled = false
+    var constellations: [UIImage?] = [
+        UIImage(named: "BusanCourseImage"),
+        UIImage(named: "ChangwonCourceImage"),
+        UIImage(named: "PohangCourseImage"),
+        UIImage(named: "BusanCourseImage"),
+        UIImage(named: "ChangwonCourceImage"),
+        UIImage(named: "PohangCourseImage"),
+        UIImage(named: "BusanCourseImage"),
+        UIImage(named: "ChangwonCourceImage"),
+        UIImage(named: "PohangCourseImage")
+    ]
 }
