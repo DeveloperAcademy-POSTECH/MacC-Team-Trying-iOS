@@ -38,8 +38,6 @@ opt_in_rules:
     - empty_collection_literal                      # Collection에서 ==, !=의 사용보다 isEmpty를 권장합니다.
     - empty_count                                   # count == 0 말고 isEmpty를 사용합니다.
     - empty_string                                  # String에서 isEmpty를 사용합니다.
-    - explicit_init                                 # 명시적으로 .init()을 호출하는 것은 지양합니다.
-    - explicit_self                                 # 인스턴스 변수와 함수는 명시적으로 self를 적고 접근합니다.
     - fallthrough                                   # Fallthrough를 지양합니다.
     - file_name                                     # 파일 이름은 파일에 선언된 타입이나 extension의 이름과 같아야합니다.
     - file_name_no_space                            # 파일 이름에는 빈 칸이 있으면 안됩니다.
