@@ -16,6 +16,8 @@ class BaseViewController: UIViewController {
     let cancelBag = CancelBag()
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
         // TODO: 배경 색상 변경하기
         view.backgroundColor = .systemBackground
     }

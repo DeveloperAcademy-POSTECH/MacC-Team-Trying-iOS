@@ -1,4 +1,5 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
 let projectName: String = "MatStar"
 
@@ -6,8 +7,8 @@ let project = Project(
     name: projectName,
     organizationName: "Try-ing",
     options: .options(
-        disableBundleAccessors: true
-//        disableSynthesizedResourceAccessors: true
+        disableBundleAccessors: true,
+        disableSynthesizedResourceAccessors: true
     ),
     targets: [
         Target(
@@ -19,6 +20,7 @@ let project = Project(
             infoPlist: .file(path: "SupportingFiles/\(projectName)-Info.plist"),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
+            scripts: [.SwiftLintShell],
             dependencies: [
                 .external(name: "CancelBag"),
                 .external(name: "FlexLayout"),

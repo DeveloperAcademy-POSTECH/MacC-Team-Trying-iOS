@@ -1,9 +1,9 @@
 //
-//  ___FILENAME___
-//  ___PROJECTNAME___
+//  SearchTestViewController.swift
+//  MatStar
 //
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright (c) ___YEAR___ ___ORGANIZATIONNAME___. All rights reserved.
+//  Created by 김승창 on 2022/10/12.
+//  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
 import Combine
@@ -12,8 +12,14 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class ___VARIABLE_sceneName___ViewController: BaseViewController {
-    var viewModel: ___VARIABLE_sceneName___ViewModel?
+final class SearchTestViewController: BaseViewController {
+    var viewModel: SearchTestViewModel?
+    
+    private lazy var viewLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Search"
+        return label
+    }()
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -32,10 +38,10 @@ final class ___VARIABLE_sceneName___ViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension ___VARIABLE_sceneName___ViewController {
+extension SearchTestViewController {
     private func setUI() {
         setAttributes()
-        setConstraints()
+        setLayout()
     }
     
     /// Attributes를 설정합니다.
@@ -44,7 +50,11 @@ extension ___VARIABLE_sceneName___ViewController {
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setConstraints() {
+    private func setLayout() {
+        view.addSubview(viewLabel)
         
+        viewLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
     }
 }
