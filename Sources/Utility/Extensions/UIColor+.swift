@@ -11,6 +11,5 @@ import UIKit
 extension UIColor {
     class func designSystem(_ color: Palette) -> UIColor? {
         UIColor(named: color.rawValue)
-//        UIColor(named: color.rawValue, in: Bundle.module, compatibleWith: nil)
     }
 }
