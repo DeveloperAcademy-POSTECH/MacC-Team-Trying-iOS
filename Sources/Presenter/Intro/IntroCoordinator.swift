@@ -8,7 +8,13 @@
 
 import UIKit
 
-final class IntroCoordinator: Coordinator {
+protocol IntroCoordinatorProtocol: Coordinator, LoginCoordinatorLogic, EnterEmailCoordinatorLogic {
+    var navigationController: UINavigationController? { get }
+
+    func coordinateToEnterEmailScene()
+}
+
+final class IntroCoordinator: IntroCoordinatorProtocol {
     weak var navigationController: UINavigationController?
 
     init(navigationController: UINavigationController?) {
@@ -21,7 +27,8 @@ final class IntroCoordinator: Coordinator {
     }
 
     func createLoginScene() -> UIViewController {
-        LoginViewController(viewModel: .init(coordinator: self))
+        let loginViewModel = LoginViewModel(coordinator: self)
+        return LoginViewController(viewModel: loginViewModel)
     }
 
     func createEnterEmailScene() -> UIViewController {
@@ -30,7 +37,7 @@ final class IntroCoordinator: Coordinator {
 }
 
 // MARK: - CoordinatorLogic
-extension IntroCoordinator: LoginCoordinatorLogic, EnterEmailCoordinatorLogic {
+extension IntroCoordinator {
 
     func coordinateToEnterEmailScene() {
         navigationController?.setNavigationBarHidden(false, animated: false)

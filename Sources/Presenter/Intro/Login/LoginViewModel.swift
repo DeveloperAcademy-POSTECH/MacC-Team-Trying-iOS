@@ -14,7 +14,11 @@ protocol LoginCoordinatorLogic {
     func coordinateToEnterEmailScene()
 }
 
-final class LoginViewModel: BaseViewModel {
+protocol LoginBusinessLogic {
+    func loginButtonDidTapped()
+}
+
+final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
     let coordinator: LoginCoordinatorLogic
 
     init(coordinator: LoginCoordinatorLogic) {

@@ -15,9 +15,9 @@ import PinLayout
 import FlexLayout
 
 final class LoginViewController: BaseViewController {
-    let viewModel: LoginViewModel
+    let viewModel: LoginBusinessLogic
 
-    init(viewModel: LoginViewModel) {
+    init(viewModel: LoginBusinessLogic) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -66,7 +66,7 @@ extension LoginViewController {
 extension LoginViewController {
 
     @objc
-    private func loginBttonDidTapped() {
+    func loginBttonDidTapped() {
         viewModel.loginButtonDidTapped()
     }
 }
