@@ -7,7 +7,17 @@
 //
 
 import Combine
+import Foundation
 
 final class FeedTestViewModel: BaseViewModel {
+}
 
+struct TestViewModel {
+    let id: Int
+    let planet: String
+    let title: String
+    let body: String
+    let date: String
+    let tag: [String]
+    let image: String
 }
