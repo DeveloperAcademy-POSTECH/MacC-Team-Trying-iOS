@@ -90,4 +90,4 @@ identifier_name:
     excluded:
         - id                # id라는 변수명에 대해서는 identifier_name rule을 적용하지 않습니다.
     allowed_symbols:
-        - _
+        - _                 # underscore에 대해서는 예외처리합니다.
