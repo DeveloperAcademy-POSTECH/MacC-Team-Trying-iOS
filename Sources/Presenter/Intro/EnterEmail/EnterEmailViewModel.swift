@@ -10,6 +10,12 @@ import Combine
 
 import CancelBag
 
-final class EnterEmailViewModel: BaseViewModel {
+protocol EnterEmailCoordinatorLogic {}
 
+final class EnterEmailViewModel: BaseViewModel {
+    let coordinator: EnterEmailCoordinatorLogic
+
+    init(coordinator: EnterEmailCoordinatorLogic) {
+        self.coordinator = coordinator
+    }
 }

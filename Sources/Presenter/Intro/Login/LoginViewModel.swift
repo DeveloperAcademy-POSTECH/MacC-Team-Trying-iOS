@@ -10,6 +10,18 @@ import Combine
 
 import CancelBag
 
-final class LoginViewModel: BaseViewModel {
+protocol LoginCoordinatorLogic {
+    func coordinateToEnterEmailScene()
+}
 
+final class LoginViewModel: BaseViewModel {
+    let coordinator: LoginCoordinatorLogic
+
+    init(coordinator: LoginCoordinatorLogic) {
+        self.coordinator = coordinator
+    }
+
+    func loginButtonDidTapped() {
+        coordinator.coordinateToEnterEmailScene()
+    }
 }

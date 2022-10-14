@@ -13,7 +13,16 @@ import CancelBag
 import SnapKit
 
 final class EnterEmailViewController: BaseViewController {
-    var viewModel: EnterEmailViewModel?
+    let viewModel: EnterEmailViewModel
+
+    init(viewModel: EnterEmailViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     private func bind() {}
 
@@ -32,11 +41,7 @@ extension EnterEmailViewController {
         setLayout()
     }
 
-    private func setAttributes() {
-        
-    }
+    private func setAttributes() {}
 
-    private func setLayout() {
-        
-    }
+    private func setLayout() {}
 }

@@ -16,7 +16,24 @@ final class IntroCoordinator: Coordinator {
     }
 
     func start() {
-        let controller = LoginViewController()
-        self.navigationController?.setViewControllers([controller], animated: false)
+        let startController = createLoginScene()
+        navigationController?.setViewControllers([startController], animated: false)
+    }
+
+    func createLoginScene() -> UIViewController {
+        LoginViewController(viewModel: .init(coordinator: self))
+    }
+
+    func createEnterEmailScene() -> UIViewController {
+        EnterEmailViewController(viewModel: .init(coordinator: self))
+    }
+}
+
+// MARK: - CoordinatorLogic
+extension IntroCoordinator: LoginCoordinatorLogic, EnterEmailCoordinatorLogic {
+
+    func coordinateToEnterEmailScene() {
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationController?.pushViewController(createEnterEmailScene(), animated: true)
     }
 }
