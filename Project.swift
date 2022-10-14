@@ -28,6 +28,15 @@ let project = Project(
                 .external(name: "SnapKit"),
                 .external(name: "PinLayout")
             ]
+        ),
+        Target(
+            name: "\(projectName)Tests",
+            platform: .iOS,
+            product: .unitTests,
+            bundleId: "comr.Try-ing.\(projectName)Tests",
+            infoPlist: .default,
+            sources: ["Tests/**"],
+            dependencies: [.target(name: projectName)]
         )
     ]
 )
