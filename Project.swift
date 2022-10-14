@@ -25,7 +25,8 @@ let project = Project(
                 .external(name: "CancelBag"),
                 .external(name: "FlexLayout"),
                 .external(name: "Lottie"),
-                .external(name: "SnapKit")
+                .external(name: "SnapKit"),
+                .external(name: "PinLayout")
             ]
         )
     ]
