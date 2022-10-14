@@ -24,6 +24,12 @@ final class HomeViewController: BaseViewController {
         return imageView
     }()
     
+    private let otherPlanets: [UIImageView] = [
+        UIImageView(image: UIImage(named: "PodingPlanet")),
+        UIImageView(image: UIImage(named: "WodyPlanet")),
+        UIImageView(image: UIImage(named: "YouthPlanet"))
+    ]
+    
     
     
     private let otherProfileImage: UIImageView = {
@@ -107,23 +113,34 @@ final class HomeViewController: BaseViewController {
     }
     
     @objc func handlePanGesture(gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self.view)
         if gesture.state == .began {
             print("Began")
         } else if gesture.state == .changed {
-            let translation = gesture.translation(in: self.view)
             UIView.animate(withDuration: 0.8) {
                 self.constellationCollectionView.alpha = 0
                 let scale = CGAffineTransform(scaleX: 0.5, y: 0.5).translatedBy(x: 0, y: -800)
                 self.myPlanetImage.transform = scale
             }
         } else if gesture.state == .ended {
-            self.constellationCollectionView.isHidden = true
-            self.myPlanetImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(myPlanetImageTappedAfterSmaller)))
+            if translation.y > -150 {
+                UIView.animate(withDuration: 0.5) {
+                    self.myPlanetImage.transform = .identity
+                    self.constellationCollectionView.alpha = 1
+                }
+            } else {
+                self.constellationCollectionView.isHidden = true
+                self.myPlanetImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(myPlanetImageTappedAfterSmaller)))
+            }
         }
     }
     
     @objc func myPlanetImageTappedAfterSmaller() {
-        print("작아진 지구가 tap되었습니다")
+        UIView.animate(withDuration: 0.5) {
+            self.constellationCollectionView.isHidden = false
+            self.constellationCollectionView.alpha = 1
+            self.myPlanetImage.transform = .identity
+        }
     }
 }
 
@@ -132,7 +149,7 @@ extension HomeViewController {
     private func setUI() {
         setAttributes()
         setConstraints()
-        view.backgroundColor = UIColor(named: "MainBlack")
+        view.backgroundColor = .black
         myPlanetImage.isUserInteractionEnabled = true
         myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
     }
