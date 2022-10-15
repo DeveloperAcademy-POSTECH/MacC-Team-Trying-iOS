@@ -8,10 +8,12 @@
 import ProjectDescription
 
 let dependencies = Dependencies(
+    carthage: [
+        .github(path: "https://github.com/airbnb/lottie-ios.git", requirement: .exact("3.5.0"))
+    ],
     swiftPackageManager: [
         .remote(url: "https://github.com/devxoul/CancelBag", requirement: .upToNextMajor(from: "1")),
         .remote(url: "https://github.com/layoutBox/FlexLayout.git", requirement: .exact("1.3.18")),
-        .remote(url: "https://github.com/airbnb/lottie-ios.git", requirement: .exact("3.5.0")),
         .remote(url: "https://github.com/SnapKit/SnapKit.git", requirement: .upToNextMajor(from: "5.0.1"))
     ],
     platforms: [.iOS]
