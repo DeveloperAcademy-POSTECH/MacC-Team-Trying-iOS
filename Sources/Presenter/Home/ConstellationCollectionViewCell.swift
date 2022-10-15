@@ -21,12 +21,7 @@ class ConstellationCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-//        self.backgroundColor = .blue
         addSubview(constellationImage)
-//        constellationImage.snp.makeConstraints { make in
-//            make.center.equalToSuperview()
-//            make.size.equalTo(100)
-//        }
         constellationImage.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -36,6 +31,4 @@ class ConstellationCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
 }

@@ -16,6 +16,17 @@ import Lottie
 final class HomeViewController: BaseViewController {
     
     var viewModel = HomeViewModel()
+    
+    lazy var homeLottie: LottieAnimationView = {
+        let lottie = LottieAnimationView.init(name: "HomeLottie")
+        lottie.frame = self.view.bounds
+        lottie.center = self.view.center
+        lottie.contentMode = .scaleAspectFill
+        lottie.animationSpeed = 0.5
+        lottie.loopMode = .loop
+        lottie.play()
+        return lottie
+    }()
 
     private let myProfileImage: UIImageView = {
         let imageView = UIImageView()
@@ -43,11 +54,13 @@ final class HomeViewController: BaseViewController {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .heavy)
         label.textColor = .white
-        label.attributedText = String.makeAtrributedString(name: "카리나",
-                                                           appendString: " 와 함께",
-                                                           changeAppendStringSize: 15,
-                                                           changeAppendStringWieght: .regular,
-                                                           changeAppendStringColor: .white)
+        label.attributedText = String.makeAtrributedString(
+            name: "카리나",
+            appendString: " 와 함께",
+            changeAppendStringSize: 15,
+            changeAppendStringWieght: .regular,
+            changeAppendStringColor: .white
+        )
         return label
     }()
     
@@ -67,7 +80,7 @@ final class HomeViewController: BaseViewController {
     }()
     
     private lazy var profileStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: viewModel.isSingled ?? true ? [myProfileImage, otherProfileImage] : [myProfileImage])
+        let stackView = UIStackView(arrangedSubviews: viewModel.isSingled ? [myProfileImage, otherProfileImage] : [myProfileImage])
         stackView.spacing = -10
         stackView.axis = .horizontal
         stackView.alignment = .fill
@@ -111,18 +124,18 @@ final class HomeViewController: BaseViewController {
         bind()
     }
     
-    @objc func handlePanGesture(gesture: UIPanGestureRecognizer) {
+    @objc
+    func handlePanGesture(gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: self.view)
-        if gesture.state == .began {
-            print("Began")
-        } else if gesture.state == .changed {
+        let screenHeight = UIScreen.main.bounds.height
+        if gesture.state == .changed {
             UIView.animate(withDuration: 0.8) {
                 self.constellationCollectionView.alpha = 0
-                let scale = CGAffineTransform(scaleX: 0.5, y: 0.5).translatedBy(x: 0, y: -800)
+                let scale = CGAffineTransform(scaleX: 0.5, y: 0.5).translatedBy(x: 0, y: -screenHeight)
                 self.myPlanetImage.transform = scale
             }
         } else if gesture.state == .ended {
-            if translation.y > -150 {
+            if translation.y > -screenHeight / 5 {
                 UIView.animate(withDuration: 0.5) {
                     self.myPlanetImage.transform = .identity
                     self.constellationCollectionView.alpha = 1
@@ -130,15 +143,18 @@ final class HomeViewController: BaseViewController {
             } else {
                 self.constellationCollectionView.isHidden = true
                 self.myPlanetImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(myPlanetImageTappedAfterSmaller)))
+                self.homeLottie.stop()
             }
         }
     }
     
-    @objc func myPlanetImageTappedAfterSmaller() {
+    @objc
+    func myPlanetImageTappedAfterSmaller() {
         UIView.animate(withDuration: 0.5) {
             self.constellationCollectionView.isHidden = false
             self.constellationCollectionView.alpha = 1
             self.myPlanetImage.transform = .identity
+            self.homeLottie.play()
         }
     }
 }
@@ -148,14 +164,13 @@ extension HomeViewController {
     private func setUI() {
         setAttributes()
         setConstraints()
-        
-        view.backgroundColor = .black
         myPlanetImage.isUserInteractionEnabled = true
         myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
     }
     
     /// Attributes를 설정합니다.
     private func setAttributes() {
+        view.addSubview(homeLottie)
         view.addSubview(labelStackView)
         view.addSubview(profileStackView)
         view.addSubview(alarmButton)
@@ -202,7 +217,7 @@ extension HomeViewController {
         }
         
         myPlanetImage.snp.makeConstraints { make in
-            var bounds = UIScreen.main.bounds
+            let bounds = UIScreen.main.bounds
             make.centerY.equalTo(view.snp.bottom)
             make.centerX.equalToSuperview()
             make.width.equalTo(bounds.width * 1.2)
@@ -224,10 +239,8 @@ extension HomeViewController: UICollectionViewDataSource {
 }
 
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        let tmpLabel : UIImageView = UIImageView()
+        let tmpLabel = UIImageView()
         tmpLabel.image = viewModel.constellations[indexPath.row]
         return CGSize(width: tmpLabel.intrinsicContentSize.width / 5, height: 100)
     }

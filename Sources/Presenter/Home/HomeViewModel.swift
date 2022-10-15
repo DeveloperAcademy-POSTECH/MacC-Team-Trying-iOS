@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 final class HomeViewModel: BaseViewModel {
-    var isSingled = false
+    var isSingled = true
     var constellations: [UIImage?] = [
         UIImage(named: "BusanCourseImage"),
         UIImage(named: "ChangwonCourceImage"),

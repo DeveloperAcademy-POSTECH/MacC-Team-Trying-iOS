@@ -85,6 +85,7 @@ extension MainCoordinator {
     private func getTabController(item: TabBarItem) -> UINavigationController {
         let navigationController = UINavigationController()
         let tabItem = UITabBarItem(title: item.title, image: UIImage(named: item.tabBarIconName), selectedImage: nil)
+        
         navigationController.tabBarItem = tabItem
         
         let coordinator = item.getCoordinator(navigationController: navigationController)
@@ -96,6 +97,8 @@ extension MainCoordinator {
     private func prepareTabBarController(with tabControllers: [UIViewController]) {
         guard let navigationController = navigationController else { return }
         tabBarController.tabBar.backgroundColor = .black
+        tabBarController.tabBar.tintColor = UIColor(named: "mainYellow")
+        tabBarController.tabBar.unselectedItemTintColor = .white
         tabBarController.setViewControllers(tabControllers, animated: false)
         navigationController.viewControllers = [tabBarController]
     }
