@@ -19,7 +19,7 @@ final class HomeCoordinator: Coordinator {
         guard let navigationController = navigationController else { return }
         let viewController = HomeViewController()
         let viewModel = HomeViewModel()
-        viewController.viewModel = viewModel
+        viewController.homeDetailView.viewModel = viewModel
         
         navigationController.pushViewController(viewController, animated: true)
     }
