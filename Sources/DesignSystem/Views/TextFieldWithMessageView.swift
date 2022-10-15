@@ -16,6 +16,19 @@ protocol TextFieldWithMessageViewComponentDelegate: AnyObject {
     func textFieldDidChange(_ text: String)
 }
 
+/*
+    사용방법
+```
+    let view: TextFieldWithMessageViewComponent = TextFieldWithMessageView()
+    view.delegate = self
+    // TextFieldWithMessageViewComponentDelegate 채택
+    view.snp.makeConstraints { make in
+        make.top.left.right.equalToSuperView()
+    }
+```
+*/
+/// 높이는 68로 고정되어 있습니다.
+/// 위, 왼쪽, 오른쪽을 잡아주세요.
 final class TextFieldWithMessageView: UIView {
     private let failColor: UIColor? = .red
     private let successColor: UIColor? = .green
@@ -129,6 +142,7 @@ extension TextFieldWithMessageView {
     private func setLayout() {
         textField.pin.top().left().right().height(50)
         errorLabel.pin.below(of: textField).left().right().margin(3, 8, 8).height(15)
+        self.pin.height(68) // = 50 + 3 + 15
     }
 }
 
