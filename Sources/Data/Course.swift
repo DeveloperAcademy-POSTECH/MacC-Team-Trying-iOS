@@ -19,3 +19,21 @@ struct Course {
     let images: [CourseImage]
     let places: [Place]
 }
+
+extension Course {
+    static let firstDateCoures = Course(belongedPlanet: User.testUser.myPlanet,
+                                        title: "포항풀코스",
+                                        content: "포항공대에서 데이트를 했다",
+                                        date: "2022년10월1일",
+                                        tags: Tag.firstDateTags,
+                                        images: CourseImage.firstDateCourseImages,
+                                        places: Place.firstDatePlaces)
+    
+    static let secondDateCourse = Course(belongedPlanet: User.testUser.myPlanet,
+                                         title: "부산풀코스",
+                                         content: "광안리에서 데이트를 했다",
+                                         date: "2022년10월5일",
+                                         tags: Tag.secondDateTags,
+                                         images: CourseImage.secondDateCourseImages,
+                                         places: Place.secondDatePlaces)
+}

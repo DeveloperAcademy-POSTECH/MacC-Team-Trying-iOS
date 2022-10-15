@@ -16,3 +16,8 @@ struct User {
     let satellites: [Planet]
 }
 
+extension User {
+    static let testUser: User = {
+        .init(email: "matStar1015@gmail.com", password: "matStar1015", nickName: "맛스타", myPlanet: Planet.testUserPlanet, satellites: Planet.testUserSatellites)
+    }()
+}
