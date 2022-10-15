@@ -32,7 +32,7 @@ final class HomeViewController: BaseViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        setUI()
+        setAttributes()
 
     }
     
@@ -54,14 +54,14 @@ final class HomeViewController: BaseViewController {
                 }
             } else {
                 self.homeDetailView.constellationCollectionView.isHidden = true
-                self.homeDetailView.myPlanetImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(myPlanetImageTappedAfterSmaller)))
+                self.homeDetailView.myPlanetImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(myPlanetImageTapped)))
                 self.homeDetailView.homeLottie.stop()
             }
         }
     }
     
     @objc
-    func myPlanetImageTappedAfterSmaller() {
+    func myPlanetImageTapped() {
         UIView.animate(withDuration: 0.5) {
             self.homeDetailView.constellationCollectionView.isHidden = false
             self.homeDetailView.constellationCollectionView.alpha = 1
@@ -78,15 +78,9 @@ final class HomeViewController: BaseViewController {
 
 // MARK: - UI
 extension HomeViewController {
-    func setUI() {
-        view.backgroundColor = .black
-        setAttributes()
-    }
-    
-    private func setAttributes() {
+    func setAttributes() {
         homeDetailView.constellationCollectionView.dataSource = self
         homeDetailView.constellationCollectionView.delegate = self
-        
         homeDetailView.courseRegistrationButton.addTarget(self, action: #selector(courseRsgistrationButtonTapped), for: .touchUpInside)
         homeDetailView.myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
     }

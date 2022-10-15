@@ -25,8 +25,8 @@ class HomeDetailView: UIView {
         lottie.play()
         return lottie
     }()
-
-     let myProfileImage: UIImageView = {
+    
+    lazy var myProfileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "ProfileImage")
         imageView.clipsToBounds = true
@@ -34,13 +34,14 @@ class HomeDetailView: UIView {
         return imageView
     }()
     
-     let otherPlanets: [UIImageView] = [
+    lazy var otherPlanets: [UIImageView] = [
         UIImageView(image: UIImage(named: "PodingPlanet")),
-        UIImageView(image: UIImage(named: "WodyPlanet")),
+        UIImageView(image: UIImage(named: "WoodyPlanet")),
         UIImageView(image: UIImage(named: "YouthPlanet"))
     ]
     
-     let otherProfileImage: UIImageView = {
+    //MARK : - 추후 필드명 변경되면 변수명 수정(mate)
+    lazy var otherProfileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "ProfileImage")
         imageView.clipsToBounds = true
@@ -48,9 +49,9 @@ class HomeDetailView: UIView {
         return imageView
     }()
     
-     let nameLabel: UILabel = {
+    lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .heavy)
+        label.font = .designSystem(weight: .heavy, size: ._20)
         label.textColor = .white
         label.attributedText = String.makeAtrributedString(
             name: "카리나",
@@ -62,14 +63,14 @@ class HomeDetailView: UIView {
         return label
     }()
     
-     let ddayLabel: UILabel = {
+    lazy var ddayLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
         label.text = "D+273"
         return label
     }()
     
-     lazy var labelStackView: UIStackView = {
+    lazy var labelStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [nameLabel, ddayLabel])
         stackView.spacing = 0
         stackView.axis = .vertical
@@ -77,8 +78,8 @@ class HomeDetailView: UIView {
         return stackView
     }()
     
-     lazy var profileStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: viewModel.isSingled ? [myProfileImage, otherProfileImage] : [myProfileImage])
+    lazy var profileStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: viewModel.hasMate ? [myProfileImage, otherProfileImage] : [myProfileImage])
         stackView.spacing = -10
         stackView.axis = .horizontal
         stackView.alignment = .fill
@@ -86,14 +87,14 @@ class HomeDetailView: UIView {
         return stackView
     }()
     
-     let alarmButton: UIButton = {
+    lazy var alarmButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "AlarmImage"), for: .normal)
         button.tintColor = .white
         return button
     }()
     
-     let constellationCollectionView: UICollectionView = {
+    lazy var constellationCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 50, left: 20, bottom: 20, right: 20)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -102,33 +103,33 @@ class HomeDetailView: UIView {
         return collectionView
     }()
     
-     lazy var courseRegistrationButton: UIButton = {
+    lazy var courseRegistrationButton: UIButton = {
         let button = UIButton()
         button.setTitle("코스 등록", for: .normal)
         button.setImage(UIImage(systemName: "pencil"), for: .normal)
-        button.setTitleColor(UIColor(named: "mainYellow"), for: .normal)
+        button.setTitleColor(UIColor.designSystem(.mainYellow), for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 12, weight: .bold)
-        button.tintColor = UIColor(named: "mainYellow")
+        button.tintColor = UIColor.designSystem(.mainYellow)
         button.clipsToBounds = true
         button.layer.cornerRadius = 17
         button.backgroundColor = .black
-        button.layer.borderColor = UIColor(named: "mainYellow")?.cgColor
+        button.layer.borderColor = UIColor.designSystem(.mainYellow)?.cgColor
         button.layer.borderWidth = 1.5
-        
         return button
     }()
     
-     let myPlanetImage: UIImageView = {
+    lazy var myPlanetImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "MyPlanetImage")
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
-
-
+    
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUI()
-
+        
     }
     
     required init?(coder: NSCoder) {
@@ -138,7 +139,6 @@ class HomeDetailView: UIView {
     private func setUI() {
         setAttributes()
         setConstraints()
-        myPlanetImage.isUserInteractionEnabled = true
     }
     
     /// Attributes를 설정합니다.
@@ -151,7 +151,7 @@ class HomeDetailView: UIView {
         addSubview(constellationCollectionView)
         addSubview(courseRegistrationButton)
     }
-
+    
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
         homeLottie.snp.makeConstraints { make in

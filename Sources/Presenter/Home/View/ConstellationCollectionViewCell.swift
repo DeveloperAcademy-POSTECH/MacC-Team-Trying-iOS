@@ -13,7 +13,7 @@ class ConstellationCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "ConstellationCollectionViewCell"
     
-    var constellationImage: UIImageView = {
+    lazy var constellationImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView

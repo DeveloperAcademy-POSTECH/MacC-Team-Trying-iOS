@@ -1,5 +1,5 @@
 //
-//  Extension+String.swift
+//  String+.swift
 //  MatStar
 //
 //  Created by uiskim on 2022/10/12.
