@@ -104,6 +104,22 @@ final class HomeViewController: BaseViewController {
         return collectionView
     }()
     
+    private lazy var courseRegistrationButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("코스 등록", for: .normal)
+        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.setTitleColor(UIColor(named: "mainYellow"), for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .bold)
+        button.tintColor = UIColor(named: "mainYellow")
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 17
+        button.backgroundColor = .black
+        button.layer.borderColor = UIColor(named: "mainYellow")?.cgColor
+        button.layer.borderWidth = 1.5
+        button.addTarget(self, action: #selector(courseRsgistrationButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
     private let myPlanetImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "MyPlanetImage")
@@ -157,6 +173,11 @@ final class HomeViewController: BaseViewController {
             self.homeLottie.play()
         }
     }
+    
+    @objc
+    func courseRsgistrationButtonTapped() {
+        print("코스등록하기 버튼이 눌림")
+    }
 }
 
 // MARK: - UI
@@ -176,6 +197,7 @@ extension HomeViewController {
         view.addSubview(alarmButton)
         view.addSubview(myPlanetImage)
         view.addSubview(constellationCollectionView)
+        view.addSubview(courseRegistrationButton)
 
         constellationCollectionView.dataSource = self
         constellationCollectionView.delegate = self
@@ -222,6 +244,13 @@ extension HomeViewController {
             make.centerX.equalToSuperview()
             make.width.equalTo(bounds.width * 1.2)
             make.height.equalTo(bounds.width * 1.2)
+        }
+        
+        courseRegistrationButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(105)
+            make.width.equalTo(86)
+            make.height.equalTo(34)
         }
     }
 }
