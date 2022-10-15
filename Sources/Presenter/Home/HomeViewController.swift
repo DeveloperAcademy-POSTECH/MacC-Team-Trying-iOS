@@ -11,11 +11,12 @@ import UIKit
 
 import CancelBag
 import SnapKit
+import Lottie
 
 final class HomeViewController: BaseViewController {
     
     var viewModel = HomeViewModel()
-    
+
     private let myProfileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "ProfileImage")
@@ -30,8 +31,6 @@ final class HomeViewController: BaseViewController {
         UIImageView(image: UIImage(named: "YouthPlanet"))
     ]
     
-    
-    
     private let otherProfileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "ProfileImage")
@@ -44,7 +43,11 @@ final class HomeViewController: BaseViewController {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .heavy)
         label.textColor = .white
-        label.attributedText = String.makeAtrributedString(name: "카리나", appendString: " 와 함께", changeAppendStringSize: 15, changeAppendStringWieght: .regular, changeAppendStringColor: .white)
+        label.attributedText = String.makeAtrributedString(name: "카리나",
+                                                           appendString: " 와 함께",
+                                                           changeAppendStringSize: 15,
+                                                           changeAppendStringWieght: .regular,
+                                                           changeAppendStringColor: .white)
         return label
     }()
     
@@ -88,15 +91,12 @@ final class HomeViewController: BaseViewController {
         return collectionView
     }()
     
-    
-    
     private let myPlanetImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "MyPlanetImage")
         return imageView
     }()
-    
-    
+
     /// View Model과 bind 합니다.
     private func bind() {
         // input
@@ -104,7 +104,6 @@ final class HomeViewController: BaseViewController {
         // output
         
     }
-
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -149,6 +148,7 @@ extension HomeViewController {
     private func setUI() {
         setAttributes()
         setConstraints()
+        
         view.backgroundColor = .black
         myPlanetImage.isUserInteractionEnabled = true
         myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
@@ -161,10 +161,11 @@ extension HomeViewController {
         view.addSubview(alarmButton)
         view.addSubview(myPlanetImage)
         view.addSubview(constellationCollectionView)
+
         constellationCollectionView.dataSource = self
         constellationCollectionView.delegate = self
     }
-    
+
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
         myProfileImage.snp.makeConstraints { make in
@@ -216,11 +217,10 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ConstellationCollectionViewCell.identifier, for: indexPath) as! ConstellationCollectionViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ConstellationCollectionViewCell.identifier, for: indexPath) as? ConstellationCollectionViewCell else { return UICollectionViewCell() }
         cell.constellationImage.image = viewModel.constellations[indexPath.row]
         return cell
     }
-    
 }
 
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
@@ -230,7 +230,5 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
         let tmpLabel : UIImageView = UIImageView()
         tmpLabel.image = viewModel.constellations[indexPath.row]
         return CGSize(width: tmpLabel.intrinsicContentSize.width / 5, height: 100)
-        
     }
 }
-

@@ -95,6 +95,7 @@ extension MainCoordinator {
     
     private func prepareTabBarController(with tabControllers: [UIViewController]) {
         guard let navigationController = navigationController else { return }
+        tabBarController.tabBar.backgroundColor = .black
         tabBarController.setViewControllers(tabControllers, animated: false)
         navigationController.viewControllers = [tabBarController]
     }
