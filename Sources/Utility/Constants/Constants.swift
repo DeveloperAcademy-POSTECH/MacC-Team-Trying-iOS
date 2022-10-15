@@ -30,5 +30,6 @@ struct Constants {
     struct Image {
         static let chevron_left = "chevron_left"
         static let x_mark = "x_mark"
+        static let magnifyingglass = "magnifyingglass"
     }
 }

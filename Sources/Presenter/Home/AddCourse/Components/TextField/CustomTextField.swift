@@ -54,7 +54,7 @@ final class CustomTextField: UITextField {
     private func setAttributes() {
         switch type {
         case .search:
-            self.leftImage(UIImage(systemName: "magnifyingglass"), imageWidth: 10, padding: 10)
+            self.leftImage(UIImage(systemName: Constants.Image.magnifyingglass), imageWidth: 10, padding: 10)
             self.attributedPlaceholder = .init(string: "장소를 입력해 주세요.", attributes: [.foregroundColor: UIColor.designSystem(.grayEBEBF5) as Any])
             self.tintColor = .designSystem(.grayEBEBF5)
             self.textColor = .designSystem(.white)
