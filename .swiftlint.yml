@@ -74,7 +74,6 @@ opt_in_rules:
     - unused_declaration                            # 선언된 것은 최소 한번은 사용되어야 합니다.
     - unused_import                                 # 사용되지 않는 모듈의 import는 작성하지 않습니다.
     - vertical_parameter_alignment_on_call          # 함수를 호출할 때 parameters들은 한 줄에 모두, 또는 한 줄에 하나씩 vertically 정렬되어 호출해야 합니다.
-    - vertical_whitespace_between_cases             # 각 case 사이에 한 줄을 띄워서 작성합니다.
     - yoda_condition                                # constant literal은 비교 연산자의 오른쪽에 위치해야 합니다.
 
 
