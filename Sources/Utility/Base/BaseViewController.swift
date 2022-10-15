@@ -19,6 +19,10 @@ class BaseViewController: UIViewController {
         super.viewDidLoad()
         
         // TODO: 배경 색상 변경하기
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .designSystem(.black)
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
     }
 }
