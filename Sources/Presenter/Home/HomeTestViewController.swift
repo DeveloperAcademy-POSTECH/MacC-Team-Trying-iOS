@@ -18,6 +18,8 @@ final class HomeTestViewController: BaseViewController {
     private lazy var viewLabel: UILabel = {
         let label = UILabel()
         label.text = "Home"
+        label.font = .designSystem(weight: .heavy, size: ._15)
+        label.textColor = .designSystem(.mainYellow)
         return label
     }()
     
