@@ -17,7 +17,7 @@ enum SmallRectButtonType {
     
     /// 별 제거 버튼
     /// - Title : 별 제거
-    case delete     // 별 제거
+    case delete
 }
 
 final class SmallRectButton: UIButton {
