@@ -47,7 +47,6 @@ opt_in_rules:
     - identical_operands                            # 같은 것을 비교할 필요 없습니다.
     - implicit_return                               # closure, functions, getter에서 암묵적 return을 지향합니다.
     - implicitly_unwrapped_optional                 # 암시적 언래핑을 지양합니다. (IBOutlet은 예외)
-    - indentation_width                             # 첫째줄에서는 indent를 금지하고, indent는 4칸으로 설정합니다.
     - last_where                                    # Collection에서 .filter { }.last 말고 .last(where: )를 사용합니다.
     - let_var_whitespace                            # let, var 프로퍼티들은 다른 statement들과 한 줄을 띄워서 작성합니다.
     - literal_expression_end_indentation            # 배열, Dictionary의 마지막 indentation은 처음과 같아야합니다.
@@ -74,7 +73,6 @@ opt_in_rules:
     - unused_declaration                            # 선언된 것은 최소 한번은 사용되어야 합니다.
     - unused_import                                 # 사용되지 않는 모듈의 import는 작성하지 않습니다.
     - vertical_parameter_alignment_on_call          # 함수를 호출할 때 parameters들은 한 줄에 모두, 또는 한 줄에 하나씩 vertically 정렬되어 호출해야 합니다.
-    - vertical_whitespace_between_cases             # 각 case 사이에 한 줄을 띄워서 작성합니다.
     - yoda_condition                                # constant literal은 비교 연산자의 오른쪽에 위치해야 합니다.
 
 
@@ -90,3 +88,5 @@ nesting:                    # nesting을 설정합니다.
 identifier_name:
     excluded:
         - id                # id라는 변수명에 대해서는 identifier_name rule을 적용하지 않습니다.
+    allowed_symbols:
+        - _                 # underscore에 대해서는 예외처리합니다.
