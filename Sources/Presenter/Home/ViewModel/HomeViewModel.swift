@@ -19,9 +19,9 @@ final class HomeViewModel: BaseViewModel {
     var hasMate = true
     var constellations: [Constellation] = [
         Constellation(name: "창원 야구장", image: UIImage(named: "Changwon")),
-        Constellation(name: "광안리 야경보러 간날", image: UIImage(named: "Busan")),
+        Constellation(name: "광안대교 야경", image: UIImage(named: "Busan")),
         Constellation(name: "포항공대", image: UIImage(named: "Pohang")),
         Constellation(name: "부산", image: UIImage(named: "Busan")),
-        Constellation(name: "포항공대애플아카데미 기숙사", image: UIImage(named: "Pohang"))
+        Constellation(name: "애플아카데미", image: UIImage(named: "Pohang"))
     ]
 }

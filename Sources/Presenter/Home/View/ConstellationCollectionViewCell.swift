@@ -62,7 +62,7 @@ class ConstellationCollectionViewCell: UICollectionViewCell {
         }
         
         constellationImage.snp.makeConstraints { make in
-            make.width.equalTo(100)
+            make.height.equalTo(80)
         }
 
     }
