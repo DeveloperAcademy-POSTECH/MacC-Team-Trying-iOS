@@ -79,8 +79,8 @@ final class CourseFeedViewController: BaseViewController {
         listButton.layer.opacity = 0.5
         listButton.layer.masksToBounds = true
         listButton.setImage(UIImage(systemName: "list.bullet"), for: .normal)
-        listButton.snp.makeConstraints { make in
 
+        listButton.snp.makeConstraints { make in
             make.width.height.equalTo(50)
             make.top.equalTo(self.mapButton.snp.bottom).offset(20)
             make.leading.equalTo(self.mapButton)

@@ -31,7 +31,6 @@ final class HomeTestViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setUI()
         bind()
     }

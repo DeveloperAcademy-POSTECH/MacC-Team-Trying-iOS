@@ -22,5 +22,6 @@ final class FeedCoordinator: Coordinator {
         viewController.viewModel = viewModel
         
         navigationController.pushViewController(viewController, animated: true)
+        navigationController.isNavigationBarHidden = true
     }
 }

@@ -19,12 +19,6 @@ final class FeedTestViewController: BaseViewController {
 
     private var data = [TestViewModel]()
     
-    private lazy var viewLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Feed"
-        return label
-    }()
-    
     /// View Model과 bind 합니다.
     private func bind() {
         // input
@@ -36,7 +30,6 @@ final class FeedTestViewController: BaseViewController {
     // MARK: Life-Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
         for _ in 0..<10 {
             let model = TestViewModel(id: 1,
                                       planet: "우디",
@@ -52,6 +45,8 @@ final class FeedTestViewController: BaseViewController {
         layout.scrollDirection = .vertical
         layout.itemSize = CGSize(width: view.frame.size.width, height: view.frame.size.height)
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
 
         feedCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         feedCollectionView?.isPagingEnabled = true
@@ -78,8 +73,23 @@ extension FeedTestViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCollectionViewCell.identifier, for: indexPath) as? FeedCollectionViewCell else { return FeedCollectionViewCell() }
 
         cell.configure(with: model)
+        cell.delegate = self
 
         return cell
+    }
+}
+
+extension FeedTestViewController: FeedCollectionViewCellDelegate {
+    func didTapLikeButton(model: TestViewModel) {
+        print("like Button Tapped")
+    }
+
+    func didTapListButton(model: TestViewModel) {
+        print("List Button Tapped")
+    }
+
+    func didTapMapButton(model: TestViewModel) {
+        print("Map Button Tapped")
     }
 }
 
@@ -92,16 +102,13 @@ extension FeedTestViewController {
     
     /// Attributes를 설정합니다.
     private func setAttributes() {
+        feedCollectionView?.contentInsetAdjustmentBehavior = .never
         
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        view.addSubview(viewLabel)
-        
-        viewLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
+
     }
 }
 
