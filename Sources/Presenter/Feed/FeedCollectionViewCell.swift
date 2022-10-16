@@ -21,6 +21,8 @@ protocol FeedCollectionViewCellDelegate: AnyObject {
 
 class FeedCollectionViewCell: UICollectionViewCell {
 
+    private let gradient = CAGradientLayer()
+
     private var model: TestViewModel?
 
     static let identifier = "FeedCollectionViewCell"
@@ -33,7 +35,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
 
     private let planetImageView = UIImageView()
 
-    private var bottomView = UIView()
+    private var bottomView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.40))
 
     // Labels
     private let planetNameLabel = UILabel()
@@ -42,7 +44,15 @@ class FeedCollectionViewCell: UICollectionViewCell {
 
     private let dateLabel = UILabel()
 
-    private let followButton = UIButton()
+    private let followButton: UIButton = {
+        let button = UIButton()
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 15
+        button.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        button.backgroundColor = .white
+
+        return button
+    }()
 
     // Buttons
     private let mapButton = UIButton()
@@ -71,6 +81,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(listButton)
         contentView.addSubview(likeButton)
         contentView.addSubview(bottomView)
+        contentView.sendSubviewToBack(bottomView)
         contentView.sendSubviewToBack(courseImageView)
 
         // Add Action
@@ -104,8 +115,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
             make.bottom.equalToSuperview().inset(187)
         }
 
-        //Subviews
-
+        // Subviews
         bottomView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview()
@@ -142,13 +152,6 @@ class FeedCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(planetNameLabel.snp.bottom).offset(10)
             make.left.equalTo(planetNameLabel.snp.left)
         }
-
-        let gradient = CAGradientLayer()
-        gradient.frame = bottomView.bounds
-        print("bottomview: \(bottomView.bounds)")
-        gradient.colors = [UIColor.white.cgColor, UIColor.black.cgColor]
-        gradient.opacity = 0.7
-        bottomView.layer.insertSublayer(gradient, at: 0)
     }
 
     override func layoutSubviews() {
@@ -197,8 +200,13 @@ extension FeedCollectionViewCell {
 
         planetImageView.image = UIImage(named: "woodyPlanetImage")
         // 아래 검은 뷰
-
-
+        bottomView.backgroundColor = . black
+        gradient.colors = [UIColor.white.cgColor ,UIColor.black.cgColor]
+        gradient.frame = CGRect(x: 0, y: 0, width: bottomView.frame.width, height: bottomView.frame.height/10)
+        gradient.startPoint = CGPoint(x: 0.5, y: 0.0)
+        gradient.opacity = 0.3
+        gradient.endPoint = CGPoint(x: 0.5, y: 1.0)
+        bottomView.layer.addSublayer(gradient)
 
         // 지도 버튼
         mapButton.backgroundColor = .black
@@ -230,11 +238,6 @@ extension FeedCollectionViewCell {
 
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        
-
-
-
-
 
     }
 }
