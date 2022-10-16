@@ -91,6 +91,10 @@ extension FeedTestViewController: FeedCollectionViewCellDelegate {
     func didTapMapButton(model: TestViewModel) {
         print("Map Button Tapped")
     }
+
+    func didTapFollowButton(model: TestViewModel) {
+        print("follow Button Tapped")
+    }
 }
 
 // MARK: - UI
