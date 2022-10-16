@@ -12,26 +12,23 @@ import SnapKit
 
 enum CustomTextFieldType {
     /// 검색에 사용되는 TextField
-    /// - Width : 310 (0.7948)
-    /// - Height : 36 (0.0426)
+    /// - Width : 디바이스 가로 길이 * 0.7948
+    /// - Height : 36
     /// - Placeholder : 장소를 입력해 주세요.
     case search
     
     /// 코스 등록에 사용되는 TextField
-    /// - Width : 350 (0.8974)
-    /// - Height : 50 (0.0592)
+    /// - Height : 50
     /// - Placeholder : 방문하신 가게 이름을 입력해 주세요.
     case shopTitle
     
     /// 코스 등록에 사용되는 TextField
-    /// - Width : 350 (0.8974)
-    /// - Height : 50 (0.0592)
+    /// - Height : 50
     /// - Placeholder : 방문하신 가게 위치를 입력해 주세요.
     case location
     
     /// 코스 기록에 사용되는 TextField
-    /// - Width : 350 (0.8974)
-    /// - Height : 50 (0.0592)
+    /// - Height : 50
     /// - Placeholder : 코스 이름을 입력해 주세요.
     case courseTitle
 }
@@ -93,14 +90,13 @@ final class CustomTextField: UITextField {
         switch type {
         case .search:
             self.snp.makeConstraints { make in
-                make.width.equalTo(Constants.Screen.width * 0.7948)
-                make.height.equalTo(Constants.Screen.height * 0.0426)
+                make.width.equalTo(DeviceInfo.Screen.width * 0.7948)
+                make.height.equalTo(36)
             }
             
         case .shopTitle, .location, .courseTitle:
             self.snp.makeConstraints { make in
-                make.width.equalTo(Constants.Screen.width * 0.8974)
-                make.height.equalTo(Constants.Screen.height * 0.0592)
+                make.height.equalTo(50)
             }
         }
     }
