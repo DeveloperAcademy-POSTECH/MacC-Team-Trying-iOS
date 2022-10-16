@@ -40,7 +40,7 @@ class HomeDetailView: UIView {
         UIImageView(image: UIImage(named: "YouthPlanet"))
     ]
     
-    //MARK : - 추후 필드명 변경되면 변수명 수정(mate)
+    // TODO : - 추후 필드명 변경되면 변수명 수정(mate)
     lazy var otherProfileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "ProfileImage")
@@ -125,7 +125,6 @@ class HomeDetailView: UIView {
         return imageView
     }()
     
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUI()
@@ -175,6 +174,7 @@ class HomeDetailView: UIView {
         labelStackView.snp.makeConstraints { make in
             make.left.equalTo(profileStackView.snp.right).offset(10)
             make.height.equalTo(50)
+            make.width.equalTo(180)
             make.centerY.equalTo(profileStackView.snp.centerY)
         }
         

@@ -31,6 +31,7 @@ final class HomeViewController: BaseViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .black
         bind()
         setAttributes()
 
@@ -94,15 +95,21 @@ extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ConstellationCollectionViewCell.identifier, for: indexPath) as? ConstellationCollectionViewCell else { return UICollectionViewCell() }
-        cell.constellationImage.image = homeDetailView.viewModel.constellations[indexPath.row]
+        cell.constellation = homeDetailView.viewModel.constellations[indexPath.row]
         return cell
     }
 }
 
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let tmpLabel = UIImageView()
-        tmpLabel.image = homeDetailView.viewModel.constellations[indexPath.row]
-        return CGSize(width: tmpLabel.intrinsicContentSize.width / 5, height: 100)
+        return CGSize(width: 150, height: 200)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        10
     }
 }
