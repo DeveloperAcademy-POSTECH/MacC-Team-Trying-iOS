@@ -33,7 +33,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
 
     private let planetImageView = UIImageView()
 
-    private let bottomView = UIView()
+    private var bottomView = UIView()
 
     // Labels
     private let planetNameLabel = UILabel()
@@ -41,6 +41,8 @@ class FeedCollectionViewCell: UICollectionViewCell {
     private let courseNameLabel = UILabel()
 
     private let dateLabel = UILabel()
+
+    private let followButton = UIButton()
 
     // Buttons
     private let mapButton = UIButton()
@@ -84,9 +86,11 @@ class FeedCollectionViewCell: UICollectionViewCell {
         planetNameLabel.text = model.planet
         courseNameLabel.text = model.title
         dateLabel.text = model.date
-        planetImageView.image = UIImage(systemName: "circle.fill")
+        planetImageView.image = UIImage(named: "woodyPlanetImage")
 
         // MARK: Constraints
+
+        // Images
         courseImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
@@ -96,9 +100,11 @@ class FeedCollectionViewCell: UICollectionViewCell {
 
         planetImageView.snp.makeConstraints { make in
             make.width.height.equalTo(50)
-            make.left.equalTo(20)
+            make.left.equalToSuperview().inset(20)
             make.bottom.equalToSuperview().inset(187)
         }
+
+        //Subviews
 
         bottomView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -106,6 +112,8 @@ class FeedCollectionViewCell: UICollectionViewCell {
             make.width.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.35)
         }
+
+        // Buttons
 
         mapButton.snp.makeConstraints { make in
             make.width.height.equalTo(43)
@@ -119,7 +127,28 @@ class FeedCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(mapButton.snp.bottom).offset(20)
         }
 
-        
+        // Labels
+        planetNameLabel.snp.makeConstraints { make in
+            make.left.equalTo(planetImageView.snp.right).offset(10)
+            make.top.equalTo(planetImageView.snp.top)
+        }
+
+        dateLabel.snp.makeConstraints { make in
+            make.left.equalTo(planetNameLabel.snp.right).offset(10)
+            make.top.equalTo(planetNameLabel.snp.top)
+        }
+
+        courseNameLabel.snp.makeConstraints { make in
+            make.top.equalTo(planetNameLabel.snp.bottom).offset(10)
+            make.left.equalTo(planetNameLabel.snp.left)
+        }
+
+        let gradient = CAGradientLayer()
+        gradient.frame = bottomView.bounds
+        print("bottomview: \(bottomView.bounds)")
+        gradient.colors = [UIColor.white.cgColor, UIColor.black.cgColor]
+        gradient.opacity = 0.7
+        bottomView.layer.insertSublayer(gradient, at: 0)
     }
 
     override func layoutSubviews() {
@@ -165,8 +194,12 @@ extension FeedCollectionViewCell {
         // 코스 이미지
         courseImageView.image = UIImage(named: "lakeImage")
         courseImageView.layer.opacity = 0.89
+
+        planetImageView.image = UIImage(named: "woodyPlanetImage")
         // 아래 검은 뷰
-        bottomView.backgroundColor = .systemGray4
+
+
+
         // 지도 버튼
         mapButton.backgroundColor = .black
         mapButton.tintColor = .white
@@ -193,9 +226,6 @@ extension FeedCollectionViewCell {
 
         dateLabel.textAlignment = .left
         dateLabel.textColor = .white
-
-        planetImageView.image = UIImage(named: "lakeImage")
-        planetImageView.tintColor = .white
     }
 
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
