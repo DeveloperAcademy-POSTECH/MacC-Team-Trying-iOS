@@ -137,6 +137,13 @@ class FeedCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(mapButton.snp.bottom).offset(20)
         }
 
+        likeButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(20)
+            make.centerY.equalTo(self.planetImageView.snp.centerY)
+            make.width.equalTo(25)
+            make.height.equalTo(24)
+        }
+
         // Labels
         planetNameLabel.snp.makeConstraints { make in
             make.left.equalTo(planetImageView.snp.right).offset(10)
