@@ -96,7 +96,6 @@ class HomeDetailView: UIView {
     
     lazy var constellationCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 50, left: 20, bottom: 20, right: 20)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(ConstellationCollectionViewCell.self, forCellWithReuseIdentifier: ConstellationCollectionViewCell.identifier)
         collectionView.backgroundColor = .clear
@@ -128,7 +127,6 @@ class HomeDetailView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUI()
-        
     }
     
     required init?(coder: NSCoder) {
@@ -153,6 +151,7 @@ class HomeDetailView: UIView {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
+        constellationCollectionView.contentInset = UIEdgeInsets(top: 50, left: 20, bottom: 20, right: 20)
         homeLottie.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -206,5 +205,4 @@ class HomeDetailView: UIView {
             make.height.equalTo(34)
         }
     }
-    
 }

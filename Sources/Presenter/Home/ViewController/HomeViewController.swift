@@ -31,7 +31,6 @@ final class HomeViewController: BaseViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
         bind()
         setAttributes()
 
@@ -80,8 +79,10 @@ final class HomeViewController: BaseViewController {
 // MARK: - UI
 extension HomeViewController {
     func setAttributes() {
+        let layout = CustomLayout(numberOfColumns: homeDetailView.viewModel.numberOfColum)
+        layout.delegate = self
+        homeDetailView.constellationCollectionView.collectionViewLayout = layout
         homeDetailView.constellationCollectionView.dataSource = self
-        homeDetailView.constellationCollectionView.delegate = self
         homeDetailView.courseRegistrationButton.addTarget(self, action: #selector(courseRsgistrationButtonTapped), for: .touchUpInside)
         homeDetailView.myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
     }
@@ -100,16 +101,9 @@ extension HomeViewController: UICollectionViewDataSource {
     }
 }
 
-extension HomeViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 100, height: 150)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        10
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        10
+extension HomeViewController: CustomLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, heightForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat {
+        let cellDynamicHeight = CGFloat((homeDetailView.viewModel.constellations[indexPath.row].image?.size.height ?? 0)) / 4
+        return cellDynamicHeight
     }
 }

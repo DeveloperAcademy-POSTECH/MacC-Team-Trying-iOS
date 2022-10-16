@@ -13,7 +13,7 @@ class ConstellationCollectionViewCell: UICollectionViewCell {
     
     var constellation: Constellation? {
         didSet {
-            guard var constellation = constellation else { return }
+            guard let constellation = constellation else { return }
             mainTitle.text = constellation.name
             constellationImage.image = constellation.image
             mainTitle.snp.makeConstraints { make in
@@ -60,11 +60,6 @@ class ConstellationCollectionViewCell: UICollectionViewCell {
         stackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        
-        constellationImage.snp.makeConstraints { make in
-            make.height.equalTo(80)
-        }
-
     }
     
     required init?(coder: NSCoder) {
