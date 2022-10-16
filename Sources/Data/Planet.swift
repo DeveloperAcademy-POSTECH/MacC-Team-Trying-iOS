@@ -28,7 +28,7 @@ enum PlanetType {
 }
 
 struct Planet {
-    let planetName: String
+    let name: String
     let planetTyle: PlanetType
     let createdDate: String
     let courses: [Course]
@@ -36,11 +36,11 @@ struct Planet {
 
 extension Planet {
     static let testUserPlanet: Planet = {
-        .init(planetName: "맛스타행성", planetTyle: .blue, createdDate: "2022년10월15일", courses: [Course.firstDateCoures, Course.secondDateCourse])
+        .init(name: "맛스타행성", planetTyle: .blue, createdDate: "2022년 10월 15일", courses: [Course.firstDateCoures, Course.secondDateCourse])
     }()
     
     static let testUserSatellites: [Planet] = [
-        Planet(planetName: "루미행성", planetTyle: .pink, createdDate: "2022년9월1일", courses: []),
-        Planet(planetName: "유스행성", planetTyle: .orange, createdDate: "2022년8월1일", courses: [])
+        Planet(name: "루미행성", planetTyle: .pink, createdDate: "2022년 09월 01일", courses: []),
+        Planet(name: "유스행성", planetTyle: .orange, createdDate: "2022년 08월 01일", courses: [])
     ]
 }
