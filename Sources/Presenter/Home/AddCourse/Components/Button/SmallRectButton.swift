@@ -13,10 +13,14 @@ import SnapKit
 enum SmallRectButtonType {
     /// 코스 추가 버튼
     /// - Title : 코스추가
+    /// - Width: 70
+    /// - Height : 30
     case add
     
     /// 별 제거 버튼
     /// - Title : 별 제거
+    /// - Width: 70
+    /// - Height : 30
     case delete
 }
 
@@ -53,8 +57,8 @@ final class SmallRectButton: UIButton {
     
     private func setLayout() {
         self.snp.makeConstraints { make in
-            make.width.equalTo(Constants.Screen.width * 0.1794)
-            make.height.equalTo(Constants.Screen.height * 0.0355)
+            make.width.equalTo(70)
+            make.height.equalTo(30)
         }
     }
 }

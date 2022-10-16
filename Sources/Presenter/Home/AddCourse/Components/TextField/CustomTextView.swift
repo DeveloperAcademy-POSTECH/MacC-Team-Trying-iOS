@@ -15,7 +15,6 @@ final class CustomTextView: UITextView {
         super.init(frame: .zero, textContainer: nil)
         
         setAttributes()
-        setLayout()
     }
     
     required init?(coder: NSCoder) {
@@ -33,13 +32,6 @@ final class CustomTextView: UITextView {
         self.text = "내용을 입력해 주세요."
         self.font = .designSystem(weight: .regular, size: ._15)
         self.delegate = self
-    }
-    
-    private func setLayout() {
-        self.snp.makeConstraints { make in
-            make.width.equalTo(Constants.Screen.width * 0.8974)
-            make.height.equalTo(Constants.Screen.height * 0.4383)
-        }
     }
 }
 

@@ -13,10 +13,12 @@ import SnapKit
 enum MainButtonType {
     /// 다음 버튼
     /// - Title : 다음
+    /// - Height : 58
     case next
     
     /// 확인 버튼
     /// - Title : 확인
+    /// - Height : 58
     case done
 }
 
@@ -57,8 +59,7 @@ final class MainButton: UIButton {
     
     private func setLayout() {
         self.snp.makeConstraints { make in
-            make.width.equalTo(Constants.Screen.width * 0.8974)
-            make.height.equalTo(Constants.Screen.height * 0.0687)
+            make.height.equalTo(58)
         }
     }
 }

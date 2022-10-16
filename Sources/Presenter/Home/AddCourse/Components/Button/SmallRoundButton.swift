@@ -13,10 +13,14 @@ import SnapKit
 enum SmallRoundButtonType {
     /// 코스 등록 버튼
     /// - Title : 코스 등록
+    /// - Width : 90
+    /// - Height : 30
     case addCourse
     
     /// 일정 선택 버튼
     /// - Title : 일정 선택
+    /// - Width : 90
+    /// - Height : 30
     case selectDate
 }
 
@@ -53,8 +57,8 @@ final class SmallRoundButton: UIButton {
     
     private func setLayout() {
         self.snp.makeConstraints { make in
-            make.width.equalTo(Constants.Screen.width * 0.2307)
-            make.height.equalTo(Constants.Screen.height * 0.0355)
+            make.width.equalTo(90)
+            make.height.equalTo(30)
         }
     }
 }
