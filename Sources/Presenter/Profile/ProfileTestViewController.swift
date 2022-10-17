@@ -38,8 +38,9 @@ final class ProfileTestViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension ProfileTestViewController {
+extension ProfileTestViewController: NavigationBarConfigurable {
     private func setUI() {
+        configureCourseDetailNavigationBar(target: self, action: nil)
         setAttributes()
         setLayout()
     }

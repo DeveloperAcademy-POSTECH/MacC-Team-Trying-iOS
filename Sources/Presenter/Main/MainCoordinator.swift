@@ -84,7 +84,7 @@ final class MainCoordinator: Coordinator {
 extension MainCoordinator {
     private func getTabController(item: TabBarItem) -> UINavigationController {
         let navigationController = UINavigationController()
-        navigationController.setNavigationBarHidden(true, animated: false)
+        navigationController.setNavigationBarHidden(false, animated: false)
         let tabItem = UITabBarItem(title: item.title, image: UIImage(named: item.tabBarIconName), selectedImage: nil)
         navigationController.tabBarItem = tabItem
         

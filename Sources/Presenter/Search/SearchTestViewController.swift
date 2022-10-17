@@ -38,8 +38,9 @@ final class SearchTestViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension SearchTestViewController {
+extension SearchTestViewController: NavigationBarConfigurable {
     private func setUI() {
+        configureSearchNavigationBar(target: self, action: nil)
         setAttributes()
         setLayout()
     }
