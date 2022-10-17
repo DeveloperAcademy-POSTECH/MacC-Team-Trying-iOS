@@ -76,6 +76,8 @@ extension ProfileTestViewController {
         textView.snp.makeConstraints { make in
             make.top.equalTo(textField4.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
         }
     }
 }

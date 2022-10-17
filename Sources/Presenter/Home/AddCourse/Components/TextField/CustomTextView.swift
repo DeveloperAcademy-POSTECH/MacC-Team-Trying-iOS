@@ -26,8 +26,7 @@ final class CustomTextView: UITextView {
         self.textContainerInset = UIEdgeInsets(top: 15, left: 10, bottom: 10, right: 10)
         self.layer.cornerRadius = 15
         self.textColor = .designSystem(.white)
-        self.backgroundColor = .designSystem(.gray767680)
-        
+        self.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.1)
         self.tintColor = .designSystem(.white)
         self.text = "내용을 입력해 주세요."
         self.font = .designSystem(weight: .regular, size: ._15)

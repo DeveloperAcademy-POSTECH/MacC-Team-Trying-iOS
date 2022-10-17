@@ -56,21 +56,25 @@ extension HomeTestViewController {
         
         mainButton1.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalTo(view.safeAreaLayoutGuide).inset(50)
         }
         
         mainButton2.snp.makeConstraints { make in
             make.centerX.equalToSuperview().inset(100)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalTo(mainButton1.snp.bottom).offset(100)
         }
         
         mainButton3.snp.makeConstraints { make in
             make.centerX.equalToSuperview().inset(100)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalTo(mainButton2.snp.bottom).offset(100)
         }
         
         mainButton4.snp.makeConstraints { make in
             make.centerX.equalToSuperview().inset(100)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalTo(mainButton3.snp.bottom).offset(100)
         }
     }
