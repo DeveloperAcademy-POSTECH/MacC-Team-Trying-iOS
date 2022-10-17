@@ -79,7 +79,7 @@ final class CustomTextField: UITextField {
             self.leftView = imageView
             self.attributedPlaceholder = .init(string: "코스 이름을 입력해 주세요.", attributes: [.foregroundColor: UIColor.designSystem(.white) as Any])
             self.textColor = .designSystem(.white)
-            self.backgroundColor = .designSystem(.gray767680)
+            self.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.1)
             self.layer.cornerRadius = 15
         }
         self.font = .designSystem(weight: .regular, size: ._15)
