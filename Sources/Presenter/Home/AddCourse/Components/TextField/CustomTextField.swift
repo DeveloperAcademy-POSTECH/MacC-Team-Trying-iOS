@@ -90,7 +90,7 @@ final class CustomTextField: UITextField {
         switch type {
         case .search:
             self.snp.makeConstraints { make in
-                make.width.equalTo(DeviceInfo.Screen.width * 0.7948)
+                make.width.equalTo(DeviceInfo.screenWidth * 0.7948)
                 make.height.equalTo(36)
             }
             

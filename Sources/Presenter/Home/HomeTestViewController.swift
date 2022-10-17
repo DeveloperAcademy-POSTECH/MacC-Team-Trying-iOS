@@ -39,12 +39,13 @@ final class HomeTestViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension HomeTestViewController {
+extension HomeTestViewController: NavigationBarConfigurable {
     private func setUI() {
+        configureMapNavigationBar(target: self, action: nil)
         setAttributes()
         setLayout()
     }
-    
+
     /// Attributes를 설정합니다.
     private func setAttributes() {
         
