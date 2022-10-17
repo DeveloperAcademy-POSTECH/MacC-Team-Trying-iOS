@@ -16,6 +16,16 @@ import Lottie
 final class HomeViewController: BaseViewController {
     
     var homeDetailView = HomeDetailView()
+    var viewModel: HomeViewModel
+    
+    init(viewModel: HomeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         view = homeDetailView
@@ -29,11 +39,10 @@ final class HomeViewController: BaseViewController {
         
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         bind()
         setAttributes()
-
     }
     
     @objc
@@ -55,7 +64,6 @@ final class HomeViewController: BaseViewController {
             } else {
                 self.homeDetailView.constellationCollectionView.isHidden = true
                 self.homeDetailView.myPlanetImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(myPlanetImageTapped)))
-                self.homeDetailView.homeLottie.stop()
             }
         }
     }
@@ -71,39 +79,49 @@ final class HomeViewController: BaseViewController {
     }
     
     @objc
-    func courseRsgistrationButtonTapped() {
+    func courseRegistrationButtonTapped() {
         print("코스등록하기 버튼이 눌림")
+
+    }
+    
+    @objc
+    func alarmButtonTapped() {
+        print("알림 버튼이 눌림")
+        viewModel.pushToAlarmView()
     }
 }
 
 // MARK: - UI
 extension HomeViewController {
     func setAttributes() {
-        let layout = CustomLayout(numberOfColumns: homeDetailView.viewModel.numberOfColum)
-        layout.delegate = self
+        let layout = CustomLayout(numberOfColumns: viewModel.numberOfColum)
         homeDetailView.constellationCollectionView.collectionViewLayout = layout
+        layout.delegate = self
         homeDetailView.constellationCollectionView.dataSource = self
-        homeDetailView.courseRegistrationButton.addTarget(self, action: #selector(courseRsgistrationButtonTapped), for: .touchUpInside)
+        homeDetailView.constellationCollectionView.dragInteractionEnabled = true
+        
+        homeDetailView.courseRegistrationButton.addTarget(self, action: #selector(courseRegistrationButtonTapped), for: .touchUpInside)
         homeDetailView.myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
+        homeDetailView.alarmButton.addTarget(self, action: #selector(alarmButtonTapped), for: .touchUpInside)
     }
 }
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItems = homeDetailView.viewModel.constellations.count
+        let numberOfItems = viewModel.constellations.count
         return numberOfItems
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ConstellationCollectionViewCell.identifier, for: indexPath) as? ConstellationCollectionViewCell else { return UICollectionViewCell() }
-        cell.constellation = homeDetailView.viewModel.constellations[indexPath.row]
+        cell.constellation = viewModel.constellations[indexPath.row]
         return cell
     }
 }
 
 extension HomeViewController: CustomLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, heightForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat {
-        let cellDynamicHeight = CGFloat((homeDetailView.viewModel.constellations[indexPath.row].image?.size.height ?? 0)) / 4
+        let cellDynamicHeight = CGFloat((viewModel.constellations[indexPath.row].image?.size.height ?? 0)) / 4
         return cellDynamicHeight
     }
 }

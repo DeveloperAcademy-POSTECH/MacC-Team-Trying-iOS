@@ -15,8 +15,6 @@ import Lottie
 
 class HomeDetailView: UIView {
     
-    var viewModel = HomeViewModel()
-    
     lazy var homeLottie: LottieAnimationView = {
         let lottie = LottieAnimationView.init(name: "HomeLottie")
         lottie.contentMode = .scaleAspectFill
@@ -79,7 +77,7 @@ class HomeDetailView: UIView {
     }()
     
     lazy var profileStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: viewModel.hasMate ? [myProfileImage, otherProfileImage] : [myProfileImage])
+        let stackView = UIStackView(arrangedSubviews: [myProfileImage, otherProfileImage])
         stackView.spacing = -10
         stackView.axis = .horizontal
         stackView.alignment = .fill

@@ -9,12 +9,27 @@
 import UIKit
 import Combine
 
+protocol AlarmViewCoordinating {
+    func pushToAlarmViewController()
+}
+
+// TODO : - 코스등록ViewController로 연결
+protocol CourseRegistering {
+    func pushToCourseRegisterViewController()
+}
+
 struct Constellation {
     let name: String
     let image: UIImage?
 }
 
 final class HomeViewModel: BaseViewModel {
+    
+    var coordinator: Coordinator
+    
+    init(coordinator: Coordinator) {
+        self.coordinator = coordinator
+    }
     
     var numberOfColum: Int {
         switch constellations.count {
@@ -39,4 +54,10 @@ final class HomeViewModel: BaseViewModel {
         Constellation(name: "부산대학교", image: UIImage(named: "Busan")),
         Constellation(name: "인천ssg파크", image: UIImage(named: "Pohang"))
     ]
+    
+    func pushToAlarmView() {
+        guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
+        coordinator.pushToAlarmViewController()
+    }
+
 }
