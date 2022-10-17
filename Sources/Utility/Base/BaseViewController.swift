@@ -21,9 +21,4 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         view.backgroundColor = .designSystem(.black)                                // 화면 배경 색상을 설정합니다.
         navigationController?.interactivePopGestureRecognizer?.delegate = self      // Swipe-gesture를 통해 pop을 합니다.
     }
-    
-    // Status Bar의 스타일을 설정합니다.
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        .lightContent
-    }
 }
