@@ -31,9 +31,14 @@ class FeedCollectionViewCell: UICollectionViewCell {
 
     private var model: TestViewModel?
 
-    private let courseImageView = UIImageView()
+    private var pageControl = UIPageControl()
+    private var scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.65))
+
+    var images = [UIImage(named: "lakeImage"), UIImage(named: "lakeImage"), UIImage(named: "lakeImage"), UIImage(named: "lakeImage")]
+    private let courseImageView = [UIImageView]()
+
     private let planetImageView = UIImageView()
-    private var bottomView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.40))
+    private var bottomView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.35))
 
     // Labels
     private let planetNameLabel = UILabel()
@@ -47,9 +52,11 @@ class FeedCollectionViewCell: UICollectionViewCell {
     private let likeButton = UIButton()
     private let followButton = UIButton()
 
+    // MARK: Initialize
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubviews()
+        scrollView.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -59,14 +66,15 @@ class FeedCollectionViewCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         contentView.clipsToBounds = false
-        layoutButtons()
-        layoutLabels()
+        setButtons()
+        setLabels()
         layoutImageViews()
+        setScrollView()
+        setPageControl()
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        courseImageView.image = nil
         planetNameLabel.text = nil
         courseNameLabel.text = nil
         dateLabel.text = nil
@@ -75,7 +83,6 @@ class FeedCollectionViewCell: UICollectionViewCell {
 
     public func configure(with model: TestViewModel) {
         self.model = model
-        courseImageView.image = UIImage(named: model.image)
         planetNameLabel.text = model.planet
         courseNameLabel.text = model.title
         dateLabel.text = model.date
@@ -84,10 +91,33 @@ class FeedCollectionViewCell: UICollectionViewCell {
     }
 }
 
+extension FeedCollectionViewCell: UIScrollViewDelegate {
+
+    private func setScrollView() {
+            for index in 0..<images.count {
+                let imageView = UIImageView()
+                let xPos = scrollView.frame.width * CGFloat(index)
+                imageView.frame = CGRect(x: xPos, y: 0, width: scrollView.bounds.width, height: scrollView.bounds.height)
+                imageView.image = images[index]
+                imageView.layer.opacity = 0.89
+                scrollView.addSubview(imageView)
+                scrollView.contentSize.width = imageView.frame.width * CGFloat(index + 1)
+            }
+        }
+
+    private func setPageControlSelectedPage(currentPage: Int) {
+        pageControl.currentPage = currentPage
+    }
+
+    internal func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            let value = scrollView.contentOffset.x / scrollView.frame.size.width
+            setPageControlSelectedPage(currentPage: Int(round(value)))
+    }
+}
+
 extension FeedCollectionViewCell {
 
     private func addSubviews() {
-        contentView.addSubview(courseImageView)
         contentView.addSubview(planetImageView)
         contentView.addSubview(dateLabel)
         contentView.addSubview(planetNameLabel)
@@ -98,8 +128,11 @@ extension FeedCollectionViewCell {
         contentView.addSubview(likeButton)
         contentView.addSubview(followButton)
         contentView.addSubview(bottomView)
+        contentView.addSubview(scrollView)
+        contentView.addSubview(pageControl)
         contentView.sendSubviewToBack(bottomView)
-        contentView.sendSubviewToBack(courseImageView)
+        contentView.sendSubviewToBack(scrollView)
+
         // Add Action
         listButton.addTarget(self, action: #selector(didTapListButton), for: .touchUpInside)
         mapButton.addTarget(self, action: #selector(didTapMapButton), for: .touchUpInside)
@@ -107,18 +140,18 @@ extension FeedCollectionViewCell {
         followButton.addTarget(self, action: #selector(didTapFollowMapButton), for: .touchUpInside)
     }
 
-    private func layoutButtons() {
+    private func setButtons() {
         // Buttons UI
         mapButton.backgroundColor = .black
         mapButton.tintColor = .white
-        mapButton.layer.cornerRadius = 25
+        mapButton.layer.cornerRadius = 21.5
         mapButton.layer.opacity = 0.5
         mapButton.layer.masksToBounds = true
         mapButton.setImage(UIImage(systemName: "map.fill"), for: .normal)
 
         listButton.tintColor = .white
         listButton.backgroundColor = .black
-        listButton.layer.cornerRadius = 25
+        listButton.layer.cornerRadius = 21.5
         listButton.layer.opacity = 0.5
         listButton.layer.masksToBounds = true
         listButton.setImage(UIImage(systemName: "list.bullet"), for: .normal)
@@ -128,7 +161,7 @@ extension FeedCollectionViewCell {
 
         followButton.layer.masksToBounds = true
         followButton.backgroundColor = .black
-        followButton.layer.cornerRadius = 13
+        followButton.layer.cornerRadius = 12.5
         followButton.layer.borderColor = UIColor.designSystem(Palette.mainYellow)?.cgColor
         followButton.layer.borderWidth = 2
         followButton.setTitle("팔로우", for: .normal)
@@ -158,12 +191,12 @@ extension FeedCollectionViewCell {
         followButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(60)
             make.centerY.equalTo(self.planetImageView.snp.centerY)
-            make.width.equalTo(50)
-            make.height.equalTo(self.likeButton.snp.height)
+            make.width.equalTo(70)
+            make.height.equalTo(25)
         }
     }
 
-    private func layoutLabels() {
+    private func setLabels() {
         // Labels UI
         planetNameLabel.textAlignment = .left
         planetNameLabel.textColor = .white
@@ -179,12 +212,12 @@ extension FeedCollectionViewCell {
 
         courseDetailLabel.textAlignment = .left
         courseDetailLabel.textColor = .white
-        courseDetailLabel.font = UIFont.designSystem(weight: .regular, size: ._11)
+        courseDetailLabel.font = UIFont.designSystem(weight: .regular, size: ._13)
 
         // Label Constraints
         planetNameLabel.snp.makeConstraints { make in
             make.left.equalTo(planetImageView.snp.right).offset(10)
-            make.top.equalTo(planetImageView.snp.top)
+            make.top.equalTo(planetImageView.snp.top).offset(8)
         }
 
         dateLabel.snp.makeConstraints { make in
@@ -198,18 +231,16 @@ extension FeedCollectionViewCell {
         }
 
         courseDetailLabel.snp.makeConstraints { make in
-            make.width.equalTo(self.contentView.snp.width)
             make.height.equalTo(16)
-            make.bottom.equalToSuperview().inset(150)
-            make.leading.trailing.equalToSuperview().inset(20)
+            make.top.equalTo(planetImageView.snp.bottom).offset(15)
+            make.left.equalToSuperview().offset(20)
         }
     }
 
     private func layoutImageViews() {
         // ImageViews
-        courseImageView.image = UIImage(named: "lakeImage")
-        courseImageView.layer.opacity = 0.89
-        planetImageView.image = UIImage(named: "woodyPlanetImage")
+        scrollView.isPagingEnabled = true
+        scrollView.bounces = false
 
         // Views
         bottomView.backgroundColor = . black
@@ -221,17 +252,16 @@ extension FeedCollectionViewCell {
         bottomView.layer.addSublayer(gradient)
 
         // Constraints
-        courseImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+
+        pageControl.snp.makeConstraints { make in
+            make.top.equalTo(bottomView.snp.top).inset(10)
             make.centerX.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.7)
         }
 
         planetImageView.snp.makeConstraints { make in
             make.width.height.equalTo(50)
             make.left.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview().inset(187)
+            make.top.equalTo(bottomView.snp.top).inset(55)
         }
 
         // Subviews
@@ -241,6 +271,13 @@ extension FeedCollectionViewCell {
             make.width.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.35)
         }
+    }
+
+    private func setPageControl() {
+        pageControl.currentPage = 0
+        pageControl.numberOfPages = images.count
+        pageControl.pageIndicatorTintColor = UIColor.designSystem(Palette.grayC5C5C5)
+        pageControl.currentPageIndicatorTintColor = UIColor.designSystem(Palette.mainYellow)
     }
 
     // Button Actions
