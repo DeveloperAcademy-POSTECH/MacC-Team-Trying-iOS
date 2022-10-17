@@ -68,8 +68,8 @@ final class CustomNavigationBar: UIView {
         self.addSubview(leftItem)
         
         self.snp.makeConstraints { make in
-            make.width.equalTo(Constants.Screen.width)
-            make.height.equalTo(Constants.Screen.height * 0.1244)
+            make.width.equalTo(DeviceInfo.Screen.width)
+            make.height.equalTo(DeviceInfo.Screen.height * 0.1244)
         }
         
         self.leftItem.snp.makeConstraints { make in

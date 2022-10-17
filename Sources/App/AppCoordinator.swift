@@ -16,7 +16,8 @@ class AppCoordinator: Coordinator {
         self.window = window
         
         let navigationController = UINavigationController()
-        navigationController.setNavigationBarHidden(true, animated: true)
+        navigationController.setNavigationBarHidden(true, animated: false)
+        
         self.navigationController = navigationController
     }
     
