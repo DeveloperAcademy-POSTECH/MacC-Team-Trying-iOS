@@ -14,14 +14,10 @@ final class EmptyResultView: UIView {
     private lazy var emptyResultLabel: UILabel = {
         let label = UILabel()
         label.text = "검색 결과가 없습니다!"
-        label.textColor = .white
+        label.textColor = .designSystem(.white)
         return label
     }()
-    lazy var courseRegisterButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("코스 등록", for: .normal)
-        return button
-    }()
+    lazy var courseRegisterButton = SmallRoundButton(type: .addCourse)
     private lazy var iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -39,9 +35,7 @@ final class EmptyResultView: UIView {
     }
     
     private func setLayout() {
-        addSubview(emptyResultLabel)
-        addSubview(courseRegisterButton)
-        addSubview(iconImageView)
+        addSubviews(emptyResultLabel, courseRegisterButton, iconImageView)
         
         emptyResultLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()

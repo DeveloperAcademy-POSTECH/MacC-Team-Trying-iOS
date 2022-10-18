@@ -15,30 +15,23 @@ final class PlaceTableViewCell: UITableViewCell {
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = .designSystem(.white)
         label.font = .designSystem(weight: .bold, size: ._15)
         return label
     }()
-    
     lazy var categoryLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = .designSystem(.white)
         label.font = .designSystem(weight: .regular, size: ._11)
         return label
     }()
-    
     lazy var addressLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = .designSystem(.white)
         label.font = .designSystem(weight: .regular, size: ._13)
         return label
     }()
-    
-    lazy var addCourseButton: UIButton = {
-        let button = UIButton()
-        // TODO: 컴포넌트 PR 머지 후 교체하기
-        return button
-    }()
+    lazy var addCourseButton = SmallRectButton(type: .add)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -52,14 +45,11 @@ final class PlaceTableViewCell: UITableViewCell {
     }
     
     private func setAttributes() {
-        contentView.backgroundColor = .black
+        contentView.backgroundColor = .designSystem(.black)
     }
     
     private func setLayout() {
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(categoryLabel)
-        contentView.addSubview(addressLabel)
-        contentView.addSubview(addCourseButton)
+        contentView.addSubviews(titleLabel, categoryLabel, addressLabel, addCourseButton)
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
@@ -74,6 +64,11 @@ final class PlaceTableViewCell: UITableViewCell {
         addressLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(3)
             make.leading.equalToSuperview()
+        }
+        
+        addCourseButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalToSuperview()
         }
     }
 }

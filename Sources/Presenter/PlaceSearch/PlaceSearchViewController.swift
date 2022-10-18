@@ -20,12 +20,15 @@ final class PlaceSearchViewController: BaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(PlaceTableViewCell.self, forCellReuseIdentifier: PlaceTableViewCell.identifier)
-        tableView.backgroundColor = .black
+        tableView.backgroundColor = .designSystem(.black)
         tableView.sectionHeaderHeight = 1
         tableView.allowsSelection = false
+        tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
+        tableView.separatorStyle = .none
         return tableView
     }()
     private lazy var emptyResultView = EmptyResultView()
+    private lazy var addCourseButton = SmallRectButton(type: .add)
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -37,15 +40,16 @@ final class PlaceSearchViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .black
+        self.view.backgroundColor = .designSystem(.black)
         setUI()
         bind()
     }
 }
 
 // MARK: - UI
-extension PlaceSearchViewController {
+extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setUI() {
+        configureSearchNavigationBar(target: self, action: nil)
         setAttributes()
         setLayout()
     }
@@ -60,7 +64,7 @@ extension PlaceSearchViewController {
         view.addSubview(placeTableView)
         
         placeTableView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(50)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(5)
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalToSuperview()
         }
