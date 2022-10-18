@@ -34,7 +34,7 @@ final class FeedTestViewController: BaseViewController {
             let model = TestViewModel(id: 1,
                                       planet: "우디",
                                       title: "부산풀코스",
-                                      body: "찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...",
+                                      body: "찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...",
                                       date: "2022년 10월 10일",
                                       tag: ["삐갈레브레드", "도산공원"],
                                       image: "lakeImage")

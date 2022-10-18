@@ -23,7 +23,11 @@ protocol FeedCollectionViewCellDelegate: AnyObject {
 
 class FeedCollectionViewCell: UICollectionViewCell {
 
+    var isFollowButtonTaped: Bool = false
+
     static let identifier = "FeedCollectionViewCell"
+
+    private var gradientView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
 
     weak var delegate: FeedCollectionViewCellDelegate? // Delegate
 
@@ -32,7 +36,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
     private var model: TestViewModel?
 
     private var pageControl = UIPageControl()
-    private var scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.65))
+    private var scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
 
     var images = [UIImage(named: "lakeImage"), UIImage(named: "lakeImage"), UIImage(named: "lakeImage"), UIImage(named: "lakeImage")]
     private let courseImageView = [UIImageView]()
@@ -44,7 +48,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
     private let planetNameLabel = UILabel()
     private let courseNameLabel = UILabel()
     private let dateLabel = UILabel()
-    private let courseDetailLabel = UILabel()
+    private let courseDetailTextView = UITextView()
 
     // Buttons
     private let mapButton = UIButton()
@@ -55,7 +59,15 @@ class FeedCollectionViewCell: UICollectionViewCell {
     // MARK: Initialize
     override init(frame: CGRect) {
         super.init(frame: frame)
+        contentView.clipsToBounds = false
+        isFollowButtonTaped = false
+        print("init!!!!!")
         addSubviews()
+        setScrollView()
+        layoutImageViews()
+        setButtons()
+        setLabels()
+        setPageControl()
         scrollView.delegate = self
     }
 
@@ -65,20 +77,15 @@ class FeedCollectionViewCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        contentView.clipsToBounds = false
-        setButtons()
-        setLabels()
-        layoutImageViews()
-        setScrollView()
-        setPageControl()
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
+
         planetNameLabel.text = nil
         courseNameLabel.text = nil
         dateLabel.text = nil
-        courseDetailLabel.text = nil
+        courseDetailTextView.text = nil
     }
 
     public func configure(with model: TestViewModel) {
@@ -87,7 +94,7 @@ class FeedCollectionViewCell: UICollectionViewCell {
         courseNameLabel.text = model.title
         dateLabel.text = model.date
         planetImageView.image = UIImage(named: "woodyPlanetImage")
-        courseDetailLabel.text = model.body
+        courseDetailTextView.text = model.body
     }
 }
 
@@ -122,7 +129,7 @@ extension FeedCollectionViewCell {
         contentView.addSubview(dateLabel)
         contentView.addSubview(planetNameLabel)
         contentView.addSubview(courseNameLabel)
-        contentView.addSubview(courseDetailLabel)
+        contentView.addSubview(courseDetailTextView)
         contentView.addSubview(mapButton)
         contentView.addSubview(listButton)
         contentView.addSubview(likeButton)
@@ -130,8 +137,12 @@ extension FeedCollectionViewCell {
         contentView.addSubview(bottomView)
         contentView.addSubview(scrollView)
         contentView.addSubview(pageControl)
+        contentView.addSubview(gradientView)
+        contentView.sendSubviewToBack(gradientView)
         contentView.sendSubviewToBack(bottomView)
         contentView.sendSubviewToBack(scrollView)
+
+
 
         // Add Action
         listButton.addTarget(self, action: #selector(didTapListButton), for: .touchUpInside)
@@ -210,9 +221,14 @@ extension FeedCollectionViewCell {
         dateLabel.textColor = .white
         dateLabel.font = UIFont.designSystem(weight: .regular, size: ._11)
 
-        courseDetailLabel.textAlignment = .left
-        courseDetailLabel.textColor = .white
-        courseDetailLabel.font = UIFont.designSystem(weight: .regular, size: ._13)
+        courseDetailTextView.textAlignment = .left
+        courseDetailTextView.backgroundColor = .clear
+        courseDetailTextView.textColor = .white
+        courseDetailTextView.font = UIFont.designSystem(weight: .regular, size: ._13)
+        courseDetailTextView.textContainer.maximumNumberOfLines = 1
+        courseDetailTextView.textContainer.lineBreakMode = .byTruncatingTail
+
+
 
         // Label Constraints
         planetNameLabel.snp.makeConstraints { make in
@@ -230,10 +246,11 @@ extension FeedCollectionViewCell {
             make.left.equalTo(planetNameLabel.snp.left)
         }
 
-        courseDetailLabel.snp.makeConstraints { make in
-            make.height.equalTo(16)
+        courseDetailTextView.snp.makeConstraints { make in
+            make.height.equalTo(courseDetailTextView.snp.contentCompressionResistanceVerticalPriority)
+            make.width.equalTo(contentView.snp.width).inset(40)
             make.top.equalTo(planetImageView.snp.bottom).offset(15)
-            make.left.equalToSuperview().offset(20)
+            make.centerX.equalToSuperview()
         }
     }
 
@@ -243,13 +260,16 @@ extension FeedCollectionViewCell {
         scrollView.bounces = false
 
         // Views
-        bottomView.backgroundColor = . black
-        gradient.colors = [UIColor.white.cgColor, UIColor.black.cgColor]
-        gradient.frame = CGRect(x: 0, y: 0, width: bottomView.frame.width, height: bottomView.frame.height / 10)
+        bottomView.backgroundColor = .clear
+        gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+        gradient.frame = CGRect(x: 0, y: 0, width: bottomView.frame.width, height: contentView.frame.height)
         gradient.startPoint = CGPoint(x: 0.5, y: 0.0)
-        gradient.endPoint = CGPoint(x: 0.5, y: 1.0)
-        gradient.opacity = 0.3
+        gradient.endPoint = CGPoint(x: 0.5, y: 0.25)
+        gradient.opacity = 0.7
         bottomView.layer.addSublayer(gradient)
+        gradientView.backgroundColor = .black
+        gradientView.layer.opacity = 0.4
+        gradientView.isHidden = true
 
         // Constraints
 
@@ -281,23 +301,47 @@ extension FeedCollectionViewCell {
     }
 
     // Button Actions
-    @objc func didTapLikeButton() {
+    @objc
+    func didTapLikeButton() {
         guard let model = model else { return }
         delegate?.didTapLikeButton(model: model)
     }
 
-    @objc func didTapListButton() {
+    @objc
+    func didTapListButton() {
         guard let model = model else { return }
         delegate?.didTapListButton(model: model)
     }
 
-    @objc func didTapMapButton() {
+    @objc
+    func didTapMapButton() {
         guard let model = model else { return }
         delegate?.didTapMapButton(model: model)
     }
 
-    @objc func didTapFollowMapButton() {
+    @objc
+    func didTapFollowMapButton() {
         guard let model = model else { return }
+        isFollowButtonTaped.toggle()
+        if isFollowButtonTaped {
+            bottomView.snp.remakeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.bottom.equalToSuperview()
+                make.width.equalToSuperview()
+                make.height.equalToSuperview().multipliedBy(0.7)
+            }
+            gradientView.isHidden = false
+            pageControl.isHidden = true
+        } else {
+            bottomView.snp.remakeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.bottom.equalToSuperview()
+                make.width.equalToSuperview()
+                make.height.equalToSuperview().multipliedBy(0.35)
+            }
+            gradientView.isHidden = true
+            pageControl.isHidden = false
+        }
         delegate?.didTapFollowButton(model: model)
     }
 }
