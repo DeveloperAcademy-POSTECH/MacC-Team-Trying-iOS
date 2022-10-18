@@ -59,10 +59,7 @@ final class CustomToggleButton: UIButton {
     }
     
     private func setLayout() {
-        addSubview(barView)
-        addSubview(circleView)
-        addSubview(closedLockImageView)
-        addSubview(openLockImageView)
+        addSubviews(barView, circleView, closedLockImageView, openLockImageView)
         
         self.snp.makeConstraints { make in
             make.width.equalTo(60)
