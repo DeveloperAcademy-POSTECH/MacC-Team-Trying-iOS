@@ -25,7 +25,7 @@ class FollowButton: UIButton {
         self.init(configuration: configuration, primaryAction: nil)
     }
     
-    private static func updateConfiguration(type : FollowButtonConfiguration) -> Configuration {
+    private static func updateConfiguration(type: FollowButtonConfiguration) -> Configuration {
         
         var configuration = UIButton.Configuration.filled() // 1
         var background = configuration.background
@@ -37,11 +37,11 @@ class FollowButton: UIButton {
         background.strokeWidth = 1.25
         
         switch type {
-            case .follow:
+        case .follow:
                 configuration.baseForegroundColor = UIColor.yellow
                 configuration.baseBackgroundColor = .black
                 background.strokeColor = .yellow
-            case .unFollow:
+        case .unFollow:
                 configuration.baseForegroundColor = UIColor.black
                 configuration.baseBackgroundColor = .gray
                 background.strokeColor = .gray
@@ -54,6 +54,4 @@ class FollowButton: UIButton {
         case follow
         case unFollow
     }
-    
 }
-

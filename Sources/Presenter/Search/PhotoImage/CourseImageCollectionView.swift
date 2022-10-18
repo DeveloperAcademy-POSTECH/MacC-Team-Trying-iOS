@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 class CourseImageCollectionView: UICollectionView {
-    convenience init()  {
+    convenience init() {
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .horizontal
         flowLayout.itemSize = CGSize(width: 113, height: 169)
@@ -18,4 +18,3 @@ class CourseImageCollectionView: UICollectionView {
         self.init(frame: .zero, collectionViewLayout: flowLayout)
     }
 }
-

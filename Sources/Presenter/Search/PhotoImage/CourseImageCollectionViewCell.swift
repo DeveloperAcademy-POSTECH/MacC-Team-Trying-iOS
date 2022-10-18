@@ -14,10 +14,11 @@ final class CourseImageCollectionViewCell: UICollectionViewCell {
     static let identifier = "CourseImageCollectionViewCell"
     
     lazy var photoImageView: UIImageView = {
-        $0.layer.cornerRadius = 10
-        $0.contentMode = .scaleAspectFit
-        return $0
-    }(UIImageView())
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 10
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

@@ -39,7 +39,6 @@ class CourseTableView: UITableView {
     }
     
     private func configure() {
-        
         register(CourseTableViewCell.self, forCellReuseIdentifier: CourseTableViewCell.identifier)
         dataSource = self
         rowHeight = 269
@@ -50,7 +49,8 @@ class CourseTableView: UITableView {
 extension CourseTableView: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return infos.count
+        let infoCount = infos.count
+        return infoCount
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

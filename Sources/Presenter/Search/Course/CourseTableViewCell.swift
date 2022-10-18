@@ -31,27 +31,31 @@ class CourseTableViewCell: UITableViewCell {
     }
     
     private lazy var planetImageView: UIImageView = {
-        $0.contentMode = .scaleAspectFit
-        return $0
-    }(UIImageView())
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
     
     private lazy var planetNameLabel: UILabel = {
-        $0.font = .systemFont(ofSize: 11, weight: .medium)
-        $0.textColor = .white
-        return $0
-    }(UILabel())
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 11, weight: .medium)
+        label.textColor = .white
+        return label
+    }()
     
     private lazy var timeLabel: UILabel = {
-        $0.font = .systemFont(ofSize: 11, weight: .medium)
-        $0.textColor = .gray
-        return $0
-    }(UILabel())
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 11, weight: .medium)
+        label.textColor = .gray
+        return label
+    }()
     
     private lazy var locationNameLabel: UILabel = {
-        $0.font = .systemFont(ofSize: 13, weight: .bold)
-        $0.textColor = .white
-        return $0
-    }(UILabel())
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 13, weight: .bold)
+        label.textColor = .white
+        return label
+    }()
     
     private lazy var followButton: FollowButton = {
         let button = FollowButton()
@@ -60,29 +64,33 @@ class CourseTableViewCell: UITableViewCell {
     }()
     
     private lazy var likeButton: UIButton = {
-        $0.addTarget(self, action: #selector(toggleLike), for: .touchUpInside)
-        return $0
-    }(UIButton())
+        let button = UIButton()
+        button.addTarget(self, action: #selector(toggleLike), for: .touchUpInside)
+        return button
+    }()
     
     private lazy var planetNameAndTimeHStackView: UIStackView = {
-        $0.spacing = 10
-        $0.axis = .horizontal
-        return $0
-    }(UIStackView())
+        let stackView = UIStackView(arrangedSubviews: [planetNameLabel, timeLabel])
+        stackView.spacing = 10
+        stackView.axis = .horizontal
+        return stackView
+    }()
     
     private lazy var planetNameLocationVStackView: UIStackView = {
-        $0.spacing = 7
-        $0.alignment = .leading
-        $0.axis = .vertical
-        return $0
-    }(UIStackView())
+        let stackView = UIStackView(arrangedSubviews: [planetNameAndTimeHStackView, locationNameLabel])
+        stackView.spacing = 7
+        stackView.alignment = .leading
+        stackView.axis = .vertical
+        return stackView
+    }()
     
     private lazy var followAndLikeHStackView: UIStackView = {
-        $0.spacing = 16.5
-        $0.alignment = .center
-        $0.axis = .horizontal
-        return $0
-    }(UIStackView())
+        let stackView = UIStackView(arrangedSubviews: [followButton, likeButton])
+        stackView.spacing = 16.5
+        stackView.alignment = .center
+        stackView.axis = .horizontal
+        return stackView
+    }()
     
     private lazy var courseImageCollectionView: CourseImageCollectionView = {
         let collectionView = CourseImageCollectionView()
@@ -110,15 +118,7 @@ class CourseTableViewCell: UITableViewCell {
     private func setAttributes() {
        
         contentView.addSubview(planetImageView)
-        planetNameAndTimeHStackView.addArrangedSubview(planetNameLabel)
-        planetNameAndTimeHStackView.addArrangedSubview(timeLabel)
-        
-        planetNameLocationVStackView.addArrangedSubview(planetNameAndTimeHStackView)
-        planetNameLocationVStackView.addArrangedSubview(locationNameLabel)
         contentView.addSubview(planetNameLocationVStackView)
-        
-        followAndLikeHStackView.addArrangedSubview(followButton)
-        followAndLikeHStackView.addArrangedSubview(likeButton)
         contentView.addSubview(followAndLikeHStackView)
         contentView.addSubview(courseImageCollectionView)
     }
