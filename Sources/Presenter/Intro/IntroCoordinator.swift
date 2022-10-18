@@ -24,6 +24,7 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
     func start() {
         let startController = createLoginScene()
         navigationController?.setViewControllers([startController], animated: false)
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
     func createLoginScene() -> UIViewController {

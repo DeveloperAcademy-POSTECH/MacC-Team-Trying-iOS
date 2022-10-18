@@ -12,7 +12,7 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class EnterEmailViewController: BaseViewController {
+final class EnterEmailViewController: IntroAnimatedViewController {
     let viewModel: EnterEmailViewModel
 
     init(viewModel: EnterEmailViewModel) {
