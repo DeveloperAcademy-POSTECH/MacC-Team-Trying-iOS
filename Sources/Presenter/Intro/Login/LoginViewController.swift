@@ -91,7 +91,7 @@ extension LoginViewController {
         loginButton.snp.updateConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(67)
         }
-        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: 0.5, initialSpringVelocity: 1) {
+        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [.allowUserInteraction]) {
             self.loginButton.alpha = 1
             self.signUpButton.alpha = 1
             self.view.layoutIfNeeded()
@@ -102,7 +102,7 @@ extension LoginViewController {
     }
 }
 
-// MARK: Button Clicked
+// MARK: - Button Clicked
 extension LoginViewController {
 
     @objc

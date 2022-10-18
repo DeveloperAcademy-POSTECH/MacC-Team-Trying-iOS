@@ -8,13 +8,18 @@
 
 import UIKit
 
-protocol IntroCoordinatorProtocol: Coordinator, LoginCoordinatorLogic, EnterEmailCoordinatorLogic {
+protocol IntroCoordinatorProtocol:
+    Coordinator,
+    LoginCoordinatorLogic,
+    EnterEmailCoordinatorLogic,
+    EnterPasswordCoordinatorLogic,
+    FindPasswordCoordinatorLogic,
+    ConfirmPasswordCoordinatorLogic {
     var navigationController: UINavigationController? { get }
-
-    func coordinateToEnterEmailScene()
 }
 
 final class IntroCoordinator: IntroCoordinatorProtocol {
+
     weak var navigationController: UINavigationController?
 
     init(navigationController: UINavigationController?) {
@@ -35,13 +40,49 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
     func createEnterEmailScene() -> UIViewController {
         EnterEmailViewController(viewModel: .init(coordinator: self))
     }
+
+    func createEnterPasswordScene() -> UIViewController {
+        EnterPasswordViewController(viewModel: .init(coordinator: self))
+    }
+
+    func createFindPasswordScene() -> UIViewController {
+        FindPasswordViewController(viewModel: .init(coordinator: self))
+    }
+
+    func createConfirmPasswordScene() -> UIViewController {
+        ConfirmPasswordViewController(viewModel: .init(coordinator: self))
+    }
 }
 
 // MARK: - CoordinatorLogic
 extension IntroCoordinator {
 
     func coordinateToEnterEmailScene() {
-        navigationController?.setNavigationBarHidden(false, animated: false)
         navigationController?.pushViewController(createEnterEmailScene(), animated: true)
+    }
+
+    func coordinateToEnterPasswordScene() {
+        navigationController?.pushViewController(createEnterPasswordScene(), animated: true)
+    }
+
+    func coordinateToHomeScene() {
+        // TODO: 홈으로 넘어가는 델리게이트구현
+    }
+
+    func coordinateToFindPasswordScene() {
+        navigationController?.pushViewController(createFindPasswordScene(), animated: true)
+    }
+
+    func coordinateToConfirmPasswordScene() {
+        navigationController?.pushViewController(createConfirmPasswordScene(), animated: true)
+    }
+
+    func backToConfirmPasswordScene() {
+        let viewControllers: [UIViewController] = self.navigationController?.viewControllers ?? []
+        if viewControllers.count >= 3 {
+            self.navigationController?.popToViewController(viewControllers[viewControllers.count - 3], animated: true)
+        } else {
+            // TODO: 오류처리
+        }
     }
 }
