@@ -15,11 +15,11 @@ import SnapKit
 final class ProfileTestViewController: BaseViewController {
     var viewModel: ProfileTestViewModel?
     
-    private lazy var viewLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Profile"
-        return label
-    }()
+    private lazy var textField1 = CustomTextField(type: .search)
+    private lazy var textField2 = CustomTextField(type: .courseTitle)
+    private lazy var textField3 = CustomTextField(type: .location)
+    private lazy var textField4 = CustomTextField(type: .shopTitle)
+    private lazy var textView = CustomTextView()
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -38,8 +38,9 @@ final class ProfileTestViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension ProfileTestViewController {
+extension ProfileTestViewController: NavigationBarConfigurable {
     private func setUI() {
+        configureCourseDetailNavigationBar(target: self, action: nil)
         setAttributes()
         setLayout()
     }
@@ -51,10 +52,33 @@ extension ProfileTestViewController {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        view.addSubview(viewLabel)
+        view.addSubviews(textField1, textField2, textField3, textField4, textView)
         
-        viewLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        textField1.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(30)
+            make.centerX.equalToSuperview()
+        }
+        
+        textField2.snp.makeConstraints { make in
+            make.top.equalTo(textField1.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+        }
+        
+        textField3.snp.makeConstraints { make in
+            make.top.equalTo(textField2.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+        }
+        
+        textField4.snp.makeConstraints { make in
+            make.top.equalTo(textField3.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+        }
+        
+        textView.snp.makeConstraints { make in
+            make.top.equalTo(textField4.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
         }
     }
 }
