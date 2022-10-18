@@ -19,7 +19,7 @@ final class SearchTestViewModel: BaseViewModel {
 //    
     func fetchInfos() {
 
-            self.infos = [Info(planetImageString: "planet_sample", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: true, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]), Info(planetImageString: "planet_sample", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: true, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"])]
+            self.infos = [Info(planetImageString: "YouthPlanet", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: true, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]), Info(planetImageString: "YouthPlanet", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: true, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]), Info(planetImageString: "YouthPlanet", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: true, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"])]
 
     }
 }

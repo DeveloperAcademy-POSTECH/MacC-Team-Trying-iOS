@@ -40,6 +40,7 @@ class CourseTableView: UITableView {
     
     private func configure() {
         register(CourseTableViewCell.self, forCellReuseIdentifier: CourseTableViewCell.identifier)
+        backgroundColor = .black
         dataSource = self
         rowHeight = 269
     }
