@@ -11,6 +11,11 @@ import SnapKit
 
 class IntroAnimatedViewController: BaseViewController {
 
+    let fastDuration: CGFloat = 0.5
+    let fastDelay: CGFloat = 0.3
+    let duration: CGFloat = 1.0
+    let delay: CGFloat = 1.0
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -77,7 +82,7 @@ extension IntroAnimatedViewController {
             make.trailing.equalToSuperview().offset(41)
         }
 
-        UIView.animate(withDuration: 1.5, delay: 0.7, usingSpringWithDamping: 0.5, initialSpringVelocity: 1) {
+        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: 0.5, initialSpringVelocity: 1) {
             self.leftPlanetImageView.alpha = 1
             self.rightPlanetImageView.alpha = 1
             self.view.layoutIfNeeded()

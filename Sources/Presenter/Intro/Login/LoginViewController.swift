@@ -65,7 +65,6 @@ extension LoginViewController {
     private func setLayout() {
         view.addSubview(logoLabel)
         view.addSubview(loginButton)
-
         view.addSubview(logoImageView)
         view.addSubview(signUpButton)
 
@@ -89,11 +88,10 @@ extension LoginViewController {
     }
 
     private func animateInitViews() {
-
         loginButton.snp.updateConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(67)
         }
-        UIView.animate(withDuration: 1.5, delay: 1.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1) {
+        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: 0.5, initialSpringVelocity: 1) {
             self.loginButton.alpha = 1
             self.signUpButton.alpha = 1
             self.view.layoutIfNeeded()

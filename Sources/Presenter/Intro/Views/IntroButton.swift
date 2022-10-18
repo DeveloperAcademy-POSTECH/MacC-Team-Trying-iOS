@@ -40,6 +40,14 @@ final class IntroButton: BaseButton {
         setConfigurationUpdateHandler()
     }
 
+    override func setLayout() {
+        super.setLayout()
+
+        self.snp.makeConstraints { make in
+            make.height.equalTo(58)
+        }
+    }
+
     private func setConfigurationUpdateHandler() {
         self.configurationUpdateHandler = { [weak self] button in
             guard let self = self else { return }

@@ -9,6 +9,7 @@
 import UIKit
 
 import PinLayout
+import SnapKit
 
 protocol TextFieldWithMessageViewComponentDelegate: AnyObject {
     /// 텍스트가 입력되는 실시간 함수
@@ -58,12 +59,6 @@ final class TextFieldWithMessageView: UIView {
         setUI()
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        setLayout()
-    }
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -72,7 +67,7 @@ final class TextFieldWithMessageView: UIView {
     lazy var errorLabel = UILabel()
 }
 
-// MARK: - TextFieldErrorable
+// MARK: - TextFieldWithMessageViewComponent
 extension TextFieldWithMessageView: TextFieldWithMessageViewComponent {
 
     func showError(type errorType: IntroErrorType) {
@@ -81,6 +76,7 @@ extension TextFieldWithMessageView: TextFieldWithMessageViewComponent {
         errorLabel.text = errorType.message
         textField.layer.borderColor = errorType.color?.cgColor
         textField.layer.borderWidth = 1
+
     }
 
     @objc
@@ -89,6 +85,10 @@ extension TextFieldWithMessageView: TextFieldWithMessageViewComponent {
             return
         }
         delegate?.textFieldDidChange(text)
+    }
+
+    func textFieldBecomeFirstResponder() {
+        textField.becomeFirstResponder()
     }
 }
 
@@ -106,32 +106,13 @@ extension TextFieldWithMessageView {
         textField.addTarget(self, action: #selector(textFieldDidchange), for: .editingChanged)
         textField.backgroundColor = UIColor(red: 0.3, green: 0.3, blue: 0.3, alpha: 1)
         textField.textColor = .white
-        textField.leftView = UIView()
+        textField.leftView = UIView(frame: .init(x: 0, y: 0, width: 15, height: textField.frame.height))
         textField.leftViewMode = .always
-        textField.leftView?.pin.width(15)
         textField.layer.cornerRadius = 15
         textField.layer.masksToBounds = true
-
-        self.setClearButton()
-    }
-
-    private func setClearButton() {
-        let clearButtonWrappedView = UIView(frame: CGRect(origin: .zero, size: .init(width: 30, height: 20)))
-        let clearButton = UIButton(type: .system)
-        let image = UIImage(systemName: "xmark.circle.fill")?.withTintColor(.black)
-        clearButton.setImage(image, for: .normal)
-        clearButton.addTarget(self, action: #selector(clearButtonDidTap), for: .touchUpInside)
-        clearButton.tintColor = .black
-        clearButtonWrappedView.addSubview(clearButton)
-        clearButton.pin.top().bottom().left().width(20)
-        textField.rightView = clearButtonWrappedView
-        textField.clearButtonMode = .never
-        textField.rightViewMode = .whileEditing
-    }
-
-    @objc
-    func clearButtonDidTap() {
-        self.textField.text?.removeAll()
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
+        textField.returnKeyType = .done
     }
 
     private func addSubviews() {
@@ -140,9 +121,18 @@ extension TextFieldWithMessageView {
     }
 
     private func setLayout() {
-        textField.pin.top().left().right().height(50)
-        errorLabel.pin.below(of: textField).left().right().margin(3, 8, 8).height(15)
-        self.pin.height(68) // = 50 + 3 + 15
+        textField.snp.makeConstraints { make in
+            make.height.equalTo(50)
+            make.top.leading.trailing.equalToSuperview()
+        }
+        errorLabel.snp.makeConstraints { make in
+            make.top.equalTo(textField.snp.bottom).offset(3)
+            make.leading.trailing.equalToSuperview().inset(8)
+            make.height.equalTo(15)
+        }
+        self.snp.makeConstraints { make in
+            make.height.equalTo(68) // = 50 + 3 + 15
+        }
     }
 }
 
