@@ -13,7 +13,7 @@ import CancelBag
 import SnapKit
 
 final class HomeTestViewController: BaseViewController {
-    var viewModel: HomeTestViewModel?
+//    var viewModel: HomeTestViewModel?
     
     private lazy var mainButton1 = MainButton(type: .next)
     private lazy var mainButton2 = MainButton(type: .done)
