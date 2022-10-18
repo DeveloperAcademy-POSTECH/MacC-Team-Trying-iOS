@@ -15,6 +15,7 @@ enum Font {
     
     enum Size: CGFloat {
         case _15 = 15
+        case _20 = 20
     }
 
     enum Weight: String {

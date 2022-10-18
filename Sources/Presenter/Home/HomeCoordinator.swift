@@ -17,10 +17,16 @@ final class HomeCoordinator: Coordinator {
     
     func start() {
         guard let navigationController = navigationController else { return }
-        let viewController = HomeTestViewController()
-        let viewModel = HomeTestViewModel()
-        viewController.viewModel = viewModel
+        let viewModel = HomeViewModel(coordinator: self)
+        let viewController = HomeViewController(viewModel: viewModel)
         
         navigationController.pushViewController(viewController, animated: true)
+    }
+}
+
+extension HomeCoordinator: AlarmViewCoordinating {
+    func pushToAlarmViewController() {
+        let alarmViewController = AlarmViewController()
+        self.navigationController?.pushViewController(alarmViewController, animated: true)
     }
 }
