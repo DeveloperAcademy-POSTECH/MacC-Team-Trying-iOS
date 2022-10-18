@@ -14,7 +14,7 @@ protocol LoginCoordinatorLogic {
     func coordinateToEnterEmailScene()
 }
 
-protocol LoginBusinessLogic {
+protocol LoginBusinessLogic: BusinessLogic {
     func loginButtonDidTapped()
     func signUpButtonDidTapped()
 }

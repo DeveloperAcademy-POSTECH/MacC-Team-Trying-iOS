@@ -9,21 +9,20 @@
 import UIKit
 import SnapKit
 
-class IntroAnimatedViewController: BaseViewController {
+class IntroAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<VM> {
 
     let fastDuration: CGFloat = 0.5
     let fastDelay: CGFloat = 0.3
     let duration: CGFloat = 1.0
     let delay: CGFloat = 1.0
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setUI()
-    }
+    lazy var shootingStarView = ShootingStarActor(superView: view)
+    lazy var leftPlanetImageView = UIImageView()
+    lazy var rightPlanetImageView = UIImageView()
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         shootingStarView.start()
     }
 
@@ -39,26 +38,18 @@ class IntroAnimatedViewController: BaseViewController {
         shootingStarView.stop()
     }
 
-    lazy var shootingStarView = ShootingStarActor(superView: view)
-    lazy var leftPlanetImageView = UIImageView()
-    lazy var rightPlanetImageView = UIImageView()
-}
+    override func setAttribute() {
+        super.setAttribute()
 
-extension IntroAnimatedViewController {
-
-    private func setUI() {
-        setAttribute()
-        setLayout()
-    }
-
-    private func setAttribute() {
         leftPlanetImageView.alpha = 0
         rightPlanetImageView.alpha = 0
         leftPlanetImageView.image = .init(.img_planet2)
         rightPlanetImageView.image = .init(.img_planet3)
     }
 
-    private func setLayout() {
+    override func setLayout() {
+        super.setLayout()
+
         view.addSubview(leftPlanetImageView)
         view.addSubview(rightPlanetImageView)
 
@@ -73,6 +64,9 @@ extension IntroAnimatedViewController {
             make.trailing.equalToSuperview().offset(82)
         }
     }
+}
+
+extension IntroAnimatedViewController {
 
     private func animateInitViews() {
         leftPlanetImageView.snp.updateConstraints { make in

@@ -15,7 +15,7 @@ protocol EnterPasswordCoordinatorLogic {
     func coordinateToFindPasswordScene()
 }
 
-protocol EnterPasswordBusinessLogic {
+protocol EnterPasswordBusinessLogic: BusinessLogic {
     func loginButtonDidTapped()
     func findPasswordButtonDidTapped()
 }

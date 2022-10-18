@@ -14,7 +14,7 @@ protocol EnterEmailCoordinatorLogic {
     func coordinateToEnterPasswordScene()
 }
 
-protocol EnterEmailBusinessLogic {
+protocol EnterEmailBusinessLogic: BusinessLogic {
     func enterEmailButtonDidTapped()
 }
 

@@ -12,26 +12,12 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class EnterEmailViewController: IntroAnimatedViewController {
-    let viewModel: EnterEmailViewModel
+final class EnterEmailViewController: IntroAnimatedViewController<EnterEmailViewModel> {
 
-    init(viewModel: EnterEmailViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func bind() {}
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        setUI()
-        bind()
-    }
+    lazy var titleLabels = IntroTitleLabels()
+    lazy var emailTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .email)
+    lazy var nextButton = IntroButton(type: .system)
+    lazy var planetImageView = UIImageView()
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -45,20 +31,9 @@ final class EnterEmailViewController: IntroAnimatedViewController {
         animateInitViews()
     }
 
-    lazy var titleLabels = IntroTitleLabels()
-    lazy var emailTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .email)
-    lazy var nextButton = IntroButton(type: .system)
-    lazy var planetImageView = UIImageView()
-}
+    override func setAttribute() {
+        super.setAttribute()
 
-// MARK: - UI
-extension EnterEmailViewController {
-    private func setUI() {
-        setAttributes()
-        setLayout()
-    }
-
-    private func setAttributes() {
         planetImageView.alpha = 0
         planetImageView.image = .init(.img_planet)
         nextButton.title = "계속하기"
@@ -68,7 +43,9 @@ extension EnterEmailViewController {
         nextButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
     }
 
-    private func setLayout() {
+    override func setLayout() {
+        super.setLayout()
+
         view.addSubview(titleLabels)
         view.addSubview(emailTextFieldView)
         view.addSubview(nextButton)
@@ -92,6 +69,11 @@ extension EnterEmailViewController {
         }
         planetImageView.sizeToFit()
     }
+
+}
+
+// MARK: - UI
+extension EnterEmailViewController {
 
     private func animateInitViews() {
         planetImageView.snp.updateConstraints { make in

@@ -12,26 +12,13 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class EnterPasswordViewController: IntroAnimatedViewController {
-    var viewModel: EnterPasswordViewModel
+final class EnterPasswordViewController: IntroAnimatedViewController<EnterPasswordViewModel> {
 
-    init(viewModel: EnterPasswordViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func bind() {}
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setUI()
-        bind()
-    }
+    lazy var titleLabels = IntroTitleLabels()
+    lazy var passwordTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .password)
+    lazy var loginButton = IntroButton(type: .system)
+    lazy var findPasswordButton = FindPasswordButton(type: .system)
+    lazy var planetImageView = UIImageView()
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -45,21 +32,9 @@ final class EnterPasswordViewController: IntroAnimatedViewController {
         animateInitViews()
     }
 
-    lazy var titleLabels = IntroTitleLabels()
-    lazy var passwordTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .password)
-    lazy var loginButton = IntroButton(type: .system)
-    lazy var findPasswordButton = FindPasswordButton(type: .system)
-    lazy var planetImageView = UIImageView()
-}
+    override func setAttribute() {
+        super.setAttribute()
 
-// MARK: - UI
-extension EnterPasswordViewController {
-    private func setUI() {
-        setAttributes()
-        setLayout()
-    }
-
-    private func setAttributes() {
         title = "로그인"
         planetImageView.alpha = 0
         planetImageView.image = .init(.img_planet)
@@ -70,7 +45,9 @@ extension EnterPasswordViewController {
         findPasswordButton.addTarget(self, action: #selector(findPasswordButtonDidTapped), for: .touchUpInside)
     }
 
-    private func setLayout() {
+    override func setLayout() {
+        super.setLayout()
+
         view.addSubview(titleLabels)
         view.addSubview(passwordTextFieldView)
         view.addSubview(loginButton)
@@ -99,6 +76,10 @@ extension EnterPasswordViewController {
         }
         planetImageView.sizeToFit()
     }
+}
+
+// MARK: - UI
+extension EnterPasswordViewController {
 
     private func animateInitViews() {
         planetImageView.snp.updateConstraints { make in

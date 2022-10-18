@@ -13,26 +13,12 @@ import CancelBag
 import SnapKit
 import Lottie
 
-final class LoginViewController: IntroAnimatedViewController {
-    let viewModel: LoginBusinessLogic
+final class LoginViewController: IntroAnimatedViewController<LoginViewModel> {
 
-    init(viewModel: LoginBusinessLogic) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func bind() {}
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setUI()
-        bind()
-    }
+    lazy var logoLabel = LogoLabel()
+    lazy var logoImageView = UIImageView()
+    lazy var loginButton = EmailLoginButton()
+    lazy var signUpButton = SignUpButton(type: .system)
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -40,20 +26,8 @@ final class LoginViewController: IntroAnimatedViewController {
         animateInitViews()
     }
 
-    lazy var logoLabel = LogoLabel()
-    lazy var logoImageView = UIImageView()
-    lazy var loginButton = EmailLoginButton()
-    lazy var signUpButton = SignUpButton(type: .system)
-}
-
-// MARK: - UI
-extension LoginViewController {
-    private func setUI() {
-        setAttribute()
-        setLayout()
-    }
-
-    private func setAttribute() {
+    override func setAttribute() {
+        super.setAttribute()
 
         loginButton.alpha = 0
         signUpButton.alpha = 0
@@ -62,7 +36,9 @@ extension LoginViewController {
         signUpButton.addTarget(self, action: #selector(signUpButtonDidTapped), for: .touchUpInside)
     }
 
-    private func setLayout() {
+    override func setLayout() {
+        super.setLayout()
+        
         view.addSubview(logoLabel)
         view.addSubview(loginButton)
         view.addSubview(logoImageView)
@@ -86,6 +62,10 @@ extension LoginViewController {
             make.top.equalTo(loginButton.snp.bottom).offset(10)
         }
     }
+}
+
+// MARK: - UI
+extension LoginViewController {
 
     private func animateInitViews() {
         loginButton.snp.updateConstraints { make in

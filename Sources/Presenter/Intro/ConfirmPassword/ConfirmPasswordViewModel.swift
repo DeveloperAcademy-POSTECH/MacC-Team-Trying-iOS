@@ -14,7 +14,7 @@ protocol ConfirmPasswordCoordinatorLogic {
     func backToConfirmPasswordScene()
 }
 
-protocol ConfirmPasswordBusinessLogic {
+protocol ConfirmPasswordBusinessLogic: BusinessLogic {
     func enterPasswordButtonDIdTapped()
 }
 

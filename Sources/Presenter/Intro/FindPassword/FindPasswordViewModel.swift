@@ -14,7 +14,7 @@ protocol FindPasswordCoordinatorLogic {
     func coordinateToConfirmPasswordScene()
 }
 
-protocol FindPasswordBusinessLogic {
+protocol FindPasswordBusinessLogic: BusinessLogic {
     func sendEmailButtonDidTapped()
 }
 
@@ -28,5 +28,4 @@ final class FindPasswordViewModel: BaseViewModel, FindPasswordBusinessLogic {
     func sendEmailButtonDidTapped() {
         coordinator.coordinateToConfirmPasswordScene()
     }
-
 }
