@@ -59,7 +59,7 @@ final class SmallRoundButton: UIButton {
     
     private func setLayout() {
         self.snp.makeConstraints { make in
-            make.width.equalTo(90)
+            make.width.greaterThanOrEqualTo(90)
             make.height.equalTo(30)
         }
     }
