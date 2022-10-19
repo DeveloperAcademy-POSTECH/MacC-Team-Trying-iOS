@@ -103,7 +103,7 @@ extension PlaceSearchViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension PlaceSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        55
+        67
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

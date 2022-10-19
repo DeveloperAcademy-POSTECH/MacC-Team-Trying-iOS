@@ -13,6 +13,7 @@ import SnapKit
 final class PlaceSearchTableViewCell: UITableViewCell {
     static let identifier = "PlaceSearchTableViewCellIdentifer"
     
+    lazy var placeContainerView = UIView()
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .designSystem(.white)
@@ -45,11 +46,17 @@ final class PlaceSearchTableViewCell: UITableViewCell {
     
     private func setUI() {
         contentView.backgroundColor = .designSystem(.black)
-        contentView.addSubviews(titleLabel, categoryLabel, addressLabel, addCourseButton)
+        
+        placeContainerView.addSubviews(titleLabel, categoryLabel, addressLabel)
+        contentView.addSubviews(placeContainerView, addCourseButton)
+        
+        placeContainerView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(15)
+            make.leading.equalToSuperview()
+        }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(15)
-            make.leading.equalToSuperview()
+            make.top.leading.equalToSuperview()
         }
         
         categoryLabel.snp.makeConstraints { make in
@@ -58,13 +65,11 @@ final class PlaceSearchTableViewCell: UITableViewCell {
         }
         
         addressLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(3)
-            make.leading.equalToSuperview()
+            make.leading.bottom.equalToSuperview()
         }
         
         addCourseButton.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.centerY.trailing.equalToSuperview()
         }
     }
 }
