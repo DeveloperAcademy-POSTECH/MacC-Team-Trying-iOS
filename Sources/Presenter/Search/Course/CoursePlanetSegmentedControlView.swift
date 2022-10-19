@@ -24,7 +24,7 @@ class CoursePlanetSegmentedControlView: UIView {
             button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
             
             var configuration = UIButton.Configuration.plain()
-            configuration.contentInsets = .init(top: 16, leading: 0, bottom: 16, trailing: 0)
+            configuration.contentInsets = .init(top: 16, leading: 0, bottom: 20, trailing: 0)
             
             var titleAttribute = AttributedString(title)
             titleAttribute.font = .systemFont(ofSize: 15.0, weight: .bold)
@@ -44,6 +44,12 @@ class CoursePlanetSegmentedControlView: UIView {
         stack.axis = .horizontal
         stack.distribution = .fillEqually
         return stack
+    }()
+    
+    private var staticLineView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .gray
+        return view
     }()
     
     private lazy var selectorView: UIView = {
@@ -72,6 +78,7 @@ class CoursePlanetSegmentedControlView: UIView {
         self.selectorTextColor = selectorTextColor
         self.selectorViewColor = selectorViewColor
         self.buttonTitles = buttonTitle
+        
         setUI()
     }
 
@@ -100,6 +107,7 @@ class CoursePlanetSegmentedControlView: UIView {
 extension CoursePlanetSegmentedControlView {
 
     private func setAttributes() {
+        addSubview(staticLineView)
         addSubview(buttonStackView)
         addSubview(selectorView)
     }
@@ -113,6 +121,13 @@ extension CoursePlanetSegmentedControlView {
         selectorView.snp.makeConstraints { make in
             make.width.equalToSuperview().dividedBy(2)
             make.height.equalTo(3)
+            make.leading.equalToSuperview()
+            make.bottom.equalTo(staticLineView.snp.top)
+        }
+        
+        staticLineView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.height.equalTo(1)
             make.leading.equalToSuperview()
             make.top.equalTo(self.snp.bottom)
         }

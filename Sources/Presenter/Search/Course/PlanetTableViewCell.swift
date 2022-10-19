@@ -95,8 +95,10 @@ class PlanetTableViewCell: UITableViewCell {
             make.leading.trailing.equalToSuperview()
             make.top.equalToSuperview().inset(15)
             make.bottom.equalToSuperview()
-            make.height.equalTo(90)
+            make.height.equalTo(containerView.snp.width).multipliedBy(9.0 / 35.0)
         }
+        
+        print("wid")
 
         planetImageView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(20)

@@ -60,7 +60,7 @@ extension SearchTestViewController {
     private func setLayout() {
         
         coursePlanetSegmentedControlView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(20)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
             make.height.equalTo(23)
             make.top.equalToSuperview().inset(104)
         }

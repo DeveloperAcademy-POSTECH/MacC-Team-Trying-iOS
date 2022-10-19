@@ -34,8 +34,9 @@ class CourseTableView: UITableView {
         register(CourseTableViewCell.self, forCellReuseIdentifier: CourseTableViewCell.identifier)
         register(PlanetTableViewCell.self, forCellReuseIdentifier: PlanetTableViewCell.identifier)
         backgroundColor = .black
+        separatorColor = .clear
+        showsVerticalScrollIndicator = false
         dataSource = self
-//        rowHeight = 269
     }
     
     private func bind() {
@@ -50,20 +51,41 @@ class CourseTableView: UITableView {
 //            }
 //            .cancel(with: cancelBag)
         
-        viewModel.$currentCategory
-            .sink { _ in
-                print("view에서 currentCategory바뀜")
-                print("category change")
-                
-            }
-            .store(in: &cancelBag2)
+//        viewModel.$currentCategory
+//            .sink { _ in
+//                print("view에서 currentCategory바뀜")
+//                print("category change")
+//                
+//            }
+//            .store(in: &cancelBag2)
         
         viewModel.$infos
             .receive(on: DispatchQueue.main)
             .sink { infos in
+                print(infos)
                 self.reloadData()
             }
             .store(in: &cancelBag2)
+//        viewModel.$infos1
+//            .receive(on: DispatchQueue.main)
+//            .sink { infos in
+//                self.reloadData()
+//            }
+//            .store(in: &cancelBag2)
+//
+//        viewModel.$infos2
+//            .receive(on: DispatchQueue.main)
+//            .sink { infos in
+//                self.reloadData()
+//            }
+//            .store(in: &cancelBag2)
+        
+//        viewModel.$infos
+//            .receive(on: DispatchQueue.main)
+//            .sink { infos in
+//                self.reloadData()
+//            }
+//            .store(in: &cancelBag2)
     }
     
 }
