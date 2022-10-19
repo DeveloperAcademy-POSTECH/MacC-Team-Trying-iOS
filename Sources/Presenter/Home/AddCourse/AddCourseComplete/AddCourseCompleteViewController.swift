@@ -21,7 +21,7 @@ final class AddCourseCompleteViewController: BaseViewController {
         label.numberOfLines = 0
         let attributedString = NSMutableAttributedString()
         let firstString = NSAttributedString(string: "새로운 별자리가", attributes: [.font: UIFont.gmarksans(weight: .light, size: ._15)])
-        let secondString = NSAttributedString(string: "\n생성됐습니다!", attributes: [.font: UIFont.gmarksans(weight: .regular, size: ._15)])
+        let secondString = NSAttributedString(string: "\n생성됐습니다!", attributes: [.font: UIFont.gmarksans(weight: .medium, size: ._15)])
         attributedString.append(firstString)
         attributedString.append(secondString)
         let paragraphStyle = NSMutableParagraphStyle()

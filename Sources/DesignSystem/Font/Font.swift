@@ -23,6 +23,7 @@ enum Font {
     enum Weight: String {
         case heavy = "Heavy"
         case bold = "Bold"
+        case medium = "Medium"
         case regular = "Regular"
         case light = "Light"
 
@@ -33,6 +34,9 @@ enum Font {
                 
             case .bold:
                 return .bold
+                
+            case .medium:
+                return .medium
                 
             case .regular:
                 return .regular
@@ -74,6 +78,7 @@ extension Font {
     static var fonts: [CustomFont] {
         [
             CustomFont(name: .gmarketsans, weight: .light),
+            CustomFont(name: .gmarketsans, weight: .regular),
             CustomFont(name: .gmarketsans, weight: .bold)
         ]
     }
