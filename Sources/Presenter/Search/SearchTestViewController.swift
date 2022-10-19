@@ -14,23 +14,21 @@ import SnapKit
 
 final class SearchTestViewController: BaseViewController {
     var viewModel: SearchTestViewModel?
-    let courseTableView = CourseTableView()
+    private lazy var courseTableView = CourseTableView(viewModel: viewModel)
     private lazy var coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(buttonTitle: ["코스", "행성"])
-    private lazy var viewLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Search"
-        return label
-    }()
     
     /// View Model과 bind 합니다.
     private func bind() {
         // input
-        viewModel = SearchTestViewModel()
-        viewModel!.$infos
-            .sink(receiveValue: {
-                self.courseTableView.infos = $0
-            })
-            .cancel(with: cancelBag)
+//        viewModel = SearchTestViewModel()
+   
+        
+//        viewModel!.$infos
+//            .sink(receiveValue: {
+//                self.courseTableView.infos = $0
+//                self.courseTableView.reloadData()
+//            })
+//            .cancel(with: cancelBag)
         // output
         
     }
@@ -40,6 +38,7 @@ final class SearchTestViewController: BaseViewController {
         
         setUI()
         bind()
+        configure()
     }
 }
 
@@ -63,12 +62,25 @@ extension SearchTestViewController {
         coursePlanetSegmentedControlView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(23)
-            make.top.equalToSuperview().inset(114)
+            make.top.equalToSuperview().inset(104)
         }
+        
         courseTableView.snp.makeConstraints { make in
             make.leading.trailing.equalTo(coursePlanetSegmentedControlView)
             make.top.equalTo(coursePlanetSegmentedControlView.snp.bottom)
             make.bottom.equalToSuperview()
         }
+    }
+    
+    private func configure() {
+        
+        coursePlanetSegmentedControlView.delegate = self
+    }
+}
+
+extension SearchTestViewController: CoursePlanetSegmentSwitchable {
+    func change(to coursePlanet: CoursePlanet) {
+        guard let viewModel = viewModel else { return }
+        viewModel.changeTo(coursePlanet)
     }
 }

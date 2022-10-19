@@ -11,7 +11,7 @@ import SnapKit
 import UIKit
 
 protocol CoursePlanetSegmentSwitchable: AnyObject {
-    func change(to indexAt: Int)
+    func change(to coursePlanet: CoursePlanet)
 }
 
 class CoursePlanetSegmentedControlView: UIView {
@@ -20,19 +20,18 @@ class CoursePlanetSegmentedControlView: UIView {
         var buttons: [UIButton] = []
         for title in buttonTitles {
             let button = UIButton(type: .system)
+            button.setTitleColor(textColor, for: .normal)
             button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
             
-            if #available(iOS 15.0, *) {
-                var configuration = UIButton.Configuration.plain()
-                configuration.contentInsets = .init(top: 6, leading: 0, bottom: 6, trailing: 0)
-                var titleAttribute = AttributedString(title)
-                titleAttribute.font = .systemFont(ofSize: 15.0, weight: .bold)
-                titleAttribute.foregroundColor = UIColor.white
-                configuration.attributedTitle = titleAttribute
-                button.configuration = configuration
-            }
+            var configuration = UIButton.Configuration.plain()
+            configuration.contentInsets = .init(top: 16, leading: 0, bottom: 16, trailing: 0)
             
-            button.setTitleColor(textColor, for: .normal)
+            var titleAttribute = AttributedString(title)
+            titleAttribute.font = .systemFont(ofSize: 15.0, weight: .bold)
+            titleAttribute.foregroundColor = UIColor.white
+            configuration.attributedTitle = titleAttribute
+            
+            button.configuration = configuration
             buttons.append(button)
         }
         
@@ -88,7 +87,7 @@ class CoursePlanetSegmentedControlView: UIView {
             if btn == sender {
                 let selectorPosition = frame.width / CGFloat(buttonTitles.count) * CGFloat(buttonIndex)
                 selectedIndex = buttonIndex
-                delegate?.change(to: selectedIndex)
+                delegate?.change(to: CoursePlanet.init(rawValue: selectedIndex) ?? .course)
                 UIView.animate(withDuration: 0.1) {
                     self.selectorView.frame.origin.x = selectorPosition
                 }
@@ -118,4 +117,10 @@ extension CoursePlanetSegmentedControlView {
             make.top.equalTo(self.snp.bottom)
         }
     }
+}
+
+enum CoursePlanet: Int {
+    case course
+    case planet
+    
 }

@@ -155,6 +155,7 @@ class CourseTableViewCell: UITableViewCell {
             make.top.equalTo(planetImageView.snp.bottom).offset(20)
             make.leading.equalTo(planetImageView.snp.leading)
             make.height.equalTo(169)
+            make.bottom.equalToSuperview()
             make.trailing.equalTo(likeButton.snp.trailing)
         }
     }
