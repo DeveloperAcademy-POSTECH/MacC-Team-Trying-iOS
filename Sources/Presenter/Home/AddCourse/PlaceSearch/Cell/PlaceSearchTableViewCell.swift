@@ -36,19 +36,15 @@ final class PlaceSearchTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        setAttributes()
-        setLayout()
+        setUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setAttributes() {
+    private func setUI() {
         contentView.backgroundColor = .designSystem(.black)
-    }
-    
-    private func setLayout() {
         contentView.addSubviews(titleLabel, categoryLabel, addressLabel, addCourseButton)
         
         titleLabel.snp.makeConstraints { make in
