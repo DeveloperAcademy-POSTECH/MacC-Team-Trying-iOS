@@ -27,4 +27,8 @@ struct Constants {
         static let x_mark = "x_mark"
         static let magnifyingglass = "magnifyingglass"
     }
+    
+    struct Lottie {
+        static let starLottie = "star_lottie"
+    }
 }

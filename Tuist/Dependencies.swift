@@ -10,9 +10,9 @@ import ProjectDescription
 let dependencies = Dependencies(
     carthage: .init(
         [
+            .github(path: "airbnb/lottie-ios", requirement: .branch("master")),
             .github(path: "layoutBox/FlexLayout", requirement: .branch("master")),
-            .github(path: "layoutBox/PinLayout", requirement: .branch("master")),
-			.github(path: "https://github.com/airbnb/lottie-ios.git", requirement: .exact("3.5.0"))
+            .github(path: "layoutBox/PinLayout", requirement: .branch("master"))
         ]
     ),
     swiftPackageManager: [
