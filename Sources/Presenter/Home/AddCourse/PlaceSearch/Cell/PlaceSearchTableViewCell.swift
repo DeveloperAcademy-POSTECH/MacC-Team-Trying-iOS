@@ -1,5 +1,5 @@
 //
-//  PlaceTableViewCell.swift
+//  PlaceSearchTableViewCell.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/16.
@@ -10,8 +10,8 @@ import UIKit
 
 import SnapKit
 
-final class PlaceTableViewCell: UITableViewCell {
-    static let identifier = "PlaceTableViewCellIdentifer"
+final class PlaceSearchTableViewCell: UITableViewCell {
+    static let identifier = "PlaceSearchTableViewCellIdentifer"
     
     lazy var titleLabel: UILabel = {
         let label = UILabel()
