@@ -27,8 +27,8 @@ class CoursePlanetSegmentedControlView: UIView {
             configuration.contentInsets = .init(top: 16, leading: 0, bottom: 20, trailing: 0)
             
             var titleAttribute = AttributedString(title)
-            titleAttribute.font = .systemFont(ofSize: 15.0, weight: .bold)
-            titleAttribute.foregroundColor = UIColor.white
+            titleAttribute.font = .designSystem(weight: .bold, size: ._15)
+            titleAttribute.foregroundColor = .designSystem(.white)
             configuration.attributedTitle = titleAttribute
             
             button.configuration = configuration
@@ -48,7 +48,7 @@ class CoursePlanetSegmentedControlView: UIView {
     
     private var staticLineView: UIView = {
         let view = UIView()
-        view.backgroundColor = .gray
+        view.backgroundColor = .designSystem(.gray818181)
         return view
     }()
     
@@ -59,9 +59,9 @@ class CoursePlanetSegmentedControlView: UIView {
     }()
     
     private var buttonTitles: [String] = []
-    var textColor: UIColor = .gray
-    var selectorViewColor: UIColor = .white
-    var selectorTextColor: UIColor = .white
+    var textColor: UIColor?
+    var selectorViewColor: UIColor?
+    var selectorTextColor: UIColor?
     
     weak var delegate: CoursePlanetSegmentSwitchable?
     
@@ -69,16 +69,15 @@ class CoursePlanetSegmentedControlView: UIView {
     
     convenience init(
         _ buttonTitle: [String],
-        textColor: UIColor = .gray,
-        selectorViewColor: UIColor = .white,
-        selectorTextColor: UIColor = .white
+        textColor: UIColor? = .designSystem(.gray818181),
+        selectorViewColor: UIColor? = .designSystem(.white),
+        selectorTextColor: UIColor? = .designSystem(.white)
     ) {
         self.init(frame: .zero)
         self.textColor = textColor
         self.selectorTextColor = selectorTextColor
         self.selectorViewColor = selectorViewColor
         self.buttonTitles = buttonTitle
-        
         setUI()
     }
 
@@ -89,16 +88,16 @@ class CoursePlanetSegmentedControlView: UIView {
     
     @objc
     func buttonAction(sender: UIButton) {
-        for (buttonIndex, btn) in buttons.enumerated() {
-            btn.setTitleColor(textColor, for: .normal)
-            if btn == sender {
-                let selectorPosition = frame.width / CGFloat(buttonTitles.count) * CGFloat(buttonIndex)
-                selectedIndex = buttonIndex
+        for (index, button) in buttons.enumerated() {
+            button.setTitleColor(textColor, for: .normal)
+            if button == sender {
+                button.setTitleColor(selectorTextColor, for: .normal)
+                let selectorPosition = frame.width / CGFloat(buttonTitles.count) * CGFloat(index)
+                selectedIndex = index
                 delegate?.change(to: CoursePlanet.init(rawValue: selectedIndex) ?? .course)
                 UIView.animate(withDuration: 0.1) {
                     self.selectorView.frame.origin.x = selectorPosition
                 }
-                btn.setTitleColor(selectorTextColor, for: .normal)
             }
         }
     }

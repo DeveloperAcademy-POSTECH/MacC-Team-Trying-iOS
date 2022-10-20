@@ -26,7 +26,7 @@ class CourseTableViewCell: UITableViewCell {
             let image = UIImage(named: info.isLike ? "like_image" : "unlike_image")
             likeButton.setImage(image, for: .normal)
             imageURLStrings = info.imageURLStrings
-            followButton.isSelected = info.isFollow
+            followButton.setButtonDetailConfiguration(isFollow: info.isFollow)
         }
     }
     
@@ -38,22 +38,22 @@ class CourseTableViewCell: UITableViewCell {
     
     private lazy var planetNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 11, weight: .medium)
-        label.textColor = .white
+        label.font = .designSystem(weight: .regular, size: ._11)
+        label.textColor = .designSystem(.white)
         return label
     }()
     
     private lazy var timeLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 11, weight: .medium)
-        label.textColor = .gray
+        label.font = .designSystem(weight: .regular, size: ._11)
+        label.textColor = .designSystem(.grayC5C5C5)
         return label
     }()
     
     private lazy var locationNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .bold)
-        label.textColor = .white
+        label.font = .designSystem(weight: .bold, size: ._13)
+        label.textColor = .designSystem(.white)
         return label
     }()
     
@@ -109,7 +109,7 @@ class CourseTableViewCell: UITableViewCell {
     private func setUI() {
         
         selectionStyle = .none
-        backgroundColor = .black
+        backgroundColor = .designSystem(.black)
         
         setAttributes()
         setConstraints()
@@ -125,7 +125,7 @@ class CourseTableViewCell: UITableViewCell {
 
     private func setConstraints() {
         planetImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(30)
+            make.top.equalToSuperview().offset(20)
             make.leading.equalToSuperview()
             make.width.height.equalTo(50)
         }
@@ -171,7 +171,6 @@ class CourseTableViewCell: UITableViewCell {
     
     @objc private func toggleFollow() {
         //TODO: ViewModel을 통한 toggle
-        followButton.isSelected.toggle()
     }
     
     required init?(coder: NSCoder) {

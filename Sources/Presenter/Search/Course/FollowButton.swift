@@ -10,48 +10,44 @@ import UIKit
 
 class FollowButton: UIButton {
     
-    override var isSelected: Bool {
-        didSet {
-            if isSelected {
-                configuration = FollowButton.updateConfiguration(type: .follow)
-            } else {
-                configuration = FollowButton.updateConfiguration(type: .unFollow)
-            }
-        }
-    }
+    private var isFollow = false
     
     convenience init() {
-        let configuration = FollowButton.updateConfiguration(type: .follow)
-        self.init(configuration: configuration, primaryAction: nil)
+        self.init(frame: .zero)
+        setButtonCommonConfiguration()
     }
     
-    private static func updateConfiguration(type: FollowButtonConfiguration) -> Configuration {
-        
-        var configuration = UIButton.Configuration.filled() // 1
+    private func setButtonCommonConfiguration() {
+        var configuration = UIButton.Configuration.filled()
         var background = configuration.background
         var container = AttributeContainer()
-        container.font = .boldSystemFont(ofSize: 10)
+        container.font = .designSystem(weight: .bold, size: ._11)
         configuration.attributedTitle = AttributedString("팔로우", attributes: container)
         configuration.contentInsets = .init(top: 8, leading: 18, bottom: 8, trailing: 18)
         background.cornerRadius = 12.5
         background.strokeWidth = 1.25
         
-        switch type {
-        case .follow:
-                configuration.baseForegroundColor = UIColor.yellow
-                configuration.baseBackgroundColor = .black
-                background.strokeColor = .yellow
-        case .unFollow:
-                configuration.baseForegroundColor = UIColor.black
-                configuration.baseBackgroundColor = .gray
-                background.strokeColor = .gray
-        }
         configuration.background = background
-        return configuration
+        self.configuration = configuration
+        setConfigurationHandler()
     }
     
-    enum FollowButtonConfiguration {
-        case follow
-        case unFollow
+    private func setConfigurationHandler() {
+        configurationUpdateHandler = { _ in
+            self.setButtonDetailConfiguration(isFollow: !self.isFollow)
+        }
+    }
+    
+    func setButtonDetailConfiguration(isFollow: Bool) {
+        self.isFollow = isFollow
+        var background = self.configuration?.background
+    
+        self.configuration?.baseForegroundColor = isFollow ?
+            .designSystem(.mainYellow) : .designSystem(.black)
+        self.configuration?.baseBackgroundColor = isFollow ?
+            .designSystem(.black) : .designSystem(.gray818181)
+        background?.strokeColor = isFollow ?
+            .designSystem(.mainYellow) : .designSystem(.gray818181)
+        self.configuration?.background = background ?? .clear()
     }
 }

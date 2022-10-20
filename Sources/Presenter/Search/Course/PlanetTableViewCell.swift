@@ -27,7 +27,7 @@ class PlanetTableViewCell: UITableViewCell {
     private var containerView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 10
-        view.backgroundColor = .gray
+        view.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
         return view
     }()
     
@@ -39,15 +39,15 @@ class PlanetTableViewCell: UITableViewCell {
     
     private lazy var planetNameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .bold)
-        label.textColor = .white
+        label.font = .designSystem(weight: .bold, size: ._13)
+        label.textColor = .designSystem(.white)
         return label
     }()
     
     private lazy var ownerLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 11, weight: .medium)
-        label.textColor = .white
+        label.font = .designSystem(weight: .regular, size: ._11)
+        label.textColor = .designSystem(.white)
         return label
     }()
     
@@ -82,7 +82,6 @@ class PlanetTableViewCell: UITableViewCell {
     }
     
     private func setAttributes() {
-        
         containerView.addSubview(planetImageView)
         containerView.addSubview(planetNameOwnersVStackView)
         containerView.addSubview(followButton)
@@ -97,8 +96,6 @@ class PlanetTableViewCell: UITableViewCell {
             make.bottom.equalToSuperview()
             make.height.equalTo(containerView.snp.width).multipliedBy(9.0 / 35.0)
         }
-        
-        print("wid")
 
         planetImageView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(20)
@@ -118,10 +115,10 @@ class PlanetTableViewCell: UITableViewCell {
             make.trailing.equalTo(followButton.snp.leading).offset(4)
             make.centerY.equalTo(planetImageView)
         }
-
     }
     
-    @objc private func toggleFollow() {
+    @objc
+    private func toggleFollow() {
         //TODO: ViewModel을 통한 toggle
         followButton.isSelected.toggle()
     }

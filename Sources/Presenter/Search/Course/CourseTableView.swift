@@ -33,7 +33,7 @@ class CourseTableView: UITableView {
     private func configure() {
         register(CourseTableViewCell.self, forCellReuseIdentifier: CourseTableViewCell.identifier)
         register(PlanetTableViewCell.self, forCellReuseIdentifier: PlanetTableViewCell.identifier)
-        backgroundColor = .black
+        backgroundColor = .designSystem(.black)
         separatorColor = .clear
         showsVerticalScrollIndicator = false
         dataSource = self

@@ -15,7 +15,7 @@ import SnapKit
 final class SearchViewController: BaseViewController {
     var viewModel: SearchViewModel?
     private lazy var courseTableView = CourseTableView(viewModel: viewModel)
-    private lazy var coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(["코스", "행성"])
+    private var coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(["코스", "행성"])
 
     private func bind() { }
 
@@ -36,7 +36,7 @@ extension SearchViewController {
     }
     
     private func setAttributes() {
-        view.backgroundColor = .black
+        view.backgroundColor = .designSystem(.black)
         view.addSubview(courseTableView)
         view.addSubview(coursePlanetSegmentedControlView)
     }
@@ -62,7 +62,6 @@ extension SearchViewController {
     }
     
     private func configureSearchNavigationBar(target: Any?, action: Selector?) {
-        
         let titleView = CustomTextField(type: .searchCourseAndPlanet)
         navigationItem.titleView = titleView
     }

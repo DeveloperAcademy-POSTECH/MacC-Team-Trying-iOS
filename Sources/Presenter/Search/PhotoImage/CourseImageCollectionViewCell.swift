@@ -31,7 +31,6 @@ final class CourseImageCollectionViewCell: UICollectionViewCell {
     
     private func setUI() {
         contentView.addSubview(photoImageView)
-        photoImageView.backgroundColor = .brown
         photoImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.width.equalTo(113)
