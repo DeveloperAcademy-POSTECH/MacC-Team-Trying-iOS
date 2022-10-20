@@ -34,9 +34,9 @@ final class FeedTestViewController: BaseViewController {
             let model = TestViewModel(id: 1,
                                       planet: "우디",
                                       title: "부산풀코스",
-                                      body: "찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...",
+                                      body: "찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ 담에 또 찰리랑 놀고 싶다...찰리랑 놀아서 개좋았다..ㅎ ",
                                       date: "2022년 10월 10일",
-                                      tag: ["삐갈레브레드", "도산공원"],
+                                      tag: ["삐갈레브레드삐갈레브레드", "도산공원", "가나다라마사아자타"],
                                       image: "lakeImage")
             data.append(model)
         }
@@ -51,7 +51,7 @@ final class FeedTestViewController: BaseViewController {
         feedCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         feedCollectionView?.isPagingEnabled = true
         feedCollectionView?.dataSource = self
-        feedCollectionView?.register(FeedCollectionViewCell.self, forCellWithReuseIdentifier: FeedCollectionViewCell.identifier)
+        feedCollectionView?.register(FeedCell.self, forCellWithReuseIdentifier: FeedCell.identifier)
         view.addSubview(feedCollectionView!)
         setUI()
         bind()
@@ -70,7 +70,7 @@ extension FeedTestViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let model = data[indexPath.row]
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCollectionViewCell.identifier, for: indexPath) as? FeedCollectionViewCell else { return FeedCollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCell.identifier, for: indexPath) as? FeedCell else { return FeedCell() }
 
         cell.configure(with: model)
         cell.delegate = self
