@@ -13,9 +13,9 @@ import Combine
 class CourseTableView: UITableView {
     var cancelBag = CancelBag()
     var cancelBag2 = Set<AnyCancellable>()
-    var searchViewModel: SearchTestViewModel?
+    var searchViewModel: SearchViewModel?
 
-    convenience init(viewModel: SearchTestViewModel?) {
+    convenience init(viewModel: SearchViewModel?) {
         self.init(frame: .zero, style: .plain)
         self.searchViewModel = viewModel
         bind()

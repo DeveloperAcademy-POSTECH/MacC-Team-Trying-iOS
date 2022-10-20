@@ -31,6 +31,12 @@ enum CustomTextFieldType {
     /// - Height : 50
     /// - Placeholder : 코스 이름을 입력해 주세요.
     case courseTitle
+    
+    /// 검색 탭에서 사용되는 TextField
+    /// - Width : 디바이스 가로 길이 - 20 * 2
+    /// - Height : 36
+    /// - Placeholder : 코스 또는 행성을 입력해 주세요.
+    case searchCourseAndPlanet
 }
 
 final class CustomTextField: UITextField {
@@ -81,6 +87,14 @@ final class CustomTextField: UITextField {
             self.textColor = .designSystem(.white)
             self.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.1)
             self.layer.cornerRadius = 15
+            
+        case .searchCourseAndPlanet:
+            self.leftImage(UIImage(systemName: Constants.Image.magnifyingglass), imageWidth: 10, padding: 10)
+            self.attributedPlaceholder = .init(string: "코스 또는 행성을 입력하세요.", attributes: [.foregroundColor: UIColor.designSystem(.grayEBEBF5) as Any])
+            self.tintColor = .designSystem(.grayEBEBF5)
+            self.textColor = .designSystem(.white)
+            self.backgroundColor = .designSystem(.gray767680)
+            self.layer.cornerRadius = 10
         }
         self.font = .designSystem(weight: .regular, size: ._15)
         self.leftViewMode = .always
@@ -97,6 +111,12 @@ final class CustomTextField: UITextField {
         case .shopTitle, .location, .courseTitle:
             self.snp.makeConstraints { make in
                 make.height.equalTo(50)
+            }
+            
+        case .searchCourseAndPlanet:
+            self.snp.makeConstraints { make in
+                make.width.equalTo(DeviceInfo.screenWidth - 20 * 2)
+                make.height.equalTo(36)
             }
         }
     }
