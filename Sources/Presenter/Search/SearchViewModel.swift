@@ -55,16 +55,30 @@ final class SearchViewModel: BaseViewModel {
 }
 
 extension SearchViewModel {
+    
+    func downloadImages(imageURLStrings: [String]) {
+        for _ in 0..<imageURLStrings.count {
+            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                
+            }
+        }
+    }
+    
     func fetchInfos() {
-        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
             guard self.currentCategory == .course else { return }
-            self.infos1 = [Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: true, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]), Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]), Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]), Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"])]
+            self.infos1 = [
+                Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: true, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
+                Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
+                Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
+                Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"])
+            ]
         }
     }
     
     func fetchInfos2() {
         
-        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
             guard self.currentCategory == .planet else { return }
             self.infos2 = [Info2(planetImageString: "MyPlanetImage", planetNameString: "한규행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"]),Info2(planetImageString: "MyPlanetImage", planetNameString: "한규행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"])]
         }

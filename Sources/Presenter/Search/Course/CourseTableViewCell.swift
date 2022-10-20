@@ -22,10 +22,8 @@ class CourseTableViewCell: UITableViewCell {
             planetNameLabel.text = info.planetNameString
             timeLabel.text = info.timeString
             locationNameLabel.text = info.locationString
-            
-            let image = UIImage(named: info.isLike ? "like_image" : "unlike_image")
-            likeButton.setImage(image, for: .normal)
             imageURLStrings = info.imageURLStrings
+            likeButton.setButtonImage(isLike: info.isLike)
             followButton.setButtonDetailConfiguration(isFollow: info.isFollow)
         }
     }
@@ -63,8 +61,8 @@ class CourseTableViewCell: UITableViewCell {
         return button
     }()
     
-    private lazy var likeButton: UIButton = {
-        let button = UIButton()
+    private lazy var likeButton: LikeButton = {
+        let button = LikeButton()
         button.addTarget(self, action: #selector(toggleLike), for: .touchUpInside)
         return button
     }()
@@ -81,14 +79,6 @@ class CourseTableViewCell: UITableViewCell {
         stackView.spacing = 7
         stackView.alignment = .leading
         stackView.axis = .vertical
-        return stackView
-    }()
-    
-    private lazy var followAndLikeHStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [followButton, likeButton])
-        stackView.spacing = 16.5
-        stackView.alignment = .center
-        stackView.axis = .horizontal
         return stackView
     }()
     
@@ -119,14 +109,15 @@ class CourseTableViewCell: UITableViewCell {
        
         contentView.addSubview(planetImageView)
         contentView.addSubview(planetNameLocationVStackView)
-        contentView.addSubview(followAndLikeHStackView)
+        contentView.addSubview(followButton)
+        contentView.addSubview(likeButton)
         contentView.addSubview(courseImageCollectionView)
     }
 
     private func setConstraints() {
         planetImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
-            make.leading.equalToSuperview()
+            make.leading.equalToSuperview().inset(20)
             make.width.height.equalTo(50)
         }
         
@@ -136,18 +127,18 @@ class CourseTableViewCell: UITableViewCell {
         }
         
         likeButton.snp.makeConstraints { make in
-            make.width.equalTo(19)
-            make.height.equalTo(18)
-        }
-        
-        followAndLikeHStackView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview()
+            make.trailing.equalToSuperview().inset(20)
             make.centerY.equalTo(planetImageView)
         }
         
+        followButton.snp.makeConstraints { make in
+            make.trailing.equalTo(likeButton.snp.leading).offset(-16.5)
+            make.centerY.equalTo(planetImageView)
+        }
+
         planetNameLocationVStackView.snp.makeConstraints { make in
             make.leading.equalTo(planetImageView.snp.trailing).offset(10)
-            make.trailing.equalTo(followAndLikeHStackView.snp.leading).offset(4)
+            make.trailing.equalTo(followButton.snp.leading).offset(4)
             make.centerY.equalTo(planetImageView)
         }
         
@@ -160,16 +151,14 @@ class CourseTableViewCell: UITableViewCell {
         }
     }
     
-    @objc private func toggleLike() {
+    @objc
+    private func toggleLike() {
         //TODO: ViewModel을 통한 toggle
-        if likeButton.imageView?.image == UIImage(named: "like_image") {
-            likeButton.setImage(UIImage(named: "unlike_image"), for: .normal)
-        } else {
-            likeButton.setImage(UIImage(named: "like_image"), for: .normal)
-        }
+        likeButton.toggleLike()
     }
     
-    @objc private func toggleFollow() {
+    @objc
+    private func toggleFollow() {
         //TODO: ViewModel을 통한 toggle
     }
     
@@ -189,8 +178,10 @@ extension CourseTableViewCell: UICollectionViewDelegate, UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CourseImageCollectionViewCell.identifier, for: indexPath) as? CourseImageCollectionViewCell else { return UICollectionViewCell() }
-            cell.photoImageView.image = UIImage(named: imageURLStrings[indexPath.row])
-            return cell
+        
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CourseImageCollectionViewCell.identifier, for: indexPath) as? CourseImageCollectionViewCell else { return UICollectionViewCell() }
+        
+        cell.photoImageView.image = UIImage(named: imageURLStrings[indexPath.row])
+        return cell
     }
 }

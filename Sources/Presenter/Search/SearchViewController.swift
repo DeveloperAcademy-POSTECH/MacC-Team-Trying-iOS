@@ -50,15 +50,15 @@ extension SearchViewController {
         }
                 
         courseTableView.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(coursePlanetSegmentedControlView)
+            make.leading.trailing.equalToSuperview()
             make.top.equalTo(coursePlanetSegmentedControlView.snp.bottom)
             make.bottom.equalToSuperview()
         }
     }
             
     private func configure() {
-        coursePlanetSegmentedControlView.segmentChanged = { coursePlanet in
-            guard let viewModel = self.viewModel else { return }
+        coursePlanetSegmentedControlView.segmentChanged = { [weak self] coursePlanet in
+            guard let viewModel = self?.viewModel else { return }
             viewModel.changeTo(coursePlanet)
         }
     }

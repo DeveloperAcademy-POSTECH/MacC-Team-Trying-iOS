@@ -29,6 +29,7 @@ class FollowButton: UIButton {
         
         configuration.background = background
         self.configuration = configuration
+        
         setConfigurationHandler()
     }
     
@@ -42,12 +43,9 @@ class FollowButton: UIButton {
         self.isFollow = isFollow
         var background = self.configuration?.background
     
-        self.configuration?.baseForegroundColor = isFollow ?
-            .designSystem(.mainYellow) : .designSystem(.black)
-        self.configuration?.baseBackgroundColor = isFollow ?
-            .designSystem(.black) : .designSystem(.gray818181)
-        background?.strokeColor = isFollow ?
-            .designSystem(.mainYellow) : .designSystem(.gray818181)
+        self.configuration?.baseForegroundColor = isFollow ? .designSystem(.mainYellow) : .designSystem(.black)
+        self.configuration?.baseBackgroundColor = isFollow ? .designSystem(.black) : .designSystem(.gray818181)
+        background?.strokeColor = isFollow ? .designSystem(.mainYellow) : .designSystem(.gray818181)
         self.configuration?.background = background ?? .clear()
     }
 }
