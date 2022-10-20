@@ -13,6 +13,7 @@ excluded:
 
 # Default Rules 가운데 제외시키는 Rules
 disabled_rules:
+    - line_length
     - todo                            # TODOs, FIXMEs 에 대하여 warning을 띄우지 않습니다.
     - trailing_whitespace             # Trailing whitespace를 허용합니다.
 
@@ -77,8 +78,6 @@ opt_in_rules:
 
 
 # Configure
-line_length: 160            # line length를 160글자로 설정합니다.
-
 nesting:                    # nesting을 설정합니다.
     type_level:
         warning: 3

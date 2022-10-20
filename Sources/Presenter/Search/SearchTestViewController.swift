@@ -15,11 +15,11 @@ import SnapKit
 final class SearchTestViewController: BaseViewController {
     var viewModel: SearchTestViewModel?
     
-    private lazy var viewLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Search"
-        return label
-    }()
+    private lazy var smallButton1 = SmallRectButton(type: .add)
+    private lazy var smallButton2 = SmallRectButton(type: .delete)
+    
+    private lazy var smallButton3 = SmallRoundButton(type: .addCourse)
+    private lazy var smallButton4 = SmallRoundButton(type: .selectDate)
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -29,7 +29,7 @@ final class SearchTestViewController: BaseViewController {
         
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()
@@ -38,8 +38,9 @@ final class SearchTestViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension SearchTestViewController {
+extension SearchTestViewController: NavigationBarConfigurable {
     private func setUI() {
+        configureSearchNavigationBar(target: self, action: nil)
         setAttributes()
         setLayout()
     }
@@ -51,10 +52,28 @@ extension SearchTestViewController {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        view.addSubview(viewLabel)
+        view.addSubviews(smallButton1, smallButton2)
         
-        viewLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        smallButton1.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(100)
+        }
+        
+        smallButton2.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(smallButton1.snp.bottom).offset(100)
+        }
+        
+        view.addSubviews(smallButton3, smallButton4)
+        
+        smallButton3.snp.makeConstraints { make in
+            make.top.equalTo(smallButton2.snp.bottom).offset(100)
+            make.centerX.equalToSuperview()
+        }
+        
+        smallButton4.snp.makeConstraints { make in
+            make.top.equalTo(smallButton3.snp.bottom).offset(100)
+            make.centerX.equalToSuperview()
         }
     }
 }

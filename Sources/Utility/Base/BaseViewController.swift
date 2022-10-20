@@ -12,13 +12,13 @@ import UIKit
 import CancelBag
 import SnapKit
 
-class BaseViewController: UIViewController {
+class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
     let cancelBag = CancelBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // TODO: 배경 색상 변경하기
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .designSystem(.black)                                // 화면 배경 색상을 설정합니다.
+        navigationController?.interactivePopGestureRecognizer?.delegate = self      // Swipe-gesture를 통해 pop을 합니다.
     }
 }
