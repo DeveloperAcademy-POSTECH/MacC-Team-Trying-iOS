@@ -30,20 +30,5 @@ final class CustomTextView: UITextView {
         self.tintColor = .designSystem(.white)
         self.text = "내용을 입력해 주세요."
         self.font = .designSystem(weight: .regular, size: ._15)
-        self.delegate = self
-    }
-}
-
-extension CustomTextView: UITextViewDelegate {
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == "내용을 입력해 주세요." {
-            textView.text = nil
-        }
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty {
-            textView.text = "내용을 입력해 주세요."
-        }
     }
 }

@@ -26,7 +26,11 @@ struct Constants {
         static let chevron_left = "chevron_left"
         static let x_mark = "x_mark"
         static let magnifyingglass = "magnifyingglass"
-		static let appIcon = "app_icon"
+    		static let deleteButton = "delete_button"
+        static let photoIcon = "photo.on.rectangle.angled"
+        static let closedLockIcon = "lock_closed"
+        static let openLockIcon = "lock_open"
+    		static let appIcon = "app_icon"
     }
     
     struct Lottie {
