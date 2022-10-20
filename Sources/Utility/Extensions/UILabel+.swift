@@ -11,10 +11,7 @@ import UIKit
 extension UILabel {
 
     func countCurrentLines() -> Int {
-        /// INPUT : Void
-        /// Output : Int (UILabel의 행의 수를 반환.)
-        /// 사용방법법 : (UILabel).countCurrentLines()
-        ///
+        
         guard let text = self.text as NSString? else { return 0 }
         guard let font = self.font else { return 0 }
 
