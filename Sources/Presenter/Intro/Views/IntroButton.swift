@@ -38,6 +38,7 @@ final class IntroButton: UIButton {
 
 extension IntroButton {
     private func setUI() {
+        
         var configuration = UIButton.Configuration.filled()
         configuration.activityIndicatorColorTransformer = .monochromeTint
         configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in

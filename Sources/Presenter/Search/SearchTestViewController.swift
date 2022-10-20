@@ -19,17 +19,6 @@ final class SearchTestViewController: BaseViewController {
     
     /// View Model과 bind 합니다.
     private func bind() {
-        // input
-//        viewModel = SearchTestViewModel()
-   
-        
-//        viewModel!.$infos
-//            .sink(receiveValue: {
-//                self.courseTableView.infos = $0
-//                self.courseTableView.reloadData()
-//            })
-//            .cancel(with: cancelBag)
-        // output
         
     }
 
@@ -40,6 +29,7 @@ final class SearchTestViewController: BaseViewController {
         bind()
         configure()
     }
+    
 }
 
 // MARK: - UI
@@ -49,12 +39,12 @@ extension SearchTestViewController {
         setLayout()
     }
     
-    /// Attributes를 설정합니다.
     private func setAttributes() {
         view.backgroundColor = .black
         view.addSubview(courseTableView)
         view.addSubview(coursePlanetSegmentedControlView)
         navigationController?.navigationBar.backgroundColor = .blue
+        
     }
     
     private func setLayout() {
@@ -70,12 +60,13 @@ extension SearchTestViewController {
             make.top.equalTo(coursePlanetSegmentedControlView.snp.bottom)
             make.bottom.equalToSuperview()
         }
+        
     }
     
     private func configure() {
-        
         coursePlanetSegmentedControlView.delegate = self
     }
+    
 }
 
 extension SearchTestViewController: CoursePlanetSegmentSwitchable {

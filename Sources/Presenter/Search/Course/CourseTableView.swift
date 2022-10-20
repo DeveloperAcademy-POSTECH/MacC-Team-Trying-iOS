@@ -9,7 +9,7 @@
 import UIKit
 import CancelBag
 import Combine
-
+//TODO: CancelBag수정
 class CourseTableView: UITableView {
     var cancelBag = CancelBag()
     var cancelBag2 = Set<AnyCancellable>()
@@ -41,24 +41,6 @@ class CourseTableView: UITableView {
     
     private func bind() {
         guard let viewModel = searchViewModel else { return }
-//        viewModel.$currentCategory
-//            .flatMap { _ in
-//                viewModel.$infos
-//            }
-//            .sink { acccccc in
-//                print("Rr")
-//                let kkkk = acccccc
-//            }
-//            .cancel(with: cancelBag)
-        
-//        viewModel.$currentCategory
-//            .sink { _ in
-//                print("view에서 currentCategory바뀜")
-//                print("category change")
-//                
-//            }
-//            .store(in: &cancelBag2)
-        
         viewModel.$infos
             .receive(on: DispatchQueue.main)
             .sink { infos in
@@ -66,26 +48,6 @@ class CourseTableView: UITableView {
                 self.reloadData()
             }
             .store(in: &cancelBag2)
-//        viewModel.$infos1
-//            .receive(on: DispatchQueue.main)
-//            .sink { infos in
-//                self.reloadData()
-//            }
-//            .store(in: &cancelBag2)
-//
-//        viewModel.$infos2
-//            .receive(on: DispatchQueue.main)
-//            .sink { infos in
-//                self.reloadData()
-//            }
-//            .store(in: &cancelBag2)
-        
-//        viewModel.$infos
-//            .receive(on: DispatchQueue.main)
-//            .sink { infos in
-//                self.reloadData()
-//            }
-//            .store(in: &cancelBag2)
     }
     
 }
@@ -111,6 +73,7 @@ extension CourseTableView: UITableViewDataSource {
             planetTableCell.info = viewModel.infos[indexPath.row] as? Info2
             return planetTableCell
         }
+        
     }
     
 }

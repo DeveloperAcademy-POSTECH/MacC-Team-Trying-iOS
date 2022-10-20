@@ -43,13 +43,11 @@ final class SearchTestViewModel: BaseViewModel {
             }
             .store(in: &cancelbag2)
         
-        
         Publishers.Merge($infos2, $infos1)
             .sink { i1 in
                 self.infos = i1
             }
             .store(in: &cancelbag2)
-            
     }
 }
 
