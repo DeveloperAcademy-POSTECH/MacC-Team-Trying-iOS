@@ -68,7 +68,7 @@ class CoursePlanetSegmentedControlView: UIView {
     private(set) var selectedIndex: Int = 0
     
     convenience init(
-        buttonTitle: [String],
+        _ buttonTitle: [String],
         textColor: UIColor = .gray,
         selectorViewColor: UIColor = .white,
         selectorTextColor: UIColor = .white
@@ -137,5 +137,4 @@ extension CoursePlanetSegmentedControlView {
 enum CoursePlanet: Int {
     case course
     case planet
-    
 }
