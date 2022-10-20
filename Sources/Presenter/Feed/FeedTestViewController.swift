@@ -15,12 +15,6 @@ import SnapKit
 final class FeedTestViewController: BaseViewController {
     var viewModel: FeedTestViewModel?
     
-    private lazy var viewLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Feed"
-        return label
-    }()
-    
     /// View Model과 bind 합니다.
     private func bind() {
         // input
@@ -31,6 +25,8 @@ final class FeedTestViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.view.backgroundColor = .systemBackground
         
         setUI()
         bind()
@@ -51,10 +47,6 @@ extension FeedTestViewController {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        view.addSubview(viewLabel)
         
-        viewLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
     }
 }

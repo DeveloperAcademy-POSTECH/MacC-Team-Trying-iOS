@@ -14,64 +14,66 @@ import SnapKit
 
 final class SearchTestViewController: BaseViewController {
     var viewModel: SearchTestViewModel?
-    private lazy var courseTableView = CourseTableView(viewModel: viewModel)
-    private lazy var coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(buttonTitle: ["코스", "행성"])
+    
+    private lazy var smallButton1 = SmallRectButton(type: .add)
+    private lazy var smallButton2 = SmallRectButton(type: .delete)
+    
+    private lazy var smallButton3 = SmallRoundButton(type: .addCourse)
+    private lazy var smallButton4 = SmallRoundButton(type: .selectDate)
     
     /// View Model과 bind 합니다.
     private func bind() {
+        // input
+        
+        // output
         
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()
         bind()
-        configure()
     }
-    
 }
 
 // MARK: - UI
-extension SearchTestViewController {
+extension SearchTestViewController: NavigationBarConfigurable {
     private func setUI() {
+        configureSearchNavigationBar(target: self, action: nil)
         setAttributes()
         setLayout()
     }
     
+    /// Attributes를 설정합니다.
     private func setAttributes() {
-        view.backgroundColor = .black
-        view.addSubview(courseTableView)
-        view.addSubview(coursePlanetSegmentedControlView)
-        navigationController?.navigationBar.backgroundColor = .blue
         
     }
     
+    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
+        view.addSubviews(smallButton1, smallButton2)
         
-        coursePlanetSegmentedControlView.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
-            make.height.equalTo(23)
-            make.top.equalToSuperview().inset(104)
+        smallButton1.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(100)
         }
         
-        courseTableView.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(coursePlanetSegmentedControlView)
-            make.top.equalTo(coursePlanetSegmentedControlView.snp.bottom)
-            make.bottom.equalToSuperview()
+        smallButton2.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(smallButton1.snp.bottom).offset(100)
         }
         
-    }
-    
-    private func configure() {
-        coursePlanetSegmentedControlView.delegate = self
-    }
-    
-}
-
-extension SearchTestViewController: CoursePlanetSegmentSwitchable {
-    func change(to coursePlanet: CoursePlanet) {
-        guard let viewModel = viewModel else { return }
-        viewModel.changeTo(coursePlanet)
+        view.addSubviews(smallButton3, smallButton4)
+        
+        smallButton3.snp.makeConstraints { make in
+            make.top.equalTo(smallButton2.snp.bottom).offset(100)
+            make.centerX.equalToSuperview()
+        }
+        
+        smallButton4.snp.makeConstraints { make in
+            make.top.equalTo(smallButton3.snp.bottom).offset(100)
+            make.centerX.equalToSuperview()
+        }
     }
 }
