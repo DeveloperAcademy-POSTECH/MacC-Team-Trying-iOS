@@ -84,8 +84,8 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
     }
 }
 
-// MARK: - UITableViewDataSource
-extension PlaceSearchViewController: UITableViewDataSource {
+// MARK: - UITableViewDataSource, UITableViewDelegate
+extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel?.places.count ?? 0
     }
@@ -98,10 +98,7 @@ extension PlaceSearchViewController: UITableViewDataSource {
         cell.categoryLabel.text = place?.category
         return cell
     }
-}
-
-// MARK: - UITableViewDelegate
-extension PlaceSearchViewController: UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         67
     }

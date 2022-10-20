@@ -22,13 +22,13 @@ final class PlaceSearchTableViewCell: UITableViewCell {
     }()
     lazy var categoryLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .designSystem(.white)
+        label.textColor = .designSystem(.grayC5C5C5)
         label.font = .designSystem(weight: .regular, size: ._11)
         return label
     }()
     lazy var addressLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .designSystem(.white)
+        label.textColor = .designSystem(.grayC5C5C5)
         label.font = .designSystem(weight: .regular, size: ._13)
         return label
     }()
