@@ -15,13 +15,12 @@ import SnapKit
 final class SearchViewController: BaseViewController {
     var viewModel: SearchViewModel?
     private lazy var courseTableView = CourseTableView(viewModel: viewModel)
-    private var coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(["코스", "행성"])
+    private var coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(buttonTitles: ["코스", "행성"])
 
     private func bind() { }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureSearchNavigationBar(target: self, action: nil)
         setUI()
         bind()
         configure()
@@ -31,6 +30,7 @@ final class SearchViewController: BaseViewController {
 // MARK: - UI
 extension SearchViewController {
     private func setUI() {
+        configureSearchNavigationBar(target: self, action: nil)
         setAttributes()
         setLayout()
     }
@@ -54,23 +54,17 @@ extension SearchViewController {
             make.top.equalTo(coursePlanetSegmentedControlView.snp.bottom)
             make.bottom.equalToSuperview()
         }
-                
     }
             
     private func configure() {
-        coursePlanetSegmentedControlView.delegate = self
+        coursePlanetSegmentedControlView.segmentChanged = { coursePlanet in
+            guard let viewModel = self.viewModel else { return }
+            viewModel.changeTo(coursePlanet)
+        }
     }
     
     private func configureSearchNavigationBar(target: Any?, action: Selector?) {
         let titleView = CustomTextField(type: .searchCourseAndPlanet)
         navigationItem.titleView = titleView
-    }
-    
-}
-
-extension SearchViewController: CoursePlanetSegmentSwitchable {
-    func change(to coursePlanet: CoursePlanet) {
-        guard let viewModel = viewModel else { return }
-        viewModel.changeTo(coursePlanet)
     }
 }

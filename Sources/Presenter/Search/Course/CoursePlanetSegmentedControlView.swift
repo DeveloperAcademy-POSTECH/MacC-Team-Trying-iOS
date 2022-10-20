@@ -10,12 +10,9 @@ import Foundation
 import SnapKit
 import UIKit
 
-protocol CoursePlanetSegmentSwitchable: AnyObject {
-    func change(to coursePlanet: CoursePlanet)
-}
-
 class CoursePlanetSegmentedControlView: UIView {
     
+    var segmentChanged: (CoursePlanet) -> Void = { _ in }
     private lazy var buttons: [UIButton] = {
         var buttons: [UIButton] = []
         for title in buttonTitles {
@@ -63,12 +60,10 @@ class CoursePlanetSegmentedControlView: UIView {
     var selectorViewColor: UIColor?
     var selectorTextColor: UIColor?
     
-    weak var delegate: CoursePlanetSegmentSwitchable?
-    
     private(set) var selectedIndex: Int = 0
     
     convenience init(
-        _ buttonTitle: [String],
+        buttonTitles: [String],
         textColor: UIColor? = .designSystem(.gray818181),
         selectorViewColor: UIColor? = .designSystem(.white),
         selectorTextColor: UIColor? = .designSystem(.white)
@@ -77,7 +72,7 @@ class CoursePlanetSegmentedControlView: UIView {
         self.textColor = textColor
         self.selectorTextColor = selectorTextColor
         self.selectorViewColor = selectorViewColor
-        self.buttonTitles = buttonTitle
+        self.buttonTitles = buttonTitles
         setUI()
     }
 
@@ -94,7 +89,7 @@ class CoursePlanetSegmentedControlView: UIView {
                 button.setTitleColor(selectorTextColor, for: .normal)
                 let selectorPosition = frame.width / CGFloat(buttonTitles.count) * CGFloat(index)
                 selectedIndex = index
-                delegate?.change(to: CoursePlanet.init(rawValue: selectedIndex) ?? .course)
+                segmentChanged(CoursePlanet.init(rawValue: selectedIndex) ?? .course)
                 UIView.animate(withDuration: 0.1) {
                     self.selectorView.frame.origin.x = selectorPosition
                 }

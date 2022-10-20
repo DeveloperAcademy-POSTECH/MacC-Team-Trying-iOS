@@ -47,8 +47,8 @@ final class SearchViewModel: BaseViewModel {
             .store(in: &cancelbag2)
         
         Publishers.Merge($infos2, $infos1)
-            .sink { i1 in
-                self.infos = i1
+            .sink { infos in
+                self.infos = infos
             }
             .store(in: &cancelbag2)
     }
@@ -57,7 +57,6 @@ final class SearchViewModel: BaseViewModel {
 extension SearchViewModel {
     func fetchInfos() {
         DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
-            //TODO: Operator을 통한 처리가 될듯
             guard self.currentCategory == .course else { return }
             self.infos1 = [Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: true, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]), Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]), Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]), Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"])]
         }
