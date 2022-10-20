@@ -91,7 +91,7 @@ class PlanetTableViewCell: UITableViewCell {
     private func setConstraints() {
         
         containerView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalToSuperview().inset(15)
             make.bottom.equalToSuperview()
             make.height.equalTo(containerView.snp.width).multipliedBy(9.0 / 35.0)
