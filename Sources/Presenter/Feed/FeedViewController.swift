@@ -1,8 +1,9 @@
 //
-//  FeedTestViewController.swift
+//  FeedViewController.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/12.
+//  Modified by 정영진 on 2022/10/21
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
@@ -48,15 +49,16 @@ extension FeedViewController {
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
         feedCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-    }
-    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setLayout() {
         guard let feedCollectionView = feedCollectionView else { return }
         feedCollectionView.frame = view.bounds
         feedCollectionView.isPagingEnabled = true
         feedCollectionView.dataSource = self
-        feedCollectionView.register(FeedCell.self, forCellWithReuseIdentifier: FeedCell.identifier)
+        feedCollectionView.register(FeedCollectionViewCell.self, forCellWithReuseIdentifier: FeedCollectionViewCell.identifier)
         feedCollectionView.contentInsetAdjustmentBehavior = .never
+    }
+    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
+    private func setLayout() {
+        guard let feedCollectionView = feedCollectionView else { return }
         view.addSubview(feedCollectionView)
     }
     // TODO: MOCK용 임시 함수
@@ -85,7 +87,7 @@ extension FeedViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let model = data[indexPath.row]
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCell.identifier, for: indexPath) as? FeedCell else { return FeedCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeedCollectionViewCell.identifier, for: indexPath) as? FeedCollectionViewCell else { return FeedCollectionViewCell() }
 
         cell.configure(with: model)
         cell.delegate = self
@@ -94,7 +96,7 @@ extension FeedViewController: UICollectionViewDataSource {
     }
 }
 
-extension FeedViewController: FeedCellDelegate {
+extension FeedViewController: FeedCollectionViewCellDelegate {
     func didTapLikeButton(model: TestViewModel) {
         print("like Button Tapped")
         viewModel?.didTapLikeButton()

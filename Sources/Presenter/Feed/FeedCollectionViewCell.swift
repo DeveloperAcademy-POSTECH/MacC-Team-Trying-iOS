@@ -11,20 +11,20 @@ import UIKit
 import SnapKit
 import SwiftUI
 
-protocol FeedCellDelegate: AnyObject {
+protocol FeedCollectionViewCellDelegate: AnyObject {
     func didTapLikeButton(model: TestViewModel)
     func didTapListButton(model: TestViewModel)
     func didTapMapButton(model: TestViewModel)
     func didTapFollowButton(model: TestViewModel)
 }
 
-class FeedCell: UICollectionViewCell {
+class FeedCollectionViewCell: UICollectionViewCell {
 
     static let identifier = "FeedCollectionViewCell"
 
-    private var isBodyTapped: Bool = false
+    private var isBodyCollapsed: Bool = false
 
-    weak var delegate: FeedCellDelegate?
+    weak var delegate: FeedCollectionViewCellDelegate?
 
     private var model: TestViewModel?
     private var images = [String]()
@@ -32,11 +32,11 @@ class FeedCell: UICollectionViewCell {
     private let gradient = CAGradientLayer()
 
     private var tagCollectionView: UICollectionView?
-    private var scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+    private var scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight))
 
     private let courseImageView = [UIImageView]()
-    private var gradientView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
-    private var bottomView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.35))
+    private var gradientView = UIView(frame: CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight))
+    private var bottomView = UIView(frame: CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight * 0.35))
 
     private let planetImageView = UIImageView()
 
@@ -55,26 +55,16 @@ class FeedCell: UICollectionViewCell {
     // MARK: Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
-        addSubviews()
-        setScrollView()
+        addSubviewsToSuperView()
         setViews()
         setButtons()
         setLabels()
         setGestureRecognizer()
-        setCollectionView()
+        setTagCollectionView()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        planetNameLabel.text = nil
-        courseNameLabel.text = nil
-        dateLabel.text = nil
-        bodyLabel.text = nil
-        planetImageView.image = nil
     }
 
     func configure(with model: TestViewModel) {
@@ -90,7 +80,7 @@ class FeedCell: UICollectionViewCell {
     }
 }
 
-extension FeedCell: UIScrollViewDelegate {
+extension FeedCollectionViewCell: UIScrollViewDelegate {
 
     private func setScrollView() {
         for index in 0..<images.count {
@@ -111,15 +101,15 @@ extension FeedCell: UIScrollViewDelegate {
         pageControl.currentPage = currentPage
     }
 
-    internal func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let value = scrollView.contentOffset.x / scrollView.frame.size.width
         setPageControlSelectedPage(currentPage: Int(round(value)))
     }
 }
 
-extension FeedCell {
+extension FeedCollectionViewCell {
 
-    private func addSubviews() {
+    private func addSubviewsToSuperView() {
         contentView.addSubview(planetImageView)
         contentView.addSubview(dateLabel)
         contentView.addSubview(planetNameLabel)
@@ -139,12 +129,6 @@ extension FeedCell {
         contentView.sendSubviewToBack(gradientView)
         contentView.sendSubviewToBack(bottomView)
         contentView.sendSubviewToBack(scrollView)
-
-        // Add Action
-        listButton.addTarget(self, action: #selector(didTapListButton), for: .touchUpInside)
-        mapButton.addTarget(self, action: #selector(didTapMapButton), for: .touchUpInside)
-        likeButton.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
-        followButton.addTarget(self, action: #selector(didTapFollowMapButton), for: .touchUpInside)
     }
 
     private func setButtons() {
@@ -201,6 +185,10 @@ extension FeedCell {
             make.width.equalTo(70)
             make.height.equalTo(25)
         }
+        listButton.addTarget(self, action: #selector(didTapListButton), for: .touchUpInside)
+        mapButton.addTarget(self, action: #selector(didTapMapButton), for: .touchUpInside)
+        likeButton.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
+        followButton.addTarget(self, action: #selector(didTapFollowMapButton), for: .touchUpInside)
     }
 
     private func setLabels() {
@@ -258,8 +246,6 @@ extension FeedCell {
         gradientView.isHidden = true
 
         // Constraints
-
-
         planetImageView.snp.makeConstraints { make in
             make.width.height.equalTo(50)
             make.left.equalToSuperview().inset(20)
@@ -289,18 +275,18 @@ extension FeedCell {
     }
 
     private func setGestureRecognizer() {
-        let tapgestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCourseDetailLabel))
-        bodyLabel.addGestureRecognizer(tapgestureRecognizer)
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCourseDetailLabel))
+        bodyLabel.addGestureRecognizer(tapGestureRecognizer)
         bodyLabel.isUserInteractionEnabled = true
     }
 
     @objc
     private func didTapCourseDetailLabel(_ tapRecognizer: UITapGestureRecognizer) {
-        isBodyTapped.toggle()
+        isBodyCollapsed.toggle()
 
         var bottomViewHeight = contentView.frame.size.height * 0.35
 
-        if isBodyTapped { // 늘어나야함
+        if isBodyCollapsed { // 늘어나야함
             guard let text = bodyLabel.text else { return }
             let attrString = NSMutableAttributedString(string: text)
             let paragraphStyle = NSMutableParagraphStyle()
@@ -308,7 +294,7 @@ extension FeedCell {
             attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, attrString.length))
             bodyLabel.attributedText = attrString
 
-            bottomViewHeight += CGFloat(bodyLabel.countCurrentLines()) * ( bodyLabel.font.lineHeight + 4)
+            bottomViewHeight += CGFloat(bodyLabel.countCurrentLines()) * (bodyLabel.font.lineHeight + 4)
             bodyLabel.numberOfLines = 0
             bottomView.snp.remakeConstraints { make in
                 make.centerX.equalToSuperview()
@@ -355,7 +341,7 @@ extension FeedCell {
         delegate?.didTapFollowButton(model: model)
     }
 
-    private func setCollectionView() {
+    private func setTagCollectionView() {
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.minimumLineSpacing = .zero
         flowLayout.minimumInteritemSpacing = 5
@@ -370,7 +356,7 @@ extension FeedCell {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
-        collectionView.register(TagCell.self, forCellWithReuseIdentifier: TagCell.identifier)
+        collectionView.register(TagCollctionViewCell.self, forCellWithReuseIdentifier: TagCollctionViewCell.identifier)
 
         contentView.addSubview(collectionView)
 
@@ -383,7 +369,7 @@ extension FeedCell {
     }
 }
 
-extension FeedCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension FeedCollectionViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let resultModel = model else {
@@ -396,7 +382,7 @@ extension FeedCell: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let items = model?.tag else { return UICollectionViewCell() }
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCell.identifier, for: indexPath) as? TagCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollctionViewCell.identifier, for: indexPath) as? TagCollctionViewCell else { return UICollectionViewCell() }
         cell.configure(name: items[indexPath.item])
         return cell
     }
@@ -408,6 +394,6 @@ extension FeedCell: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
         } else {
             print("Model is nil")
         }
-        return TagCell.fittingSize(availableHeight: 24, name: result)
+        return TagCollctionViewCell.fittingSize(availableHeight: 24, name: result)
     }
 }

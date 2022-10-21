@@ -10,6 +10,8 @@ import UIKit
 
 extension UILabel {
 
+    /// UILabel의 texg의 현재 줄 개수를 리턴합니다.
+    /// - Returns: 라벨에 보여지는 현재 줄의 수
     func countCurrentLines() -> Int {
         
         guard let text = self.text as NSString? else { return 0 }

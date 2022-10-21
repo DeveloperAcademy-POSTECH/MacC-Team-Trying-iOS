@@ -9,12 +9,12 @@
 import SnapKit
 import UIKit
 
-final class TagCell: UICollectionViewCell {
+final class TagCollctionViewCell: UICollectionViewCell {
 
-    static let identifier = "TagCell"
+    static let identifier = "TagCollctionViewCell"
 
     static func fittingSize(availableHeight: CGFloat, name: String?) -> CGSize {
-        let cell = TagCell()
+        let cell = TagCollctionViewCell()
         cell.configure(name: name)
 
         let targetSize = CGSize(width: UIView.layoutFittingCompressedSize.width, height: availableHeight)
