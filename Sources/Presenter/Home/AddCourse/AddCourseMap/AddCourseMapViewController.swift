@@ -29,9 +29,6 @@ final class AddCourseMapViewController: BaseViewController {
         // input
         
         // output
-        if viewModel!.places.isEmpty {
-            nextButton.isEnabled = false
-        }
     }
 
     override func viewDidLoad() {
@@ -76,7 +73,8 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
                 // 이후 셀 하나가 추가되는 만큼 셀 높이 추가해주기
                 // 셀 하나의 높이 : 67
             case 0:
-                make.height.equalTo(110)
+                placeListView.isHidden = true
+                nextButton.isHidden = true
             case 1:
                 make.height.equalTo(185)
             case 2:
