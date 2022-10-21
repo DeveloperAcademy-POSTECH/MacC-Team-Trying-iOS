@@ -10,7 +10,6 @@ import Combine
 import UIKit
 
 import CancelBag
-import PanModal
 import SnapKit
 
 final class AddCourseMapViewController: BaseViewController {
