@@ -12,9 +12,9 @@ class PlanetTableViewCell: UITableViewCell {
 
     static let identifier = "PlanetTableViewCell"
     
-    var info: Info2? {
+    var planet: SearchPlanet? {
         didSet {
-            guard let info = info else {
+            guard let info = planet else {
                 return
             }
             planetImageView.image = UIImage(named: info.planetImageString)

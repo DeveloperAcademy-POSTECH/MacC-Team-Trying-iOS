@@ -13,7 +13,7 @@ class CourseTableViewCell: UITableViewCell {
     private var imageURLStrings: [String] = []
     static let identifier = "CourseTableViewCell"
     
-    var info: Info? {
+    var info: SearchCourse? {
         didSet {
             guard let info = info else {
                 return

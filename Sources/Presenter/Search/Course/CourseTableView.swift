@@ -9,10 +9,9 @@
 import UIKit
 import CancelBag
 import Combine
-//TODO: CancelBag수정
+
 class CourseTableView: UITableView {
-    var cancelBag = CancelBag()
-    var cancelBag2 = Set<AnyCancellable>()
+    var cancelbag = Set<AnyCancellable>()
     var searchViewModel: SearchViewModel?
 
     convenience init(viewModel: SearchViewModel?) {
@@ -41,13 +40,12 @@ class CourseTableView: UITableView {
     
     private func bind() {
         guard let viewModel = searchViewModel else { return }
-        viewModel.$infos
+        viewModel.$coursesOrPlanets
             .receive(on: DispatchQueue.main)
             .sink { infos in
-                print(infos)
                 self.reloadData()
             }
-            .store(in: &cancelBag2)
+            .store(in: &cancelbag)
     }
     
 }
@@ -56,7 +54,7 @@ extension CourseTableView: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let viewModel = searchViewModel else { return 0 }
-        return viewModel.infos.count
+        return viewModel.coursesOrPlanets.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -67,10 +65,10 @@ extension CourseTableView: UITableViewDataSource {
         
         switch viewModel.currentCategory {
         case .course:
-            courseTableCell.info = viewModel.infos[indexPath.row] as? Info
+            courseTableCell.info = viewModel.coursesOrPlanets[indexPath.row] as? SearchCourse
             return courseTableCell
         case .planet:
-            planetTableCell.info = viewModel.infos[indexPath.row] as? Info2
+            planetTableCell.planet = viewModel.coursesOrPlanets[indexPath.row] as? SearchPlanet
             return planetTableCell
         }
         

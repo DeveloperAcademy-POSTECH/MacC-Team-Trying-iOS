@@ -15,12 +15,12 @@ import UIKit
 final class SearchViewModel: BaseViewModel {
     
     @Published var currentCategory: CoursePlanet = .course
-    @Published var infos = []
+    @Published var coursesOrPlanets = []
     
-    @Published private var infos1 = []
-    @Published private var infos2 = []
+    @Published private var courses = []
+    @Published private var planets = []
     
-    var cancelbag2 = Set<AnyCancellable>()
+    var cancelbag = Set<AnyCancellable>()
     
     override init() {
         super.init()
@@ -29,7 +29,7 @@ final class SearchViewModel: BaseViewModel {
     
     func changeTo(_ coursePlanet: CoursePlanet) {
         guard self.currentCategory != coursePlanet else { return }
-        infos = []
+        coursesOrPlanets = []
         currentCategory = coursePlanet
     }
     
@@ -39,53 +39,48 @@ final class SearchViewModel: BaseViewModel {
             .sink { coursePlanet in
                 switch coursePlanet {
                 case .course:
-                    self.fetchInfos()
+                    self.fetchCourses()
                 case .planet:
-                    self.fetchInfos2()
+                    self.fetchPlanets()
                 }
             }
-            .store(in: &cancelbag2)
+            .store(in: &cancelbag)
         
-        Publishers.Merge($infos2, $infos1)
+        Publishers.Merge($planets, $courses)
             .sink { infos in
-                self.infos = infos
+                self.coursesOrPlanets = infos
             }
-            .store(in: &cancelbag2)
+            .store(in: &cancelbag)
     }
 }
 
 extension SearchViewModel {
     
-    func downloadImages(imageURLStrings: [String]) {
-        for _ in 0..<imageURLStrings.count {
-            DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-                
-            }
-        }
-    }
-    
-    func fetchInfos() {
+    func fetchCourses() {
+        //MARK: 임시 데이터 타입입니다.
         DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
             guard self.currentCategory == .course else { return }
-            self.infos1 = [
-                Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: true, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
-                Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
-                Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
-                Info(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"])
+            self.courses = [
+                SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: true, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
+                SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
+                SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
+                SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"])
             ]
         }
     }
     
-    func fetchInfos2() {
-        
+    func fetchPlanets() {
+        //MARK: 임시 데이터 타입입니다.
         DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
             guard self.currentCategory == .planet else { return }
-            self.infos2 = [Info2(planetImageString: "MyPlanetImage", planetNameString: "한규행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"]),Info2(planetImageString: "MyPlanetImage", planetNameString: "한규행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"])]
+            self.planets = [SearchPlanet(planetImageString: "MyPlanetImage", planetNameString: "한규행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"]),SearchPlanet(planetImageString: "MyPlanetImage", planetNameString: "한규행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"])]
         }
         
     }
 }
-struct Info {
+
+//MARK: 임시 데이터 타입입니다.
+struct SearchCourse {
     //TODO: TestViewController 바꾸고 올리기
     let planetImageString: String
     let planetNameString: String
@@ -96,7 +91,7 @@ struct Info {
     let imageURLStrings: [String]
 }
 
-struct Info2 {
+struct SearchPlanet {
     //TODO: TestViewController 바꾸고 올리기
     let planetImageString: String
     let planetNameString: String
