@@ -17,8 +17,6 @@ final class PlaceListView: UIView {
     private let minimumChangeValue: CGFloat = 50.0      // 최소로 움직여야 하는 값을 50으로 설정합니다.
     private var minHeight: CGFloat {
         switch numberOfItems {
-        case 0:
-            return 110
         case 1:
             return 185
         case 2:
