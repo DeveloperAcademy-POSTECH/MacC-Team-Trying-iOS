@@ -16,7 +16,7 @@ final class SearchTestViewController: BaseViewController {
     var viewModel: SearchTestViewModel?
     
     private lazy var smallButton1 = SmallRectButton(type: .add)
-    private lazy var smallButton2 = SmallRectButton(type: .delete)
+    private lazy var smallButton2 = SmallRectButton(type: .cancel)
     
     private lazy var smallButton3 = SmallRoundButton(type: .addCourse)
     private lazy var smallButton4 = SmallRoundButton(type: .selectDate)
