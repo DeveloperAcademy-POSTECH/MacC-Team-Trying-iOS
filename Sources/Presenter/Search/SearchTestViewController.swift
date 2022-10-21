@@ -40,7 +40,7 @@ final class SearchTestViewController: BaseViewController {
 // MARK: - UI
 extension SearchTestViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureSearchNavigationBar(target: self, action: #selector(backButtonPressed(_:)))
+        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), doneAction: #selector(doneButtonPressed(_:)))
         setAttributes()
         setLayout()
     }
@@ -83,5 +83,10 @@ extension SearchTestViewController {
     @objc
     private func backButtonPressed(_ sender: UIButton) {
         print("✨back button pressed!")
+    }
+    
+    @objc
+    private func doneButtonPressed(_ sender: UIButton) {
+        print("done")
     }
 }

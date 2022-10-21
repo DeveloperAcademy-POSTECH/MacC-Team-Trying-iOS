@@ -41,7 +41,7 @@ final class HomeTestViewController: BaseViewController {
 // MARK: - UI
 extension HomeTestViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureMapNavigationBar(target: self, action: nil)
+        configureMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(pushButtonPressed(_:)))
         setAttributes()
         setLayout()
     }
@@ -78,5 +78,18 @@ extension HomeTestViewController: NavigationBarConfigurable {
             make.leading.trailing.equalToSuperview().inset(20)
             make.top.equalTo(mainButton3.snp.bottom).offset(100)
         }
+    }
+}
+
+// MARK: - User Interaction
+extension HomeTestViewController {
+    @objc
+    private func backButtonPressed(_ sender: UIButton) {
+        print("pop")
+    }
+    
+    @objc
+    private func pushButtonPressed(_ sender: UIButton) {
+        print("push")
     }
 }
