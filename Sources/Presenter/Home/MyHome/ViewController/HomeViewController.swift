@@ -18,7 +18,7 @@ final class HomeViewController: BaseViewController {
     var homeDetailView = HomeDetailView()
     var viewModel: HomeViewModel
     var changeMyPlanetScale: Double = 0.5
-    var screenHeight = UIScreen.main.bounds.height - 20
+    var screenHeight = DeviceInfo.screenHeight - 20
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -74,18 +74,23 @@ final class HomeViewController: BaseViewController {
             }
         } else if gesture.state == .ended {
             if imageCenterY > screenHeight * 6/7 {
-                UIView.animate(withDuration: 0.5) {
-                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationAlpha: 1)
+                DispatchQueue.main.async {
+                    UIView.animate(withDuration: 0.5) {
+                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationAlpha: 1)
+                    }
                 }
             } else {
-                UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
-                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight/2),
-                                        myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
-                                        constellationAlpha: 0)
-                } completion: { _ in
-                    self.homeDetailView.constellationCollectionView.isHidden = true
-                    myPlanet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
+                DispatchQueue.main.async {
+                    UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
+                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight/2),
+                                            myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
+                                            constellationAlpha: 0)
+                    } completion: { _ in
+                        self.homeDetailView.constellationCollectionView.isHidden = true
+                        myPlanet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
+                    }
                 }
+
             }
         }
     }
