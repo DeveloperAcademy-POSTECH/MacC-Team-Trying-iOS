@@ -15,7 +15,7 @@ import SnapKit
 final class ProfileTestViewController: BaseViewController {
     var viewModel: ProfileTestViewModel?
     
-    private lazy var textField1 = CustomTextField(type: .search)
+    private lazy var textField1 = CustomTextField(type: .placeSearch)
     private lazy var textField2 = CustomTextField(type: .courseTitle)
     private lazy var textField3 = CustomTextField(type: .location)
     private lazy var textField4 = CustomTextField(type: .shopTitle)

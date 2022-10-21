@@ -35,7 +35,9 @@ final class PlaceSearchViewController: BaseViewController {
         // input
         
         // output
-        
+        if viewModel!.places.isEmpty {
+            navigationItem.rightBarButtonItem?.isEnabled = false
+        }
     }
 
     override func viewDidLoad() {
@@ -49,7 +51,7 @@ final class PlaceSearchViewController: BaseViewController {
 // MARK: - UI
 extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureSearchNavigationBar(target: self, action: nil)
+        configureSearchNavigationBar(target: self, action: #selector(backButtonPressed(_:)))
         setAttributes()
         setLayout()
     }
@@ -84,8 +86,8 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
     }
 }
 
-// MARK: - UITableViewDataSource
-extension PlaceSearchViewController: UITableViewDataSource {
+// MARK: - UITableViewDataSource, UITableViewDelegate
+extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel?.places.count ?? 0
     }
@@ -98,10 +100,7 @@ extension PlaceSearchViewController: UITableViewDataSource {
         cell.categoryLabel.text = place?.category
         return cell
     }
-}
-
-// MARK: - UITableViewDelegate
-extension PlaceSearchViewController: UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         55
     }
@@ -110,5 +109,13 @@ extension PlaceSearchViewController: UITableViewDelegate {
         let headerView = UIView()
         headerView.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
         return headerView
+    }
+}
+
+// MARK: - User Interaction
+extension PlaceSearchViewController {
+    @objc
+    private func backButtonPressed(_ sender: UIButton) {
+        print("✨back button pressed!")
     }
 }
