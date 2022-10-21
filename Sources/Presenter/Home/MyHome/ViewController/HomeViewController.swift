@@ -15,10 +15,10 @@ import Lottie
 
 final class HomeViewController: BaseViewController {
     
-    var homeDetailView = HomeDetailView()
-    var viewModel: HomeViewModel
-    var changeMyPlanetScale: Double = 0.5
-    var screenHeight = DeviceInfo.screenHeight - 20
+    let homeDetailView = HomeDetailView()
+    let viewModel: HomeViewModel
+    let changeMyPlanetScale: Double = 0.5
+    let screenHeight = DeviceInfo.screenHeight - 20
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
