@@ -275,9 +275,21 @@ extension RegisterCourseViewController: UITextViewDelegate {
         
         DispatchQueue.main.async {
             selectDateButton.setTitle(stringDate, for: .normal)
-            selectDateButton.snp.makeConstraints { make in
+            
+            selectDateButton.snp.remakeConstraints { make in
                 make.width.equalTo(144)
             }
+            
+            UIView.animate(
+                withDuration: 0.4,
+                delay: 0,
+                usingSpringWithDamping: 0.75,
+                initialSpringVelocity: 0.5,
+                options: .curveEaseInOut,
+                animations: {
+                    self.navigationController?.navigationBar.layoutIfNeeded()
+                }
+            )
         }
     }
     
