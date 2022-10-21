@@ -47,7 +47,13 @@ final class HomeViewController: BaseViewController {
         setAttributes()
     }
     
-    func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationAlpha: CGFloat) {
+    
+    /// pangesture에 따라서 요소들을 변화시키는 함수
+    /// - Parameters:
+    ///   - center: 이미지의 center좌표
+    ///   - myPlanetTransform: 어떻게 변할지, 주로 scale에 관한 값
+    ///   - constellationAlpha: 제스처에따라 alpha값이 변하는 요소는 어떻값으로 변할지
+    private func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationAlpha: CGFloat) {
         self.homeDetailView.myPlanetImage.center = center
         self.homeDetailView.myPlanetImage.transform = myPlanetTransform
         self.homeDetailView.constellationCollectionView.alpha = constellationAlpha
@@ -62,10 +68,9 @@ final class HomeViewController: BaseViewController {
         gesture.setTranslation(.zero, in: myPlanet)
         if gesture.state == .changed {
             if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
-                changeMyPlanet(center: CGPoint(x: imageCenterX,
-                                               y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
-                               myPlanetTransform: CGAffineTransform(scaleX: changeScale(xPoint: imageCenterY), y: changeScale(xPoint: imageCenterY)),
-                               constellationAlpha: changeAlpht(xPoint: imageCenterY))
+                changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
+                               myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
+                               constellationAlpha: changeAlpha(yPoint: imageCenterY))
             }
         } else if gesture.state == .ended {
             if imageCenterY > screenHeight * 6/7 {
@@ -95,8 +100,8 @@ final class HomeViewController: BaseViewController {
         if gesture.state == .changed {
             if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
                 changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
-                               myPlanetTransform: CGAffineTransform(scaleX: changeScale(xPoint: imageCenterY), y: changeScale(xPoint: imageCenterY)),
-                               constellationAlpha: changeAlpht(xPoint: imageCenterY))
+                               myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
+                               constellationAlpha: changeAlpha(yPoint: imageCenterY))
                 self.homeDetailView.constellationCollectionView.isHidden = false
             }
         } else if gesture.state == .ended {
@@ -129,12 +134,25 @@ final class HomeViewController: BaseViewController {
         viewModel.pushToAlarmView()
     }
     
-    func changeScale(xPoint: Double) -> CGFloat {
-        return CGFloat(((xPoint * 0.5)/425)+0.0287)
+    /// 이미지의 center위치(y)값에 따라 곱해줄 scale값을 return해주는 함수
+    /// - Parameter yPoint: 이미지center의 yPoint
+    /// - Returns: 이미지에 곱해줄 scale값
+    private func changeScale(yPoint: Double) -> CGFloat {
+        // 기울기(기기의 크기별로 대응되도록 계산)
+        let gradient = (2*(1 - changeMyPlanetScale))/screenHeight
+        // 그래프의 y절편(1차함수기때문에 필요)
+        let interceptionY = (2 * changeMyPlanetScale) - 1
+        return CGFloat((gradient * yPoint) + interceptionY)
     }
     
-    func changeAlpht(xPoint: Double) -> CGFloat {
-        return CGFloat((xPoint/400)-1.1125)
+    
+    /// 이미지의 center(y)값에 따라 곱해줄 alpha값을 return해주는 함수
+    /// - Parameter yPoint: 이미지center의 yPoint
+    /// - Returns: 이미지에 곱해줄 alpha값
+    private func changeAlpha(yPoint: Double) -> CGFloat {
+        let gredient = 2/screenHeight
+        let interceptionY = -1.0
+        return CGFloat((gredient * yPoint) + interceptionY)
     }
 }
 
