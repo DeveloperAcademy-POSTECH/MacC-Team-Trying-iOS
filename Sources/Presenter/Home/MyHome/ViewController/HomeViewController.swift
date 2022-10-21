@@ -18,6 +18,7 @@ final class HomeViewController: BaseViewController {
     var homeDetailView = HomeDetailView()
     var viewModel: HomeViewModel
     var changeMyPlanetScale: Double = 0.5
+    var screenHeight = UIScreen.main.bounds.height - 20
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -46,38 +47,39 @@ final class HomeViewController: BaseViewController {
         setAttributes()
     }
     
+    func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationAlpha: CGFloat) {
+        self.homeDetailView.myPlanetImage.center = center
+        self.homeDetailView.myPlanetImage.transform = myPlanetTransform
+        self.homeDetailView.constellationCollectionView.alpha = constellationAlpha
+    }
+    
     @objc
     func handlePanGesture(gesture: UIPanGestureRecognizer) {
-        let velocity = gesture.velocity(in: homeDetailView.myPlanetImage)
-        let screenHeight = UIScreen.main.bounds.height - 20
-        let translation = gesture.translation(in: self.homeDetailView.myPlanetImage)
-        gesture.setTranslation(.zero, in: self.homeDetailView.myPlanetImage)
+        let myPlanet = self.homeDetailView.myPlanetImage
+        let imageCenterY = myPlanet.center.y
+        let imageCenterX = myPlanet.center.x
+        let translation = gesture.translation(in: myPlanet)
+        gesture.setTranslation(.zero, in: myPlanet)
         if gesture.state == .changed {
-            if abs(velocity.y) > abs(velocity.x) {
-                // center변화, alpha변화, scale변화
-                self.homeDetailView.myPlanetImage.center = CGPoint(x: self.homeDetailView.myPlanetImage.center.x,
-                                                                   y: min(max(self.homeDetailView.myPlanetImage.center.y + translation.y, screenHeight/2), screenHeight))
-                self.homeDetailView.constellationCollectionView.alpha = changeAlpht(xPoint: homeDetailView.myPlanetImage.center.y)
-                let scaleImage = changeScale(xPoint: homeDetailView.myPlanetImage.center.y)
-                self.homeDetailView.myPlanetImage.transform = CGAffineTransform(scaleX: scaleImage, y: scaleImage)
+            if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
+                changeMyPlanet(center: CGPoint(x: imageCenterX,
+                                               y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
+                               myPlanetTransform: CGAffineTransform(scaleX: changeScale(xPoint: imageCenterY), y: changeScale(xPoint: imageCenterY)),
+                               constellationAlpha: changeAlpht(xPoint: imageCenterY))
             }
         } else if gesture.state == .ended {
-            if self.homeDetailView.myPlanetImage.center.y > screenHeight*6/7 {
+            if imageCenterY > screenHeight * 6/7 {
                 UIView.animate(withDuration: 0.5) {
-                    // center변화, alpha변화, scale변화(transform)
-                    self.homeDetailView.constellationCollectionView.alpha = 1
-                    self.homeDetailView.myPlanetImage.transform = .identity
-                    self.homeDetailView.myPlanetImage.center = CGPoint(x: self.homeDetailView.myPlanetImage.center.x, y: screenHeight)
+                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationAlpha: 1)
                 }
             } else {
                 UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
-                    let scale = CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale)
-                    self.homeDetailView.myPlanetImage.transform = scale
-                    self.homeDetailView.myPlanetImage.center = CGPoint(x: self.homeDetailView.myPlanetImage.center.x, y: screenHeight/2)
-                    self.homeDetailView.constellationCollectionView.alpha = 0
+                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight/2),
+                                        myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
+                                        constellationAlpha: 0)
                 } completion: { _ in
                     self.homeDetailView.constellationCollectionView.isHidden = true
-                    self.homeDetailView.myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
+                    myPlanet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
                 }
             }
         }
@@ -85,36 +87,31 @@ final class HomeViewController: BaseViewController {
     
     @objc
     func handlePanGestureAfter(gesture: UIPanGestureRecognizer) {
-        let velocity = gesture.velocity(in: homeDetailView.myPlanetImage)
-        let screenHeight = UIScreen.main.bounds.height - 20
-        let translation = gesture.translation(in: self.homeDetailView.myPlanetImage)
+        let myPlanet = self.homeDetailView.myPlanetImage
+        let imageCenterX = myPlanet.center.x
+        let imageCenterY = myPlanet.center.y
+        let translation = gesture.translation(in: myPlanet)
+        gesture.setTranslation(.zero, in: myPlanet)
         if gesture.state == .changed {
-            if abs(velocity.y) > abs(velocity.x) {
-                homeDetailView.myPlanetImage.center = CGPoint(x: self.homeDetailView.myPlanetImage.center.x,
-                                                              y: min(max(self.homeDetailView.myPlanetImage.center.y + translation.y, screenHeight/2), screenHeight))
+            if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
+                changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
+                               myPlanetTransform: CGAffineTransform(scaleX: changeScale(xPoint: imageCenterY), y: changeScale(xPoint: imageCenterY)),
+                               constellationAlpha: changeAlpht(xPoint: imageCenterY))
                 self.homeDetailView.constellationCollectionView.isHidden = false
-                homeDetailView.constellationCollectionView.alpha = changeAlpht(xPoint: homeDetailView.myPlanetImage.center.y)
-                gesture.setTranslation(.zero, in: self.homeDetailView.myPlanetImage)
-                let scaleImage = changeScale(xPoint: homeDetailView.myPlanetImage.center.y)
-                let scale = CGAffineTransform(scaleX: scaleImage, y: scaleImage)
-                self.homeDetailView.myPlanetImage.transform = scale
             }
         } else if gesture.state == .ended {
-            if self.homeDetailView.myPlanetImage.center.y < (screenHeight/2)*7/6 {
+            if self.homeDetailView.myPlanetImage.center.y < (screenHeight/2) * 7/6 {
                 UIView.animate(withDuration: 0.3) {
-                    self.homeDetailView.constellationCollectionView.alpha = 0
+                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight/2),
+                                   myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
+                                   constellationAlpha: 0)
                     self.homeDetailView.constellationCollectionView.isHidden = true
-                    self.homeDetailView.myPlanetImage.transform = CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale)
-                    self.homeDetailView.myPlanetImage.center = CGPoint(x: self.homeDetailView.myPlanetImage.center.x, y: screenHeight/2)
                 }
             } else {
                 UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
-                    let scale = CGAffineTransform(scaleX: 1, y: 1)
-                    self.homeDetailView.myPlanetImage.transform = scale
-                    self.homeDetailView.myPlanetImage.center = CGPoint(x: self.homeDetailView.myPlanetImage.center.x, y: screenHeight)
-                    self.homeDetailView.constellationCollectionView.alpha = 1
+                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: CGAffineTransform(scaleX: 1, y: 1), constellationAlpha: 1)
                 } completion: { _ in
-                    self.homeDetailView.myPlanetImage.removeGestureRecognizer(gesture)
+                    myPlanet.removeGestureRecognizer(gesture)
                 }
             }
         }
@@ -175,3 +172,4 @@ extension HomeViewController: CustomLayoutDelegate {
         return cellDynamicHeight
     }
 }
+
