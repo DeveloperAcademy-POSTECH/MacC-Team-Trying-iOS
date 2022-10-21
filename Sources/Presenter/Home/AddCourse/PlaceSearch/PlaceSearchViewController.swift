@@ -28,7 +28,6 @@ final class PlaceSearchViewController: BaseViewController {
         return tableView
     }()
     private lazy var emptyResultView = EmptyResultView()
-    private lazy var addCourseButton = SmallRectButton(type: .add)
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -58,7 +57,8 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
     
     /// Attributes를 설정합니다.
     private func setAttributes() {
-        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(screenPressed(_:)))
+        view.addGestureRecognizer(tapGestureRecognizer)
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -98,6 +98,9 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
         cell.titleLabel.text = place?.title
         cell.addressLabel.text = place?.address
         cell.categoryLabel.text = place?.category
+        cell.addCourseButton.tag = indexPath.row
+        
+        cell.addCourseButton.addTarget(self, action: #selector(addCourseButtonPressed(_:)), for: .touchUpInside)
         return cell
     }
     
@@ -122,5 +125,16 @@ extension PlaceSearchViewController {
     @objc
     private func doneButtonPressed(_ sender: UIButton) {
         print("done")
+    }
+    
+    @objc
+    private func screenPressed(_ sender: UITapGestureRecognizer) {
+        navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
+    }
+    
+    @objc
+    private func addCourseButtonPressed(_ sender: UIButton) {
+        navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
+        print("\(sender.tag) button pressed")
     }
 }
