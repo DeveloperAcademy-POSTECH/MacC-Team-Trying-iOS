@@ -13,4 +13,6 @@ protocol TextFieldWithMessageViewComponent: Component {
     /// 에러메시지를 보여주는 함수
     /// - Parameter direction:성공, 실패 
     func showError(type errorType: IntroErrorType)
+    /// 텍스트필드의 키보드를 올립니다
+    func textFieldBecomeFirstResponder()
 }
