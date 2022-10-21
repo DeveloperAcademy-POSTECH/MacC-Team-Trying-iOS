@@ -356,7 +356,7 @@ extension FeedCollectionViewCell {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .clear
-        collectionView.register(TagCollctionViewCell.self, forCellWithReuseIdentifier: TagCollctionViewCell.identifier)
+        collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: TagCollectionViewCell.identifier)
 
         contentView.addSubview(collectionView)
 
@@ -382,7 +382,7 @@ extension FeedCollectionViewCell: UICollectionViewDelegate, UICollectionViewData
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let items = model?.tag else { return UICollectionViewCell() }
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollctionViewCell.identifier, for: indexPath) as? TagCollctionViewCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TagCollectionViewCell.identifier, for: indexPath) as? TagCollectionViewCell else { return UICollectionViewCell() }
         cell.configure(name: items[indexPath.item])
         return cell
     }
@@ -394,6 +394,6 @@ extension FeedCollectionViewCell: UICollectionViewDelegate, UICollectionViewData
         } else {
             print("Model is nil")
         }
-        return TagCollctionViewCell.fittingSize(availableHeight: 24, name: result)
+        return TagCollectionViewCell.fittingSize(availableHeight: 24, name: result)
     }
 }
