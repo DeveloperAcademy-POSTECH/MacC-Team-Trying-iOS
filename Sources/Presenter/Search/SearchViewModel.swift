@@ -39,7 +39,7 @@ final class SearchViewModel: BaseViewModel {
     private func bind() {
         
         $searchString
-            .debounce(for: 0.5, scheduler: RunLoop.main)
+            .debounce(for: 0.5, scheduler: DispatchQueue.main)
             .removeDuplicates()
             .dropFirst()
             .compactMap { $0 }
@@ -54,7 +54,7 @@ final class SearchViewModel: BaseViewModel {
             .store(in: &cancelbag)
     
         $currentCategory
-            .debounce(for: 0.5, scheduler: RunLoop.main)
+            .debounce(for: 0.5, scheduler: DispatchQueue.main)
             .sink { coursePlanet in
                 switch coursePlanet {
                 case .course:
@@ -77,7 +77,6 @@ extension SearchViewModel {
     
     func fetchCourses(_ string: String = "") {
         //MARK: 임시 데이터 타입입니다.
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
             guard self.currentCategory == .course else { return }
             self.courses = ([
                 SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: true, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
@@ -86,19 +85,16 @@ extension SearchViewModel {
                 SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "네규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"])
             ] as [SearchCourse])
             .filter { $0.locationString.contains(string) }
-        }
     }
     
     func fetchPlanets(_ string: String = "") {
         //MARK: 임시 데이터 타입입니다.
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
             guard self.currentCategory == .planet else { return }
             self.planets = ([
                 SearchPlanet(planetImageString: "MyPlanetImage", planetNameString: "두규행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"]),
                 SearchPlanet(planetImageString: "MyPlanetImage", planetNameString: "규한행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"])
             ] as [SearchPlanet])
             .filter { $0.planetNameString.contains(string) }
-        }
     }
 }
 
