@@ -13,18 +13,21 @@ class CourseTableViewCell: UITableViewCell {
     private var imageURLStrings: [String] = []
     static let identifier = "CourseTableViewCell"
     
-    var info: SearchCourse? {
+    var likeTapped: (() -> Void)?
+    var followTapped: (() -> Void)?
+    
+    var course: SearchCourse? {
         didSet {
-            guard let info = info else {
+            guard let course = course else {
                 return
             }
-            planetImageView.image = UIImage(named: info.planetImageString)
-            planetNameLabel.text = info.planetNameString
-            timeLabel.text = info.timeString
-            locationNameLabel.text = info.locationString
-            imageURLStrings = info.imageURLStrings
-            likeButton.setButtonImage(isLike: info.isLike)
-            followButton.setButtonDetailConfiguration(isFollow: info.isFollow)
+            planetImageView.image = UIImage(named: course.planetImageString)
+            planetNameLabel.text = course.planetNameString
+            timeLabel.text = course.timeString
+            locationNameLabel.text = course.locationString
+            imageURLStrings = course.imageURLStrings
+            likeButton.setButtonImage(isLike: course.isLike)
+            followButton.setButtonDetailConfiguration(isFollow: course.isFollow)
         }
     }
     
@@ -153,13 +156,13 @@ class CourseTableViewCell: UITableViewCell {
     
     @objc
     private func toggleLike() {
-        //TODO: ViewModel을 통한 toggle
         likeButton.toggleLike()
+        likeTapped?()
     }
     
     @objc
     private func toggleFollow() {
-        //TODO: ViewModel을 통한 toggle
+        followTapped?()
     }
     
     required init?(coder: NSCoder) {

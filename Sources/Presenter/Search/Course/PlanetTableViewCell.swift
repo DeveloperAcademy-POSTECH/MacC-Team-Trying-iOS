@@ -11,16 +11,17 @@ import UIKit
 class PlanetTableViewCell: UITableViewCell {
 
     static let identifier = "PlanetTableViewCell"
+    var followTapped: (() -> Void)?
     
     var planet: SearchPlanet? {
         didSet {
-            guard let info = planet else {
+            guard let planet = planet else {
                 return
             }
-            planetImageView.image = UIImage(named: info.planetImageString)
-            planetNameLabel.text = info.planetNameString
-            ownerLabel.text = info.hosts.joined(separator: ", ")
-            followButton.isSelected = info.isFollow
+            planetImageView.image = UIImage(named: planet.planetImageString)
+            planetNameLabel.text = planet.planetNameString
+            ownerLabel.text = planet.hosts.joined(separator: ", ")
+            followButton.isSelected = planet.isFollow
         }
     }
     
@@ -119,8 +120,7 @@ class PlanetTableViewCell: UITableViewCell {
     
     @objc
     private func toggleFollow() {
-        //TODO: ViewModel을 통한 toggle
-        followButton.isSelected.toggle()
+        followTapped?()
     }
     
     required init?(coder: NSCoder) {

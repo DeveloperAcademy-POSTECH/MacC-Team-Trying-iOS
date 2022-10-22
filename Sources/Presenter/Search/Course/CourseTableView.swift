@@ -42,12 +42,11 @@ class CourseTableView: UITableView {
         guard let viewModel = searchViewModel else { return }
         viewModel.$coursesOrPlanets
             .receive(on: DispatchQueue.main)
-            .sink { infos in
+            .sink { _ in
                 self.reloadData()
             }
             .store(in: &cancelbag)
     }
-    
 }
 
 extension CourseTableView: UITableViewDataSource {
@@ -65,13 +64,16 @@ extension CourseTableView: UITableViewDataSource {
         
         switch viewModel.currentCategory {
         case .course:
-            courseTableCell.info = viewModel.coursesOrPlanets[indexPath.row] as? SearchCourse
+            courseTableCell.course = viewModel.coursesOrPlanets[indexPath.row] as? SearchCourse
+            //TODO: 버튼 누를 시 ViewModel 데이터 넘기기
+            courseTableCell.likeTapped = { }
+            courseTableCell.followTapped = { }
             return courseTableCell
         case .planet:
             planetTableCell.planet = viewModel.coursesOrPlanets[indexPath.row] as? SearchPlanet
+            //TODO: 버튼 누를 시 ViewModel 데이터 넘기기
+            planetTableCell.followTapped = { }
             return planetTableCell
         }
-        
     }
-    
 }

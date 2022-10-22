@@ -13,11 +13,16 @@ import CancelBag
 import SnapKit
 
 final class SearchViewController: BaseViewController {
+    
     var viewModel: SearchViewModel?
+    var cancelbag = Set<AnyCancellable>()
     private lazy var courseTableView = CourseTableView(viewModel: viewModel)
-    private var coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(buttonTitles: ["코스", "행성"])
-
-    private func bind() { }
+    private let coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(buttonTitles: ["코스", "행성"])
+    private let navigationTextField = CustomTextField(type: .searchCourseAndPlanet)
+    
+    private func bind() {
+        viewModel?.bind(navigationTextField, to: \.searchString)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,11 +35,11 @@ final class SearchViewController: BaseViewController {
 // MARK: - UI
 extension SearchViewController {
     private func setUI() {
-        configureSearchNavigationBar(target: self, action: nil)
+        navigationItem.titleView = navigationTextField
         setAttributes()
         setLayout()
     }
-    
+
     private func setAttributes() {
         view.backgroundColor = .designSystem(.black)
         view.addSubview(courseTableView)
@@ -61,10 +66,5 @@ extension SearchViewController {
             guard let viewModel = self?.viewModel else { return }
             viewModel.changeTo(coursePlanet)
         }
-    }
-    
-    private func configureSearchNavigationBar(target: Any?, action: Selector?) {
-        let titleView = CustomTextField(type: .searchCourseAndPlanet)
-        navigationItem.titleView = titleView
     }
 }
