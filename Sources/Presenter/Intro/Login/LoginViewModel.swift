@@ -14,8 +14,9 @@ protocol LoginCoordinatorLogic {
     func coordinateToEnterEmailScene()
 }
 
-protocol LoginBusinessLogic {
+protocol LoginBusinessLogic: BusinessLogic {
     func loginButtonDidTapped()
+    func signUpButtonDidTapped()
 }
 
 final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
@@ -26,6 +27,10 @@ final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
     }
 
     func loginButtonDidTapped() {
+        coordinator.coordinateToEnterEmailScene()
+    }
+
+    func signUpButtonDidTapped() {
         coordinator.coordinateToEnterEmailScene()
     }
 }

@@ -190,7 +190,7 @@ class HomeDetailView: UIView {
         
         myPlanetImage.snp.makeConstraints { make in
             let bounds = UIScreen.main.bounds
-            make.centerY.equalTo(self.snp.bottom)
+            make.centerY.equalTo(self.snp.bottom).inset(20)
             make.centerX.equalToSuperview()
             make.width.equalTo(bounds.width * 1.2)
             make.height.equalTo(bounds.width * 1.2)

@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class IntroButton: UIButton {
+final class IntroButton: BaseButton {
 
     /// 버튼 loading 프로퍼티
     var loading: Bool = false {
@@ -24,21 +24,8 @@ final class IntroButton: UIButton {
         }
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setUI()
-        setConfigurationUpdateHandler()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
-extension IntroButton {
-    private func setUI() {
-        
+    override func setAttribute() {
+        super.setAttribute()
         var configuration = UIButton.Configuration.filled()
         configuration.activityIndicatorColorTransformer = .monochromeTint
         configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
@@ -50,6 +37,15 @@ extension IntroButton {
         configuration.baseBackgroundColor = .designSystem(.mainYellow)
         configuration.baseForegroundColor = .black
         self.configuration = configuration
+        setConfigurationUpdateHandler()
+    }
+
+    override func setLayout() {
+        super.setLayout()
+
+        self.snp.makeConstraints { make in
+            make.height.equalTo(58)
+        }
     }
 
     private func setConfigurationUpdateHandler() {
