@@ -15,7 +15,6 @@ import SnapKit
 final class SearchViewController: BaseViewController {
     
     var viewModel: SearchViewModel?
-    var cancelbag = Set<AnyCancellable>()
     private lazy var courseTableView = CourseTableView(viewModel: viewModel)
     private let coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(buttonTitles: ["코스", "행성"])
     private let navigationTextField = SearchTextField()

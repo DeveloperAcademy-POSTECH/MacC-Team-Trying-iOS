@@ -11,9 +11,9 @@ import CancelBag
 import Combine
 
 class CourseTableView: UITableView {
-    var cancelbag = Set<AnyCancellable>()
     var searchViewModel: SearchViewModel?
-
+    let cancelBag = CancelBag()
+    
     convenience init(viewModel: SearchViewModel?) {
         self.init(frame: .zero, style: .plain)
         self.searchViewModel = viewModel
@@ -45,7 +45,7 @@ class CourseTableView: UITableView {
             .sink { _ in
                 self.reloadData()
             }
-            .store(in: &cancelbag)
+            .cancel(with: cancelBag)
     }
 }
 

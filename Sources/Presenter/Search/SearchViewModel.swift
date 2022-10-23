@@ -22,8 +22,6 @@ final class SearchViewModel: BaseViewModel {
     
     @Published var searchString: String
     
-    var cancelbag = Set<AnyCancellable>()
-    
     override init() {
         searchString = ""
         super.init()
@@ -51,7 +49,7 @@ final class SearchViewModel: BaseViewModel {
                     self.fetchPlanets(str)
                 }
             }
-            .store(in: &cancelbag)
+            .cancel(with: cancelBag)
     
         $currentCategory
             .debounce(for: 0.5, scheduler: DispatchQueue.main)
@@ -63,13 +61,13 @@ final class SearchViewModel: BaseViewModel {
                     self.fetchPlanets(self.searchString)
                 }
             }
-            .store(in: &cancelbag)
+            .cancel(with: cancelBag)
         
         Publishers.Merge($planets, $courses)
             .sink { infos in
                 self.coursesOrPlanets = infos
             }
-            .store(in: &cancelbag)
+            .cancel(with: cancelBag)
     }
 }
 
@@ -106,7 +104,7 @@ extension SearchViewModel {
                          self[keyPath: property] = textField.text ?? ""
                      }
                  })
-                 .store(in: &cancelbag)
+                 .cancel(with: cancelBag)
         }
 }
 
