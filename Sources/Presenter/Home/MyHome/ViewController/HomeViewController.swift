@@ -129,8 +129,7 @@ final class HomeViewController: BaseViewController {
     
     @objc
     func courseRegistrationButtonTapped() {
-        print("코스등록하기 버튼이 눌림")
-        
+        viewModel.pushToCourseRegisterView()
     }
     
     @objc

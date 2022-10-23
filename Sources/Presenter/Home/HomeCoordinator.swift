@@ -24,9 +24,20 @@ final class HomeCoordinator: Coordinator {
     }
 }
 
-extension HomeCoordinator: AlarmViewCoordinating {
+extension HomeCoordinator: AlarmViewCoordinating, CourseRegisterViewCoordinating, Popable {
     func pushToAlarmViewController() {
         let alarmViewController = AlarmViewController()
         self.navigationController?.pushViewController(alarmViewController, animated: true)
+    }
+    
+    func pushToCourseRegisterViewController() {
+        let viewController = AddCourseMapViewController()
+        viewController.viewModel = AddCourseMapViewModel(coordinator: self)
+        
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func popViewController() {
+        self.navigationController?.popViewController(animated: true)
     }
 }

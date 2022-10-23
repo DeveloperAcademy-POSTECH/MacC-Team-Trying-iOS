@@ -14,7 +14,15 @@ import SnapKit
 
 final class AddCourseMapViewController: BaseViewController {
     var viewModel: AddCourseMapViewModel?
-
+    
+    private var isPlaceDetailPresented = false
+    private lazy var toggleButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("토글~", for: .normal)
+        button.addTarget(self, action: #selector(toggleButtonPressed(_:)), for: .touchUpInside)
+        return button
+    }()
+    private lazy var placeDetailView = PlaceDetailView()
     private lazy var placeListView: PlaceListView = {
         let view = PlaceListView(parentView: self.view, numberOfItems: (viewModel?.places.count)!)
         view.mapPlaceTableView.dataSource = self
@@ -29,12 +37,18 @@ final class AddCourseMapViewController: BaseViewController {
         
         // output
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()
         bind()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        navigationController?.tabBarController?.tabBar.isHidden = false
     }
 }
 
@@ -57,9 +71,20 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
         navigationController?.tabBarController?.tabBar.isHidden = true
-
-        view.addSubviews(placeListView, nextButton)
-
+        
+        view.addSubviews(placeDetailView, placeListView, nextButton)
+        
+        view.addSubview(toggleButton)
+        toggleButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(100)
+        }
+        
+        placeDetailView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(0)
+        }
+        
         placeListView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             
@@ -118,11 +143,78 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
 extension AddCourseMapViewController {
     @objc
     private func backButtonPressed(_ sender: UIButton) {
-        print("pop")
+        viewModel?.pop()
     }
     
     @objc
     private func nextButtonPressed(_ sender: UIButton) {
         print("next")
+    }
+    
+    @objc
+    private func toggleButtonPressed(_ sender: UIButton) {
+        if isPlaceDetailPresented {
+            presentPlaceListView()
+        } else {
+            presentPlaceDetailView()
+        }
+    }
+    
+    private func presentPlaceDetailView() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.placeListView.snp.updateConstraints { make in
+                make.height.equalTo(0)
+            }
+            
+            self.nextButton.snp.remakeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(20)
+                make.top.equalTo(self.view.snp.bottom)
+            }
+            
+            self.placeDetailView.snp.updateConstraints { make in
+                make.height.equalTo(264)
+            }
+            
+            UIView.animate(
+                withDuration: 0.3,
+                delay: 0,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+
+        isPlaceDetailPresented.toggle()
+    }
+    
+    private func presentPlaceListView() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.placeDetailView.snp.updateConstraints { make in
+                make.height.equalTo(0)
+            }
+            
+            self.nextButton.snp.remakeConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(20)
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+                make.height.equalTo(58)
+            }
+            
+            self.placeListView.snp.updateConstraints { make in
+                // TODO: 높이 동적으로 할당하기
+                make.height.equalTo(319)
+            }
+            
+            UIView.animate(
+                withDuration: 0.3,
+                delay: 0,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+        
+        isPlaceDetailPresented.toggle()
     }
 }

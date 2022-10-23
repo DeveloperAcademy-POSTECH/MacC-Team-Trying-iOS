@@ -14,7 +14,7 @@ protocol AlarmViewCoordinating {
 }
 
 // TODO : - 코스등록ViewController로 연결
-protocol CourseRegistering {
+protocol CourseRegisterViewCoordinating {
     func pushToCourseRegisterViewController()
 }
 
@@ -54,10 +54,17 @@ final class HomeViewModel: BaseViewModel {
         Constellation(name: "부산대학교", image: UIImage(named: "Busan")),
         Constellation(name: "인천ssg파크", image: UIImage(named: "Pohang"))
     ]
-    
+}
+
+// MARK: - Coordinating
+extension HomeViewModel {
     func pushToAlarmView() {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
         coordinator.pushToAlarmViewController()
     }
-
+    
+    func pushToCourseRegisterView() {
+        guard let coordinator = coordinator as? CourseRegisterViewCoordinating else { return }
+        coordinator.pushToCourseRegisterViewController()
+    }
 }
