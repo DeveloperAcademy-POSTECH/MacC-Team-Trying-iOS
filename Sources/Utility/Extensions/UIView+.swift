@@ -16,4 +16,44 @@ extension UIView {
             addSubview(view)
         }
     }
+ 
+    /// View를 화면에 Fade In 시킵니다.
+    /// - Parameters:
+    ///   - withDuration: Animation Duration
+    ///   - onCompletion: Completion handler
+    func fadeIn(_ withDuration: TimeInterval, onCompletion: (() -> Void)? = nil) {
+        self.alpha = 0
+        self.isHidden = false
+        
+        DispatchQueue.main.async {
+            UIView.animate(
+                withDuration: withDuration,
+                animations: { self.alpha = 1.0 },
+                completion: { _ in
+                    if let completion = onCompletion {
+                        completion()
+                    }
+                }
+            )
+        }
+    }
+    
+    /// View를 화면에서 Fade Out 시킵니다.
+    /// - Parameters:
+    ///   - withDuration: Animation Duration
+    ///   - onCompletion: Completion handler
+    func fadeOut(_ withDuration: TimeInterval, onCompletion: (() -> Void)? = nil) {
+        DispatchQueue.main.async {
+            UIView.animate(
+                withDuration: withDuration,
+                animations: { self.alpha = 0.0 },
+                completion: { _ in
+                    self.isHidden = true
+                    if let completion = onCompletion {
+                        completion()
+                    }
+                }
+            )
+        }
+    }
 }

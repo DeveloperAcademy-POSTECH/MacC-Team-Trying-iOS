@@ -11,6 +11,7 @@ import UIKit
 enum Font {
     enum Name: String {
         case system
+        case gmarketsans = "GmarketSans"
     }
     
     enum Size: CGFloat {
@@ -23,6 +24,7 @@ enum Font {
     enum Weight: String {
         case heavy = "Heavy"
         case bold = "Bold"
+        case medium = "Medium"
         case regular = "Regular"
         case light = "Light"
 
@@ -33,6 +35,9 @@ enum Font {
                 
             case .bold:
                 return .bold
+                
+            case .medium:
+                return .medium
                 
             case .regular:
                 return .regular
@@ -73,8 +78,9 @@ enum Font {
 extension Font {
     static var fonts: [CustomFont] {
         [
-            // TODO: 사용할 폰트를 아래 형태와 같이 추가할 예정입니다.
-            // CustomFont(name: <#T##Name#>, weight: <#T##Weight#>)
+            CustomFont(name: .gmarketsans, weight: .light),
+            CustomFont(name: .gmarketsans, weight: .regular),
+            CustomFont(name: .gmarketsans, weight: .bold)
         ]
     }
 

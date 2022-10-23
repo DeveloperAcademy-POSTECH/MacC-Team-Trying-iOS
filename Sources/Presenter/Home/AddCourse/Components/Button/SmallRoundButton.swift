@@ -48,8 +48,10 @@ final class SmallRoundButton: UIButton {
             
         case .selectDate:
             self.setTitle("일정 선택", for: .normal)
-            self.setTitleColor(.designSystem(.black), for: .normal)
-            self.backgroundColor = .designSystem(.grayC5C5C5)
+            self.setTitleColor(.designSystem(.white), for: .normal)
+            self.backgroundColor = .designSystem(.black)
+            self.layer.borderColor = .designSystem(.white)
+            self.layer.borderWidth = 1
         }
         self.layer.cornerRadius = 15
         self.titleLabel?.font = .designSystem(weight: .bold, size: ._13)
@@ -57,7 +59,7 @@ final class SmallRoundButton: UIButton {
     
     private func setLayout() {
         self.snp.makeConstraints { make in
-            make.width.equalTo(90)
+            make.width.greaterThanOrEqualTo(90)
             make.height.equalTo(30)
         }
     }

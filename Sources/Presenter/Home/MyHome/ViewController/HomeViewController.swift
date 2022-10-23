@@ -15,8 +15,10 @@ import Lottie
 
 final class HomeViewController: BaseViewController {
     
-    var homeDetailView = HomeDetailView()
-    var viewModel: HomeViewModel
+    let homeDetailView = HomeDetailView()
+    let viewModel: HomeViewModel
+    let changeMyPlanetScale: Double = 0.5
+    let screenHeight = DeviceInfo.screenHeight - 20
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -38,56 +40,124 @@ final class HomeViewController: BaseViewController {
         // output
         
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
         setAttributes()
     }
     
+    
+    /// pangesture에 따라서 요소들을 변화시키는 함수
+    /// - Parameters:
+    ///   - center: 이미지의 center좌표
+    ///   - myPlanetTransform: 어떻게 변할지, 주로 scale에 관한 값
+    ///   - constellationAlpha: 제스처에따라 alpha값이 변하는 요소는 어떻값으로 변할지
+    private func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationAlpha: CGFloat) {
+        self.homeDetailView.myPlanetImage.center = center
+        self.homeDetailView.myPlanetImage.transform = myPlanetTransform
+        self.homeDetailView.constellationCollectionView.alpha = constellationAlpha
+    }
+    
     @objc
     func handlePanGesture(gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: self.view)
-        let screenHeight = UIScreen.main.bounds.height
+        let myPlanet = self.homeDetailView.myPlanetImage
+        let imageCenterY = myPlanet.center.y
+        let imageCenterX = myPlanet.center.x
+        let translation = gesture.translation(in: myPlanet)
+        gesture.setTranslation(.zero, in: myPlanet)
         if gesture.state == .changed {
-            UIView.animate(withDuration: 0.7) {
-                self.homeDetailView.constellationCollectionView.alpha = 0
-                let scale = CGAffineTransform(scaleX: 0.5, y: 0.5).translatedBy(x: 0, y: -screenHeight)
-                self.homeDetailView.myPlanetImage.transform = scale
+            if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
+                changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
+                               myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
+                               constellationAlpha: changeAlpha(yPoint: imageCenterY))
             }
         } else if gesture.state == .ended {
-            if translation.y > -screenHeight / 5 {
-                UIView.animate(withDuration: 0.5) {
-                    self.homeDetailView.myPlanetImage.transform = .identity
-                    self.homeDetailView.constellationCollectionView.alpha = 1
+            if imageCenterY > screenHeight * 6/7 {
+                DispatchQueue.main.async {
+                    UIView.animate(withDuration: 0.5) {
+                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationAlpha: 1)
+                    }
                 }
             } else {
-                self.homeDetailView.constellationCollectionView.isHidden = true
-                self.homeDetailView.myPlanetImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(myPlanetImageTapped)))
+                DispatchQueue.main.async {
+                    UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
+                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight/2),
+                                            myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
+                                            constellationAlpha: 0)
+                    } completion: { _ in
+                        self.homeDetailView.constellationCollectionView.isHidden = true
+                        myPlanet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
+                    }
+                }
+
             }
         }
     }
     
     @objc
-    func myPlanetImageTapped() {
-        UIView.animate(withDuration: 0.5) {
-            self.homeDetailView.constellationCollectionView.isHidden = false
-            self.homeDetailView.constellationCollectionView.alpha = 1
-            self.homeDetailView.myPlanetImage.transform = .identity
-            self.homeDetailView.homeLottie.play()
+    func handlePanGestureAfter(gesture: UIPanGestureRecognizer) {
+        let myPlanet = self.homeDetailView.myPlanetImage
+        let imageCenterX = myPlanet.center.x
+        let imageCenterY = myPlanet.center.y
+        let translation = gesture.translation(in: myPlanet)
+        gesture.setTranslation(.zero, in: myPlanet)
+        if gesture.state == .changed {
+            if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
+                changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
+                               myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
+                               constellationAlpha: changeAlpha(yPoint: imageCenterY))
+                self.homeDetailView.constellationCollectionView.isHidden = false
+            }
+        } else if gesture.state == .ended {
+            if self.homeDetailView.myPlanetImage.center.y < (screenHeight/2) * 7/6 {
+                UIView.animate(withDuration: 0.3) {
+                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight/2),
+                                   myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
+                                   constellationAlpha: 0)
+                    self.homeDetailView.constellationCollectionView.isHidden = true
+                }
+            } else {
+                UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
+                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: CGAffineTransform(scaleX: 1, y: 1), constellationAlpha: 1)
+                } completion: { _ in
+                    myPlanet.removeGestureRecognizer(gesture)
+                }
+            }
         }
     }
     
     @objc
     func courseRegistrationButtonTapped() {
         print("코스등록하기 버튼이 눌림")
-
+        
     }
     
     @objc
     func alarmButtonTapped() {
         print("알림 버튼이 눌림")
         viewModel.pushToAlarmView()
+    }
+    
+    /// 이미지의 center위치(y)값에 따라 곱해줄 scale값을 return해주는 함수
+    /// - Parameter yPoint: 이미지center의 yPoint
+    /// - Returns: 이미지에 곱해줄 scale값
+    private func changeScale(yPoint: Double) -> CGFloat {
+        // 기울기(기기의 크기별로 대응되도록 계산)
+        let gradient = (2*(1 - changeMyPlanetScale))/screenHeight
+        // 그래프의 y절편(1차함수기때문에 필요)
+        let interceptionY = (2 * changeMyPlanetScale) - 1
+        return CGFloat((gradient * yPoint) + interceptionY)
+    }
+    
+    
+    /// 이미지의 center(y)값에 따라 곱해줄 alpha값을 return해주는 함수
+    /// - Parameter yPoint: 이미지center의 yPoint
+    /// - Returns: 이미지에 곱해줄 alpha값
+    private func changeAlpha(yPoint: Double) -> CGFloat {
+        let gredient = 2/screenHeight
+        let interceptionY = -1.0
+        return CGFloat((gredient * yPoint) + interceptionY)
     }
 }
 
@@ -125,3 +195,4 @@ extension HomeViewController: CustomLayoutDelegate {
         return cellDynamicHeight
     }
 }
+

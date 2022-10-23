@@ -10,12 +10,22 @@ import Combine
 
 import CancelBag
 
-protocol EnterEmailCoordinatorLogic {}
+protocol EnterEmailCoordinatorLogic {
+    func coordinateToEnterPasswordScene()
+}
 
-final class EnterEmailViewModel: BaseViewModel {
+protocol EnterEmailBusinessLogic: BusinessLogic {
+    func enterEmailButtonDidTapped()
+}
+
+final class EnterEmailViewModel: BaseViewModel, EnterEmailBusinessLogic {
     let coordinator: EnterEmailCoordinatorLogic
 
     init(coordinator: EnterEmailCoordinatorLogic) {
         self.coordinator = coordinator
+    }
+
+    func enterEmailButtonDidTapped() {
+        coordinator.coordinateToEnterPasswordScene()
     }
 }
