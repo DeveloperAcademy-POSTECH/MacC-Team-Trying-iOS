@@ -114,7 +114,7 @@ class CourseTableViewCell: UITableViewCell {
 
     private func setConstraints() {
         planetImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
+            make.top.equalToSuperview().inset(20)
             make.leading.equalToSuperview().inset(20)
             make.width.height.equalTo(50)
         }
