@@ -92,13 +92,14 @@ class HomeDetailView: UIView {
         return button
     }()
     
-    lazy var constellationCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(ConstellationCollectionViewCell.self, forCellWithReuseIdentifier: ConstellationCollectionViewCell.identifier)
-        collectionView.backgroundColor = .clear
-        return collectionView
-    }()
+//    lazy var constellationCollectionView: UICollectionView = {
+//        let layout = UICollectionViewFlowLayout()
+//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+//        collectionView.register(ConstellationCollectionViewCell.self, forCellWithReuseIdentifier: ConstellationCollectionViewCell.identifier)
+//        collectionView.backgroundColor = .clear
+//        return collectionView
+//    }()
+    
     
     lazy var courseRegistrationButton: UIButton = {
         let button = UIButton()
@@ -143,13 +144,13 @@ class HomeDetailView: UIView {
         addSubview(profileStackView)
         addSubview(alarmButton)
         addSubview(myPlanetImage)
-        addSubview(constellationCollectionView)
+//        addSubview(constellationCollectionView)
         addSubview(courseRegistrationButton)
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
-        constellationCollectionView.contentInset = UIEdgeInsets(top: 50, left: 20, bottom: 20, right: 20)
+//        constellationCollectionView.contentInset = UIEdgeInsets(top: 50, left: 20, bottom: 20, right: 20)
         homeLottie.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -182,11 +183,11 @@ class HomeDetailView: UIView {
             make.centerY.equalTo(labelStackView.snp.centerY)
         }
         
-        constellationCollectionView.snp.makeConstraints { make in
-            make.left.right.equalToSuperview()
-            make.top.equalTo(labelStackView.snp.bottom)
-            make.bottom.equalTo(myPlanetImage.snp.top)
-        }
+//        constellationCollectionView.snp.makeConstraints { make in
+//            make.left.right.equalToSuperview()
+//            make.top.equalTo(labelStackView.snp.bottom)
+//            make.bottom.equalTo(myPlanetImage.snp.top)
+//        }
         
         myPlanetImage.snp.makeConstraints { make in
             let bounds = UIScreen.main.bounds

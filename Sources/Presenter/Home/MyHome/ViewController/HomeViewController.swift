@@ -56,7 +56,7 @@ final class HomeViewController: BaseViewController {
     private func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationAlpha: CGFloat) {
         self.homeDetailView.myPlanetImage.center = center
         self.homeDetailView.myPlanetImage.transform = myPlanetTransform
-        self.homeDetailView.constellationCollectionView.alpha = constellationAlpha
+//        self.homeDetailView.constellationCollectionView.alpha = constellationAlpha
     }
     
     @objc
@@ -86,7 +86,7 @@ final class HomeViewController: BaseViewController {
                                             myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
                                             constellationAlpha: 0)
                     } completion: { _ in
-                        self.homeDetailView.constellationCollectionView.isHidden = true
+//                        self.homeDetailView.constellationCollectionView.isHidden = true
                         myPlanet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
                     }
                 }
@@ -107,7 +107,7 @@ final class HomeViewController: BaseViewController {
                 changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
                                myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
                                constellationAlpha: changeAlpha(yPoint: imageCenterY))
-                self.homeDetailView.constellationCollectionView.isHidden = false
+//                self.homeDetailView.constellationCollectionView.isHidden = false
             }
         } else if gesture.state == .ended {
             if self.homeDetailView.myPlanetImage.center.y < (screenHeight/2) * 7/6 {
@@ -115,7 +115,7 @@ final class HomeViewController: BaseViewController {
                     self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight/2),
                                    myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
                                    constellationAlpha: 0)
-                    self.homeDetailView.constellationCollectionView.isHidden = true
+//                    self.homeDetailView.constellationCollectionView.isHidden = true
                 }
             } else {
                 UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
@@ -164,11 +164,11 @@ final class HomeViewController: BaseViewController {
 // MARK: - UI
 extension HomeViewController {
     func setAttributes() {
-        let layout = CustomLayout(numberOfColumns: viewModel.numberOfColum)
-        homeDetailView.constellationCollectionView.collectionViewLayout = layout
-        layout.delegate = self
-        homeDetailView.constellationCollectionView.dataSource = self
-        homeDetailView.constellationCollectionView.dragInteractionEnabled = true
+//        let layout = CustomLayout(numberOfColumns: viewModel.numberOfColum)
+//        homeDetailView.constellationCollectionView.collectionViewLayout = layout
+//        layout.delegate = self
+//        homeDetailView.constellationCollectionView.dataSource = self
+//        homeDetailView.constellationCollectionView.dragInteractionEnabled = true
         
         homeDetailView.courseRegistrationButton.addTarget(self, action: #selector(courseRegistrationButtonTapped), for: .touchUpInside)
         homeDetailView.myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
@@ -195,4 +195,3 @@ extension HomeViewController: CustomLayoutDelegate {
         return cellDynamicHeight
     }
 }
-
