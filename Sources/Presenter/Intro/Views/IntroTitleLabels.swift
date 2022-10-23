@@ -31,8 +31,8 @@ final class IntroTitleLabels: BaseView {
 
         titleLabel.textAlignment = .center
         subTitleLabel.textAlignment = .center
-        titleLabel.font = .boldSystemFont(ofSize: 15)
-        subTitleLabel.font = .systemFont(ofSize: 15)
+        titleLabel.font = .gmarksans(weight: .light, size: ._15)
+        subTitleLabel.font = .gmarksans(weight: .medium, size: ._15)
     }
 
     override func setLayout() {
@@ -45,7 +45,7 @@ final class IntroTitleLabels: BaseView {
             make.top.leading.trailing.equalToSuperview()
         }
         subTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom)
+            make.top.equalTo(titleLabel.snp.bottom).offset(6)
             make.leading.trailing.bottom.equalToSuperview()
         }
     }

@@ -102,9 +102,16 @@ extension TextFieldWithMessageView {
 
     private func setAttribute() {
         errorLabel.textColor = normalColor
-        errorLabel.font = .boldSystemFont(ofSize: 12)
+        errorLabel.font = .designSystem(weight: .regular, size: ._15)
         textField.addTarget(self, action: #selector(textFieldDidchange), for: .editingChanged)
-        textField.backgroundColor = UIColor(red: 0.3, green: 0.3, blue: 0.3, alpha: 1)
+        textField.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.2)
+        textField.attributedPlaceholder = NSAttributedString(
+            string: textField.placeholder ?? "",
+            attributes: [
+                NSAttributedString.Key.foregroundColor: UIColor.designSystem(.grayC5C5C5) ?? .white,
+                NSAttributedString.Key.font: UIFont.designSystem(weight: .regular, size: ._15)
+            ]
+        )
         textField.textColor = .white
         textField.leftView = UIView(frame: .init(x: 0, y: 0, width: 15, height: textField.frame.height))
         textField.leftViewMode = .always

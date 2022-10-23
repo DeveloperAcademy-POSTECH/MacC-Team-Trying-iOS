@@ -12,34 +12,29 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class EnterEmailViewController: IntroAnimatedViewController<EnterEmailViewModel> {
+final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailViewModel> {
 
     lazy var titleLabels = IntroTitleLabels()
     lazy var emailTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .email)
     lazy var nextButton = IntroButton(type: .system)
     lazy var planetImageView = UIImageView()
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        self.emailTextFieldView.textFieldBecomeFirstResponder()
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        animateInitViews()
+        beginAnimations()
+        bringsInteractionFront()
     }
 
     override func setAttribute() {
         super.setAttribute()
 
-        planetImageView.alpha = 0
-        planetImageView.image = .init(.img_planet)
+        title = "로그인"
         nextButton.title = "계속하기"
         titleLabels.title = "맛스타 이용을 위해서"
         titleLabels.subTitle = "로그인을 해주세요!"
-        title = "로그인"
+        planetImageView.alpha = 0
+        planetImageView.image = .init(.img_planet)
         nextButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
     }
 
@@ -67,26 +62,27 @@ final class EnterEmailViewController: IntroAnimatedViewController<EnterEmailView
             make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(-46)
         }
-        planetImageView.sizeToFit()
     }
-
 }
 
 // MARK: - UI
 extension EnterEmailViewController {
 
-    private func animateInitViews() {
-        planetImageView.snp.updateConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(179)
-        }
-        UIView.animate(
-            withDuration: fastDuration,
-            delay: fastDelay,
-            animations: {
-                self.planetImageView.alpha = 1
-                self.view.layoutIfNeeded()
+    private func beginAnimations() {
+
+        enterAnimator?.addAnimations {
+            self.planetImageView.alpha = 1
+            self.planetImageView.snp.updateConstraints { make in
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(179)
             }
-        )
+            self.view.layoutIfNeeded()
+        }
+
+        enterAnimator?.startAnimation(afterDelay: fastDelay)
+    }
+
+    private func bringsInteractionFront() {
+
         view.bringSubviewToFront(emailTextFieldView)
         view.bringSubviewToFront(nextButton)
     }
@@ -94,8 +90,21 @@ extension EnterEmailViewController {
 
 // MARK: - Button Clicked
 extension EnterEmailViewController {
+
     @objc
     func loginButtonDidTapped() {
-        viewModel.enterEmailButtonDidTapped()
+        leaveAnimator?.addAnimations {
+            self.planetImageView.alpha = 0
+            self.planetImageView.snp.updateConstraints { make in
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+            }
+            self.view.layoutIfNeeded()
+        }
+
+        leaveAnimator?.addCompletion { [weak self] _ in
+            self?.viewModel.enterEmailButtonDidTapped()
+        }
+
+        leaveAnimator?.startAnimation()
     }
 }
