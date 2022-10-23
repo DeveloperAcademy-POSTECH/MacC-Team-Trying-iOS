@@ -16,7 +16,7 @@ final class SearchTestViewController: BaseViewController {
     var viewModel: SearchTestViewModel?
     
     private lazy var smallButton1 = SmallRectButton(type: .add)
-    private lazy var smallButton2 = SmallRectButton(type: .delete)
+    private lazy var smallButton2 = SmallRectButton(type: .cancel)
     
     private lazy var smallButton3 = SmallRoundButton(type: .addCourse)
     private lazy var smallButton4 = SmallRoundButton(type: .selectDate)
@@ -40,7 +40,7 @@ final class SearchTestViewController: BaseViewController {
 // MARK: - UI
 extension SearchTestViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureSearchNavigationBar(target: self, action: nil)
+        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), doneAction: #selector(doneButtonPressed(_:)))
         setAttributes()
         setLayout()
     }
@@ -75,5 +75,18 @@ extension SearchTestViewController: NavigationBarConfigurable {
             make.top.equalTo(smallButton3.snp.bottom).offset(100)
             make.centerX.equalToSuperview()
         }
+    }
+}
+
+// MARK: - User Interaction
+extension SearchTestViewController {
+    @objc
+    private func backButtonPressed(_ sender: UIButton) {
+        print("✨back button pressed!")
+    }
+    
+    @objc
+    private func doneButtonPressed(_ sender: UIButton) {
+        print("done")
     }
 }

@@ -15,7 +15,7 @@ import SnapKit
 final class ProfileTestViewController: BaseViewController {
     var viewModel: ProfileTestViewModel?
     
-    private lazy var textField1 = CustomTextField(type: .search)
+    private lazy var textField1 = CustomTextField(type: .placeSearch)
     private lazy var textField2 = CustomTextField(type: .courseTitle)
     private lazy var textField3 = CustomTextField(type: .location)
     private lazy var textField4 = CustomTextField(type: .shopTitle)
@@ -40,7 +40,7 @@ final class ProfileTestViewController: BaseViewController {
 // MARK: - UI
 extension ProfileTestViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureCourseDetailNavigationBar(target: self, action: nil)
+        configureCourseDetailNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), selectDateAction: #selector(selectDateButtonPressed(_:)))
         setAttributes()
         setLayout()
     }
@@ -80,5 +80,18 @@ extension ProfileTestViewController: NavigationBarConfigurable {
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
         }
+    }
+}
+
+// MARK: - User Interaction
+extension ProfileTestViewController {
+    @objc
+    private func backButtonPressed(_ sender: UIButton) {
+        print("pop")
+    }
+    
+    @objc
+    private func selectDateButtonPressed(_ sender: UIButton) {
+        print("select date")
     }
 }

@@ -85,7 +85,7 @@ final class RegisterCourseViewController: BaseViewController {
 // MARK: - UI
 extension RegisterCourseViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureCourseDetailNavigationBar(target: self, action: nil)
+        configureCourseDetailNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), selectDateAction: #selector(selectDateButtonPressed(_:)))
         setAttributes()
         setLayout()
         setInteractions()
@@ -195,8 +195,8 @@ extension RegisterCourseViewController: PHPickerViewControllerDelegate {
 // MARK: - User Interactions
 extension RegisterCourseViewController: UITextViewDelegate {
     private func setInteractions() {
-        guard let selectDateButton = navigationItem.titleView as? SmallRoundButton else { return }
-        selectDateButton.addTarget(self, action: #selector(datePickButtonPressed(_:)), for: .touchUpInside)
+//        guard let selectDateButton = navigationItem.titleView as? SmallRoundButton else { return }
+//        selectDateButton.addTarget(self, action: #selector(datePickButtonPressed(_:)), for: .touchUpInside)
     }
     
     /// UIButton의 터치가 아닐 때, dismissAllActivatedComponents() 메소드를 호출합니다.
@@ -227,6 +227,11 @@ extension RegisterCourseViewController: UITextViewDelegate {
         }
     }
     
+    @objc
+    private func backButtonPressed(_ sender: UIButton) {
+        print("pop")
+    }
+    
     /// TextField의 편집이 시작될 때, DatePicker가 활성화 되어있다면 dismiss합니다.
     @objc
     private func textFieldDidBeginEditing(_ sender: UITextField) {
@@ -248,7 +253,7 @@ extension RegisterCourseViewController: UITextViewDelegate {
     
     /// 일정 선택 버튼이 눌렸을 때, 키보드를 dismiss하고 DatePicker를 present하거나 dismiss합니다.
     @objc
-    private func datePickButtonPressed(_ sender: UIButton) {
+    private func selectDateButtonPressed(_ sender: UIButton) {
         courseTitleTextField.resignFirstResponder()
         contentTextView.resignFirstResponder()
         datePicker.isHidden ? presentDatePicker() : dismissDatePicker()
@@ -275,9 +280,21 @@ extension RegisterCourseViewController: UITextViewDelegate {
         
         DispatchQueue.main.async {
             selectDateButton.setTitle(stringDate, for: .normal)
-            selectDateButton.snp.makeConstraints { make in
+            
+            selectDateButton.snp.remakeConstraints { make in
                 make.width.equalTo(144)
             }
+            
+            UIView.animate(
+                withDuration: 0.4,
+                delay: 0,
+                usingSpringWithDamping: 0.75,
+                initialSpringVelocity: 0.5,
+                options: .curveEaseInOut,
+                animations: {
+                    self.navigationController?.navigationBar.layoutIfNeeded()
+                }
+            )
         }
     }
     

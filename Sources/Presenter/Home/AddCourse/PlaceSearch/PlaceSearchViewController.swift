@@ -28,14 +28,15 @@ final class PlaceSearchViewController: BaseViewController {
         return tableView
     }()
     private lazy var emptyResultView = EmptyResultView()
-    private lazy var addCourseButton = SmallRectButton(type: .add)
     
     /// View Model과 bind 합니다.
     private func bind() {
         // input
         
         // output
-        
+        if viewModel!.places.isEmpty {
+            navigationItem.rightBarButtonItem?.isEnabled = false
+        }
     }
 
     override func viewDidLoad() {
@@ -49,14 +50,15 @@ final class PlaceSearchViewController: BaseViewController {
 // MARK: - UI
 extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureSearchNavigationBar(target: self, action: nil)
+        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), doneAction: #selector(doneButtonPressed(_:)))
         setAttributes()
         setLayout()
     }
     
     /// Attributes를 설정합니다.
     private func setAttributes() {
-        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(screenPressed(_:)))
+        view.addGestureRecognizer(tapGestureRecognizer)
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -96,6 +98,9 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
         cell.titleLabel.text = place?.title
         cell.addressLabel.text = place?.address
         cell.categoryLabel.text = place?.category
+        cell.addCourseButton.tag = indexPath.row
+        
+        cell.addCourseButton.addTarget(self, action: #selector(addCourseButtonPressed(_:)), for: .touchUpInside)
         return cell
     }
     
@@ -107,5 +112,29 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
         let headerView = UIView()
         headerView.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
         return headerView
+    }
+}
+
+// MARK: - User Interaction
+extension PlaceSearchViewController {
+    @objc
+    private func backButtonPressed(_ sender: UIButton) {
+        print("✨back button pressed!")
+    }
+    
+    @objc
+    private func doneButtonPressed(_ sender: UIButton) {
+        print("done")
+    }
+    
+    @objc
+    private func screenPressed(_ sender: UITapGestureRecognizer) {
+        navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
+    }
+    
+    @objc
+    private func addCourseButtonPressed(_ sender: UIButton) {
+        navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
+        print("\(sender.tag) button pressed")
     }
 }
