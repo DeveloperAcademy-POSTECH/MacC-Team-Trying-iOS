@@ -133,12 +133,12 @@ extension TextFieldWithMessageView {
             make.top.leading.trailing.equalToSuperview()
         }
         errorLabel.snp.makeConstraints { make in
-            make.top.equalTo(textField.snp.bottom).offset(3)
+            make.top.equalTo(textField.snp.bottom).offset(7)
             make.leading.trailing.equalToSuperview().inset(8)
             make.height.equalTo(15)
         }
         self.snp.makeConstraints { make in
-            make.height.equalTo(68) // = 50 + 3 + 15
+            make.height.equalTo(68)
         }
     }
 }
