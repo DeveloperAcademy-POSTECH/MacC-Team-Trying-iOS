@@ -13,8 +13,9 @@ import CancelBag
 import SnapKit
 import Lottie
 
-final class HomeViewController: BaseViewController {
-    
+final class HomeViewController: BaseViewController{
+
+    private var carouselView: CarouselView?
     let homeDetailView = HomeDetailView()
     let viewModel: HomeViewModel
     let changeMyPlanetScale: Double = 0.5
@@ -43,8 +44,14 @@ final class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        carouselView = CarouselView(pages: viewModel.constellations.count, delegate: self)
         bind()
         setAttributes()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        carouselView?.configureView(with: viewModel.constellations)
     }
     
     
@@ -86,7 +93,6 @@ final class HomeViewController: BaseViewController {
                                             myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
                                             constellationAlpha: 0)
                     } completion: { _ in
-//                        self.homeDetailView.constellationCollectionView.isHidden = true
                         myPlanet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
                     }
                 }
@@ -107,7 +113,6 @@ final class HomeViewController: BaseViewController {
                 changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
                                myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
                                constellationAlpha: changeAlpha(yPoint: imageCenterY))
-//                self.homeDetailView.constellationCollectionView.isHidden = false
             }
         } else if gesture.state == .ended {
             if self.homeDetailView.myPlanetImage.center.y < (screenHeight/2) * 7/6 {
@@ -115,7 +120,6 @@ final class HomeViewController: BaseViewController {
                     self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight/2),
                                    myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
                                    constellationAlpha: 0)
-//                    self.homeDetailView.constellationCollectionView.isHidden = true
                 }
             } else {
                 UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
@@ -137,6 +141,18 @@ final class HomeViewController: BaseViewController {
     func alarmButtonTapped() {
         print("알림 버튼이 눌림")
         viewModel.pushToAlarmView()
+    }
+    
+    @objc
+    func beforeImageButtonTapped() {
+        carouselView?.currentPage -= 1
+        carouselView?.carouselCollectionView.scrollToItem(at: NSIndexPath(item: carouselView!.currentPage, section: 0) as IndexPath, at: .left, animated: true)
+    }
+    
+    @objc
+    func afterImageButtonTapped() {
+        carouselView?.currentPage += 1
+        carouselView?.carouselCollectionView.scrollToItem(at: NSIndexPath(item: carouselView!.currentPage, section: 0) as IndexPath, at: .right, animated: true)
     }
     
     /// 이미지의 center위치(y)값에 따라 곱해줄 scale값을 return해주는 함수
@@ -164,15 +180,39 @@ final class HomeViewController: BaseViewController {
 // MARK: - UI
 extension HomeViewController {
     func setAttributes() {
-//        let layout = CustomLayout(numberOfColumns: viewModel.numberOfColum)
-//        homeDetailView.constellationCollectionView.collectionViewLayout = layout
-//        layout.delegate = self
-//        homeDetailView.constellationCollectionView.dataSource = self
-//        homeDetailView.constellationCollectionView.dragInteractionEnabled = true
         
+        homeDetailView.textButton.setTitle(viewModel.constellations.first?.name, for: .normal)
+        homeDetailView.dateLabel.text = viewModel.constellations.first?.data
+
+        self.homeDetailView.textButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(160)
+            make.height.equalTo(44)
+            guard let text = self.homeDetailView.textButton.currentTitle else {return}
+            make.width.equalTo((text as NSString).size().width + 90)
+        }
+
+        homeDetailView.currentImage.image = viewModel.constellations.first?.image
         homeDetailView.courseRegistrationButton.addTarget(self, action: #selector(courseRegistrationButtonTapped), for: .touchUpInside)
         homeDetailView.myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
         homeDetailView.alarmButton.addTarget(self, action: #selector(alarmButtonTapped), for: .touchUpInside)
+        
+        guard let carouselView = carouselView else { return }
+        view.addSubview(carouselView)
+        carouselView.snp.makeConstraints { make in
+            make.top.equalTo(homeDetailView.textButton.snp.bottom).offset(40)
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(homeDetailView.myPlanetImage.snp.top).offset(-120)
+        }
+        
+        if viewModel.constellations.count > 1 {
+            homeDetailView.afterImageButton.isHidden = false
+            homeDetailView.afterImageButton.setImage(self.viewModel.constellations[1].image, for: .normal)
+        }
+        
+        homeDetailView.beforeImageButton.addTarget(self, action: #selector(beforeImageButtonTapped), for: .touchUpInside)
+        homeDetailView.afterImageButton.addTarget(self, action: #selector(afterImageButtonTapped), for: .touchUpInside)
+        
     }
 }
 
@@ -193,5 +233,33 @@ extension HomeViewController: CustomLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, heightForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat {
         let cellDynamicHeight = CGFloat((viewModel.constellations[indexPath.row].image?.size.height ?? 0)) / 4
         return cellDynamicHeight
+    }
+}
+
+extension HomeViewController: CarouselViewDelegate {
+    func currentPageDidChange(to page: Int) {
+        self.homeDetailView.textButton.setTitle(self.viewModel.constellations[page].name, for: .normal)
+        self.homeDetailView.textButton.snp.updateConstraints { make in
+            guard let text = self.homeDetailView.textButton.currentTitle else {return}
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(160)
+            make.height.equalTo(44)
+            make.width.equalTo((text as NSString).size().width + 90)
+        }
+        self.homeDetailView.dateLabel.text = self.viewModel.constellations[page].data
+        
+        self.homeDetailView.currentImage.image = self.viewModel.constellations[page].image
+        if page == 0 {
+            self.homeDetailView.beforeImageButton.isHidden = true
+        } else {
+            self.homeDetailView.beforeImageButton.isHidden = false
+            self.homeDetailView.beforeImageButton.setImage(self.viewModel.constellations[page-1].image, for: .normal)
+        }
+        if page == viewModel.constellations.count - 1 {
+            self.homeDetailView.afterImageButton.isHidden = true
+        } else {
+            self.homeDetailView.afterImageButton.isHidden = false
+            self.homeDetailView.afterImageButton.setImage(self.viewModel.constellations[page+1].image, for: .normal)
+        }
     }
 }
