@@ -83,9 +83,7 @@ class PlanetTableViewCell: UITableViewCell {
     }
     
     private func setAttributes() {
-        containerView.addSubview(planetImageView)
-        containerView.addSubview(planetNameOwnersVStackView)
-        containerView.addSubview(followButton)
+        containerView.addSubviews(planetImageView, planetNameOwnersVStackView, followButton)
         contentView.addSubview(containerView)
     }
 

@@ -12,10 +12,10 @@ class CourseTableViewCell: UITableViewCell {
 
     private var imageURLStrings: [String] = []
     static let identifier = "CourseTableViewCell"
-    
+
     var likeTapped: (() -> Void)?
     var followTapped: (() -> Void)?
-    
+
     var course: SearchCourse? {
         didSet {
             guard let course = course else {
@@ -109,12 +109,7 @@ class CourseTableViewCell: UITableViewCell {
     }
     
     private func setAttributes() {
-       
-        contentView.addSubview(planetImageView)
-        contentView.addSubview(planetNameLocationVStackView)
-        contentView.addSubview(followButton)
-        contentView.addSubview(likeButton)
-        contentView.addSubview(courseImageCollectionView)
+        contentView.addSubviews(planetImageView, planetNameLocationVStackView, followButton, likeButton, courseImageCollectionView)
     }
 
     private func setConstraints() {

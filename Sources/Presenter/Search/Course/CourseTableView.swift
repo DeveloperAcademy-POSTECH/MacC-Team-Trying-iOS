@@ -76,4 +76,5 @@ extension CourseTableView: UITableViewDataSource {
             return planetTableCell
         }
     }
+    
 }

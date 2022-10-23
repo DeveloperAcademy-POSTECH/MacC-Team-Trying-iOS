@@ -12,7 +12,7 @@ import UIKit
 
 class CoursePlanetSegmentedControlView: UIView {
     
-    var segmentChanged: (CoursePlanet) -> Void = { _ in }
+    var segmentChanged: ((CoursePlanet) -> Void)?
     private lazy var buttons: [UIButton] = {
         var buttons: [UIButton] = []
         for title in buttonTitles {
@@ -89,7 +89,7 @@ class CoursePlanetSegmentedControlView: UIView {
                 button.setTitleColor(selectorTextColor, for: .normal)
                 let selectorPosition = frame.width / CGFloat(buttonTitles.count) * CGFloat(index)
                 selectedIndex = index
-                segmentChanged(CoursePlanet.init(rawValue: selectedIndex) ?? .course)
+                segmentChanged?(CoursePlanet.init(rawValue: selectedIndex) ?? .course)
                 UIView.animate(withDuration: 0.1) {
                     self.selectorView.frame.origin.x = selectorPosition
                 }
