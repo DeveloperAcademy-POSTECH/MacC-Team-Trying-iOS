@@ -6,9 +6,9 @@
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
-import Foundation
-import SnapKit
 import UIKit
+
+import SnapKit
 
 class CoursePlanetSegmentedControlView: UIView {
     
@@ -60,7 +60,7 @@ class CoursePlanetSegmentedControlView: UIView {
     var selectorViewColor: UIColor?
     var selectorTextColor: UIColor?
     
-    private(set) var selectedIndex: Int = 0
+    private(set) var selectedCategory: CoursePlanet = .course
     
     convenience init(
         buttonTitles: [String],
@@ -88,8 +88,8 @@ class CoursePlanetSegmentedControlView: UIView {
             if button == sender {
                 button.setTitleColor(selectorTextColor, for: .normal)
                 let selectorPosition = frame.width / CGFloat(buttonTitles.count) * CGFloat(index)
-                selectedIndex = index
-                segmentChanged?(CoursePlanet.init(rawValue: selectedIndex) ?? .course)
+                selectedCategory = CoursePlanet.allCases[index]
+                segmentChanged?(selectedCategory)
                 UIView.animate(withDuration: 0.1) {
                     self.selectorView.frame.origin.x = selectorPosition
                 }
@@ -128,7 +128,7 @@ extension CoursePlanetSegmentedControlView {
     }
 }
 
-enum CoursePlanet: Int {
+enum CoursePlanet: Int, CaseIterable {
     case course
     case planet
 }

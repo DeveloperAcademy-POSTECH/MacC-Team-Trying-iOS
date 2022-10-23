@@ -6,7 +6,6 @@
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
 class LikeButton: UIButton {

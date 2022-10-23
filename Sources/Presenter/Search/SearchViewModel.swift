@@ -7,10 +7,10 @@
 //
 
 import Combine
+import UIKit
 
 import CancelBag
 
-import UIKit
 
 final class SearchViewModel: BaseViewModel {
     

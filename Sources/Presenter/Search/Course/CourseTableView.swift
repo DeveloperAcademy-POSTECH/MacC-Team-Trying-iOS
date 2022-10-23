@@ -6,9 +6,11 @@
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
-import UIKit
-import CancelBag
 import Combine
+import UIKit
+
+import CancelBag
+
 
 class CourseTableView: UITableView {
     var searchViewModel: SearchViewModel?
