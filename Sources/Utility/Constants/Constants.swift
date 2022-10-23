@@ -25,6 +25,7 @@ struct Constants {
     struct Image {
         static let chevron_left = "chevron_left"
         static let circle_x = "circle_x"
+        static let x_mark_circle_fill = "xmark.circle.fill"
         static let magnifyingglass = "magnifyingglass"
         static let deleteButton = "delete_button"
         static let photoIcon = "photo.on.rectangle.angled"

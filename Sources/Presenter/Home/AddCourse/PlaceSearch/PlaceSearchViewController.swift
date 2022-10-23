@@ -15,11 +15,11 @@ import SnapKit
 final class PlaceSearchViewController: BaseViewController {
     var viewModel: PlaceSearchViewModel?
     
-    private lazy var placeTableView: UITableView = {
+    private lazy var placeSearchTableView: UITableView = {
         let tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(PlaceTableViewCell.self, forCellReuseIdentifier: PlaceTableViewCell.identifier)
+        tableView.register(PlaceSearchTableViewCell.self, forCellReuseIdentifier: PlaceSearchTableViewCell.identifier)
         tableView.backgroundColor = .designSystem(.black)
         tableView.sectionHeaderHeight = 1
         tableView.allowsSelection = false
@@ -63,9 +63,9 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        view.addSubview(placeTableView)
+        view.addSubview(placeSearchTableView)
         
-        placeTableView.snp.makeConstraints { make in
+        placeSearchTableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(5)
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalToSuperview()
@@ -93,7 +93,7 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: PlaceTableViewCell.identifier, for: indexPath) as? PlaceTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: PlaceSearchTableViewCell.identifier, for: indexPath) as? PlaceSearchTableViewCell else { return UITableViewCell() }
         let place = viewModel?.places[indexPath.row]
         cell.titleLabel.text = place?.title
         cell.addressLabel.text = place?.address
@@ -105,7 +105,7 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        55
+        67
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
