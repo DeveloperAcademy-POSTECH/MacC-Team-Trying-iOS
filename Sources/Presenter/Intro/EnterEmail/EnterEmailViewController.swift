@@ -30,11 +30,16 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
         super.setAttribute()
 
         title = "로그인"
-        nextButton.title = "계속하기"
+
         titleLabels.title = "맛스타 이용을 위해서"
         titleLabels.subTitle = "로그인을 해주세요!"
+
         planetImageView.alpha = 0
         planetImageView.image = .init(.img_planet)
+
+        emailTextFieldView.delegate = self
+
+        nextButton.title = "계속하기"
         nextButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
     }
 
@@ -106,5 +111,20 @@ extension EnterEmailViewController {
         }
 
         leaveAnimator?.startAnimation()
+    }
+}
+
+// MARK: TextFieldWithMessageViewComponentDelegate
+extension EnterEmailViewController: TextFieldWithMessageViewComponentDelegate {
+
+    func textFieldDidChange(_ text: String) {
+        let emailPattern = #"^\S+@\S+\.\S+$"#
+        let result = text.range(of: emailPattern, options: .regularExpression)
+        let validEmail = (result != nil)
+        if validEmail {
+            emailTextFieldView.showError(type: .noError)
+        } else {
+            emailTextFieldView.showError(type: .invalidEmail)
+        }
     }
 }

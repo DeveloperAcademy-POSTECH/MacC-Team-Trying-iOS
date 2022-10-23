@@ -30,12 +30,15 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
     override func setAttribute() {
         super.setAttribute()
 
-        loginButton.title = "들어가기"
         titleLabels.title = "다시 찾아주셨네요!"
         titleLabels.subTitle = "반갑습니다"
+
         planetImageView.alpha = 0
         planetImageView.image = .init(.img_planet)
+
+        loginButton.title = "들어가기"
         loginButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
+        
         findPasswordButton.addTarget(self, action: #selector(findPasswordButtonDidTapped), for: .touchUpInside)
     }
 
