@@ -1,0 +1,27 @@
+//
+//  EnterCodeViewModel.swift
+//  MatStar
+//
+//  Created by Jaeyong Lee on 2022/10/24.
+//  Copyright (c) 2022 Try-ing. All rights reserved.
+//
+
+import Combine
+
+import CancelBag
+
+protocol EnterCodeCoordinatorLogic {
+
+}
+
+protocol EnterCodeBuisnessLogic: BusinessLogic {
+
+}
+
+final class EnterCodeViewModel: BaseViewModel, EnterCodeBuisnessLogic {
+    let coordinator: EnterCodeCoordinatorLogic
+
+    init(coordinator: EnterCodeCoordinatorLogic) {
+        self.coordinator = coordinator
+    }
+}
