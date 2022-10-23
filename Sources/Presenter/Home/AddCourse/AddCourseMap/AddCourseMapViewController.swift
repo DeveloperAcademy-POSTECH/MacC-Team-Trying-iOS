@@ -41,7 +41,7 @@ final class AddCourseMapViewController: BaseViewController {
 // MARK: - UI
 extension AddCourseMapViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureMapNavigationBar(target: self, action: nil)
+        configureMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(nextButtonPressed(_:)))
         setAttributes()
         setLayout()
         
@@ -111,5 +111,18 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         67
+    }
+}
+
+// MARK: - User Interactions
+extension AddCourseMapViewController {
+    @objc
+    private func backButtonPressed(_ sender: UIButton) {
+        print("pop")
+    }
+    
+    @objc
+    private func nextButtonPressed(_ sender: UIButton) {
+        print("next")
     }
 }
