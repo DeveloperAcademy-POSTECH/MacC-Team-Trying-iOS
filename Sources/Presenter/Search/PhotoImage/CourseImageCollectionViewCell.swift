@@ -33,8 +33,6 @@ final class CourseImageCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(photoImageView)
         photoImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.width.equalTo(113)
-            make.height.equalTo(169)
         }
     }
 }

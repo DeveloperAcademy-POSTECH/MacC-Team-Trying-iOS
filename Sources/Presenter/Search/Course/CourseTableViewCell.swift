@@ -85,8 +85,18 @@ class CourseTableViewCell: UITableViewCell {
         return stackView
     }()
     
-    private lazy var courseImageCollectionView: CourseImageCollectionView = {
-        let collectionView = CourseImageCollectionView()
+    private let courseImageCollectionViewFlowLayout: UICollectionViewFlowLayout = {
+        let flowLayout = UICollectionViewFlowLayout()
+        let lineSpacing = 5.0
+        let cellWidth = (DeviceInfo.screenWidth - 20 * 2 - lineSpacing * 2) / 3
+        flowLayout.scrollDirection = .horizontal
+        flowLayout.itemSize = CGSize(width: cellWidth, height: cellWidth / 113 * 169)
+        flowLayout.minimumLineSpacing = lineSpacing
+        return flowLayout
+    }()
+    
+    private lazy var courseImageCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: courseImageCollectionViewFlowLayout)
         collectionView.backgroundColor = .black
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -143,7 +153,7 @@ class CourseTableViewCell: UITableViewCell {
         courseImageCollectionView.snp.makeConstraints { make in
             make.top.equalTo(planetImageView.snp.bottom).offset(20)
             make.leading.equalTo(planetImageView.snp.leading)
-            make.height.equalTo(169)
+            make.height.equalTo(courseImageCollectionViewFlowLayout.itemSize.height)
             make.bottom.equalToSuperview()
             make.trailing.equalTo(likeButton.snp.trailing)
         }
