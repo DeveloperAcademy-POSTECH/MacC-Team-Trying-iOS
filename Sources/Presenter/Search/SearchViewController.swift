@@ -18,7 +18,7 @@ final class SearchViewController: BaseViewController {
     var cancelbag = Set<AnyCancellable>()
     private lazy var courseTableView = CourseTableView(viewModel: viewModel)
     private let coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(buttonTitles: ["코스", "행성"])
-    private let navigationTextField = CustomTextField(type: .searchCourseAndPlanet)
+    private let navigationTextField = SearchTextField()
     
     private func bind() {
         viewModel?.bind(navigationTextField, to: \.searchString)
