@@ -14,8 +14,6 @@ protocol CarouselViewDelegate: AnyObject {
 }
 
 class CarouselView: UIView {
-    // MARK: - Subviews
-    
     lazy var carouselCollectionView: UICollectionView = {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         collection.showsHorizontalScrollIndicator = false
@@ -27,8 +25,6 @@ class CarouselView: UIView {
         return collection
     }()
     
-    // MARK: - Properties
-    
     private var pages: Int
     private weak var delegate: CarouselViewDelegate?
     private var carouselData = [Constellation]()
@@ -37,8 +33,6 @@ class CarouselView: UIView {
             delegate?.currentPageDidChange(to: currentPage)
         }
     }
-    
-    // MARK: - Initializers
     
     init(pages: Int, delegate: CarouselViewDelegate?) {
         self.pages = pages
@@ -51,8 +45,6 @@ class CarouselView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-// MARK: - Setups
 
 extension CarouselView {
     func setupUI() {
@@ -68,7 +60,6 @@ extension CarouselView {
         carouselLayout.sectionInset = .init(top: 0, left: cellPadding, bottom: 0, right: cellPadding)
         carouselLayout.minimumLineSpacing = cellPadding * 2
         carouselCollectionView.collectionViewLayout = carouselLayout
-        
         addSubview(carouselCollectionView)
         carouselCollectionView.snp.makeConstraints { make in
             make.top.left.right.equalToSuperview()
@@ -77,51 +68,32 @@ extension CarouselView {
     }
 }
 
-// MARK: - UICollectionViewDataSource
-
 extension CarouselView: UICollectionViewDataSource {
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return carouselData.count
+        let numberOfItems = carouselData.count
+        return numberOfItems
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCell.cellId, for: indexPath) as? CarouselCell else { return UICollectionViewCell() }
-        
         let image = carouselData[indexPath.row].image
         let text = carouselData[indexPath.row].name
-        
         cell.configure(image: image, text: text)
-        
         return cell
     }
 }
 
-// MARK: - UICollectionView Delegate
-
 extension CarouselView: UICollectionViewDelegate {
-    
-    //MARK : - 속도가 0이 되었을때 알아서 움직이다가 딱 멈췄을때 호출
+    // MARK: - 속도가 0이 되었을때 알아서 움직이다가 딱 멈췄을때 호출
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         currentPage = getCurrentPage()
     }
     
-    //MARK : - touches up했을때 손가락을 떼면 호출
+    // MARK: - touches up했을때 손가락을 떼면 호출
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         currentPage = getCurrentPage()
     }
-    
-//    //MARK : - 움직이는 동안 작동
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        currentPage = getCurrentPage()
-//    }
 }
-
-// MARK: - Public
 
 extension CarouselView {
     public func configureView(with data: [Constellation]) {
@@ -137,8 +109,6 @@ extension CarouselView {
     }
 }
 
-
-// MARKK: - Helpers
 extension CarouselView {
     func getCurrentPage() -> Int {
         let visibleRect = CGRect(origin: carouselCollectionView.contentOffset, size: carouselCollectionView.bounds.size)
@@ -149,4 +119,3 @@ extension CarouselView {
         return currentPage
     }
 }
-

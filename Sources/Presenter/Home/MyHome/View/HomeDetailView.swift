@@ -92,7 +92,7 @@ class HomeDetailView: UIView {
         return button
     }()
     
-    lazy var textButton: UIButton = {
+    lazy var courseNameButton: UIButton = {
         let button = UIButton(type: .custom)
         button.backgroundColor = .clear
         button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
@@ -200,7 +200,7 @@ class HomeDetailView: UIView {
         addSubview(alarmButton)
         addSubview(myPlanetImage)
         addSubview(courseRegistrationButton)
-        addSubview(textButton)
+        addSubview(courseNameButton)
         addSubview(dateLabel)
         addSubview(currentImageBox)
         currentImageBox.addSubview(currentImage)
@@ -244,7 +244,7 @@ class HomeDetailView: UIView {
         
         dateLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(textButton.snp.bottom).offset(5)
+            make.top.equalTo(courseNameButton.snp.bottom).offset(15)
             make.height.equalTo(15)
         }
         
@@ -271,13 +271,10 @@ class HomeDetailView: UIView {
             make.centerY.equalTo(currentImageBox.snp.centerY).offset(30)
         }
     
-        
         myPlanetImage.snp.makeConstraints { make in
-            let bounds = UIScreen.main.bounds
             make.centerY.equalTo(self.snp.bottom).inset(20)
             make.centerX.equalToSuperview()
-            make.width.equalTo(bounds.width * 1.2)
-            make.height.equalTo(bounds.width * 1.2)
+            make.size.equalTo(DeviceInfo.screenWidth * 1.2)
         }
         
         courseRegistrationButton.snp.makeConstraints { make in
