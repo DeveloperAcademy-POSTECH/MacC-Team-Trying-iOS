@@ -44,8 +44,8 @@ class CourseTableView: UITableView {
         guard let viewModel = searchViewModel else { return }
         viewModel.$coursesOrPlanets
             .receive(on: DispatchQueue.main)
-            .sink { _ in
-                self.reloadData()
+            .sink { [weak self] _ in
+                self?.reloadData()
             }
             .cancel(with: cancelBag)
     }

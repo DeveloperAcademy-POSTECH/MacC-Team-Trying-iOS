@@ -90,8 +90,8 @@ class CoursePlanetSegmentedControlView: UIView {
                 let selectorPosition = frame.width / CGFloat(buttonTitles.count) * CGFloat(index)
                 selectedCategory = CoursePlanet.allCases[index]
                 segmentChanged?(selectedCategory)
-                UIView.animate(withDuration: 0.1) {
-                    self.selectorView.frame.origin.x = selectorPosition
+                UIView.animate(withDuration: 0.1) { [weak self] in
+                    self?.selectorView.frame.origin.x = selectorPosition
                 }
             }
         }
