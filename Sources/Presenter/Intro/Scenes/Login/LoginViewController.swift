@@ -19,24 +19,33 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
     lazy var logoImageView = UIImageView()
     lazy var loginButton = EmailLoginButton()
     lazy var signUpButton = SignUpButton(type: .system)
-    
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        setupAnimations()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        beginAnimations()
-        bringsInteractionFront()
+        enterAnimator?.startAnimation(afterDelay: fastDelay)
     }
 
     override func setAttribute() {
         super.setAttribute()
 
+        navigationItem.title = ""
+
         loginButton.alpha = 0
-        signUpButton.alpha = 0
-        logoImageView.image = .init(.img_logo)
-        logoLabel.font = .gmarksans(weight: .bold, size: ._30)
         loginButton.addTarget(self, action: #selector(loginBttonDidTapped), for: .touchUpInside)
-        signUpButton.addTarget(self, action: #selector(signUpButtonDidTapped), for: .touchUpInside)
-        setNavigationBar()
+
+        signUpButton.alpha = 0
+        loginButton.addTarget(self, action: #selector(loginBttonDidTapped), for: .touchUpInside)
+
+        logoImageView.image = .init(.img_logo)
+
+        logoLabel.font = .gmarksans(weight: .bold, size: ._30)
     }
 
     override func setLayout() {
@@ -69,8 +78,7 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
 
 extension LoginViewController {
 
-    private func beginAnimations() {
-
+    private func setupAnimations() {
         enterAnimator?.addAnimations {
             self.loginButton.alpha = 1
             self.signUpButton.alpha = 1
@@ -81,16 +89,12 @@ extension LoginViewController {
             self.view.layoutIfNeeded()
         }
 
-        enterAnimator?.startAnimation(afterDelay: fastDelay)
-    }
-
-    private func bringsInteractionFront() {
-        view.bringSubviewToFront(loginButton)
-        view.bringSubviewToFront(signUpButton)
-    }
-
-    private func setNavigationBar() {
-        navigationItem.title = ""
+        leaveAnimator?.addAnimations {
+            self.loginButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(100)
+            }
+            self.view.layoutIfNeeded()
+        }
     }
 }
 
@@ -99,13 +103,6 @@ extension LoginViewController {
 
     @objc
     func loginBttonDidTapped() {
-        leaveAnimator?.addAnimations {
-            self.loginButton.snp.updateConstraints { make in
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(100)
-            }
-            self.view.layoutIfNeeded()
-        }
-
         leaveAnimator?.addCompletion { [weak self] _ in
             self?.viewModel.loginButtonDidTapped()
         }
@@ -115,13 +112,6 @@ extension LoginViewController {
 
     @objc
     func signUpButtonDidTapped() {
-        leaveAnimator?.addAnimations {
-            self.loginButton.snp.updateConstraints { make in
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(100)
-            }
-            self.view.layoutIfNeeded()
-        }
-
         leaveAnimator?.addCompletion { [weak self] _ in
             self?.viewModel.signUpButtonDidTapped()
         }

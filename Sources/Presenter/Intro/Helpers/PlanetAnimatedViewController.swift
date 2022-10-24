@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import Lottie
 
 class PlanetAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<VM> {
 
@@ -16,7 +17,7 @@ class PlanetAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<V
     let duration: CGFloat = 1.0
     let delay: CGFloat = 1.0
 
-    lazy var shootingStarView = ShootingStarActor(superView: view)
+    lazy var shootingStarView = LottieAnimationView(name: "shooting-star", bundle: .main)
     lazy var leftPlanetImageView = UIImageView()
     lazy var rightPlanetImageView = UIImageView()
 
@@ -27,13 +28,13 @@ class PlanetAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<V
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        shootingStarView.start()
+        setupAnimation()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        setupAnimation()
+        shootingStarView.play()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -45,6 +46,8 @@ class PlanetAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<V
     override func setAttribute() {
         super.setAttribute()
 
+        shootingStarView.loopMode = .loop
+        shootingStarView.animationSpeed = 0.7
         leftPlanetImageView.alpha = 0
         rightPlanetImageView.alpha = 0
         leftPlanetImageView.image = .init(.img_planet2)
@@ -55,9 +58,13 @@ class PlanetAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<V
     override func setLayout() {
         super.setLayout()
 
+        view.addSubview(shootingStarView)
         view.addSubview(leftPlanetImageView)
         view.addSubview(rightPlanetImageView)
 
+        shootingStarView.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+        }
         leftPlanetImageView.frame = CGRect(
             origin: .init(x: -57, y: DeviceInfo.screenHeight - view.safeAreaInsets.bottom - 352),
             size: .init(width: 57, height: 56)
