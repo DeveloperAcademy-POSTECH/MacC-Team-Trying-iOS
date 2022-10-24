@@ -6,29 +6,47 @@
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
+import MapKit
 import UIKit
 
 import SnapKit
 
 final class PlaceDetailView: UIView {
+    var selectedPlace: CLPlacemark? {
+        didSet {
+            guard let selectedPlace = selectedPlace else { return }
+            let name = selectedPlace.name ?? ""
+            // TODO: 카테고리로 수정하기
+            let category = selectedPlace.country ?? ""
+            let administrativeArea = selectedPlace.administrativeArea ?? ""
+            let locality = selectedPlace.locality ?? ""
+            let thoroughfare = selectedPlace.thoroughfare ?? ""
+            let subThoroughfare = selectedPlace.subThoroughfare ?? ""
+            let address = "\(administrativeArea) \(locality) \(thoroughfare) \(subThoroughfare)"
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.titleLabel.text = name
+                self.categoryLabel.text = category
+                self.addressLabel.text = address
+            }
+        }
+    }
     private lazy var placeInfoView = UIView()
     lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "호맥"
         label.textColor = .designSystem(.white)
         label.font = .designSystem(weight: .bold, size: ._15)
         return label
     }()
     lazy var categoryLabel: UILabel = {
         let label = UILabel()
-        label.text = "음식점"
         label.textColor = .designSystem(.grayC5C5C5)
         label.font = .designSystem(weight: .regular, size: ._11)
         return label
     }()
     lazy var addressLabel: UILabel = {
         let label = UILabel()
-        label.text = "경북 포항시 북구 흥해읍 학천리"
         label.textColor = .designSystem(.grayC5C5C5)
         label.font = .designSystem(weight: .regular, size: ._13)
         return label
@@ -49,7 +67,7 @@ final class PlaceDetailView: UIView {
     }()
     private lazy var relatedCourseNumberLabel: UILabel = {
         let label = UILabel()
-        label.text = "5개"
+        label.text = "0개"
         label.font = .designSystem(weight: .bold, size: ._20)
         label.textColor = .designSystem(.mainYellow)
         return label
@@ -84,7 +102,7 @@ final class PlaceDetailView: UIView {
         }
         
         categoryLabel.snp.makeConstraints { make in
-            make.leading.equalTo(titleLabel.snp.trailing).offset(37)
+            make.leading.equalTo(titleLabel.snp.trailing).offset(10)
             make.bottom.equalTo(titleLabel)
         }
         

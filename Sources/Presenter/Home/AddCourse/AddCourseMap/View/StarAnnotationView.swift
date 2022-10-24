@@ -16,7 +16,7 @@ final class StarAnnotationView: MKAnnotationView {
     
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
-        centerOffset = CGPoint(x: 0, y: -20)
+        centerOffset = CGPoint(x: 0, y: -18)
     }
     
     required init?(coder aDecoder: NSCoder) {

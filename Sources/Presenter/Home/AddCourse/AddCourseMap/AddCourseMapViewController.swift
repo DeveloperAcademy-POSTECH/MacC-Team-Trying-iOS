@@ -7,6 +7,7 @@
 //
 
 import Combine
+import MapKit
 import UIKit
 
 import CancelBag
@@ -33,14 +34,29 @@ final class AddCourseMapViewController: BaseViewController {
             return 319
         }
     }
-    private var isPlaceDetailPresented = false
-    private lazy var toggleButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("토글~", for: .normal)
-        button.addTarget(self, action: #selector(toggleButtonPressed(_:)), for: .touchUpInside)
-        return button
+    
+    private var recentAnnotation: MKAnnotation?
+    private lazy var placeMapView: MKMapView = {
+        let map = MKMapView()
+        map.register(StarAnnotationView.self, forAnnotationViewWithReuseIdentifier: StarAnnotationView.identifier)
+        map.delegate = self
+        map.setRegion(
+            // TODO: 사용자의 현재 위치 정보를 가져오기
+            MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 36.01436040811483, longitude: 129.32476193278993),
+                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+            ),
+            animated: true
+        )
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapMapView(_:)))
+        map.addGestureRecognizer(tapGestureRecognizer)
+        return map
     }()
-    private lazy var placeDetailView = PlaceDetailView()
+    private lazy var placeDetailView: PlaceDetailView = {
+        let view = PlaceDetailView()
+        view.addCourseButton.addTarget(self, action: #selector(didTapAddCourseButton(_:)), for: .touchUpInside)
+        return view
+    }()
     private lazy var placeListView: PlaceListView = {
         let view = PlaceListView(parentView: self.view, numberOfItems: (viewModel?.places.count)!)
         view.mapPlaceTableView.dataSource = self
@@ -54,6 +70,19 @@ final class AddCourseMapViewController: BaseViewController {
         // input
         
         // output
+        self.viewModel?.$places
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+                guard let self = self else { return }
+                self.placeListView.mapPlaceTableView.reloadData()
+            })
+            .cancel(with: cancelBag)
+        
+        self.viewModel?.$places
+            .sink(receiveValue: { [weak self] places in
+                self?.placeListView.numberOfItems = places.count
+            })
+            .cancel(with: cancelBag)
     }
     
     override func viewDidLoad() {
@@ -76,9 +105,6 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
         configureMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(nextButtonPressed(_:)))
         setAttributes()
         setLayout()
-        
-        // TODO: 배경 원상복구
-        view.backgroundColor = .systemGray4
     }
     
     /// Attributes를 설정합니다.
@@ -90,12 +116,10 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
     private func setLayout() {
         navigationController?.tabBarController?.tabBar.isHidden = true
         
-        view.addSubviews(placeDetailView, placeListView, nextButton)
+        view.addSubviews(placeMapView, placeDetailView, placeListView, nextButton)
         
-        view.addSubview(toggleButton)
-        toggleButton.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(100)
+        placeMapView.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom.equalToSuperview()
         }
         
         placeDetailView.snp.makeConstraints { make in
@@ -136,6 +160,9 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
         cell.titleLabel.text = place?.title
         cell.categoryLabel.text = place?.category
         cell.addressLabel.text = place?.address
+        cell.deleteButton.tag = indexPath.row
+        
+        cell.deleteButton.addTarget(self, action: #selector(didTapDeleteButton(_:)), for: .touchUpInside)
         
         return cell
     }
@@ -158,15 +185,25 @@ extension AddCourseMapViewController {
     }
     
     @objc
-    private func toggleButtonPressed(_ sender: UIButton) {
-        if isPlaceDetailPresented {
+    private func didTapAddCourseButton(_ sender: UIButton) {
+        presentPlaceListView()
+        viewModel?.addPlace(self.placeDetailView.selectedPlace!, annotation: recentAnnotation!)
+        recentAnnotation = nil
+    }
+    
+    @objc
+    private func didTapDeleteButton(_ sender: UIButton) {
+        let annotation = (viewModel?.places[sender.tag].annotation)!
+        placeMapView.removeAnnotation(annotation)
+        viewModel?.deletePlace(sender.tag)
+        
+        if (viewModel?.places.count)! < 3 {
             presentPlaceListView()
-        } else {
-            presentPlaceDetailView()
         }
     }
     
-    private func presentPlaceDetailView() {
+    private func presentPlaceDetailView(with place: CLPlacemark) {
+        placeDetailView.selectedPlace = place
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.placeListView.snp.updateConstraints { make in
@@ -190,8 +227,6 @@ extension AddCourseMapViewController {
                 }
             )
         }
-
-        isPlaceDetailPresented.toggle()
     }
     
     private func presentPlaceListView() {
@@ -212,8 +247,18 @@ extension AddCourseMapViewController {
                 }
             }
             
-            self.placeListView.snp.updateConstraints { make in
-                make.height.equalTo(self.placeListViewHeight)
+            if self.placeListView.isContainerCollapsed {
+                self.placeListView.snp.updateConstraints { make in
+                    make.height.equalTo(self.placeListViewHeight)
+                }
+            } else {
+                if self.placeListViewHeight == 0 {
+                    self.placeListView.snp.remakeConstraints { make in
+                        make.height.equalTo(0)
+                        make.leading.trailing.bottom.equalToSuperview()
+                    }
+                    self.placeListView.isContainerCollapsed.toggle()
+                }
             }
             
             UIView.animate(
@@ -224,7 +269,67 @@ extension AddCourseMapViewController {
                 }
             )
         }
-        
-        isPlaceDetailPresented.toggle()
     }
+    
+    @objc
+    private func didTapMapView(_ sender: UITapGestureRecognizer) {
+        let location = sender.location(in: placeMapView)
+        let mapPoint = placeMapView.convert(location, toCoordinateFrom: placeMapView)
+        
+        if sender.state == .ended {
+            searchLocation(mapPoint)
+        }
+    }
+    
+    private func removeRecentAnnotation() {
+        guard let recentAnnotation = recentAnnotation else { return }
+        placeMapView.removeAnnotation(recentAnnotation)
+    }
+    
+    private func searchLocation(_ point: CLLocationCoordinate2D) {
+        let geocoder: CLGeocoder = CLGeocoder()
+        let location = CLLocation(latitude: point.latitude, longitude: point.longitude)
+        
+        removeRecentAnnotation()
+        
+        geocoder.reverseGeocodeLocation(location) { placeMarks, error in
+            if error == nil, let marks = placeMarks {
+                marks.forEach { placeMark in
+                    let starAnnotation = StarAnnotation(coordinate: CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude))
+                    
+                    self.presentPlaceDetailView(with: placeMark)
+                    self.placeMapView.addAnnotation(starAnnotation)
+                }
+            } else {
+                print("검색 실패")
+            }
+        }
+    }
+}
+
+// MARK: - MKMapViewDelegate, CLLocationManagerDelegate
+extension AddCourseMapViewController: MKMapViewDelegate, CLLocationManagerDelegate {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        guard let annotation = annotation as? StarAnnotation else { return nil }
+        
+        recentAnnotation = annotation
+        var annotationView = self.placeMapView.dequeueReusableAnnotationView(withIdentifier: StarAnnotationView.identifier)
+        
+        if annotationView == nil {
+            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: StarAnnotationView.identifier)
+            annotationView?.canShowCallout = true
+            annotationView?.contentMode = .scaleAspectFit
+        } else {
+            annotationView?.annotation = annotation
+        }
+        
+        annotationView?.image = UIImage(named: Constants.Image.starAnnotation)
+        
+        return annotationView
+    }
+}
+
+// MARK: - Helper Methods
+extension AddCourseMapViewController {
+    
 }
