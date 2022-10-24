@@ -93,7 +93,7 @@ class HomeDetailView: UIView {
     }()
     
     lazy var courseNameButton: UIButton = {
-        let button = UIButton(type: .custom)
+        let button = UIButton(type: .system)
         button.backgroundColor = .clear
         button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
         button.clipsToBounds = true
