@@ -41,7 +41,7 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
         loginButton.addTarget(self, action: #selector(loginBttonDidTapped), for: .touchUpInside)
 
         signUpButton.alpha = 0
-        loginButton.addTarget(self, action: #selector(loginBttonDidTapped), for: .touchUpInside)
+        signUpButton.addTarget(self, action: #selector(signUpButtonDidTapped), for: .touchUpInside)
 
         logoImageView.image = .init(.img_logo)
 

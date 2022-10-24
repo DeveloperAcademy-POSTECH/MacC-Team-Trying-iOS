@@ -100,7 +100,7 @@ extension PlanetAnimatedViewController {
     private func setNavigationBar() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .clear
+        appearance.backgroundColor = .black
         appearance.titleTextAttributes = [
             NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._17),
             NSAttributedString.Key.foregroundColor: UIColor.white

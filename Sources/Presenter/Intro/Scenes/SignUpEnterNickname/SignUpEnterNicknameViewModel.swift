@@ -10,7 +10,9 @@ import Combine
 
 import CancelBag
 
-protocol SignUpEnterNicknameCoordinatorLogic {}
+protocol SignUpEnterNicknameCoordinatorLogic {
+    func coordinateToCreatePlanetScene()
+}
 
 protocol SignUpEnterNicknameBusinessLogic: BusinessLogic {
     func nextButtonDidTapped()
@@ -30,7 +32,7 @@ final class SignUpEnterNicknameViewModel: BaseViewModel, SignUpEnterNicknameBusi
     }
 
     func nextButtonDidTapped() {
-
+        coordinator.coordinateToCreatePlanetScene()
     }
 
     func textFieldDidChange(_ text: String) {

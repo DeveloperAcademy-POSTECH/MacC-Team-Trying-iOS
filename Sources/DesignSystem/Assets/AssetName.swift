@@ -14,4 +14,9 @@ enum AssetName: String {
     case img_planet
     case img_planet2
     case img_planet3
+    case planet_yellow
+    case planet_purple
+    case planet_green
+    case planet_red
+    case ic_planet_name
 }

@@ -17,7 +17,8 @@ protocol IntroCoordinatorProtocol: Coordinator,
                                    SignUpEnterPasswordCoordinatorLogic,
                                    SignUpEnterNicknameCoordinatorLogic,
                                    FindPasswordCoordinatorLogic,
-                                   ConfirmPasswordCoordinatorLogic {
+                                   ConfirmPasswordCoordinatorLogic,
+                                   CreatePlanetCoordinatorLogic {
     var navigationController: UINavigationController? { get }
 }
 
@@ -108,7 +109,12 @@ extension IntroCoordinator {
     func coordinateSignUpEnterNickname() {
         navigationController?.pushViewController(createSignUpEnterNicknameScene(), animated: true)
     }
-    
+
+    func coordinateToCreatePlanetScene() {
+        let createPlanetViewController = CreatePlanetViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(createPlanetViewController, animated: true)
+    }
+
     func backToConfirmPasswordScene() {
         let viewControllers: [UIViewController] = self.navigationController?.viewControllers ?? []
         if viewControllers.count >= 3 {
