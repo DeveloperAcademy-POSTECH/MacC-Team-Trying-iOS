@@ -10,9 +10,13 @@ import Combine
 
 import CancelBag
 
-protocol CreatePlanetCompleteCoordinatorLogic {}
+protocol CreatePlanetCompleteCoordinatorLogic {
+    func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String)
+}
 
-protocol CreatePlanetCompleteBuisnessLogic: BusinessLogic {}
+protocol CreatePlanetCompleteBuisnessLogic: BusinessLogic {
+    func nextButtonDidTapped()
+}
 
 final class CreatePlanetCompleteViewModel: BaseViewModel, CreatePlanetCompleteBuisnessLogic {
     let coordinator: CreatePlanetCompleteCoordinatorLogic
@@ -28,5 +32,9 @@ final class CreatePlanetCompleteViewModel: BaseViewModel, CreatePlanetCompleteBu
         self.selectedPlanet = selectedPlanet
         self.planetName = planetName
         self.coordinator = coordinator
+    }
+
+    func nextButtonDidTapped() {
+        coordinator.coordinateToWaitingInvitationScene(selectedPlanet: selectedPlanet, planetName: planetName)
     }
 }

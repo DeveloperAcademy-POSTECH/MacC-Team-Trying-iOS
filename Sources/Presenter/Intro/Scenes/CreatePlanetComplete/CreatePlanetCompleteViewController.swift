@@ -21,6 +21,12 @@ final class CreatePlanetCompleteViewController: IntroBaseViewController<CreatePl
     lazy var invitationDescriptionLabel = UILabel()
     lazy var nextButton = IntroButton(type: .system)
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+
     override func bind() {
 
         viewModel.$selectedPlanet
@@ -33,7 +39,7 @@ final class CreatePlanetCompleteViewController: IntroBaseViewController<CreatePl
         viewModel.$planetName
             .receive(on: DispatchQueue.main)
             .sink { [weak self] planetName in
-                self?.planetNameLabel.text = "🪐\(planetName)"
+                self?.planetNameLabel.text = planetName
             }
             .cancel(with: cancelBag)
     }
@@ -61,7 +67,7 @@ final class CreatePlanetCompleteViewController: IntroBaseViewController<CreatePl
         invitationDescriptionLabel.text = "메이트를 초대해서 같이 행성을 꾸며보세요!"
 
         nextButton.title = "확인"
-
+        nextButton.addTarget(self, action: #selector(nextButtonDidTapped), for: .touchUpInside)
         planetNameLabel.font = .designSystem(weight: .bold, size: ._20)
     }
 
@@ -101,4 +107,9 @@ final class CreatePlanetCompleteViewController: IntroBaseViewController<CreatePl
     }
 }
 
-extension CreatePlanetCompleteViewController {}
+extension CreatePlanetCompleteViewController {
+    @objc
+    func nextButtonDidTapped() {
+        viewModel.nextButtonDidTapped()
+    }
+}

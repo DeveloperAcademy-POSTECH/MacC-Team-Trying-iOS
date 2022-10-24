@@ -19,7 +19,8 @@ protocol IntroCoordinatorProtocol: Coordinator,
                                    FindPasswordCoordinatorLogic,
                                    ConfirmPasswordCoordinatorLogic,
                                    CreatePlanetCoordinatorLogic,
-                                   CreatePlanetCompleteCoordinatorLogic {
+                                   CreatePlanetCompleteCoordinatorLogic,
+                                   WaitingInvitationCoordinatorLogic {
     var navigationController: UINavigationController? { get }
 }
 
@@ -125,6 +126,17 @@ extension IntroCoordinator {
             )
         )
         navigationController?.pushViewController(createPlanetCompleteViewController, animated: true)
+    }
+
+    func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String) {
+        let waitingInvitationViewController = WaitingInvitationViewController(
+            viewModel: .init(
+                selectedPlanet: selectedPlanet,
+                planetName: planetName,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(waitingInvitationViewController, animated: true)
     }
 
     func backToConfirmPasswordScene() {
