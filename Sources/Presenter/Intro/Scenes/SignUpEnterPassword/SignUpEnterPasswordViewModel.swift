@@ -16,16 +16,31 @@ protocol SignUpEnterPasswordCoordinatorLogic {
 
 protocol SignUpEnterPasswordBusinessLogic: BusinessLogic {
     func nextButtonDidTapped()
+    func textFieldDidChange(_ text: String)
 }
 
 final class SignUpEnterPasswordViewModel: BaseViewModel, SignUpEnterPasswordBusinessLogic {
     let coordinator: SignUpEnterPasswordCoordinatorLogic
 
+    @Published var passwordTextFieldState: TextFieldState
+    var password: String
+
     init(coordinator: SignUpEnterPasswordCoordinatorLogic) {
+        passwordTextFieldState = .emptyPassword
+        password = ""
         self.coordinator = coordinator
     }
 
     func nextButtonDidTapped() {
         coordinator.coordinateSignUpEnterNickname()
+    }
+
+    func textFieldDidChange(_ text: String) {
+        password = text
+
+        // TODO: 정규식 고쳐야함
+        let passwordPattern = "^[A-Za-z0-9].{8,12}"
+        let result = text.range(of: passwordPattern, options: .regularExpression)
+        passwordTextFieldState = (result != nil) ? .validPassword : .invalidPassword
     }
 }

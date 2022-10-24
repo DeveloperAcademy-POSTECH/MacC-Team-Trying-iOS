@@ -26,6 +26,23 @@ final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSig
         bringsInteractionFront()
     }
 
+    override func bind() {
+
+        viewModel.$email
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] email in
+                self?.emailTextFieldView.updateText(email)
+            }
+            .cancel(with: cancelBag)
+
+        viewModel.$emailTextFieldState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.signUpButton.isEnabled = currentState == .good
+            }
+            .cancel(with: cancelBag)
+    }
+
     override func setAttribute() {
         super.setAttribute()
 
@@ -105,6 +122,6 @@ extension ConfirmSignUpViewController {
 extension ConfirmSignUpViewController: TextFieldWithMessageViewComponentDelegate {
 
     func textFieldDidChange(_ text: String) {
-
+        viewModel.textFieldDidChange(text)
     }
 }

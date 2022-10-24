@@ -12,7 +12,7 @@ import CancelBag
 
 protocol EnterEmailCoordinatorLogic {
     func coordinateToEnterPasswordScene()
-    func coordinateToConfirmSignUpScene()
+    func coordinateToConfirmSignUpScene(email: String)
 }
 
 protocol EnterEmailBusinessLogic: BusinessLogic {
@@ -21,28 +21,36 @@ protocol EnterEmailBusinessLogic: BusinessLogic {
 }
 
 final class EnterEmailViewModel: BaseViewModel, EnterEmailBusinessLogic {
+
     let coordinator: EnterEmailCoordinatorLogic
 
-    @Published var enterEmailButtonEnable: TextFieldState = .empty
+    @Published var emailTextFieldState: TextFieldState
+    var email: String
 
     init(coordinator: EnterEmailCoordinatorLogic) {
         self.coordinator = coordinator
+        emailTextFieldState = .empty
+        email = ""
     }
 
     func enterEmailButtonDidTapped() {
         // TODO: 화면 전환 분기처리
 //        coordinator.coordinateToEnterPasswordScene()
-        coordinator.coordinateToConfirmSignUpScene()
+
+        coordinator.coordinateToConfirmSignUpScene(email: email)
     }
 
     func textFieldDidChange(_ text: String) {
+
+        email = text
+
         if text.isEmpty {
-            enterEmailButtonEnable = .empty
+            emailTextFieldState = .empty
             return
         }
 
         let emailPattern = #"^\S+@\S+\.\S+$"#
         let result = text.range(of: emailPattern, options: .regularExpression)
-        enterEmailButtonEnable = (result != nil) ? .good : .invalidEmail
+        emailTextFieldState = (result != nil) ? .good : .invalidEmail
     }
 }

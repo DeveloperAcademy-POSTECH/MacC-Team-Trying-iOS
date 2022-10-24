@@ -24,12 +24,26 @@ final class SignUpEnterPasswordViewController: IntroBaseViewController<SignUpEnt
         setNotification()
     }
 
+    override func bind() {
+
+        viewModel.$passwordTextFieldState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.codeTextFieldView.updateState(currentState)
+                self?.nextButton.isEnabled = currentState == .validPassword
+            }
+            .cancel(with: cancelBag)
+    }
+
     override func setAttribute() {
         super.setAttribute()
 
+        navigationItem.backButtonTitle = ""
         navigationItem.title = "회원가입"
 
         titleLabels.subTitle = "비밀번호를 입력해 주세요!"
+
+        codeTextFieldView.delegate = self
 
         nextButton.title = "다음"
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
@@ -103,8 +117,16 @@ extension SignUpEnterPasswordViewController {
 }
 
 extension SignUpEnterPasswordViewController {
+
     @objc
     func nextButtonDidTap() {
         viewModel.nextButtonDidTapped()
+    }
+}
+
+extension SignUpEnterPasswordViewController: TextFieldWithMessageViewComponentDelegate {
+
+    func textFieldDidChange(_ text: String) {
+        viewModel.textFieldDidChange(text)
     }
 }

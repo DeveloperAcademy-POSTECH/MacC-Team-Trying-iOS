@@ -51,8 +51,8 @@ final class TextFieldWithMessageViewTests: XCTestCase {
         let error = TextFieldState.invalidEmail
         sut.updateState(error)
         XCTAssertEqual(sut.stateLabel.text, error.message)
-        XCTAssertEqual(sut.stateLabel.textColor, error.color)
-        XCTAssertEqual(sut.textField.layer.borderColor, error.color?.cgColor)
+        XCTAssertEqual(sut.stateLabel.textColor, error.borderColor)
+        XCTAssertEqual(sut.textField.layer.borderColor, error.borderColor?.cgColor)
     }
 
     func testTextFieldWithMessageView_텍스트_clear버튼을_누르면_텍스트가_모두_사라집니다() {
