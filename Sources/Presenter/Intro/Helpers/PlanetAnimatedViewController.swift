@@ -20,6 +20,7 @@ class PlanetAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<V
     lazy var shootingStarView = LottieAnimationView(name: "shooting-star", bundle: .main)
     lazy var leftPlanetImageView = UIImageView()
     lazy var rightPlanetImageView = UIImageView()
+    lazy var backgroundView = BackgroundView(frame: view.bounds)
 
     var enterAnimator: UIViewPropertyAnimator?
     var leaveAnimator: UIViewPropertyAnimator?
@@ -58,6 +59,7 @@ class PlanetAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<V
     override func setLayout() {
         super.setLayout()
 
+        view.addSubview(backgroundView)
         view.addSubview(shootingStarView)
         view.addSubview(leftPlanetImageView)
         view.addSubview(rightPlanetImageView)
