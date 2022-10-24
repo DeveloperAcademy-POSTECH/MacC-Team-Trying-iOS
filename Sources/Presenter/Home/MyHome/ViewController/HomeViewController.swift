@@ -149,12 +149,24 @@ final class HomeViewController: BaseViewController {
     @objc
     func courseRegistrationButtonTapped() {
         print("코스등록하기 버튼이 눌림")
+        
     }
     
     @objc
     func alarmButtonTapped() {
         print("알림 버튼이 눌림")
         viewModel.pushToAlarmView()
+    }
+    
+    @objc
+    /// 데이터를 넘겨야해서 코디네이터 안씀 -> 추후 변경 예정
+    func courseNameButtonTapped() {
+        let nextVC = CoursesViewController()
+        let backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        backBarButtonItem.tintColor = .white
+        self.navigationItem.backBarButtonItem = backBarButtonItem
+        nextVC.courses = viewModel.constellations
+        navigationController?.pushViewController(nextVC, animated: true)
     }
 
     @objc
@@ -244,6 +256,7 @@ extension HomeViewController {
         homeDetailView.alarmButton.addTarget(self, action: #selector(alarmButtonTapped), for: .touchUpInside)
         homeDetailView.beforeImageButton.addTarget(self, action: #selector(beforeImageButtonTapped), for: .touchUpInside)
         homeDetailView.afterImageButton.addTarget(self, action: #selector(afterImageButtonTapped), for: .touchUpInside)
+        homeDetailView.courseNameButton.addTarget(self, action: #selector(courseNameButtonTapped), for: .touchUpInside)
     }
 }
 
@@ -252,19 +265,19 @@ extension HomeViewController: CarouselViewDelegate {
     /// - Parameter page: 페이지(몇번째 별자리인지)
     func currentPageDidChange(to page: Int) {
         // MARK: - page가 변할때마다 변하는 요소들 1)코스이름 2)코스날짜 3)현재별자리(가운데아래 작은 네모)
-        self.homeDetailView.courseNameButton.setTitle(self.viewModel.constellations[page].name, for: .normal)
-        self.homeDetailView.dateLabel.text = self.viewModel.constellations[page].data
-        self.homeDetailView.currentImage.image = self.viewModel.constellations[page].image
+            self.homeDetailView.courseNameButton.setTitle(self.viewModel.constellations[page].name, for: .normal)
+            self.homeDetailView.dateLabel.text = self.viewModel.constellations[page].data
+            self.homeDetailView.currentImage.image = self.viewModel.constellations[page].image
+            
+            // MARK: - String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
+            self.homeDetailView.courseNameButton.snp.updateConstraints { make in
+                guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
+                make.centerX.equalToSuperview()
+                make.top.equalToSuperview().offset(160)
+                make.height.equalTo(44)
+                make.width.equalTo((text as NSString).size().width + 90)
+            }
         
-        // MARK: - String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
-        self.homeDetailView.courseNameButton.snp.updateConstraints { make in
-            guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(160)
-            make.height.equalTo(44)
-            make.width.equalTo((text as NSString).size().width + 90)
-        }
-
         // MARK: - 마지막페이지와 첫페이지에서는 특정 버튼이 보이지 않아야함
         self.homeDetailView.beforeImageButton.isHidden = (page == 0) ? true : false
         self.homeDetailView.afterImageButton.isHidden = (page == viewModel.constellations.count - 1) ? true : false

@@ -93,7 +93,7 @@ class HomeDetailView: UIView {
     }()
     
     lazy var courseNameButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.backgroundColor = .clear
         button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
         button.clipsToBounds = true
@@ -102,6 +102,7 @@ class HomeDetailView: UIView {
         button.layer.cornerRadius = 22
         button.setImage(UIImage(systemName: "list.bullet"), for: .normal)
         button.semanticContentAttribute = .forceRightToLeft
+        button.setTitleColor(UIColor.gray, for: .highlighted)
         button.tintColor = .white
         button.contentHorizontalAlignment = .center
         button.titleEdgeInsets = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 5)

@@ -13,6 +13,10 @@ protocol AlarmViewCoordinating {
     func pushToAlarmViewController()
 }
 
+protocol CourseDetailCoordinating {
+    func pushToCourseDetailViewController()
+}
+
 // TODO : - 코스등록ViewController로 연결
 protocol CourseRegistering {
     func pushToCourseRegisterViewController()
@@ -59,6 +63,11 @@ final class HomeViewModel: BaseViewModel {
     func pushToAlarmView() {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
         coordinator.pushToAlarmViewController()
+    }
+    
+    func pushToCourseDetailView() {
+        guard let coordinator = coordinator as? CourseDetailCoordinating else { return }
+        coordinator.pushToCourseDetailViewController()
     }
 
 }
