@@ -21,9 +21,15 @@ final class SignUpEnterPasswordViewController: IntroBaseViewController<SignUpEnt
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        setNotification()
+        setNotifications()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        removeNotifications()
+    }
+    
     override func bind() {
 
         viewModel.$passwordTextFieldState
@@ -69,11 +75,8 @@ final class SignUpEnterPasswordViewController: IntroBaseViewController<SignUpEnt
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
     }
-}
 
-extension SignUpEnterPasswordViewController {
-
-    private func setNotification() {
+    private func setNotifications() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillShow),
@@ -83,6 +86,19 @@ extension SignUpEnterPasswordViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    private func removeNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )

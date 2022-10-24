@@ -105,8 +105,6 @@ extension PlanetAnimatedViewController {
             NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._17),
             NSAttributedString.Key.foregroundColor: UIColor.white
         ]
-        let backButton = UIBarButtonItemAppearance()
-        appearance.backButtonAppearance = backButton
         appearance.shadowColor = .clear
         self.navigationController?.navigationBar.standardAppearance = appearance
         self.navigationController?.navigationBar.scrollEdgeAppearance = appearance

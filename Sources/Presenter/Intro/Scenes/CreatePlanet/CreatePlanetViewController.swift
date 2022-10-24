@@ -28,7 +28,13 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        setNofification()
+        setNofifications()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        removeNotifications()
     }
 
     override func bind() {
@@ -42,10 +48,13 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
                 label.text = name
                 label.sizeToFit()
                 let newWidth: CGFloat = name.isEmpty ? 182 : (label.bounds.width + 30)
-                self?.planetTextField.snp.updateConstraints({ make in
-                    make.width.equalTo(newWidth)
-                })
-                self?.planetTextField.layoutIfNeeded()
+
+                UIView.animate(withDuration: 0.3, delay: 0) {
+                    self?.planetTextField.snp.updateConstraints({ make in
+                        make.width.equalTo(newWidth)
+                    })
+                    self?.planetTextField.layoutIfNeeded()
+                }
             }
             .cancel(with: cancelBag)
     }
@@ -95,15 +104,15 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
             make.centerX.equalToSuperview()
             make.top.equalTo(collectionView.snp.bottom).offset(-30)
         }
-        alreadyHaveInvitationButton.snp.makeConstraints { make in
-            make.bottom.equalTo(nextButton.snp.top).offset(-20)
-            make.centerX.equalToSuperview()
-        }
         planetTextField.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(320)
             make.centerX.equalToSuperview()
             make.height.equalTo(30)
             make.width.equalTo(182)
+        }
+        alreadyHaveInvitationButton.snp.makeConstraints { make in
+            make.bottom.equalTo(nextButton.snp.top).offset(-20)
+            make.centerX.equalToSuperview()
         }
         nextButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
@@ -111,7 +120,7 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
         }
     }
 
-    private func setNofification() {
+    private func setNofifications() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillShow),
@@ -121,6 +130,19 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    private func removeNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
@@ -140,7 +162,7 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
 
             UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
                 self.collectionView.snp.updateConstraints { make in
-                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(-keyboardHeight)
+                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(-100 - keyboardHeight)
                 }
                 self.planetTextField.snp.updateConstraints { make in
                     make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(50)
@@ -175,7 +197,7 @@ extension CreatePlanetViewController {
 
     @objc
     func nextButtonDidTapped() {
-
+        viewModel.nextButtonDidTapped()
     }
 
     @objc
@@ -236,6 +258,7 @@ extension CreatePlanetViewController: UICollectionViewDelegate {
         offset = CGPoint(x: roundedIndex * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
         targetContentOffset.pointee = offset
         currentIndex = roundedIndex
+        viewModel.updateSelectedPlanet(index: Int(currentIndex))
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

@@ -18,7 +18,8 @@ protocol IntroCoordinatorProtocol: Coordinator,
                                    SignUpEnterNicknameCoordinatorLogic,
                                    FindPasswordCoordinatorLogic,
                                    ConfirmPasswordCoordinatorLogic,
-                                   CreatePlanetCoordinatorLogic {
+                                   CreatePlanetCoordinatorLogic,
+                                   CreatePlanetCompleteCoordinatorLogic {
     var navigationController: UINavigationController? { get }
 }
 
@@ -113,6 +114,17 @@ extension IntroCoordinator {
     func coordinateToCreatePlanetScene() {
         let createPlanetViewController = CreatePlanetViewController(viewModel: .init(coordinator: self))
         navigationController?.pushViewController(createPlanetViewController, animated: true)
+    }
+
+    func coordinateToCreatePlanetCompleteScene(selectedPlanet: String, planetName: String) {
+        let createPlanetCompleteViewController = CreatePlanetCompleteViewController(
+            viewModel: .init(
+                selectedPlanet: selectedPlanet,
+                planetName: planetName,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(createPlanetCompleteViewController, animated: true)
     }
 
     func backToConfirmPasswordScene() {

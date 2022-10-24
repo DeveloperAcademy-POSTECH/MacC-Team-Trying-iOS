@@ -21,7 +21,13 @@ final class EnterCodeViewController: IntroBaseViewController<EnterCodeViewModel>
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        setNotification()
+        setNotifications()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        removeNotifications()
     }
 
     override func bind() {
@@ -69,11 +75,8 @@ final class EnterCodeViewController: IntroBaseViewController<EnterCodeViewModel>
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
     }
-}
 
-extension EnterCodeViewController {
-
-    private func setNotification() {
+    private func setNotifications() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillShow),
@@ -83,6 +86,19 @@ extension EnterCodeViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    private func removeNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
@@ -115,6 +131,7 @@ extension EnterCodeViewController {
         }
     }
 }
+
 
 extension EnterCodeViewController {
     @objc
