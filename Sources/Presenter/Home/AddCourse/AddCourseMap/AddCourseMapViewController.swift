@@ -15,6 +15,24 @@ import SnapKit
 final class AddCourseMapViewController: BaseViewController {
     var viewModel: AddCourseMapViewModel?
     
+    private var placeListViewHeight: CGFloat {
+        // 기본으로 줘야하는 높이 : 45
+        // indicator 영역 높이 : 15
+        // main button 높이 : 58
+        // 위 3개는 최소 높이. (45 + 15 + 58 = 118)
+        // 이후 셀 하나가 추가되는 만큼 셀 높이 추가해주기
+        // 셀 하나의 높이 : 67
+        switch viewModel?.places.count {
+        case 0:
+            return 0
+        case 1:
+            return 185
+        case 2:
+            return 252
+        default:
+            return 319
+        }
+    }
     private var isPlaceDetailPresented = false
     private lazy var toggleButton: UIButton = {
         let button = UIButton(type: .system)
@@ -88,29 +106,17 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
         placeListView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             
-            let numberOfItems = viewModel?.places.count
-            switch numberOfItems {
-                // 기본으로 줘야하는 높이 : 45
-                // indicator 영역 높이 : 15
-                // main button 높이 : 58
-                // 위 3개는 최소 높이. (45 + 15 + 58 = 118)
-                // 이후 셀 하나가 추가되는 만큼 셀 높이 추가해주기
-                // 셀 하나의 높이 : 67
-            case 0:
-                placeListView.isHidden = true
-                nextButton.isHidden = true
-            case 1:
-                make.height.equalTo(185)
-            case 2:
-                make.height.equalTo(252)
-            default:
-                make.height.equalTo(319)
-            }
+            make.height.equalTo(placeListViewHeight)
         }
         
         nextButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            if placeListViewHeight == 0 {
+                make.leading.trailing.equalToSuperview().inset(20)
+                make.top.equalTo(view.snp.bottom)
+            } else {
+                make.leading.trailing.equalToSuperview().inset(20)
+                make.bottom.equalTo(view.safeAreaLayoutGuide)
+            }
         }
     }
 }
@@ -196,14 +202,18 @@ extension AddCourseMapViewController {
             }
             
             self.nextButton.snp.remakeConstraints { make in
-                make.leading.trailing.equalToSuperview().inset(20)
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
-                make.height.equalTo(58)
+                if self.placeListViewHeight == 0 {
+                    make.leading.trailing.equalToSuperview().inset(20)
+                    make.top.equalTo(self.view.snp.bottom)
+                } else {
+                    make.leading.trailing.equalToSuperview().inset(20)
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+                    make.height.equalTo(58)
+                }
             }
             
             self.placeListView.snp.updateConstraints { make in
-                // TODO: 높이 동적으로 할당하기
-                make.height.equalTo(319)
+                make.height.equalTo(self.placeListViewHeight)
             }
             
             UIView.animate(
