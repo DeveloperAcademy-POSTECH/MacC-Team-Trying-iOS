@@ -10,6 +10,22 @@ import Combine
 
 import CancelBag
 
-final class ConfirmSignUpViewModel: BaseViewModel {
+protocol ConfirmSignUpCoordinatorLogic {
+    func coordinateToEnterCodeScene()
+}
 
+protocol ConfirmSignUpBuisnessLogic: BusinessLogic {
+    func signUpButtonDidTapped()
+}
+
+final class ConfirmSignUpViewModel: BaseViewModel, ConfirmSignUpBuisnessLogic {
+    let coordinator: ConfirmSignUpCoordinatorLogic
+
+    init(coordinator: ConfirmSignUpCoordinatorLogic) {
+        self.coordinator = coordinator
+    }
+
+    func signUpButtonDidTapped() {
+        coordinator.coordinateToEnterCodeScene()
+    }
 }

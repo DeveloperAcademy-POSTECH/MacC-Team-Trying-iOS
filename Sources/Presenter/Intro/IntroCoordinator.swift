@@ -12,6 +12,10 @@ protocol IntroCoordinatorProtocol: Coordinator,
                                    LoginCoordinatorLogic,
                                    EnterEmailCoordinatorLogic,
                                    EnterPasswordCoordinatorLogic,
+                                   ConfirmSignUpCoordinatorLogic,
+                                   EnterCodeCoordinatorLogic,
+                                   SignUpEnterPasswordCoordinatorLogic,
+                                   SignUpEnterNicknameCoordinatorLogic,
                                    FindPasswordCoordinatorLogic,
                                    ConfirmPasswordCoordinatorLogic {
     var navigationController: UINavigationController? { get }
@@ -51,6 +55,22 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
     func createConfirmPasswordScene() -> UIViewController {
         ConfirmPasswordViewController(viewModel: .init(coordinator: self))
     }
+
+    func createConfirmSignUpScene() -> UIViewController {
+        ConfirmSignUpViewController(viewModel: .init(coordinator: self))
+    }
+
+    func createEnterCodeScene() -> UIViewController {
+        EnterCodeViewController(viewModel: .init(coordinator: self))
+    }
+
+    func createSignUpEnterPasswordScene() -> UIViewController {
+        SignUpEnterPasswordViewController(viewModel: .init(coordinator: self))
+    }
+
+    func createSignUpEnterNicknameScene() -> UIViewController {
+        SignUpEnterNicknameViewController(viewModel: .init(coordinator: self))
+    }
 }
 
 // MARK: - CoordinatorLogic
@@ -76,6 +96,22 @@ extension IntroCoordinator {
         navigationController?.pushViewController(createConfirmPasswordScene(), animated: true)
     }
 
+    func coordinateToEnterCodeScene() {
+        navigationController?.pushViewController(createEnterCodeScene(), animated: true)
+    }
+
+    func coordinateToConfirmSignUpScene() {
+        navigationController?.pushViewController(createConfirmSignUpScene(), animated: true)
+    }
+
+    func coordinateToSignUpEnterPassword() {
+        navigationController?.pushViewController(createSignUpEnterPasswordScene(), animated: true)
+    }
+
+    func coordinateSignUpEnterNickname() {
+        navigationController?.pushViewController(createSignUpEnterNicknameScene(), animated: true)
+    }
+    
     func backToConfirmPasswordScene() {
         let viewControllers: [UIViewController] = self.navigationController?.viewControllers ?? []
         if viewControllers.count >= 3 {

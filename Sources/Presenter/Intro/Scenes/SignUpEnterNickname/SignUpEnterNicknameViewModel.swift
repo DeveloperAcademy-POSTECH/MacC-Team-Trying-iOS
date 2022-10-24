@@ -12,12 +12,18 @@ import CancelBag
 
 protocol SignUpEnterNicknameCoordinatorLogic {}
 
-protocol SignUpEnterNicknameBusinessLogic: BusinessLogic {}
+protocol SignUpEnterNicknameBusinessLogic: BusinessLogic {
+    func nextButtonDidTapped()
+}
 
 final class SignUpEnterNicknameViewModel: BaseViewModel, SignUpEnterNicknameBusinessLogic {
-    let coordinator: ConfirmPasswordCoordinatorLogic
+    let coordinator: SignUpEnterNicknameCoordinatorLogic
 
-    init(coordinator: ConfirmPasswordCoordinatorLogic) {
+    init(coordinator: SignUpEnterNicknameCoordinatorLogic) {
         self.coordinator = coordinator
+    }
+
+    func nextButtonDidTapped() {
+
     }
 }

@@ -10,14 +10,22 @@ import Combine
 
 import CancelBag
 
-protocol SignUpEnterPasswordCoordinatorLogic {}
+protocol SignUpEnterPasswordCoordinatorLogic {
+    func coordinateSignUpEnterNickname()
+}
 
-protocol SignUpEnterPasswordBusinessLogic: BusinessLogic {}
+protocol SignUpEnterPasswordBusinessLogic: BusinessLogic {
+    func nextButtonDidTapped()
+}
 
 final class SignUpEnterPasswordViewModel: BaseViewModel, SignUpEnterPasswordBusinessLogic {
-    let coordinator: ConfirmPasswordCoordinatorLogic
+    let coordinator: SignUpEnterPasswordCoordinatorLogic
 
-    init(coordinator: ConfirmPasswordCoordinatorLogic) {
+    init(coordinator: SignUpEnterPasswordCoordinatorLogic) {
         self.coordinator = coordinator
+    }
+
+    func nextButtonDidTapped() {
+        coordinator.coordinateSignUpEnterNickname()
     }
 }
