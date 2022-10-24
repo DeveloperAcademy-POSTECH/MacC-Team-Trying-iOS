@@ -176,7 +176,7 @@ extension PlaceListView {
         DispatchQueue.main.async {
             self.snp.remakeConstraints { make in
                 make.leading.trailing.bottom.equalToSuperview()
-                make.top.equalTo(parentView.safeAreaLayoutGuide)
+                make.top.equalTo(parentView.safeAreaLayoutGuide).offset(10)
             }
             
             UIView.animate(

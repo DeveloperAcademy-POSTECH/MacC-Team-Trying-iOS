@@ -37,7 +37,7 @@ extension NavigationBarConfigurable {
     func configureMapNavigationBar(target: Any, dismissAction: Selector, pushAction: Selector) {
         let dismissButton: UIButton = {
             let button = UIButton()
-            button.setImage(UIImage(named: Constants.Image.circle_x), for: .normal)
+            button.setImage(UIImage(named: Constants.Image.deleteButton), for: .normal)
             button.addTarget(target, action: dismissAction, for: .touchUpInside)
             return button
         }()
@@ -48,7 +48,7 @@ extension NavigationBarConfigurable {
             button.contentHorizontalAlignment = .left
             button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
             button.setTitleColor(.designSystem(.grayC5C5C5), for: .normal)
-            button.backgroundColor = .designSystem(.gray333333)
+            button.backgroundColor = .designSystem(.black)
             button.titleLabel?.font = .designSystem(weight: .regular, size: ._15)
             button.layer.cornerRadius = 22
             button.addTarget(target, action: pushAction, for: .touchUpInside)
