@@ -20,11 +20,22 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
     lazy var findPasswordButton = FindPasswordButton(type: .system)
     lazy var planetImageView = UIImageView()
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        setupAnimations()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        leaveAnimator?.startAnimation()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        beginAnimations()
-        bringsInteractionFront()
+        enterAnimator?.startAnimation(afterDelay: fastDelay)
     }
 
     override func setAttribute() {
@@ -77,7 +88,7 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
 // MARK: - UI
 extension EnterPasswordViewController {
 
-    private func beginAnimations() {
+    private func setupAnimations() {
         enterAnimator?.addAnimations {
             self.planetImageView.alpha = 1
             self.planetImageView.snp.updateConstraints { make in
@@ -85,15 +96,6 @@ extension EnterPasswordViewController {
             }
             self.view.layoutIfNeeded()
         }
-
-        enterAnimator?.startAnimation(afterDelay: fastDelay)
-    }
-
-    private func bringsInteractionFront() {
-
-        view.bringSubviewToFront(passwordTextFieldView)
-        view.bringSubviewToFront(loginButton)
-        view.bringSubviewToFront(findPasswordButton)
     }
 }
 

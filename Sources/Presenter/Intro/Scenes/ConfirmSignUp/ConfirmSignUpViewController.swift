@@ -19,11 +19,22 @@ final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSig
     lazy var signUpButton = IntroButton(type: .system)
     lazy var planetImageView = UIImageView()
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        setupAnimations()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        leaveAnimator?.startAnimation()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        beginAnimations()
-        bringsInteractionFront()
+        enterAnimator?.startAnimation(afterDelay: fastDelay)
     }
 
     override func bind() {
@@ -89,7 +100,7 @@ final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSig
 
 extension ConfirmSignUpViewController {
 
-    private func beginAnimations() {
+    private func setupAnimations() {
 
         enterAnimator?.addAnimations {
             self.planetImageView.alpha = 1
@@ -99,13 +110,13 @@ extension ConfirmSignUpViewController {
             self.view.layoutIfNeeded()
         }
 
-        enterAnimator?.startAnimation(afterDelay: fastDelay)
-    }
-
-    private func bringsInteractionFront() {
-
-        view.bringSubviewToFront(emailTextFieldView)
-        view.bringSubviewToFront(signUpButton)
+        leaveAnimator?.addAnimations {
+            self.planetImageView.alpha = 0
+            self.planetImageView.snp.updateConstraints { make in
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+            }
+            self.view.layoutIfNeeded()
+        }
     }
 }
 

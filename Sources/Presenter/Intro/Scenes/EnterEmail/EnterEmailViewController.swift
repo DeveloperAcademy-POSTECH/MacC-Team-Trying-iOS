@@ -19,11 +19,22 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
     lazy var nextButton = IntroButton(type: .system)
     lazy var planetImageView = UIImageView()
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        setupAnimations()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        leaveAnimator?.startAnimation()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        beginAnimations()
-        bringsInteractionFront()
+        enterAnimator?.startAnimation(afterDelay: fastDelay)
     }
 
     override func bind() {
@@ -83,8 +94,8 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
 
 extension EnterEmailViewController {
 
-    private func beginAnimations() {
-
+    private func setupAnimations() {
+        
         enterAnimator?.addAnimations {
             self.planetImageView.alpha = 1
             self.planetImageView.snp.updateConstraints { make in
@@ -93,13 +104,13 @@ extension EnterEmailViewController {
             self.view.layoutIfNeeded()
         }
 
-        enterAnimator?.startAnimation(afterDelay: fastDelay)
-    }
-
-    private func bringsInteractionFront() {
-
-        view.bringSubviewToFront(emailTextFieldView)
-        view.bringSubviewToFront(nextButton)
+        leaveAnimator?.addAnimations {
+            self.planetImageView.alpha = 0
+            self.planetImageView.snp.updateConstraints { make in
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+            }
+            self.view.layoutIfNeeded()
+        }
     }
 }
 
@@ -108,13 +119,6 @@ extension EnterEmailViewController {
 
     @objc
     func loginButtonDidTapped() {
-        leaveAnimator?.addAnimations {
-            self.planetImageView.alpha = 0
-            self.planetImageView.snp.updateConstraints { make in
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
-            }
-            self.view.layoutIfNeeded()
-        }
 
         leaveAnimator?.addCompletion { [weak self] _ in
             self?.viewModel.enterEmailButtonDidTapped()
