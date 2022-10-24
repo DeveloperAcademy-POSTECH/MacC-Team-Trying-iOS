@@ -23,14 +23,27 @@ final class EnterCodeViewController: IntroBaseViewController<EnterCodeViewModel>
 
         setNotification()
     }
-    
+
+    override func bind() {
+
+        viewModel.$codeTextFieldState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.codeTextFieldView.updateState(currentState)
+            }
+            .cancel(with: cancelBag)
+    }
+
     override func setAttribute() {
         super.setAttribute()
 
+        navigationItem.backButtonTitle = ""
         navigationItem.title = "회원가입"
 
         titleLabels.title = "이메일 주소로 코드가 발송됐습니다!"
         titleLabels.subTitle = "인증코드를 입력해 주세요."
+
+        codeTextFieldView.delegate = self
 
         nextButton.title = "다음"
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
@@ -107,5 +120,11 @@ extension EnterCodeViewController {
     @objc
     func nextButtonDidTap() {
         viewModel.nextButtonDidTapped()
+    }
+}
+
+extension EnterCodeViewController: TextFieldWithMessageViewComponentDelegate {
+    func textFieldDidChange(_ text: String) {
+        viewModel.textFieldDidChange(text)
     }
 }

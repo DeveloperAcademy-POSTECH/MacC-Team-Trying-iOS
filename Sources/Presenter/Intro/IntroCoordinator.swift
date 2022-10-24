@@ -56,10 +56,6 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
         ConfirmPasswordViewController(viewModel: .init(coordinator: self))
     }
 
-    func createConfirmSignUpScene() -> UIViewController {
-        ConfirmSignUpViewController(viewModel: .init(coordinator: self))
-    }
-
     func createEnterCodeScene() -> UIViewController {
         EnterCodeViewController(viewModel: .init(coordinator: self))
     }
@@ -100,8 +96,9 @@ extension IntroCoordinator {
         navigationController?.pushViewController(createEnterCodeScene(), animated: true)
     }
 
-    func coordinateToConfirmSignUpScene() {
-        navigationController?.pushViewController(createConfirmSignUpScene(), animated: true)
+    func coordinateToConfirmSignUpScene(email: String) {
+        let destinationViewController = ConfirmSignUpViewController(viewModel: .init(email: email, coordinator: self))
+        navigationController?.pushViewController(destinationViewController, animated: true)
     }
 
     func coordinateToSignUpEnterPassword() {

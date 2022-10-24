@@ -28,7 +28,7 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
 
     override func bind() {
 
-        viewModel.$enterEmailButtonEnable
+        viewModel.$emailTextFieldState
             .receive(on: DispatchQueue.main)
             .sink { [weak self] currentState in
                 self?.emailTextFieldView.updateState(currentState)
@@ -128,7 +128,6 @@ extension EnterEmailViewController {
 extension EnterEmailViewController: TextFieldWithMessageViewComponentDelegate {
 
     func textFieldDidChange(_ text: String) {
-
         viewModel.textFieldDidChange(text)
     }
 }

@@ -23,13 +23,27 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
 
         setNotification()
     }
-    
+
+    override func bind() {
+
+        viewModel.$nicknameTextFieldState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.codeTextFieldView.updateState(currentState)
+                self?.nextButton.isEnabled = currentState == .validNickname
+            }
+            .cancel(with: cancelBag)
+    }
+
     override func setAttribute() {
         super.setAttribute()
 
+        navigationItem.backButtonTitle = ""
         navigationItem.title = "회원가입"
 
         titleLabels.subTitle = "닉네임을 입력해 주세요!"
+
+        codeTextFieldView.delegate = self
 
         nextButton.title = "다음"
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
@@ -106,5 +120,12 @@ extension SignUpEnterNicknameViewController {
     @objc
     func nextButtonDidTap() {
         viewModel.nextButtonDidTapped()
+    }
+}
+
+extension SignUpEnterNicknameViewController: TextFieldWithMessageViewComponentDelegate {
+
+    func textFieldDidChange(_ text: String) {
+        viewModel.textFieldDidChange(text)
     }
 }

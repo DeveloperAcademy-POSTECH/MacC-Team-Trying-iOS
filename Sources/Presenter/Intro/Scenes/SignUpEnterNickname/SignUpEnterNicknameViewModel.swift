@@ -14,16 +14,31 @@ protocol SignUpEnterNicknameCoordinatorLogic {}
 
 protocol SignUpEnterNicknameBusinessLogic: BusinessLogic {
     func nextButtonDidTapped()
+    func textFieldDidChange(_ text: String)
 }
 
 final class SignUpEnterNicknameViewModel: BaseViewModel, SignUpEnterNicknameBusinessLogic {
     let coordinator: SignUpEnterNicknameCoordinatorLogic
 
+    @Published var nicknameTextFieldState: TextFieldState
+    var nickname: String
+
     init(coordinator: SignUpEnterNicknameCoordinatorLogic) {
+        self.nicknameTextFieldState = .emptyNickname
+        self.nickname = ""
         self.coordinator = coordinator
     }
 
     func nextButtonDidTapped() {
 
+    }
+
+    func textFieldDidChange(_ text: String) {
+        nickname = text
+
+        // TODO: 닉네임 정규식
+        let nicknamePattern = "^[A-Za-z0-9].{8,12}"
+        let result = text.range(of: nicknamePattern, options: .regularExpression)
+        nicknameTextFieldState = result != nil ? .validNickname : .invalidNickname
     }
 }

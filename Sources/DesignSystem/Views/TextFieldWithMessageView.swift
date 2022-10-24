@@ -70,11 +70,15 @@ final class TextFieldWithMessageView: UIView {
 // MARK: - TextFieldWithMessageViewComponent
 extension TextFieldWithMessageView: TextFieldWithMessageViewComponent {
 
+    func updateText(_ text: String) {
+        textField.text = text
+    }
+
     func updateState(_ state: TextFieldState) {
         stateLabel.isHidden = state == .good
-        stateLabel.textColor = state.color
+        stateLabel.textColor = state.textColor
         stateLabel.text = state.message
-        textField.layer.borderColor = state.color?.cgColor
+        textField.layer.borderColor = state.borderColor?.cgColor
         textField.layer.borderWidth = 1
 
     }

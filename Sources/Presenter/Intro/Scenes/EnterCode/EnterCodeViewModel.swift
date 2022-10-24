@@ -16,22 +16,39 @@ protocol EnterCodeCoordinatorLogic {
 
 protocol EnterCodeBuisnessLogic: BusinessLogic {
     func nextButtonDidTapped()
+    func textFieldDidChange(_ text: String)
 }
 
 final class EnterCodeViewModel: BaseViewModel, EnterCodeBuisnessLogic {
     let coordinator: EnterCodeCoordinatorLogic
 
+    @Published var codeTextFieldState: TextFieldState
+    var certificationCode: String
+
     init(coordinator: EnterCodeCoordinatorLogic) {
+        self.codeTextFieldState = .empty
+        self.certificationCode = ""
         self.coordinator = coordinator
     }
 
     func nextButtonDidTapped() {
-        coordinator.coordinateToSignUpEnterPassword()
+
+        // TODO: 통신
+        if rightCode == certificationCode {
+            coordinator.coordinateToSignUpEnterPassword()
+        } else {
+            codeTextFieldState = .wrongCertificationNumber
+        }
+    }
+
+    func textFieldDidChange(_ text: String) {
+        certificationCode = text
+        codeTextFieldState = .empty
     }
 }
 
 extension EnterCodeViewModel {
     var rightCode: String {
-        return "aaaaaa"
+        "aaaaaa"
     }
 }
