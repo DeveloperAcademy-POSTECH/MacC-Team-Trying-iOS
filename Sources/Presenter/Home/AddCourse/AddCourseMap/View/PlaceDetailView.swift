@@ -34,15 +34,11 @@ final class PlaceDetailView: UIView {
         return label
     }()
     lazy var addCourseButton = SmallRectButton(type: .add)
-    private lazy var relatedCourseStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.distribution = .fillEqually
-        stackView.spacing = 10
-        stackView.layer.cornerRadius = 10
-        stackView.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
-        return stackView
+    private lazy var relatedCourseContainerView: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 10
+        view.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
+        return view
     }()
     private lazy var relatedCourseLabel: UILabel = {
         let label = UILabel()
@@ -74,9 +70,8 @@ final class PlaceDetailView: UIView {
         self.layer.cornerRadius = 20
         
         placeInfoView.addSubviews(titleLabel, categoryLabel, addressLabel)
-        relatedCourseStackView.addArrangedSubview(relatedCourseLabel)
-        relatedCourseStackView.addArrangedSubview(relatedCourseNumberLabel)
-        self.addSubviews(placeInfoView, addCourseButton, relatedCourseStackView)
+        relatedCourseContainerView.addSubviews(relatedCourseLabel, relatedCourseNumberLabel)
+        self.addSubviews(placeInfoView, addCourseButton, relatedCourseContainerView)
         
         placeInfoView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(33)
@@ -103,10 +98,18 @@ final class PlaceDetailView: UIView {
             make.trailing.equalToSuperview().inset(20)
         }
         
-        relatedCourseStackView.snp.makeConstraints { make in
-            make.height.equalTo(100)
+        relatedCourseContainerView.snp.makeConstraints { make in
+            make.top.equalTo(placeInfoView.snp.bottom).offset(30)
             make.leading.trailing.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview().inset(64)
+            make.height.equalTo(100)
+        }
+        relatedCourseLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().inset(24)
+        }
+        relatedCourseNumberLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(24)
         }
     }
 }
