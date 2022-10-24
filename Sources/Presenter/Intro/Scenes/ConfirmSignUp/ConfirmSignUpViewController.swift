@@ -12,39 +12,99 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class ConfirmSignUpViewController: BaseViewController {
-    var viewModel: ConfirmSignUpViewModel?
-    
-    /// View Model과 bind 합니다.
-    private func bind() {
-        // input
-        
-        // output
-        
+final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSignUpViewModel> {
+
+    lazy var titleLabels = IntroTitleLabels()
+    lazy var emailTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .email)
+    lazy var signUpButton = IntroButton(type: .system)
+    lazy var planetImageView = UIImageView()
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        beginAnimations()
+        bringsInteractionFront()
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        setUI()
-        bind()
+    override func setAttribute() {
+        super.setAttribute()
+
+        title = "로그인"
+
+        titleLabels.title = "등록된 이메일이 없네요."
+        titleLabels.subTitle = "가입하시겠어요?"
+
+        planetImageView.alpha = 0
+        planetImageView.image = .init(.img_planet)
+
+        emailTextFieldView.delegate = self
+
+        signUpButton.title = "가입하기"
+        signUpButton.addTarget(self, action: #selector(signUpButtonDidTapped), for: .touchUpInside)
+    }
+
+    override func setLayout() {
+        super.setLayout()
+
+        view.addSubview(titleLabels)
+        view.addSubview(emailTextFieldView)
+        view.addSubview(signUpButton)
+        view.addSubview(planetImageView)
+
+        titleLabels.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(54)
+        }
+        emailTextFieldView.snp.makeConstraints { make in
+            make.top.equalTo(titleLabels.snp.bottom).offset(30)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
+        signUpButton.snp.makeConstraints { make in
+            make.top.equalTo(emailTextFieldView.snp.bottom).offset(12)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
+        planetImageView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            make.leading.trailing.equalToSuperview().inset(-46)
+        }
     }
 }
 
-// MARK: - UI
 extension ConfirmSignUpViewController {
-    private func setUI() {
-        setAttributes()
-        setLayout()
+
+    private func beginAnimations() {
+
+        enterAnimator?.addAnimations {
+            self.planetImageView.alpha = 1
+            self.planetImageView.snp.updateConstraints { make in
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(179)
+            }
+            self.view.layoutIfNeeded()
+        }
+
+        enterAnimator?.startAnimation(afterDelay: fastDelay)
     }
-    
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
+
+    private func bringsInteractionFront() {
+
+        view.bringSubviewToFront(emailTextFieldView)
+        view.bringSubviewToFront(signUpButton)
     }
-    
-    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setLayout() {
-        
+}
+
+// MARK: - Button Clicked
+
+extension ConfirmSignUpViewController {
+
+    @objc
+    func signUpButtonDidTapped() {
+        viewModel.signUpButtonDidTapped()
+    }
+}
+
+extension ConfirmSignUpViewController: TextFieldWithMessageViewComponentDelegate {
+
+    func textFieldDidChange(_ text: String) {
+
     }
 }

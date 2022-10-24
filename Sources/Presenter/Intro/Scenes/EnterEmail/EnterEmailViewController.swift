@@ -70,7 +70,6 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
     }
 }
 
-// MARK: - UI
 extension EnterEmailViewController {
 
     private func beginAnimations() {

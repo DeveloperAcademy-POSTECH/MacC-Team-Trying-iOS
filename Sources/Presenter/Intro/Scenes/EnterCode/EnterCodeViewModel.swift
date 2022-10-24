@@ -11,11 +11,11 @@ import Combine
 import CancelBag
 
 protocol EnterCodeCoordinatorLogic {
-
+    func coordinateToSignUpEnterPassword()
 }
 
 protocol EnterCodeBuisnessLogic: BusinessLogic {
-
+    func nextButtonDidTapped()
 }
 
 final class EnterCodeViewModel: BaseViewModel, EnterCodeBuisnessLogic {
@@ -23,5 +23,9 @@ final class EnterCodeViewModel: BaseViewModel, EnterCodeBuisnessLogic {
 
     init(coordinator: EnterCodeCoordinatorLogic) {
         self.coordinator = coordinator
+    }
+
+    func nextButtonDidTapped() {
+        coordinator.coordinateToSignUpEnterPassword()
     }
 }

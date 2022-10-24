@@ -12,6 +12,7 @@ import CancelBag
 
 protocol EnterEmailCoordinatorLogic {
     func coordinateToEnterPasswordScene()
+    func coordinateToConfirmSignUpScene()
 }
 
 protocol EnterEmailBusinessLogic: BusinessLogic {
@@ -26,6 +27,8 @@ final class EnterEmailViewModel: BaseViewModel, EnterEmailBusinessLogic {
     }
 
     func enterEmailButtonDidTapped() {
-        coordinator.coordinateToEnterPasswordScene()
+        // TODO: 화면 전환 분기처리
+//        coordinator.coordinateToEnterPasswordScene()
+        coordinator.coordinateToConfirmSignUpScene()
     }
 }

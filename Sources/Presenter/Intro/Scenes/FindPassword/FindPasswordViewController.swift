@@ -18,7 +18,11 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
     lazy var emailView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .email)
     lazy var sendEmailButton = IntroButton(type: .system)
 
-    override func bind() {}
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        setNotification()
+    }
 
     override func setAttribute() {
         super.setAttribute()
@@ -30,8 +34,6 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
 
         sendEmailButton.title = "확인"
         sendEmailButton.addTarget(self, action: #selector(sendEmailButtonDidTapped), for: .touchUpInside)
-
-        setNofification()
     }
 
     override func setLayout() {
@@ -58,7 +60,7 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
 
 extension FindPasswordViewController {
 
-    private func setNofification() {
+    private func setNotification() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillShow),
