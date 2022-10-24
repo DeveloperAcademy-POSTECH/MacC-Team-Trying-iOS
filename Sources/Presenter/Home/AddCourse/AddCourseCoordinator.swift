@@ -19,6 +19,7 @@ final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, Register
         let viewModel = AddCourseMapViewModel(coordinator: self)
         let viewController = AddCourseMapViewController(viewModel: viewModel)
         
+        self.navigationController?.isNavigationBarHidden = false
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
