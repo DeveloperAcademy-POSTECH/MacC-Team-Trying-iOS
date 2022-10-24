@@ -17,10 +17,11 @@ final class FeedCoordinator: Coordinator {
     
     func start() {
         guard let navigationController = navigationController else { return }
-        let viewController = FeedTestViewController()
-        let viewModel = FeedTestViewModel()
+        let viewController = FeedViewController()
+        let viewModel = FeedViewModel.shared
         viewController.viewModel = viewModel
         
         navigationController.pushViewController(viewController, animated: true)
+        navigationController.isNavigationBarHidden = true
     }
 }
