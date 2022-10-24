@@ -64,17 +64,17 @@ final class TextFieldWithMessageView: UIView {
     }
 
     lazy var textField = UITextField()
-    lazy var errorLabel = UILabel()
+    lazy var stateLabel = UILabel()
 }
 
 // MARK: - TextFieldWithMessageViewComponent
 extension TextFieldWithMessageView: TextFieldWithMessageViewComponent {
 
-    func showError(type errorType: IntroErrorType) {
-        errorLabel.isHidden = errorType == .noError
-        errorLabel.textColor = errorType.color
-        errorLabel.text = errorType.message
-        textField.layer.borderColor = errorType.color?.cgColor
+    func updateState(_ state: TextFieldState) {
+        stateLabel.isHidden = state == .good
+        stateLabel.textColor = state.color
+        stateLabel.text = state.message
+        textField.layer.borderColor = state.color?.cgColor
         textField.layer.borderWidth = 1
 
     }
@@ -101,8 +101,8 @@ extension TextFieldWithMessageView {
     }
 
     private func setAttribute() {
-        errorLabel.textColor = normalColor
-        errorLabel.font = .designSystem(weight: .regular, size: ._15)
+        stateLabel.textColor = normalColor
+        stateLabel.font = .designSystem(weight: .regular, size: ._11)
         textField.addTarget(self, action: #selector(textFieldDidchange), for: .editingChanged)
         textField.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.2)
         textField.attributedPlaceholder = NSAttributedString(
@@ -124,7 +124,7 @@ extension TextFieldWithMessageView {
 
     private func addSubviews() {
         addSubview(textField)
-        addSubview(errorLabel)
+        addSubview(stateLabel)
     }
 
     private func setLayout() {
@@ -132,7 +132,7 @@ extension TextFieldWithMessageView {
             make.height.equalTo(50)
             make.top.leading.trailing.equalToSuperview()
         }
-        errorLabel.snp.makeConstraints { make in
+        stateLabel.snp.makeConstraints { make in
             make.top.equalTo(textField.snp.bottom).offset(7)
             make.leading.trailing.equalToSuperview().inset(8)
             make.height.equalTo(15)

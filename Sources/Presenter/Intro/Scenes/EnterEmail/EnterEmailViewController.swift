@@ -26,6 +26,17 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
         bringsInteractionFront()
     }
 
+    override func bind() {
+
+        viewModel.$enterEmailButtonEnable
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.emailTextFieldView.updateState(currentState)
+                self?.nextButton.isEnabled = currentState == .good
+            }
+            .cancel(with: cancelBag)
+    }
+
     override func setAttribute() {
         super.setAttribute()
 
@@ -117,13 +128,7 @@ extension EnterEmailViewController {
 extension EnterEmailViewController: TextFieldWithMessageViewComponentDelegate {
 
     func textFieldDidChange(_ text: String) {
-        let emailPattern = #"^\S+@\S+\.\S+$"#
-        let result = text.range(of: emailPattern, options: .regularExpression)
-        let validEmail = (result != nil)
-        if validEmail {
-            emailTextFieldView.showError(type: .noError)
-        } else {
-            emailTextFieldView.showError(type: .invalidEmail)
-        }
+
+        viewModel.textFieldDidChange(text)
     }
 }

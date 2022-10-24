@@ -48,10 +48,10 @@ final class TextFieldWithMessageViewTests: XCTestCase {
     }
 
     func testTextFieldWithMessageView_이메일_validation_오류메시지가_발생했습니다() {
-        let error = IntroErrorType.invalidEmail
-        sut.showError(type: error)
-        XCTAssertEqual(sut.errorLabel.text, error.message)
-        XCTAssertEqual(sut.errorLabel.textColor, error.color)
+        let error = TextFieldState.invalidEmail
+        sut.updateState(error)
+        XCTAssertEqual(sut.stateLabel.text, error.message)
+        XCTAssertEqual(sut.stateLabel.textColor, error.color)
         XCTAssertEqual(sut.textField.layer.borderColor, error.color?.cgColor)
     }
 

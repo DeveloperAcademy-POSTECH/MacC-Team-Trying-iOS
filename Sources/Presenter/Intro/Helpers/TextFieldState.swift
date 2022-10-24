@@ -1,5 +1,5 @@
 //
-//  IntroErrorType.swift
+//  TextFieldState.swift
 //  MatStar
 //
 //  Created by Jaeyong Lee on 2022/10/15.
@@ -8,19 +8,23 @@
 
 import UIKit
 
-enum IntroErrorType {
+enum TextFieldState {
     case invalidEmail // 이메일 정보가 올바르지 않은 경우
-    case invalidPassword //
+    case invalidPassword
+    case invalidNickname
     case wrongPassword // 잘못된 비밀번호를 입력했을 경우
     case wrongCertificationNumber // 인증번호가 올바르지 못한 경우
     case noUser // 등록되지 않은 유저인 경우
-    case noError // 에러가 없는 경우
+    case good // 에러가 없는 경우
+    case empty
 
     var message: String? {
         switch self {
         case .invalidEmail:
             return "올바른 이메일 주소가 아닙니다."
         case .invalidPassword:
+            return "한글 + 영어 + 숫자 + 특수문자 포함 8~12자 이내"
+        case .invalidNickname:
             return "한글 + 영어 + 숫자  포함 8자 이내"
         case .wrongPassword:
             return "비밀번호가 틀렸습니다."
@@ -28,15 +32,19 @@ enum IntroErrorType {
             return "인증번호가 틀렸습니다!"
         case .noUser:
             return "등록된 정보가 없습니다."
-        case .noError:
+        case .good:
             return nil
+        case .empty:
+            return ""
         }
     }
 
     var color: UIColor? {
         switch self {
-        case .noError:
-            return .green
+        case .good:
+            return .clear
+        case .empty:
+            return .clear
         default:
             return .red
         }
