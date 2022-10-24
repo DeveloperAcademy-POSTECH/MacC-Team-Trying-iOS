@@ -32,6 +32,7 @@ struct Constants {
         static let closedLockIcon = "lock_closed"
         static let openLockIcon = "lock_open"
         static let appIcon = "app_icon"
+        static let starAnnotation = "star_annotation"
     }
     
     struct Lottie {
