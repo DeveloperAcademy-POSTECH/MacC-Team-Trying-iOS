@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+// Init시 setButtonDetailConfiguration, addTarget함수를 사용하시면 됩니다.
 class FollowButton: UIButton {
     
     private var isFollow = false

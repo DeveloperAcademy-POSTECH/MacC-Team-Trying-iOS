@@ -21,7 +21,7 @@ class PlanetTableViewCell: UITableViewCell {
             planetImageView.image = UIImage(named: planet.planetImageString)
             planetNameLabel.text = planet.planetNameString
             ownerLabel.text = planet.hosts.joined(separator: ", ")
-            followButton.isSelected = planet.isFollow
+            followButton.setButtonDetailConfiguration(isFollow: planet.isFollow)
         }
     }
     

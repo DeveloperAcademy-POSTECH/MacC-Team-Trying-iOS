@@ -42,6 +42,7 @@ final class SearchViewModel: BaseViewModel {
             .dropFirst()
             .compactMap { $0 }
             .sink { str in
+                print("call")
                 switch self.currentCategory {
                 case .course:
                     self.fetchCourses(str)
@@ -73,7 +74,7 @@ final class SearchViewModel: BaseViewModel {
 
 extension SearchViewModel {
     
-    func fetchCourses(_ string: String = "") {
+    func fetchCourses(_ string: String) {
         //MARK: 임시 데이터 타입입니다.
             guard self.currentCategory == .course else { return }
             self.courses = ([
@@ -85,7 +86,7 @@ extension SearchViewModel {
             .filter { $0.locationString.contains(string) }
     }
     
-    func fetchPlanets(_ string: String = "") {
+    func fetchPlanets(_ string: String) {
         //MARK: 임시 데이터 타입입니다.
             guard self.currentCategory == .planet else { return }
             self.planets = ([
