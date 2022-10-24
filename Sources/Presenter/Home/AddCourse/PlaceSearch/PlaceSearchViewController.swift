@@ -13,7 +13,7 @@ import CancelBag
 import SnapKit
 
 final class PlaceSearchViewController: BaseViewController {
-    var viewModel: PlaceSearchViewModel?
+    var viewModel: PlaceSearchViewModel
     
     private lazy var placeSearchTableView: UITableView = {
         let tableView = UITableView()
@@ -34,11 +34,20 @@ final class PlaceSearchViewController: BaseViewController {
         // input
         
         // output
-        if viewModel!.places.isEmpty {
+        if viewModel.places.isEmpty {
             navigationItem.rightBarButtonItem?.isEnabled = false
         }
     }
-
+    
+    init(viewModel: PlaceSearchViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .designSystem(.black)
@@ -71,7 +80,7 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
             make.bottom.equalToSuperview()
         }
         
-        if let viewModel = viewModel, viewModel.places.isEmpty {
+        if viewModel.places.isEmpty {
             self.presentEmptyResultView()
         }
     }
@@ -89,15 +98,15 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel?.places.count ?? 0
+        viewModel.places.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PlaceSearchTableViewCell.identifier, for: indexPath) as? PlaceSearchTableViewCell else { return UITableViewCell() }
-        let place = viewModel?.places[indexPath.row]
-        cell.titleLabel.text = place?.title
-        cell.addressLabel.text = place?.address
-        cell.categoryLabel.text = place?.category
+        let place = viewModel.places[indexPath.row]
+        cell.titleLabel.text = place.title
+        cell.addressLabel.text = place.address
+        cell.categoryLabel.text = place.category
         cell.addCourseButton.tag = indexPath.row
         
         cell.addCourseButton.addTarget(self, action: #selector(addCourseButtonPressed(_:)), for: .touchUpInside)
@@ -119,12 +128,13 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
 extension PlaceSearchViewController {
     @objc
     private func backButtonPressed(_ sender: UIButton) {
-        print("✨back button pressed!")
+        viewModel.pop()
     }
     
     @objc
     private func doneButtonPressed(_ sender: UIButton) {
-        print("done")
+        // TODO: 완료 처리하기
+        viewModel.pop()
     }
     
     @objc

@@ -15,7 +15,7 @@ import CancelBag
 import SnapKit
 
 final class AddCourseMapViewController: BaseViewController {
-    var viewModel: AddCourseMapViewModel?
+    var viewModel: AddCourseMapViewModel
     
     private var placeListViewHeight: CGFloat {
         // 기본으로 줘야하는 높이 : 45
@@ -24,7 +24,7 @@ final class AddCourseMapViewController: BaseViewController {
         // 위 3개는 최소 높이. (45 + 15 + 58 = 118)
         // 이후 셀 하나가 추가되는 만큼 셀 높이 추가해주기
         // 셀 하나의 높이 : 67
-        switch viewModel?.places.count {
+        switch viewModel.places.count {
         case 0:
             return 0
         case 1:
@@ -76,19 +76,23 @@ final class AddCourseMapViewController: BaseViewController {
         return view
     }()
     private lazy var placeListView: PlaceListView = {
-        let view = PlaceListView(parentView: self.view, numberOfItems: (viewModel?.places.count)!)
+        let view = PlaceListView(parentView: self.view, numberOfItems: viewModel.places.count)
         view.mapPlaceTableView.dataSource = self
         view.mapPlaceTableView.delegate = self
         return view
     }()
-    private lazy var nextButton = MainButton(type: .next)
+    private lazy var nextButton: MainButton = {
+        let button = MainButton(type: .next)
+        button.addTarget(self, action: #selector(didTapNextButton(_:)), for: .touchUpInside)
+        return button
+    }()
     
     /// View Model과 bind 합니다.
     private func bind() {
         // input
         
         // output
-        self.viewModel?.$places
+        self.viewModel.$places
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] _ in
                 guard let self = self else { return }
@@ -96,11 +100,20 @@ final class AddCourseMapViewController: BaseViewController {
             })
             .cancel(with: cancelBag)
         
-        self.viewModel?.$places
+        self.viewModel.$places
             .sink(receiveValue: { [weak self] places in
                 self?.placeListView.numberOfItems = places.count
             })
             .cancel(with: cancelBag)
+    }
+    
+    init(viewModel: AddCourseMapViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -132,25 +145,13 @@ final class AddCourseMapViewController: BaseViewController {
             self.present(alert, animated: true, completion: nil)
         }
     }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        navigationController?.tabBarController?.tabBar.isHidden = false
-    }
 }
 
 // MARK: - UI
 extension AddCourseMapViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(nextButtonPressed(_:)))
-        setAttributes()
+        configureMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(placeSearchButtonPressed(_:)))
         setLayout()
-    }
-    
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -189,18 +190,18 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel?.places.count ?? 0
+        viewModel.places.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MapPlaceTableViewCell.identifier, for: indexPath) as? MapPlaceTableViewCell else { return UITableViewCell() }
         
-        let place = viewModel?.places[indexPath.row]
+        let place = viewModel.places[indexPath.row]
         
         cell.numberLabel.text = String(indexPath.row + 1)
-        cell.titleLabel.text = place?.title
-        cell.categoryLabel.text = place?.category
-        cell.addressLabel.text = place?.address
+        cell.titleLabel.text = place.title
+        cell.categoryLabel.text = place.category
+        cell.addressLabel.text = place.address
         cell.deleteButton.tag = indexPath.row
         
         cell.deleteButton.addTarget(self, action: #selector(didTapDeleteButton(_:)), for: .touchUpInside)
@@ -217,30 +218,35 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
 extension AddCourseMapViewController {
     @objc
     private func backButtonPressed(_ sender: UIButton) {
-        viewModel?.pop()
+        viewModel.pop()
     }
     
     @objc
-    private func nextButtonPressed(_ sender: UIButton) {
-        print("next")
+    private func placeSearchButtonPressed(_ sender: UIButton) {
+        viewModel.pushToPlaceSearchView()
     }
     
     @objc
     private func didTapAddCourseButton(_ sender: UIButton) {
         presentPlaceListView()
-        viewModel?.addPlace(self.placeDetailView.selectedPlace!, annotation: recentAnnotation!)
+        viewModel.addPlace(self.placeDetailView.selectedPlace!, annotation: recentAnnotation!)
         recentAnnotation = nil
     }
     
     @objc
     private func didTapDeleteButton(_ sender: UIButton) {
-        let annotation = (viewModel?.places[sender.tag].annotation)!
+        let annotation = viewModel.places[sender.tag].annotation
         placeMapView.removeAnnotation(annotation)
-        viewModel?.deletePlace(sender.tag)
+        viewModel.deletePlace(sender.tag)
         
-        if (viewModel?.places.count)! < 3 {
+        if viewModel.places.count < 3 {
             presentPlaceListView()
         }
+    }
+    
+    @objc
+    private func didTapNextButton(_ sender: UIButton) {
+        viewModel.pushToRegisterCourseView()
     }
     
     private func presentPlaceDetailView(with place: CLPlacemark) {

@@ -11,7 +11,13 @@ import CoreLocation
 import MapKit
 
 final class PlaceSearchViewModel: BaseViewModel {
+    var coordinator: Coordinator
     
+    init(coordinator: Coordinator) {
+        self.coordinator = coordinator
+    }
+    
+    // MARK: Mock
     var places: [Place] = [
         Place(title: "포항공대", category: "대학교", address: "경북 포항시 남구 효리단길", location: CLLocationCoordinate2D(latitude: 36.01436040811483, longitude: 129.32476193278993), annotation: StarAnnotation(coordinate: CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0))),
         Place(title: "효자초등학교", category: "초등학교", address: "경북 포항시 남구 이효리", location: CLLocationCoordinate2D(latitude: 36.00553989283799, longitude: 129.33772074559323), annotation: StarAnnotation(coordinate: CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0))),
@@ -21,5 +27,12 @@ final class PlaceSearchViewModel: BaseViewModel {
         Place(title: "널구지공원", category: "공원", address: "충북 서산시 어딘가", location: CLLocationCoordinate2D(latitude: 35.16319093471162, longitude: 129.1291314739054), annotation: StarAnnotation(coordinate: CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0))),
         Place(title: "금련산", category: "산", address: "경북 포항시 북구 창포동", location: CLLocationCoordinate2D(latitude: 35.161204733671845, longitude: 129.09472209989778), annotation: StarAnnotation(coordinate: CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0)))
     ]
-    
+}
+
+// MARK: - Coordinating
+extension PlaceSearchViewModel {
+    func pop() {
+        guard let coordinator = coordinator as? Popable else { return }
+        coordinator.popViewController()
+    }
 }

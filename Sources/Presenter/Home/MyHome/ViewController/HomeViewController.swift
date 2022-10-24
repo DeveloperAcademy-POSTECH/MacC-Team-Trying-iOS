@@ -47,6 +47,11 @@ final class HomeViewController: BaseViewController {
         setAttributes()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.tabBarController?.tabBar.isHidden = false
+    }
     
     /// pangesture에 따라서 요소들을 변화시키는 함수
     /// - Parameters:
@@ -129,12 +134,11 @@ final class HomeViewController: BaseViewController {
     
     @objc
     func courseRegistrationButtonTapped() {
-        viewModel.pushToCourseRegisterView()
+        viewModel.startAddCourseFlow()
     }
     
     @objc
     func alarmButtonTapped() {
-        print("알림 버튼이 눌림")
         viewModel.pushToAlarmView()
     }
     

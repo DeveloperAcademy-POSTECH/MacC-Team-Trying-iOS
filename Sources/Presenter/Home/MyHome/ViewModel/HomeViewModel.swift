@@ -13,11 +13,6 @@ protocol AlarmViewCoordinating {
     func pushToAlarmViewController()
 }
 
-// TODO : - 코스등록ViewController로 연결
-protocol CourseRegisterViewCoordinating {
-    func pushToCourseRegisterViewController()
-}
-
 struct Constellation {
     let name: String
     let image: UIImage?
@@ -63,8 +58,8 @@ extension HomeViewModel {
         coordinator.pushToAlarmViewController()
     }
     
-    func pushToCourseRegisterView() {
-        guard let coordinator = coordinator as? CourseRegisterViewCoordinating else { return }
-        coordinator.pushToCourseRegisterViewController()
+    func startAddCourseFlow() {
+        guard let coordinator = coordinator as? HomeCoordinator else { return }
+        coordinator.startAddCourseFlow()
     }
 }

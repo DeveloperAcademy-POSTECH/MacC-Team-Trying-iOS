@@ -16,6 +16,14 @@ protocol Popable {
     func popViewController()
 }
 
+protocol PlaceSearchCoordinating {
+    func pushToPlaceSearchViewController()
+}
+
+protocol RegisterCourseCoordinating {
+    func pushToRegisterCourseViewController()
+}
+
 final class AddCourseMapViewModel: BaseViewModel {
     var coordinator: Coordinator
     @Published var places: [Place]
@@ -31,6 +39,16 @@ extension AddCourseMapViewModel {
     func pop() {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
+    }
+    
+    func pushToPlaceSearchView() {
+        guard let coordinator = coordinator as? PlaceSearchCoordinating else { return }
+        coordinator.pushToPlaceSearchViewController()
+    }
+    
+    func pushToRegisterCourseView() {
+        guard let coordinator = coordinator as? RegisterCourseCoordinating else { return }
+        coordinator.pushToRegisterCourseViewController()
     }
 }
 
