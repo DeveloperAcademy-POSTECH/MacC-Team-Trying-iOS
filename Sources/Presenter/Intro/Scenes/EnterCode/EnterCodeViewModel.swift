@@ -29,3 +29,9 @@ final class EnterCodeViewModel: BaseViewModel, EnterCodeBuisnessLogic {
         coordinator.coordinateToSignUpEnterPassword()
     }
 }
+
+extension EnterCodeViewModel {
+    var rightCode: String {
+        return "aaaaaa"
+    }
+}
