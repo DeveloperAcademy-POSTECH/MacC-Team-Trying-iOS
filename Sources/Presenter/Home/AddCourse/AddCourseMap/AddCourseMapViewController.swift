@@ -7,6 +7,7 @@
 //
 
 import Combine
+import CoreLocation
 import MapKit
 import UIKit
 
@@ -36,6 +37,18 @@ final class AddCourseMapViewController: BaseViewController {
     }
     
     private var recentAnnotation: MKAnnotation?
+    private lazy var locationManager: CLLocationManager = {
+        let manager = CLLocationManager()
+        manager.delegate = self
+        manager.requestWhenInUseAuthorization()
+        manager.desiredAccuracy = .greatestFiniteMagnitude
+        manager.startUpdatingLocation()
+        manager.startUpdatingHeading()
+        manager.startMonitoringSignificantLocationChanges()
+        return manager
+    }()
+    
+    var currentLocation: CLLocation!
     private lazy var placeMapView: MKMapView = {
         let map = MKMapView()
         map.register(StarAnnotationView.self, forAnnotationViewWithReuseIdentifier: StarAnnotationView.identifier)
@@ -43,11 +56,16 @@ final class AddCourseMapViewController: BaseViewController {
         map.setRegion(
             // TODO: 사용자의 현재 위치 정보를 가져오기
             MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: 36.01436040811483, longitude: 129.32476193278993),
+                center: CLLocationCoordinate2D(
+                    latitude: currentLocation.coordinate.latitude,
+                    longitude: currentLocation.coordinate.longitude
+                ),
                 span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
             ),
             animated: true
         )
+        map.showsUserLocation = true
+        map.setUserTrackingMode(.followWithHeading, animated: true)
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapMapView(_:)))
         map.addGestureRecognizer(tapGestureRecognizer)
         return map
@@ -88,8 +106,31 @@ final class AddCourseMapViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        currentLocation = locationManager.location
         setUI()
         bind()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if CLLocationManager.locationServicesEnabled() {
+            if CLLocationManager.authorizationStatus() == .denied || CLLocationManager.authorizationStatus() == .restricted {
+                let alert = UIAlertController(title: "Error", message: "위치 서비스 기능이 꺼져있습니다.", preferredStyle: .alert)
+                let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
+                alert.addAction(confirmAction)
+                self.present(alert, animated: true, completion: nil)
+            } else {
+                locationManager.desiredAccuracy = kCLLocationAccuracyBest
+                locationManager.delegate = self
+                locationManager.requestWhenInUseAuthorization()
+            }
+        } else {
+            let alert = UIAlertController(title: "Error", message: "위치 서비스 제공을 할 수 없습니다.", preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
+            alert.addAction(confirmAction)
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -308,7 +349,7 @@ extension AddCourseMapViewController {
 }
 
 // MARK: - MKMapViewDelegate, CLLocationManagerDelegate
-extension AddCourseMapViewController: MKMapViewDelegate, CLLocationManagerDelegate {
+extension AddCourseMapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? StarAnnotation else { return nil }
         
@@ -329,7 +370,26 @@ extension AddCourseMapViewController: MKMapViewDelegate, CLLocationManagerDelega
     }
 }
 
-// MARK: - Helper Methods
-extension AddCourseMapViewController {
+extension AddCourseMapViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        locationManager = manager
+        currentLocation = locationManager.location
+    }
     
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+        case .notDetermined :
+            manager.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse:
+            self.currentLocation = locationManager.location
+        case .authorizedAlways:
+            self.currentLocation = locationManager.location
+        case .restricted :
+            break
+        case .denied :
+            break
+        default:
+            break
+        }
+    }
 }
