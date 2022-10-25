@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class CoursesViewController: UIViewController {
+class CoursesViewController: BaseViewController {
     
     var courses: [Constellation] = []
     
@@ -20,20 +20,19 @@ class CoursesViewController: UIViewController {
         collectionView.showsVerticalScrollIndicator = false
         return collectionView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
         setUI()
         setNavigationBar()
     }
     
     func setNavigationBar() {
-        // MARK: - 네비게이션 title의 font변경
+        // MARK: 네비게이션 title의 font변경
         self.title = "내 별자리"
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20)]
         
-        // MARK: - 네비게이션 rightbutton커스텀
+        // MARK: 네비게이션 rightbutton커스텀
         let mapButton = UIButton(type: .custom)
         let configure = UIImage.SymbolConfiguration(pointSize: 23, weight: .light, scale: .default)
         mapButton.setImage(UIImage(systemName: "map", withConfiguration: configure), for: .normal)
@@ -42,7 +41,7 @@ class CoursesViewController: UIViewController {
         let rightBarButton = UIBarButtonItem(customView: mapButton)
         self.navigationItem.rightBarButtonItem = rightBarButton
         
-        // MARK: - 네비게이션이 너무 위에 붙어있어서 height증가
+        // MARK: 네비게이션이 너무 위에 붙어있어서 height증가
         self.additionalSafeAreaInsets.top = 20
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()

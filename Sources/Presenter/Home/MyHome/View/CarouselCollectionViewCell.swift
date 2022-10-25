@@ -9,9 +9,9 @@
 import UIKit
 import SnapKit
 
-class CarouselCell: UICollectionViewCell {
+class CarouselCollectionViewCell: UICollectionViewCell {
     var imageView = UIImageView()
-    static let cellId = "CarouselCell"
+    static let cellId = "CarouselCollectionViewCell"
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -35,7 +35,7 @@ class CarouselCell: UICollectionViewCell {
     }
 }
 
-extension CarouselCell {
+extension CarouselCollectionViewCell {
     public func configure(image: UIImage?, text: String) {
         imageView.image = image
     }

@@ -224,8 +224,8 @@ class HomeDetailView: UIView {
         }
         
         profileStackView.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(20)
-            make.top.equalToSuperview().offset(60)
+            make.left.equalToSuperview().inset(20)
+            make.top.equalToSuperview().inset(60)
             make.height.equalTo(50)
         }
         
@@ -252,7 +252,7 @@ class HomeDetailView: UIView {
         currentImageBox.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.size.equalTo(50)
-            make.bottom.equalTo(myPlanetImage.snp.top).inset(-47)
+            make.bottom.equalTo(myPlanetImage.snp.top).offset(-47)
         }
         
         currentImage.snp.makeConstraints { make in
@@ -261,7 +261,7 @@ class HomeDetailView: UIView {
         }
         
         beforeImageButton.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(55)
+            make.left.equalToSuperview().inset(55)
             make.size.equalTo(50)
             make.centerY.equalTo(currentImageBox.snp.centerY).offset(30)
         }
@@ -273,7 +273,7 @@ class HomeDetailView: UIView {
         }
     
         myPlanetImage.snp.makeConstraints { make in
-            make.centerY.equalTo(self.snp.bottom).inset(20)
+            make.centerY.equalTo(self.snp.bottom).offset(-20)
             make.centerX.equalToSuperview()
             make.size.equalTo(DeviceInfo.screenWidth * 1.2)
         }

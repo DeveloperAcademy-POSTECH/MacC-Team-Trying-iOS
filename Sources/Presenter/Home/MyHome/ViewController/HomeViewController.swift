@@ -15,7 +15,7 @@ import Lottie
 
 final class HomeViewController: BaseViewController {
 
-    private var carouselView: CarouselView?
+    private var carouselView: CarouselCollectionView?
     let homeDetailView = HomeDetailView()
     let viewModel: HomeViewModel
     let changeMyPlanetScale: Double = 0.5
@@ -44,7 +44,7 @@ final class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        carouselView = CarouselView(pages: viewModel.constellations.count, delegate: self)
+        carouselView = CarouselCollectionView(pages: viewModel.constellations.count, delegate: self)
         bind()
         setAttributes()
     }
@@ -221,12 +221,12 @@ final class HomeViewController: BaseViewController {
 extension HomeViewController {
     func setAttributes() {
         
-        // MARK: - 기본값 세팅
+        // MARK: 기본값 세팅
         homeDetailView.courseNameButton.setTitle(viewModel.constellations.first?.name, for: .normal)
         homeDetailView.dateLabel.text = viewModel.constellations.first?.data
         homeDetailView.currentImage.image = viewModel.constellations.first?.image
 
-        // MARK: - input으로 들어오는 String에 따라 width가 달라져야하기 때문에 ViewController에서 레이아웃을 잡아줌
+        // MARK: input으로 들어오는 String에 따라 width가 달라져야하기 때문에 ViewController에서 레이아웃을 잡아줌
         self.homeDetailView.courseNameButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalToSuperview().offset(160)
@@ -235,7 +235,7 @@ extension HomeViewController {
             make.width.equalTo((text as NSString).size().width + 90)
         }
         
-        // MARK: - CarouselView의 경우 viewController의 ViewModel에서 데이터를 받아서 처리해야하기때문에 ViewController에서 작업
+        // MARK: CarouselView의 경우 viewController의 ViewModel에서 데이터를 받아서 처리해야하기때문에 ViewController에서 작업
         guard let carouselView = carouselView else { return }
         view.addSubview(carouselView)
         carouselView.snp.makeConstraints { make in
@@ -244,13 +244,13 @@ extension HomeViewController {
             make.bottom.equalTo(homeDetailView.myPlanetImage.snp.top).offset(-120)
         }
         
-        // MARK: - 별자리가 1개라면 다음 별자리를 보여주는 버튼이 필요없음(제약조건)
+        // MARK: 별자리가 1개라면 다음 별자리를 보여주는 버튼이 필요없음(제약조건)
         if viewModel.constellations.count > 1 {
             homeDetailView.afterImageButton.isHidden = false
             homeDetailView.afterImageButton.setImage(self.viewModel.constellations[1].image, for: .normal)
         }
         
-        // MARK: - detailView의 button을 addTarget으로 연결해줌
+        // MARK: detailView의 button을 addTarget으로 연결해줌
         homeDetailView.courseRegistrationButton.addTarget(self, action: #selector(courseRegistrationButtonTapped), for: .touchUpInside)
         homeDetailView.myPlanetImage.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture)))
         homeDetailView.alarmButton.addTarget(self, action: #selector(alarmButtonTapped), for: .touchUpInside)
@@ -264,12 +264,12 @@ extension HomeViewController: CarouselViewDelegate {
     /// carousel에서 Page가 변할때마다 호출되는 델리게이트 함수
     /// - Parameter page: 페이지(몇번째 별자리인지)
     func currentPageDidChange(to page: Int) {
-        // MARK: - page가 변할때마다 변하는 요소들 1)코스이름 2)코스날짜 3)현재별자리(가운데아래 작은 네모)
+        // MARK: page가 변할때마다 변하는 요소들 1)코스이름 2)코스날짜 3)현재별자리(가운데아래 작은 네모)
             self.homeDetailView.courseNameButton.setTitle(self.viewModel.constellations[page].name, for: .normal)
             self.homeDetailView.dateLabel.text = self.viewModel.constellations[page].data
             self.homeDetailView.currentImage.image = self.viewModel.constellations[page].image
             
-            // MARK: - String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
+            // MARK: String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
             self.homeDetailView.courseNameButton.snp.updateConstraints { make in
                 guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
                 make.centerX.equalToSuperview()
@@ -278,11 +278,11 @@ extension HomeViewController: CarouselViewDelegate {
                 make.width.equalTo((text as NSString).size().width + 90)
             }
         
-        // MARK: - 마지막페이지와 첫페이지에서는 특정 버튼이 보이지 않아야함
+        // MARK: 마지막페이지와 첫페이지에서는 특정 버튼이 보이지 않아야함
         self.homeDetailView.beforeImageButton.isHidden = (page == 0) ? true : false
         self.homeDetailView.afterImageButton.isHidden = (page == viewModel.constellations.count - 1) ? true : false
         
-        // MARK: - 이전 별자리와 다음별자리가 보여야하는데, range를 벗어나지 않게 min과 max함수로 제약조건 추가
+        // MARK: 이전 별자리와 다음별자리가 보여야하는데, range를 벗어나지 않게 min과 max함수로 제약조건 추가
         self.homeDetailView.beforeImageButton.setImage(self.viewModel.constellations[max(page - 1, 0)].image, for: .normal)
         self.homeDetailView.afterImageButton.setImage(self.viewModel.constellations[min(page + 1, viewModel.constellations.count - 1)].image, for: .normal)
     }
