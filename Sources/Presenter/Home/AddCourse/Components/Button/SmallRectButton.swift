@@ -17,11 +17,11 @@ enum SmallRectButtonType {
     /// - Height : 30
     case add
     
-    /// 별 제거 버튼
-    /// - Title : 별 제거
+    /// 취소 버튼
+    /// - Title : 취소
     /// - Width: 70
     /// - Height : 30
-    case delete
+    case cancel
 }
 
 final class SmallRectButton: UIButton {
@@ -45,8 +45,8 @@ final class SmallRectButton: UIButton {
             self.setTitle("코스추가", for: .normal)
             self.layer.borderColor = .designSystem(.mainYellow)
             
-        case .delete:
-            self.setTitle("별 제거", for: .normal)
+        case .cancel:
+            self.setTitle("취소", for: .normal)
             self.layer.borderColor = .designSystem(.red)
         }
         self.layer.cornerRadius = 10

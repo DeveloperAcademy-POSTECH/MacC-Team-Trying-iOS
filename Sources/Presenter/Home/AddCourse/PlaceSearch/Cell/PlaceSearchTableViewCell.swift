@@ -1,5 +1,5 @@
 //
-//  PlaceTableViewCell.swift
+//  PlaceSearchTableViewCell.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/16.
@@ -10,9 +10,10 @@ import UIKit
 
 import SnapKit
 
-final class PlaceTableViewCell: UITableViewCell {
-    static let identifier = "PlaceTableViewCellIdentifer"
+final class PlaceSearchTableViewCell: UITableViewCell {
+    static let identifier = "PlaceSearchTableViewCellIdentifer"
     
+    lazy var placeContainerView = UIView()
     lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .designSystem(.white)
@@ -21,13 +22,13 @@ final class PlaceTableViewCell: UITableViewCell {
     }()
     lazy var categoryLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .designSystem(.white)
+        label.textColor = .designSystem(.grayC5C5C5)
         label.font = .designSystem(weight: .regular, size: ._11)
         return label
     }()
     lazy var addressLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .designSystem(.white)
+        label.textColor = .designSystem(.grayC5C5C5)
         label.font = .designSystem(weight: .regular, size: ._13)
         return label
     }()
@@ -36,24 +37,26 @@ final class PlaceTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        setAttributes()
-        setLayout()
+        setUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setAttributes() {
+    private func setUI() {
         contentView.backgroundColor = .designSystem(.black)
-    }
-    
-    private func setLayout() {
-        contentView.addSubviews(titleLabel, categoryLabel, addressLabel, addCourseButton)
+        
+        placeContainerView.addSubviews(titleLabel, categoryLabel, addressLabel)
+        contentView.addSubviews(placeContainerView, addCourseButton)
+        
+        placeContainerView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(15)
+            make.leading.equalToSuperview()
+        }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(15)
-            make.leading.equalToSuperview()
+            make.top.leading.equalToSuperview()
         }
         
         categoryLabel.snp.makeConstraints { make in
@@ -62,13 +65,11 @@ final class PlaceTableViewCell: UITableViewCell {
         }
         
         addressLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(3)
-            make.leading.equalToSuperview()
+            make.leading.bottom.equalToSuperview()
         }
         
         addCourseButton.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.centerY.trailing.equalToSuperview()
         }
     }
 }
