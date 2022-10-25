@@ -47,6 +47,7 @@ final class CreatePlanetCompleteViewController: IntroBaseViewController<CreatePl
     override func setAttribute() {
         super.setAttribute()
 
+        navigationItem.backButtonTitle = ""
         navigationController?.setNavigationBarHidden(true, animated: false)
 
         let attributedText: NSMutableAttributedString = .init(string: "")

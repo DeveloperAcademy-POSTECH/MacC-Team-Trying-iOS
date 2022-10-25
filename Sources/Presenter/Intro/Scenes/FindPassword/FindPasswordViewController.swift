@@ -30,13 +30,33 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
         removeNotifications()
     }
 
+    override func bind() {
+
+        viewModel.$emailState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.sendEmailButton.isEnabled = currentState == .good
+            }
+            .cancel(with: cancelBag)
+
+        viewModel.$email
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] email in
+                self?.emailView.updateText(email)
+            }
+            .cancel(with: cancelBag)
+    }
+
     override func setAttribute() {
         super.setAttribute()
-        
+
+        navigationItem.backButtonTitle = ""
         navigationItem.title = "비밀번호 찾기"
 
         titleLabels.title = "회원가입 시 등록한 이메일 정보로"
         titleLabels.subTitle = "비밀번호를 재설정 할 수 있습니다."
+
+        emailView.delegate = self
 
         sendEmailButton.title = "확인"
         sendEmailButton.addTarget(self, action: #selector(sendEmailButtonDidTapped), for: .touchUpInside)
@@ -125,5 +145,12 @@ extension FindPasswordViewController {
     @objc
     func sendEmailButtonDidTapped() {
         viewModel.sendEmailButtonDidTapped()
+    }
+}
+
+extension FindPasswordViewController: TextFieldWithMessageViewComponentDelegate {
+
+    func textFieldDidChange(_ text: String) {
+        viewModel.textFieldDidChange(text)
     }
 }

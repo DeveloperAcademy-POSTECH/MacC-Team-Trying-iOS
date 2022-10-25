@@ -124,6 +124,7 @@ final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSig
         planetImageView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(-46)
+            make.height.equalTo(planetImageView.snp.width).multipliedBy(1)
         }
     }
 }
@@ -135,7 +136,7 @@ extension ConfirmSignUpViewController {
         enterAnimator?.addAnimations {
             self.planetImageView.alpha = 1
             self.planetImageView.snp.updateConstraints { make in
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(179)
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(149)
             }
             self.view.layoutIfNeeded()
         }

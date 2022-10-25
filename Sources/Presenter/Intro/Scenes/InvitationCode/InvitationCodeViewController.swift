@@ -21,10 +21,6 @@ final class InvitationCodeViewController: IntroBaseViewController<InvitationCode
     lazy var planetNameLabel = UILabel()
     lazy var nextButton = IntroButton(type: .system)
 
-
-    var stageOneChangedAnimator: UIViewPropertyAnimator?
-    var stageTwoChangedAnimator: UIViewPropertyAnimator?
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -39,15 +35,10 @@ final class InvitationCodeViewController: IntroBaseViewController<InvitationCode
 
     override func bind() {
 
-        viewModel.$stage
+        viewModel.$textFieldState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] stage in
-                switch stage {
-                case .notFound:
-                    self?.stageOneChangedAnimator?.startAnimation()
-                case .found:
-                    self?.stageTwoChangedAnimator?.startAnimation()
-                }
+            .sink { [weak self] currentState in
+                self?.nextButton.isEnabled = currentState == .good
             }
             .cancel(with: cancelBag)
     }
@@ -56,22 +47,16 @@ final class InvitationCodeViewController: IntroBaseViewController<InvitationCode
         super.setAttribute()
 
         navigationItem.title = "코드 입력"
+        navigationItem.backButtonTitle = ""
 
         nextButton.title = "완료"
+        nextButton.addTarget(self, action: #selector(nextButtonDidTapped), for: .touchUpInside)
 
         titleLabels.title = "메이트가 공유한 코드를 통해서"
         titleLabels.subTitle = "행성에 입장할 수 있어요!!"
 
         codeTextFieldView.delegate = self
 
-        stageOneChangedAnimator = UIViewPropertyAnimator(duration: 0.4, curve: .linear) {
-            self.titleLabels.title = "메이트가 공유한 코드를 통해서"
-            self.titleLabels.subTitle = "행성에 입장할 수 있어요!!"
-        }
-        stageTwoChangedAnimator = UIViewPropertyAnimator(duration: 0.4, curve: .linear) {
-            self.titleLabels.title = "환영합니다 🎉"
-            self.titleLabels.subTitle = "우디행성을 발견했어요!"
-        }
     }
 
     override func setLayout() {
@@ -151,6 +136,14 @@ final class InvitationCodeViewController: IntroBaseViewController<InvitationCode
         UIView.animate(withDuration: 1) {
             self.view.layoutIfNeeded()
         }
+    }
+}
+
+extension InvitationCodeViewController {
+
+    @objc
+    func nextButtonDidTapped() {
+        viewModel.nextButtonDidTapped()
     }
 }
 

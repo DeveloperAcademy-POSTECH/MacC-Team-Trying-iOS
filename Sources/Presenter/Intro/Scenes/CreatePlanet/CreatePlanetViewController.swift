@@ -39,6 +39,13 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
 
     override func bind() {
 
+        viewModel.$planetTextFieldState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.nextButton.isEnabled = currentState == .good
+            }
+            .cancel(with: cancelBag)
+
         viewModel.$planetName
             .receive(on: DispatchQueue.main)
             .sink { [weak self] name in
@@ -53,15 +60,17 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
                     self?.planetTextField.snp.updateConstraints({ make in
                         make.width.equalTo(newWidth)
                     })
-                    self?.planetTextField.layoutIfNeeded()
+                    self?.planetTextField.setNeedsLayout()
                 }
             }
             .cancel(with: cancelBag)
+
     }
 
     override func setAttribute() {
         super.setAttribute()
 
+        navigationItem.hidesBackButton = true
         navigationItem.title = "행성생성"
         navigationItem.backButtonTitle = ""
 

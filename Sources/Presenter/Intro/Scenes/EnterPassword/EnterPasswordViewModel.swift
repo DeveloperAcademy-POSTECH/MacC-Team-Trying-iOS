@@ -13,7 +13,7 @@ import CancelBag
 
 protocol EnterPasswordCoordinatorLogic {
     func coordinateToHomeScene()
-    func coordinateToFindPasswordScene()
+    func coordinateToFindPasswordScene(email: String)
 }
 
 protocol EnterPasswordBusinessLogic: BusinessLogic {
@@ -72,6 +72,6 @@ final class EnterPasswordViewModel: BaseViewModel, EnterPasswordBusinessLogic {
     }
 
     func findPasswordButtonDidTapped() {
-        coordinator.coordinateToHomeScene()
+        coordinator.coordinateToFindPasswordScene(email: email)
     }
 }

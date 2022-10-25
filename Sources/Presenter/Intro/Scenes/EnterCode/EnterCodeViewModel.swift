@@ -53,9 +53,8 @@ final class EnterCodeViewModel: BaseViewModel, EnterCodeBuisnessLogic {
                 DispatchQueue.main.async {
                     self.coordinator.coordinateToSignUpEnterPassword(email: self.email)
                 }
-
+                
             } catch {
-
                 self.isLoading = false
                 codeTextFieldState = .wrongCertificationNumber
             }
@@ -64,6 +63,6 @@ final class EnterCodeViewModel: BaseViewModel, EnterCodeBuisnessLogic {
 
     func textFieldDidChange(_ text: String) {
         certificationCode = text
-        codeTextFieldState = .empty
+        codeTextFieldState = text.count >= 6 ? .good : .empty
     }
 }

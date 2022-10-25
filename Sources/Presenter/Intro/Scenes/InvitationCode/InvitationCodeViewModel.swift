@@ -12,7 +12,7 @@ import Combine
 import CancelBag
 
 protocol InvitationCodeCoordinatorLogic {
-    func coordinateToHomeScene()
+    func coordinateToFindPlanetScene(planetName: String, planetImageName: String, code: String)
 }
 
 protocol InvitationCodeBusinessLogic: BusinessLogic {
@@ -25,62 +25,39 @@ final class InvitationCodeViewModel: BaseViewModel, InvitationCodeBusinessLogic 
 
     private let planetService = PlanetService()
 
-    enum Stage {
-        case notFound
-        case found
-    }
-
     @Published var textFieldState: TextFieldState
-    @Published var stage: Stage
     @Published var isLoading: Bool
-    var planetImage: String
-    var planetName: String
     var code: String
 
     init(coordinator: InvitationCodeCoordinatorLogic) {
         self.textFieldState = .empty
-        self.stage = .notFound
         self.code = ""
-        self.planetImage = ""
-        self.planetName = ""
         self.isLoading = false
         self.coordinator = coordinator
     }
 
     func nextButtonDidTapped() {
-        switch stage {
-        case .notFound:
+        Task {
+            do {
+                isLoading = true
+                let planetInfo = try await planetService.getPlanetByCode(.init(code: code))
+                isLoading = false
 
-            Task {
-                do {
-                    isLoading = true
-                    let planetInfo = try await planetService.getPlanetByCode(.init(code: code))
-                    isLoading = false
-                    planetImage = planetInfo.image
-                    planetName = planetInfo.name
-                    stage = .found
-                } catch {
-
+                DispatchQueue.main.async {
+                    self.coordinator.coordinateToFindPlanetScene(
+                        planetName: planetInfo.name,
+                        planetImageName: planetInfo.image,
+                        code: self.code
+                    )
                 }
-            }
-        case .found:
-            Task {
-                do {
-                    isLoading = true
-                    _ = try await planetService.joinPlanet(.init(code: code))
-                    isLoading = false
+            } catch {
 
-                    DispatchQueue.main.async {
-                        self.coordinator.coordinateToHomeScene()
-                    }
-                } catch {
-                    
-                }
             }
         }
     }
 
     func textFieldDidChange(_ text: String) {
         self.code = text
+        self.textFieldState = text.count >= 6 ? .good : .empty
     }
 }

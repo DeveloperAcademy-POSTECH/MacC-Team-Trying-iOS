@@ -92,7 +92,7 @@ private final class RequestFactory<T: TargetType> {
             throw NetworkError.invalidURL(url: request.path)
         }
         var urlRequest = URLRequest(url: url)
-        print(urlRequest.url)
+
         if let body = request.body {
             print(body)
             let jsonEncoder = JSONEncoder()

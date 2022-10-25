@@ -39,9 +39,10 @@ extension TargetType {
     }
 
     private var token: String {
-        guard let token = UserDefaults.standard.string(forKey: "token") else {
+        guard let token = UserDefaults.standard.string(forKey: "accessToken") else {
             return ""
         }
+        print(token)
         return token
     }
     var query: QueryItems? { nil }

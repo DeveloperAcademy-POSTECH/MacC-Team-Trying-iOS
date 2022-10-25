@@ -21,7 +21,8 @@ protocol IntroCoordinatorProtocol: Coordinator,
                                    CreatePlanetCoordinatorLogic,
                                    CreatePlanetCompleteCoordinatorLogic,
                                    WaitingInvitationCoordinatorLogic,
-                                   InvitationCodeCoordinatorLogic {
+                                   InvitationCodeCoordinatorLogic,
+                                   FindPlanetCoordinatorLogic {
     var navigationController: UINavigationController? { get }
 }
 
@@ -48,10 +49,6 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
         EnterEmailViewController(viewModel: .init(coordinator: self))
     }
 
-    func createFindPasswordScene() -> UIViewController {
-        FindPasswordViewController(viewModel: .init(coordinator: self))
-    }
-
     func createConfirmPasswordScene() -> UIViewController {
         ConfirmPasswordViewController(viewModel: .init(coordinator: self))
     }
@@ -73,8 +70,14 @@ extension IntroCoordinator {
         // TODO: 홈으로 넘어가는 델리게이트구현
     }
 
-    func coordinateToFindPasswordScene() {
-        navigationController?.pushViewController(createFindPasswordScene(), animated: true)
+    func coordinateToFindPasswordScene(email: String) {
+        let findPassword = FindPasswordViewController(
+            viewModel: .init(
+                email: email,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(findPassword, animated: true)
     }
 
     func coordinateToConfirmPasswordScene() {
@@ -111,6 +114,11 @@ extension IntroCoordinator {
             )
         )
         navigationController?.pushViewController(signUp, animated: true)
+    }
+
+    func coordinateToFindPlanetScene(planetName: String, planetImageName: String, code: String) {
+        let findPlanet = FindPlanetViewController(viewModel: .init(planetImage: planetImageName, planetName: planetName, code: code, coordinator: self))
+        navigationController?.pushViewController(findPlanet, animated: true)
     }
 
     func coordinateToSignUpEnterPassword(email: String) {
@@ -151,11 +159,12 @@ extension IntroCoordinator {
         navigationController?.pushViewController(createPlanetComplete, animated: true)
     }
 
-    func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String) {
+    func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String, code: String) {
         let waitingInvitationViewController = WaitingInvitationViewController(
             viewModel: .init(
                 selectedPlanet: selectedPlanet,
                 planetName: planetName,
+                code: code,
                 coordinator: self
             )
         )

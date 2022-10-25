@@ -29,8 +29,10 @@ class PlanetTextField: UITextField {
             make.width.equalTo(20)
             make.height.equalTo(20)
         }
+        imageView.backgroundColor = .clear
         self.leftView = imageView
         self.leftViewMode = .always
+        self.textInputView.layer.masksToBounds = false
         
         self.borderStyle = .none
         addSubview(lineView)

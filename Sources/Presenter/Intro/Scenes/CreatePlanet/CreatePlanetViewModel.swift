@@ -28,23 +28,29 @@ final class CreatePlanetViewModel: BaseViewModel, CreatePlanetBusinessLogic {
 
     private let planetService = PlanetService()
 
+    @Published var planetTextFieldState: TextFieldState
     @Published var planetName: String
     var selectedPlanet: String
 
     let planets: [String] = ["planet_purple", "planet_red", "planet_yellow", "planet_green"]
 
     init(coordinator: CreatePlanetCoordinatorLogic) {
+        self.planetTextFieldState = .empty
         self.planetName = ""
-        selectedPlanet = planets[0]
+        self.selectedPlanet = planets[0]
         self.coordinator = coordinator
     }
 
     func planetTextDidChanged(_ name: String) {
-        if name.count < 16 {
+        if name.count < 9 {
             self.planetName = name
         } else {
             self.planetName = planetName
         }
+
+        let nicknamePattern = #"^[가-힣A-Za-z0-9].{1,8}"#
+        let result = planetName.range(of: nicknamePattern, options: .regularExpression)
+        self.planetTextFieldState = result != nil ? .good : .invalidNickname
     }
 
     func nextButtonDidTapped() {
@@ -61,7 +67,6 @@ final class CreatePlanetViewModel: BaseViewModel, CreatePlanetBusinessLogic {
                 }
             }
         }
-
     }
 
     func updateSelectedPlanet(index: Int) {

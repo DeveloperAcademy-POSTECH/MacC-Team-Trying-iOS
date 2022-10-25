@@ -36,6 +36,7 @@ final class EnterCodeViewController: IntroBaseViewController<EnterCodeViewModel>
             .receive(on: DispatchQueue.main)
             .sink { [weak self] currentState in
                 self?.codeTextFieldView.updateState(currentState)
+                self?.nextButton.isEnabled = currentState == .good
             }
             .cancel(with: cancelBag)
 
@@ -138,7 +139,6 @@ final class EnterCodeViewController: IntroBaseViewController<EnterCodeViewModel>
         }
     }
 }
-
 
 extension EnterCodeViewController {
     @objc

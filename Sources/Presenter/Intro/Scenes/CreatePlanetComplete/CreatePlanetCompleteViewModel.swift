@@ -11,7 +11,7 @@ import Combine
 import CancelBag
 
 protocol CreatePlanetCompleteCoordinatorLogic {
-    func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String)
+    func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String, code: String)
 }
 
 protocol CreatePlanetCompleteBuisnessLogic: BusinessLogic {
@@ -23,6 +23,7 @@ final class CreatePlanetCompleteViewModel: BaseViewModel, CreatePlanetCompleteBu
 
     @Published var selectedPlanet: String
     @Published var planetName: String
+    let code: String
 
     init(
         selectedPlanet: String,
@@ -30,12 +31,13 @@ final class CreatePlanetCompleteViewModel: BaseViewModel, CreatePlanetCompleteBu
         code: String,
         coordinator: CreatePlanetCompleteCoordinatorLogic
     ) {
+        self.code = code
         self.selectedPlanet = selectedPlanet
         self.planetName = planetName
         self.coordinator = coordinator
     }
 
     func nextButtonDidTapped() {
-        coordinator.coordinateToWaitingInvitationScene(selectedPlanet: selectedPlanet, planetName: planetName)
+        coordinator.coordinateToWaitingInvitationScene(selectedPlanet: selectedPlanet, planetName: planetName, code: code)
     }
 }
