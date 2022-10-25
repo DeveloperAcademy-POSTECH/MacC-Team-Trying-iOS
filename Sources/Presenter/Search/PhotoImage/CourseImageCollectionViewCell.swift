@@ -17,7 +17,7 @@ final class CourseImageCollectionViewCell: UICollectionViewCell {
     lazy var photoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 10
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     

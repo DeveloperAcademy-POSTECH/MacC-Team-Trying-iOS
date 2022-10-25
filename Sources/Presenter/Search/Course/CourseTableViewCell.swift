@@ -33,7 +33,7 @@ class CourseTableViewCell: UITableViewCell {
     
     private lazy var planetImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     

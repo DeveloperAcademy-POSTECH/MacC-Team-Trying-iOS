@@ -34,7 +34,7 @@ class PlanetTableViewCell: UITableViewCell {
     
     private var planetImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
