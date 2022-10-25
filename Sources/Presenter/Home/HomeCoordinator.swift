@@ -34,5 +34,10 @@ extension HomeCoordinator: AlarmViewCoordinating, CourseDetailCoordinating {
         let alarmViewController = AlarmViewController()
         self.navigationController?.pushViewController(alarmViewController, animated: true)
     }
+    
+    func startAddCourseFlow() {
+        let addCourseCoordinator = AddCourseCoordinator(navigationController: navigationController)
+        addCourseCoordinator.start()
+    }
 }
 

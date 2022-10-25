@@ -59,15 +59,22 @@ final class HomeViewModel: BaseViewModel {
         Constellation(name: "부산대학교", data: "2022-10-07(금)", image: UIImage(named: "Busan")),
         Constellation(name: "인천ssg파크", data: "2022-10-08(토)", image: UIImage(named: "Pohang"))
     ]
-    
+}
+
+// MARK: - Coordinating
+extension HomeViewModel {
     func pushToAlarmView() {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
         coordinator.pushToAlarmViewController()
     }
     
+    func startAddCourseFlow() {
+        guard let coordinator = coordinator as? HomeCoordinator else { return }
+        coordinator.startAddCourseFlow()
+    }
+
     func pushToCourseDetailView() {
         guard let coordinator = coordinator as? CourseDetailCoordinating else { return }
         coordinator.pushToCourseDetailViewController()
     }
-
 }
