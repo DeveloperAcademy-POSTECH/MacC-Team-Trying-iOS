@@ -14,15 +14,10 @@ import SnapKit
 
 final class SearchViewController: BaseViewController {
     
-<<<<<<< HEAD:Sources/Presenter/Search/SearchViewController.swift
     var viewModel: SearchViewModel?
     private lazy var courseTableView = CourseTableView(viewModel: viewModel)
     private let coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(buttonTitles: ["코스", "행성"])
     private let navigationTextField = SearchTextField()
-=======
-    private lazy var smallButton1 = SmallRectButton(type: .add)
-    private lazy var smallButton2 = SmallRectButton(type: .cancel)
->>>>>>> develop:Sources/Presenter/Search/SearchTestViewController.swift
     
     private func bind() {
         viewModel?.bind(navigationTextField, to: \.searchString)
@@ -39,11 +34,7 @@ final class SearchViewController: BaseViewController {
 // MARK: - UI
 extension SearchViewController {
     private func setUI() {
-<<<<<<< HEAD:Sources/Presenter/Search/SearchViewController.swift
         navigationItem.titleView = navigationTextField
-=======
-        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), doneAction: #selector(doneButtonPressed(_:)))
->>>>>>> develop:Sources/Presenter/Search/SearchTestViewController.swift
         setAttributes()
         setLayout()
     }
@@ -74,18 +65,5 @@ extension SearchViewController {
             guard let viewModel = self?.viewModel else { return }
             viewModel.changeTo(coursePlanet)
         }
-    }
-}
-
-// MARK: - User Interaction
-extension SearchTestViewController {
-    @objc
-    private func backButtonPressed(_ sender: UIButton) {
-        print("✨back button pressed!")
-    }
-    
-    @objc
-    private func doneButtonPressed(_ sender: UIButton) {
-        print("done")
     }
 }
