@@ -31,7 +31,7 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
 
         enterAnimator?.startAnimation(afterDelay: fastDelay)
     }
-
+   
     override func setAttribute() {
         super.setAttribute()
 
@@ -50,7 +50,7 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
 
     override func setLayout() {
         super.setLayout()
-        
+
         view.addSubview(logoLabel)
         view.addSubview(loginButton)
         view.addSubview(logoImageView)
