@@ -45,6 +45,11 @@ final class HomeViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         carouselView = CarouselCollectionView(pages: viewModel.constellations.count, delegate: self)
+        Task {
+            try await viewModel.fetchAsync()
+            self.homeDetailView.ddayLabel.text = viewModel.user?.nickName
+        }
+        
         bind()
         setAttributes()
     }
