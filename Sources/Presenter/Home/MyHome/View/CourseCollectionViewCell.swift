@@ -9,9 +9,9 @@
 import UIKit
 import SnapKit
 
-class CourseCell: UICollectionViewCell {
+class CourseCollectionViewCell: UICollectionViewCell {
     
-    static let cellId = "CourseCell"
+    static let cellId = "CourseCollectionViewCell"
     
     var course: Constellation? {
         didSet {

@@ -49,7 +49,7 @@ class CoursesViewController: BaseViewController {
     
     func setUI() {
         view.addSubview(courseCollectionView)
-        courseCollectionView.register(CourseCell.self, forCellWithReuseIdentifier: CourseCell.cellId)
+        courseCollectionView.register(CourseCollectionViewCell.self, forCellWithReuseIdentifier: CourseCollectionViewCell.cellId)
         courseCollectionView.dataSource = self
         courseCollectionView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
@@ -65,7 +65,7 @@ extension CoursesViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CourseCell.cellId, for: indexPath) as? CourseCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CourseCollectionViewCell.cellId, for: indexPath) as? CourseCollectionViewCell else { return UICollectionViewCell() }
         cell.course = courses[indexPath.row]
         return cell
     }
