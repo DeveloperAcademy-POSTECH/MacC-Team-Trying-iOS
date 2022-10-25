@@ -110,6 +110,7 @@ extension FeedViewController: FeedCollectionViewCellDelegate {
     func didTapMapButton(model: TestViewModel) {
         print("Map Button Tapped")
         viewModel?.didTapMapButton()
+        viewModel?.pushToAlarmViewController()
     }
 
     func didTapFollowButton(model: TestViewModel) {

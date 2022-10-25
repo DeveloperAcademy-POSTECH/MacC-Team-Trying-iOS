@@ -10,11 +10,17 @@
 import Combine
 import Foundation
 
+protocol FeedMapCoordinating {
+    func pushToAlarmViewController()
+}
+
 final class FeedViewModel: BaseViewModel {
 
-    static let shared = FeedViewModel()
+    var coordinator: Coordinator
 
-    override private init() {}
+    init(coordinator: Coordinator) {
+        self.coordinator = coordinator
+    }
 
     private let data = [Course]()
 
@@ -29,6 +35,11 @@ final class FeedViewModel: BaseViewModel {
     func didTapLikeButton() { }
 
     func didTapFollowButton() { }
+
+    func pushToAlarmViewController() {
+        guard let coordinator = coordinator as? FeedMapCoordinating else { return }
+        coordinator.pushToAlarmViewController()
+    }
 }
 
 // MARK: MOCK
