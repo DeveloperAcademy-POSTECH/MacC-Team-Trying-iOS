@@ -37,6 +37,7 @@ extension SearchViewController {
         navigationItem.titleView = navigationTextField
         setAttributes()
         setLayout()
+        setDoneOnKeyboard()
     }
 
     private func setAttributes() {
@@ -65,5 +66,21 @@ extension SearchViewController {
             guard let viewModel = self?.viewModel else { return }
             viewModel.changeTo(coursePlanet)
         }
+    }
+}
+
+extension SearchViewController {
+    func setDoneOnKeyboard() {
+        let keyboardToolbar = UIToolbar()
+        keyboardToolbar.sizeToFit()
+        let emptyView = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
+        keyboardToolbar.items = [emptyView, doneBarButton]
+        self.navigationTextField.inputAccessoryView = keyboardToolbar
+    }
+
+    @objc
+    func dismissKeyboard() {
+        navigationController?.view.endEditing(true)
     }
 }

@@ -25,7 +25,7 @@ final class SearchTextField: UITextField {
     
     private func setAttributes() {
         self.leftImage(UIImage(systemName: Constants.Image.magnifyingglass), imageWidth: 10, padding: 10)
-        self.attributedPlaceholder = .init(string: "코스 또는 행성을 입력하세요.", attributes: [.foregroundColor: UIColor.designSystem(.grayEBEBF5) as Any])
+        self.attributedPlaceholder = .init(string: "검색어를 입력하세요.", attributes: [.foregroundColor: UIColor.designSystem(.grayEBEBF5) as Any])
         self.tintColor = .designSystem(.grayEBEBF5)
         self.textColor = .designSystem(.white)
         self.backgroundColor = .designSystem(.gray767680)
@@ -41,4 +41,3 @@ final class SearchTextField: UITextField {
         }
     }
 }
-
