@@ -13,17 +13,18 @@ import CancelBag
 import SnapKit
 import Lottie
 
-final class LoginViewController: IntroAnimatedViewController<LoginViewModel> {
+final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
 
     lazy var logoLabel = LogoLabel()
     lazy var logoImageView = UIImageView()
     lazy var loginButton = EmailLoginButton()
     lazy var signUpButton = SignUpButton(type: .system)
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        animateInitViews()
+        beginAnimations()
+        bringsInteractionFront()
     }
 
     override func setAttribute() {
@@ -32,8 +33,10 @@ final class LoginViewController: IntroAnimatedViewController<LoginViewModel> {
         loginButton.alpha = 0
         signUpButton.alpha = 0
         logoImageView.image = .init(.img_logo)
+        logoLabel.font = .gmarksans(weight: .bold, size: ._30)
         loginButton.addTarget(self, action: #selector(loginBttonDidTapped), for: .touchUpInside)
         signUpButton.addTarget(self, action: #selector(signUpButtonDidTapped), for: .touchUpInside)
+        setNavigationBar()
     }
 
     override func setLayout() {
@@ -64,21 +67,30 @@ final class LoginViewController: IntroAnimatedViewController<LoginViewModel> {
     }
 }
 
-// MARK: - UI
 extension LoginViewController {
 
-    private func animateInitViews() {
-        loginButton.snp.updateConstraints { make in
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(67)
-        }
-        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [.allowUserInteraction]) {
+    private func beginAnimations() {
+
+        enterAnimator?.addAnimations {
             self.loginButton.alpha = 1
             self.signUpButton.alpha = 1
+
+            self.loginButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(67)
+            }
             self.view.layoutIfNeeded()
         }
 
+        enterAnimator?.startAnimation(afterDelay: fastDelay)
+    }
+
+    private func bringsInteractionFront() {
         view.bringSubviewToFront(loginButton)
         view.bringSubviewToFront(signUpButton)
+    }
+
+    private func setNavigationBar() {
+        navigationItem.title = ""
     }
 }
 
@@ -87,11 +99,33 @@ extension LoginViewController {
 
     @objc
     func loginBttonDidTapped() {
-        viewModel.loginButtonDidTapped()
+        leaveAnimator?.addAnimations {
+            self.loginButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(100)
+            }
+            self.view.layoutIfNeeded()
+        }
+
+        leaveAnimator?.addCompletion { [weak self] _ in
+            self?.viewModel.loginButtonDidTapped()
+        }
+
+        leaveAnimator?.startAnimation()
     }
 
     @objc
     func signUpButtonDidTapped() {
-        viewModel.signUpButtonDidTapped()
+        leaveAnimator?.addAnimations {
+            self.loginButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(100)
+            }
+            self.view.layoutIfNeeded()
+        }
+
+        leaveAnimator?.addCompletion { [weak self] _ in
+            self?.viewModel.signUpButtonDidTapped()
+        }
+
+        leaveAnimator?.startAnimation()
     }
 }

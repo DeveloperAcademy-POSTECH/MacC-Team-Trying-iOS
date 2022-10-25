@@ -8,13 +8,12 @@
 
 import UIKit
 
-protocol IntroCoordinatorProtocol:
-    Coordinator,
-    LoginCoordinatorLogic,
-    EnterEmailCoordinatorLogic,
-    EnterPasswordCoordinatorLogic,
-    FindPasswordCoordinatorLogic,
-    ConfirmPasswordCoordinatorLogic {
+protocol IntroCoordinatorProtocol: Coordinator,
+                                   LoginCoordinatorLogic,
+                                   EnterEmailCoordinatorLogic,
+                                   EnterPasswordCoordinatorLogic,
+                                   FindPasswordCoordinatorLogic,
+                                   ConfirmPasswordCoordinatorLogic {
     var navigationController: UINavigationController? { get }
 }
 
