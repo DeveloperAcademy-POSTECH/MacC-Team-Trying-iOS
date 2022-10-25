@@ -48,28 +48,12 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
         EnterEmailViewController(viewModel: .init(coordinator: self))
     }
 
-    func createEnterPasswordScene() -> UIViewController {
-        EnterPasswordViewController(viewModel: .init(coordinator: self))
-    }
-
     func createFindPasswordScene() -> UIViewController {
         FindPasswordViewController(viewModel: .init(coordinator: self))
     }
 
     func createConfirmPasswordScene() -> UIViewController {
         ConfirmPasswordViewController(viewModel: .init(coordinator: self))
-    }
-
-    func createEnterCodeScene() -> UIViewController {
-        EnterCodeViewController(viewModel: .init(coordinator: self))
-    }
-
-    func createSignUpEnterPasswordScene() -> UIViewController {
-        SignUpEnterPasswordViewController(viewModel: .init(coordinator: self))
-    }
-
-    func createSignUpEnterNicknameScene() -> UIViewController {
-        SignUpEnterNicknameViewController(viewModel: .init(coordinator: self))
     }
 }
 
@@ -80,8 +64,9 @@ extension IntroCoordinator {
         navigationController?.pushViewController(createEnterEmailScene(), animated: true)
     }
 
-    func coordinateToEnterPasswordScene() {
-        navigationController?.pushViewController(createEnterPasswordScene(), animated: true)
+    func coordinateToEnterPasswordScene(email: String) {
+        let enterPassword = EnterPasswordViewController(viewModel: .init(email: email, coordinator: self))
+        navigationController?.pushViewController(enterPassword, animated: true)
     }
 
     func coordinateToHomeScene() {
@@ -96,37 +81,74 @@ extension IntroCoordinator {
         navigationController?.pushViewController(createConfirmPasswordScene(), animated: true)
     }
 
-    func coordinateToEnterCodeScene() {
-        navigationController?.pushViewController(createEnterCodeScene(), animated: true)
-    }
-
-    func coordinateToConfirmSignUpScene(email: String) {
-        let destinationViewController = ConfirmSignUpViewController(viewModel: .init(email: email, coordinator: self))
-        navigationController?.pushViewController(destinationViewController, animated: true)
-    }
-
-    func coordinateToSignUpEnterPassword() {
-        navigationController?.pushViewController(createSignUpEnterPasswordScene(), animated: true)
-    }
-
-    func coordinateSignUpEnterNickname() {
-        navigationController?.pushViewController(createSignUpEnterNicknameScene(), animated: true)
-    }
-
-    func coordinateToCreatePlanetScene() {
-        let createPlanetViewController = CreatePlanetViewController(viewModel: .init(coordinator: self))
-        navigationController?.pushViewController(createPlanetViewController, animated: true)
-    }
-
-    func coordinateToCreatePlanetCompleteScene(selectedPlanet: String, planetName: String) {
-        let createPlanetCompleteViewController = CreatePlanetCompleteViewController(
+    func coordinateToEnterCodeScene(email: String) {
+        let enterCode = EnterCodeViewController(
             viewModel: .init(
-                selectedPlanet: selectedPlanet,
-                planetName: planetName,
+                email: email,
                 coordinator: self
             )
         )
-        navigationController?.pushViewController(createPlanetCompleteViewController, animated: true)
+        navigationController?.pushViewController(enterCode, animated: true)
+    }
+
+    func coordinateToConfirmSignUpScene(email: String) {
+        let confirmSignUp = ConfirmSignUpViewController(
+            viewModel: .init(
+                viewType: .confirmSignUp,
+                email: email,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(confirmSignUp, animated: true)
+    }
+
+    func coordinateToSignUpEmailScene() {
+        let signUp = ConfirmSignUpViewController(
+            viewModel: .init(
+                viewType: .signup,
+                email: "",
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(signUp, animated: true)
+    }
+
+    func coordinateToSignUpEnterPassword(email: String) {
+        let signUpEnterPassword = SignUpEnterPasswordViewController(
+            viewModel: .init(
+                email: email,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(signUpEnterPassword, animated: true)
+    }
+
+    func coordinateSignUpEnterNickname(email: String, password: String) {
+        let signUpEnterNickname = SignUpEnterNicknameViewController(
+            viewModel: .init(
+                email: email,
+                password: password,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(signUpEnterNickname, animated: true)
+    }
+
+    func coordinateToCreatePlanetScene() {
+        let createPlanet = CreatePlanetViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(createPlanet, animated: true)
+    }
+
+    func coordinateToCreatePlanetCompleteScene(selectedPlanet: String, planetName: String, code: String) {
+        let createPlanetComplete = CreatePlanetCompleteViewController(
+            viewModel: .init(
+                selectedPlanet: selectedPlanet,
+                planetName: planetName,
+                code: code,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(createPlanetComplete, animated: true)
     }
 
     func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String) {

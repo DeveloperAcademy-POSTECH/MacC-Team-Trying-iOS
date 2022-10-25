@@ -38,14 +38,36 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
         enterAnimator?.startAnimation(afterDelay: fastDelay)
     }
 
+    override func bind() {
+
+        viewModel.$passwordTextFieldState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.passwordTextFieldView.updateState(currentState)
+            }
+            .cancel(with: cancelBag)
+
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                self?.loginButton.loading = isLoading
+            }
+            .cancel(with: cancelBag)
+
+    }
+
     override func setAttribute() {
         super.setAttribute()
+
+        navigationItem.title = "로그인"
 
         titleLabels.title = "다시 찾아주셨네요!"
         titleLabels.subTitle = "반갑습니다"
 
         planetImageView.alpha = 0
         planetImageView.image = .init(.img_planet)
+
+        passwordTextFieldView.delegate = self
 
         loginButton.title = "들어가기"
         loginButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
@@ -110,5 +132,12 @@ extension EnterPasswordViewController {
     @objc
     func findPasswordButtonDidTapped() {
         viewModel.findPasswordButtonDidTapped()
+    }
+}
+
+extension EnterPasswordViewController: TextFieldWithMessageViewComponentDelegate {
+
+    func textFieldDidChange(_ text: String) {
+        viewModel.textFieldDidChange(text)
     }
 }

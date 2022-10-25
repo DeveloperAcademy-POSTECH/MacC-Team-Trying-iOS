@@ -16,7 +16,7 @@ extension CheckEmailAPI: TargetType {
    
     var method: HTTPMethod { .get }
 
-    var query: QueryItems {
+    var query: QueryItems? {
         switch self {
         case .validationEmail(let checkEmailRequestModel):
             return ["email": checkEmailRequestModel.email]

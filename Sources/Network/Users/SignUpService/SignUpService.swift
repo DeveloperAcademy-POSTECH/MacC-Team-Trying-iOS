@@ -8,6 +8,10 @@
 
 import Foundation
 
-struct SignUpServcie {
+struct SignUpService {
+    private let provider = NetworkProviderImpl<SignUpAPI>()
 
+    func signup(_ body: SignUpRequestModel) async throws -> SignUpResponseModel {
+        try await provider.send(.signUp(body))
+    }
 }

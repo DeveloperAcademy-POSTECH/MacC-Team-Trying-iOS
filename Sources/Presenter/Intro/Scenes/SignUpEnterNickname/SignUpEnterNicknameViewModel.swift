@@ -6,6 +6,7 @@
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
+import Foundation
 import Combine
 
 import CancelBag
@@ -20,27 +21,59 @@ protocol SignUpEnterNicknameBusinessLogic: BusinessLogic {
 }
 
 final class SignUpEnterNicknameViewModel: BaseViewModel, SignUpEnterNicknameBusinessLogic {
+
     let coordinator: SignUpEnterNicknameCoordinatorLogic
 
+    private let signUpService = SignUpService()
+
     @Published var nicknameTextFieldState: TextFieldState
+    @Published var isLoading: Bool
+    let email: String
+    let password: String
     var nickname: String
 
-    init(coordinator: SignUpEnterNicknameCoordinatorLogic) {
-        self.nicknameTextFieldState = .emptyNickname
+    init(
+        email: String,
+        password: String,
+        coordinator: SignUpEnterNicknameCoordinatorLogic
+    ) {
+        self.email = email
+        self.password = password
         self.nickname = ""
+        self.nicknameTextFieldState = .emptyNickname
+        self.isLoading = false
         self.coordinator = coordinator
     }
 
     func nextButtonDidTapped() {
-        coordinator.coordinateToCreatePlanetScene()
+        Task {
+            do {
+                self.isLoading = true
+
+                let accessToken = try await signUpService.signup(.init(email: email, password: password, name: nickname))
+                UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
+
+                self.isLoading = false
+
+                DispatchQueue.main.async {
+                    self.coordinator.coordinateToCreatePlanetScene()
+                }
+            } catch {
+                self.isLoading = false
+            }
+        }
+
+    }
+
+    private func createSignUpRequestModel() -> SignUpRequestModel {
+        .init(email: email, password: password, name: nickname)
     }
 
     func textFieldDidChange(_ text: String) {
         nickname = text
 
-        // TODO: 닉네임 정규식
-        let nicknamePattern = "^[A-Za-z0-9].{8,12}"
-        let result = text.range(of: nicknamePattern, options: .regularExpression)
+        let nicknamePattern = #"^[가-힣A-Za-z0-9].{1,8}"#
+        let result = nickname.range(of: nicknamePattern, options: .regularExpression)
         nicknameTextFieldState = result != nil ? .validNickname : .invalidNickname
     }
 }

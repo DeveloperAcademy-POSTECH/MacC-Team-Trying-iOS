@@ -29,9 +29,9 @@ class IntroBaseViewController<VM: BusinessLogic>: UIViewController, CodeBased {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        bind()
         setLayout()
         setAttribute()
+        bind()
     }
 
     func bind() {}

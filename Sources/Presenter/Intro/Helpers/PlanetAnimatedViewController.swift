@@ -108,7 +108,6 @@ extension PlanetAnimatedViewController {
         appearance.shadowColor = .clear
         self.navigationController?.navigationBar.standardAppearance = appearance
         self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        navigationItem.title = "로그인"
         navigationItem.backButtonTitle = ""
         navigationController?.navigationBar.tintColor = .white
     }

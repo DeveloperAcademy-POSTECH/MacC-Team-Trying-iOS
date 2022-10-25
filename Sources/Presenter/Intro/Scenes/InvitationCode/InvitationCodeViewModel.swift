@@ -6,12 +6,13 @@
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
+import Foundation
 import Combine
 
 import CancelBag
 
 protocol InvitationCodeCoordinatorLogic {
-
+    func coordinateToHomeScene()
 }
 
 protocol InvitationCodeBusinessLogic: BusinessLogic {
@@ -22,6 +23,8 @@ protocol InvitationCodeBusinessLogic: BusinessLogic {
 final class InvitationCodeViewModel: BaseViewModel, InvitationCodeBusinessLogic {
     let coordinator: InvitationCodeCoordinatorLogic
 
+    private let planetService = PlanetService()
+
     enum Stage {
         case notFound
         case found
@@ -29,37 +32,55 @@ final class InvitationCodeViewModel: BaseViewModel, InvitationCodeBusinessLogic 
 
     @Published var textFieldState: TextFieldState
     @Published var stage: Stage
+    @Published var isLoading: Bool
+    var planetImage: String
+    var planetName: String
+    var code: String
 
     init(coordinator: InvitationCodeCoordinatorLogic) {
         self.textFieldState = .empty
         self.stage = .notFound
+        self.code = ""
+        self.planetImage = ""
+        self.planetName = ""
+        self.isLoading = false
         self.coordinator = coordinator
     }
 
     func nextButtonDidTapped() {
         switch stage {
         case .notFound:
-            // TODO: 통신
-            self.stage = .found
-        case .found:
-            break
 
+            Task {
+                do {
+                    isLoading = true
+                    let planetInfo = try await planetService.getPlanetByCode(.init(code: code))
+                    isLoading = false
+                    planetImage = planetInfo.image
+                    planetName = planetInfo.name
+                    stage = .found
+                } catch {
+
+                }
+            }
+        case .found:
+            Task {
+                do {
+                    isLoading = true
+                    _ = try await planetService.joinPlanet(.init(code: code))
+                    isLoading = false
+
+                    DispatchQueue.main.async {
+                        self.coordinator.coordinateToHomeScene()
+                    }
+                } catch {
+                    
+                }
+            }
         }
     }
 
     func textFieldDidChange(_ text: String) {
-        if text == rightCode {
-            stage = .found
-            textFieldState = .empty
-        } else {
-            stage = .notFound
-            #warning("초대코드가 맞지 않을 경우 오류메시지 정하가")
-        }
-    }
-}
-
-extension InvitationCodeViewModel {
-    var rightCode: String {
-        "aaa"
+        self.code = text
     }
 }

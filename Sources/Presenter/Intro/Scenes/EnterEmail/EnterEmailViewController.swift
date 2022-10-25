@@ -54,6 +54,17 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
             }
             .cancel(with: cancelBag)
 
+        viewModel.$leaveAnimation
+            .receive(on: DispatchQueue.main)
+            .filter { $0 == true }
+            .sink { [weak self] _ in
+                self?.leaveAnimator?.addCompletion { _ in
+                    self?.viewModel.goNext()
+                }
+                self?.leaveAnimator?.startAnimation()
+            }
+            .cancel(with: cancelBag)
+
     }
 
     override func setAttribute() {
@@ -127,11 +138,7 @@ extension EnterEmailViewController {
 
     @objc
     func loginButtonDidTapped() {
-        leaveAnimator?.addCompletion { [weak self] _ in
-            self?.viewModel.enterEmailButtonDidTapped()
-        }
-
-        leaveAnimator?.startAnimation()
+        viewModel.enterEmailButtonDidTapped()
     }
 }
 

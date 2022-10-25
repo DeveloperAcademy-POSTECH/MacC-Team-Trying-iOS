@@ -27,6 +27,7 @@ final class CreatePlanetCompleteViewModel: BaseViewModel, CreatePlanetCompleteBu
     init(
         selectedPlanet: String,
         planetName: String,
+        code: String,
         coordinator: CreatePlanetCompleteCoordinatorLogic
     ) {
         self.selectedPlanet = selectedPlanet

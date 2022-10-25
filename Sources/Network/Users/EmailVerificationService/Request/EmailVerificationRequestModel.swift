@@ -9,7 +9,16 @@
 import Foundation
 
 enum EmailVerificationRequestModel {
-    struct SendModel: Encodable {
+    struct SendModel: RequestBody {
+        let email: String
+    }
+
+    struct VerificationModel: RequestBody {
+        let email: String
+        let code: String
+    }
+
+    struct ResetPasswordModel: RequestBody {
         let email: String
     }
 }

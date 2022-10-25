@@ -30,16 +30,20 @@ final class NetworkProviderImpl<T: TargetType>: NetworkProvider {
                         continuation.resume(with: .failure(error))
                         return
                     }
-                    guard let data = data,
-                          let httpResponse = response as? HTTPURLResponse,
-                          (200..<400).contains(httpResponse.statusCode)
-                    else {
-                        print(response as? HTTPURLResponse)
-                        continuation.resume(with: .failure(NetworkError.badServerResponse))
-                        return
-                    }
+
+                    guard let data = data else { return }
+
                     do {
+                        try self.httpStatusProcess(data: data, response: response)
+
+                        if M.self == EmptyResponseBody.self {
+                            guard let empty = EmptyResponseBody() as? M else { return }
+                            continuation.resume(with: .success(empty))
+                            return
+                        }
+
                         let output = try JSONDecoder().decode(M.self, from: data)
+                        print(output)
                         continuation.resume(with: .success(output))
                     } catch {
                         continuation.resume(with: .failure(error))
@@ -49,7 +53,22 @@ final class NetworkProviderImpl<T: TargetType>: NetworkProvider {
             } catch {
                 continuation.resume(with: .failure(error))
             }
+        }
+    }
 
+    private func httpStatusProcess(data: Data?, response: URLResponse?) throws {
+        guard let response = response as? HTTPURLResponse else { throw NetworkError.invalidResponse }
+
+        guard 200...299 ~= response.statusCode else {
+            if let data = data {
+                let badResponse = BadServerResponse(
+                    statusCode: response.statusCode,
+                    body: BaseError(message: String(data: data, encoding: .utf8))
+                )
+                print(badResponse)
+                throw NetworkError.badServerResponse(badResponse)
+            }
+            throw NetworkError.invalidResponse
         }
     }
 }
@@ -66,14 +85,16 @@ private final class RequestFactory<T: TargetType> {
     }
 
     func makeURLRequest() throws -> URLRequest {
-        if request.query.isEmpty == false {
-            urlComponents?.queryItems = request.query.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
+        if request.query?.isEmpty == false {
+            urlComponents?.queryItems = request.query?.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
         }
         guard let url = urlComponents?.url else {
             throw NetworkError.invalidURL(url: request.path)
         }
         var urlRequest = URLRequest(url: url)
+        print(urlRequest.url)
         if let body = request.body {
+            print(body)
             let jsonEncoder = JSONEncoder()
             jsonEncoder.outputFormatting = .withoutEscapingSlashes
             let data = try jsonEncoder.encode(body)
@@ -87,9 +108,4 @@ private final class RequestFactory<T: TargetType> {
         urlRequest.httpMethod = request.method.rawValue
         return urlRequest
     }
-}
-
-enum NetworkError: Error {
-    case invalidURL(url: String?)
-    case badServerResponse
 }
