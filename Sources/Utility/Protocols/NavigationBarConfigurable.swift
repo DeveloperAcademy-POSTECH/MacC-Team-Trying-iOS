@@ -31,6 +31,13 @@ protocol NavigationBarConfigurable: BaseViewController {
     ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
     ///   - selectDateAction: 일정 선택 버튼이 눌렸을 때 실행할 @objc 메소드
     func configureCourseDetailNavigationBar(target: Any, popAction: Selector, selectDateAction: Selector)
+
+    /// 지도 피드 과정에서 이지역을 재검색을 할 수 있는 화면에서 사용되는, Navigation Bar를 설정합니다.
+    /// - Parameters:
+    ///   - target: Target
+    ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
+    ///   - selectSearchAction: 일정 선택 버튼이 눌렸을 때 실행할 @objc 메소드
+    func configureFeedMapNavigationBar(target: Any, dissmissAction: Selector, selectSearchAction: Selector)
 }
 
 extension NavigationBarConfigurable {
@@ -114,5 +121,42 @@ extension NavigationBarConfigurable {
         let leftButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem = leftButtonItem
         navigationItem.titleView = selectDateButton
+    }
+
+    func configureFeedMapNavigationBar(target: Any, dissmissAction: Selector, selectSearchAction: Selector) {
+        let backButton: UIButton = {
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
+            button.addTarget(target, action: dissmissAction, for: .touchUpInside)
+            return button
+        }()
+
+        let selectSearchButton: UIButton = {
+            let button = UIButton(type: .custom)
+            button.backgroundColor = .clear
+            button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+            button.clipsToBounds = true
+            button.layer.borderColor = UIColor.designSystem(Palette.mainYellow)?.cgColor
+            button.layer.borderWidth = 1
+            button.layer.cornerRadius = 22
+            button.setTitle("이 지역 재탐색", for: .normal)
+            button.setImage(UIImage(systemName: "arrow.clockwise"), for: .normal)
+            button.semanticContentAttribute = .forceLeftToRight
+            button.setTitleColor(UIColor.gray, for: .highlighted)
+            button.tintColor = .white
+            button.contentHorizontalAlignment = .center
+            button.backgroundColor = UIColor.designSystem(.black)
+            button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 5)
+            button.snp.makeConstraints { make in
+                make.width.equalTo(140)
+                make.height.equalTo(50)
+            }
+            return button
+        }()
+
+        let leftButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem = leftButtonItem
+        navigationItem.titleView = selectSearchButton
     }
 }

@@ -40,8 +40,9 @@ final class AddCourseMapViewController: BaseViewController {
 
 // MARK: - UI
 extension AddCourseMapViewController: NavigationBarConfigurable {
+
     private func setUI() {
-        configureMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(nextButtonPressed(_:)))
+        configureFeedMapNavigationBar(target: self, dissmissAction: #selector(backButtonPressed(_:)), selectSearchAction: #selector(searchButtonPressed(_:)))
         setAttributes()
         setLayout()
         
@@ -122,7 +123,7 @@ extension AddCourseMapViewController {
     }
     
     @objc
-    private func nextButtonPressed(_ sender: UIButton) {
+    private func searchButtonPressed(_ sender: UIButton) {
         print("next")
     }
 }

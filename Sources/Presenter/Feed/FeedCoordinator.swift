@@ -29,10 +29,8 @@ final class FeedCoordinator: Coordinator {
 
 extension FeedCoordinator: FeedMapCoordinating {
     func pushToAlarmViewController() {
-        print("dddddddddkndksnjksbhjksaadjkakj")
         let feedMapConroller = FeedMapViewController()
         navigationController?.isNavigationBarHidden = false
         self.navigationController?.pushViewController(feedMapConroller, animated: true)
-
     }
 }
