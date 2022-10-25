@@ -41,7 +41,7 @@ final class AddCourseMapViewController: BaseViewController {
         let manager = CLLocationManager()
         manager.delegate = self
         manager.requestWhenInUseAuthorization()
-        manager.desiredAccuracy = .greatestFiniteMagnitude
+        manager.desiredAccuracy = .infinity
         manager.startUpdatingLocation()
         manager.startUpdatingHeading()
         manager.startMonitoringSignificantLocationChanges()
@@ -54,7 +54,6 @@ final class AddCourseMapViewController: BaseViewController {
         map.register(StarAnnotationView.self, forAnnotationViewWithReuseIdentifier: StarAnnotationView.identifier)
         map.delegate = self
         map.setRegion(
-            // TODO: 사용자의 현재 위치 정보를 가져오기
             MKCoordinateRegion(
                 center: CLLocationCoordinate2D(
                     latitude: currentLocation.coordinate.latitude,
@@ -94,15 +93,10 @@ final class AddCourseMapViewController: BaseViewController {
         // output
         self.viewModel.$places
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                self.placeListView.mapPlaceTableView.reloadData()
-            })
-            .cancel(with: cancelBag)
-        
-        self.viewModel.$places
             .sink(receiveValue: { [weak self] places in
-                self?.placeListView.numberOfItems = places.count
+                guard let self = self else { return }
+                self.placeListView.numberOfItems = places.count
+                self.placeListView.mapPlaceTableView.reloadData()
             })
             .cancel(with: cancelBag)
     }
@@ -190,7 +184,7 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.places.count ?? 0
+        viewModel.places.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -229,15 +223,16 @@ extension AddCourseMapViewController {
     @objc
     private func didTapAddCourseButton(_ sender: UIButton) {
         presentPlaceListView()
-        viewModel.addPlace(self.placeDetailView.selectedPlace!, annotation: recentAnnotation!)
+        viewModel.addPlace(self.placeDetailView.selectedPlace!)
+        viewModel.addAnnotation(recentAnnotation!)
         recentAnnotation = nil
     }
     
     @objc
     private func didTapDeleteButton(_ sender: UIButton) {
-        let annotation = viewModel.places[sender.tag].annotation
-        placeMapView.removeAnnotation(annotation)
-        viewModel.deletePlace(sender.tag)
+        let index = sender.tag
+        viewModel.deletePlace(index)
+        viewModel.deleteAnnotation(map: self.placeMapView, at: index)
         
         if viewModel.places.count < 3 {
             presentPlaceListView()

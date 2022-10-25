@@ -27,10 +27,12 @@ protocol RegisterCourseCoordinating {
 final class AddCourseMapViewModel: BaseViewModel {
     var coordinator: Coordinator
     @Published var places: [Place]
+    var annotations: [MKAnnotation]
     
-    init(coordinator: Coordinator, places: [Place] = []) {
+    init(coordinator: Coordinator, places: [Place] = [], annotations: [MKAnnotation] = []) {
         self.coordinator = coordinator
         self.places = places
+        self.annotations = annotations
     }
 }
 
@@ -54,18 +56,27 @@ extension AddCourseMapViewModel {
 
 // MARK: - Methods
 extension AddCourseMapViewModel {
-    func addPlace(_ place: CLPlacemark, annotation: MKAnnotation) {
-        places.append(convertToPlace(place: place, annotation: annotation))
+    func addPlace(_ place: CLPlacemark) {
+        places.append(convertToPlace(place: place))
     }
     
     func deletePlace(_ index: Int) {
         places.remove(at: index)
     }
+    
+    func addAnnotation(_ annotation: MKAnnotation) {
+        annotations.append(annotation)
+    }
+    
+    func deleteAnnotation(map: MKMapView, at index: Int) {
+        map.removeAnnotation(annotations[index])
+        annotations.remove(at: index)
+    }
 }
 
 // MARK: - Helper
 extension AddCourseMapViewModel {
-    private func convertToPlace(place: CLPlacemark, annotation: MKAnnotation) -> Place {
+    private func convertToPlace(place: CLPlacemark) -> Place {
         let title = place.name ?? ""
         // TODO: 카테고리로 변경하기
         let category = place.country ?? ""
@@ -82,8 +93,7 @@ extension AddCourseMapViewModel {
             location: CLLocationCoordinate2D(
                 latitude: place.location?.coordinate.latitude ?? 0,
                 longitude: place.location?.coordinate.longitude ?? 0
-            ),
-            annotation: annotation
+            )
         )
     }
 }
