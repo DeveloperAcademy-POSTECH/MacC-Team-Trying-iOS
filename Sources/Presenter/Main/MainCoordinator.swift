@@ -100,6 +100,7 @@ extension MainCoordinator {
         tabBarController.tabBar.backgroundColor = .black
         tabBarController.tabBar.tintColor = UIColor(named: "mainYellow")
         tabBarController.tabBar.unselectedItemTintColor = .white
+        tabBarController.tabBar.barTintColor = .black
         tabBarController.setViewControllers(tabControllers, animated: false)
         navigationController.viewControllers = [tabBarController]
     }
