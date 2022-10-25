@@ -12,11 +12,13 @@ import CancelBag
 
 protocol CreatePlanetCoordinatorLogic {
     func coordinateToCreatePlanetCompleteScene(selectedPlanet: String, planetName: String)
+    func coordinateToInvitationCodeScene()
 }
 
 protocol CreatePlanetBusinessLogic: BusinessLogic {
     func planetTextDidChanged(_ name: String)
     func nextButtonDidTapped()
+    func alreadyHaveInvitationButtonDidTapped()
 }
 
 final class CreatePlanetViewModel: BaseViewModel, CreatePlanetBusinessLogic {
@@ -47,5 +49,9 @@ final class CreatePlanetViewModel: BaseViewModel, CreatePlanetBusinessLogic {
 
     func updateSelectedPlanet(index: Int) {
         self.selectedPlanet = planets[index]
+    }
+
+    func alreadyHaveInvitationButtonDidTapped() {
+        coordinator.coordinateToInvitationCodeScene()
     }
 }

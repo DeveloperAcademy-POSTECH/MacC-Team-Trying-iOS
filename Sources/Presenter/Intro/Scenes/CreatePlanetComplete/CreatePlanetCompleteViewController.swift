@@ -68,6 +68,7 @@ final class CreatePlanetCompleteViewController: IntroBaseViewController<CreatePl
 
         nextButton.title = "확인"
         nextButton.addTarget(self, action: #selector(nextButtonDidTapped), for: .touchUpInside)
+        
         planetNameLabel.font = .designSystem(weight: .bold, size: ._20)
     }
 

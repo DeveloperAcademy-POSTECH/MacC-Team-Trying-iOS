@@ -202,7 +202,7 @@ extension CreatePlanetViewController {
 
     @objc
     func alreadyHaveInvitationButtonDidTapped() {
-
+        viewModel.alreadyHaveInvitationButtonDidTapped()
     }
 
     @objc

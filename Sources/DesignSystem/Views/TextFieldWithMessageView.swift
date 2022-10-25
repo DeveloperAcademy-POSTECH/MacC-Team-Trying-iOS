@@ -41,6 +41,7 @@ final class TextFieldWithMessageView: UIView {
         case email
         case certificationNumber
         case noText
+        case invitationCode
     }
 
     private var textType: TextType
@@ -162,6 +163,8 @@ extension TextFieldWithMessageView.TextType {
             return "인증번호를 입력해 주세요."
         case .noText:
             return ""
+        case .invitationCode:
+            return "초대코드를 입력해 주세요."
         }
     }
 }

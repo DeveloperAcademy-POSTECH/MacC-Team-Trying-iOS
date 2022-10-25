@@ -68,7 +68,7 @@ final class CurrentSignUpProgressView: BaseView {
         lineLayer.frame = rect
 
         let animation = CABasicAnimation(keyPath: "strokeEnd")
-        animation.duration = 1.2
+        animation.duration = 0.6
         animation.beginTime = CACurrentMediaTime()
         animation.fromValue = 0
         animation.toValue = 1
@@ -95,12 +95,12 @@ final class CurrentSignUpProgressView: BaseView {
             firstStarPosition.fromValue = CGPoint(x: 0, y: rect.height)
             firstStarPosition.isRemovedOnCompletion = false
             firstStarPosition.fillMode = .forwards
-            firstStarPosition.duration = 2
+            firstStarPosition.duration = 1.0
             firstStarPosition.toValue = CGPoint(x: self.signupLabel.frame.midX, y: rect.height)
             let firstStarRotation = CABasicAnimation(keyPath: "transform.rotation.z")
             firstStarRotation.fromValue = 0
             firstStarRotation.toValue = 360
-            firstStarRotation.duration = 2
+            firstStarRotation.duration = 1.0
             self.layer.addSublayer(firstStarLayer)
             firstStarLayer.add(firstStarRotation, forKey: nil)
             firstStarLayer.add(firstStarPosition, forKey: nil)
@@ -109,12 +109,12 @@ final class CurrentSignUpProgressView: BaseView {
             secondStarPosition.fromValue = CGPoint(x: 0, y: rect.height)
             secondStarPosition.isRemovedOnCompletion = false
             secondStarPosition.fillMode = .forwards
-            secondStarPosition.duration = 1
+            secondStarPosition.duration = 1.2
             secondStarPosition.toValue = CGPoint(x: self.createPlanetLabel.frame.midX, y: rect.height)
             let secondStarRotaion = CABasicAnimation(keyPath: "transform.rotation.z")
             secondStarRotaion.fromValue = 0
             secondStarRotaion.toValue = 360
-            secondStarRotaion.duration = 1
+            secondStarRotaion.duration = 1.2
             self.layer.addSublayer(secondStarLayer)
             secondStarLayer.add(secondStarPosition, forKey: nil)
             secondStarLayer.add(secondStarRotaion, forKey: nil)

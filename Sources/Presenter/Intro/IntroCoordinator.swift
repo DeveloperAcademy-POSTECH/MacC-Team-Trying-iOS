@@ -20,7 +20,8 @@ protocol IntroCoordinatorProtocol: Coordinator,
                                    ConfirmPasswordCoordinatorLogic,
                                    CreatePlanetCoordinatorLogic,
                                    CreatePlanetCompleteCoordinatorLogic,
-                                   WaitingInvitationCoordinatorLogic {
+                                   WaitingInvitationCoordinatorLogic,
+                                   InvitationCodeCoordinatorLogic {
     var navigationController: UINavigationController? { get }
 }
 
@@ -139,6 +140,10 @@ extension IntroCoordinator {
         navigationController?.pushViewController(waitingInvitationViewController, animated: true)
     }
 
+    func coordinateToInvitationCodeScene() {
+        let invitationCodeViewController = InvitationCodeViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(invitationCodeViewController, animated: true)
+    }
     func backToConfirmPasswordScene() {
         let viewControllers: [UIViewController] = self.navigationController?.viewControllers ?? []
         if viewControllers.count >= 3 {

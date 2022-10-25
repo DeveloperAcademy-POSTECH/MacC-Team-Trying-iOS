@@ -1,8 +1,8 @@
 //
-//  SignUpEnterNicknameViewController.swift
+//  InvitationCodeViewController.swift
 //  MatStar
 //
-//  Created by Jaeyong Lee on 2022/10/24.
+//  Created by Jaeyong Lee on 2022/10/25.
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
@@ -12,11 +12,18 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnterNicknameViewModel> {
+final class InvitationCodeViewController: IntroBaseViewController<InvitationCodeViewModel> {
 
+    lazy var backgroundView = BackgroundView(frame: view.bounds)
     lazy var titleLabels = IntroTitleLabels()
-    lazy var codeTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .nickname)
+    lazy var codeTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .invitationCode)
+    lazy var planetImageView = UIImageView()
+    lazy var planetNameLabel = UILabel()
     lazy var nextButton = IntroButton(type: .system)
+
+
+    var stageOneChangedAnimator: UIViewPropertyAnimator?
+    var stageTwoChangedAnimator: UIViewPropertyAnimator?
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -32,11 +39,15 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
 
     override func bind() {
 
-        viewModel.$nicknameTextFieldState
+        viewModel.$stage
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] currentState in
-                self?.codeTextFieldView.updateState(currentState)
-                self?.nextButton.isEnabled = currentState == .validNickname
+            .sink { [weak self] stage in
+                switch stage {
+                case .notFound:
+                    self?.stageOneChangedAnimator?.startAnimation()
+                case .found:
+                    self?.stageTwoChangedAnimator?.startAnimation()
+                }
             }
             .cancel(with: cancelBag)
     }
@@ -44,22 +55,33 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
     override func setAttribute() {
         super.setAttribute()
 
-        navigationItem.backButtonTitle = ""
-        navigationItem.title = "회원가입"
+        navigationItem.title = "코드 입력"
 
-        titleLabels.subTitle = "닉네임을 입력해 주세요!"
+        nextButton.title = "완료"
+
+        titleLabels.title = "메이트가 공유한 코드를 통해서"
+        titleLabels.subTitle = "행성에 입장할 수 있어요!!"
 
         codeTextFieldView.delegate = self
 
-        nextButton.title = "다음"
-        nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
+        stageOneChangedAnimator = UIViewPropertyAnimator(duration: 0.4, curve: .linear) {
+            self.titleLabels.title = "메이트가 공유한 코드를 통해서"
+            self.titleLabels.subTitle = "행성에 입장할 수 있어요!!"
+        }
+        stageTwoChangedAnimator = UIViewPropertyAnimator(duration: 0.4, curve: .linear) {
+            self.titleLabels.title = "환영합니다 🎉"
+            self.titleLabels.subTitle = "우디행성을 발견했어요!"
+        }
     }
 
     override func setLayout() {
         super.setLayout()
 
+        view.addSubview(backgroundView)
         view.addSubview(titleLabels)
         view.addSubview(codeTextFieldView)
+        view.addSubview(planetImageView)
+        view.addSubview(planetNameLabel)
         view.addSubview(nextButton)
 
         titleLabels.snp.makeConstraints { make in
@@ -132,14 +154,7 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
     }
 }
 
-extension SignUpEnterNicknameViewController {
-    @objc
-    func nextButtonDidTap() {
-        viewModel.nextButtonDidTapped()
-    }
-}
-
-extension SignUpEnterNicknameViewController: TextFieldWithMessageViewComponentDelegate {
+extension InvitationCodeViewController: TextFieldWithMessageViewComponentDelegate {
 
     func textFieldDidChange(_ text: String) {
         viewModel.textFieldDidChange(text)
