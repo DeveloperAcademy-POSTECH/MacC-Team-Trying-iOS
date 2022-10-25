@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Combine
 
 extension UITextField {
     /// UITextField의 leftView image를 설정합니다.
@@ -24,4 +25,12 @@ extension UITextField {
         leftView = containerView
         leftViewMode = .always
     }
+    
+    func textPublisher() -> AnyPublisher<String, Never> {
+            NotificationCenter.default
+                .publisher(for: UITextField.textDidChangeNotification, object: self)
+                .map { ($0.object as? UITextField)?.text ?? "" }
+                .eraseToAnyPublisher()
+        }
+    
 }
