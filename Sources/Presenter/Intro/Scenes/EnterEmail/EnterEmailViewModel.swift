@@ -6,6 +6,7 @@
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
+import Foundation
 import Combine
 
 import CancelBag
@@ -24,20 +25,47 @@ final class EnterEmailViewModel: BaseViewModel, EnterEmailBusinessLogic {
 
     let coordinator: EnterEmailCoordinatorLogic
 
+    private let checkEmailService = CheckEmailService()
+    
     @Published var emailTextFieldState: TextFieldState
+    @Published var isLoading: Bool
     var email: String
 
     init(coordinator: EnterEmailCoordinatorLogic) {
         self.coordinator = coordinator
+        isLoading = false
         emailTextFieldState = .empty
         email = ""
     }
 
     func enterEmailButtonDidTapped() {
-        // TODO: 화면 전환 분기처리
-//        coordinator.coordinateToEnterPasswordScene()
+        Task {
+            do {
 
-        coordinator.coordinateToConfirmSignUpScene(email: email)
+                let isExist = try await checkEmailService.checkEmail(.init(email: email))
+                let nextScene: NextScene = isExist.exist ? .enterPassword : .confirmSignup
+                DispatchQueue.main.async {
+                    self.routeToScene(nextScene)
+                }
+            } catch {
+                isLoading = false
+                print("통신 오류 에러 처리")
+            }
+        }
+    }
+
+    enum NextScene {
+        case confirmSignup
+        case enterPassword
+    }
+
+    private func routeToScene(_ next: NextScene) {
+        switch next {
+        case .confirmSignup:
+            self.coordinator.coordinateToConfirmSignUpScene(email: self.email)
+        case .enterPassword:
+            self.coordinator.coordinateToEnterPasswordScene()
+        }
     }
 
     func textFieldDidChange(_ text: String) {
