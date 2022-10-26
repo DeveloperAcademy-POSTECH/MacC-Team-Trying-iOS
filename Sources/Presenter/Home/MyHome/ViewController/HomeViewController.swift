@@ -65,6 +65,11 @@ final class HomeViewController: BaseViewController {
         navigationController?.tabBarController?.tabBar.isHidden = false
     }
     
+//     override func viewDidAppear(_ animated: Bool) {
+//         super.viewDidAppear(animated)
+//         carouselView?.configureView(with: viewModel.constellations)
+//     }
+
     /// pangesture에 따라서 요소들을 변화시키는 함수
     /// - Parameters:
     ///   - center: 이미지의 center좌표
