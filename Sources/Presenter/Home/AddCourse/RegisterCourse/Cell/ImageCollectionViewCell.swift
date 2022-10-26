@@ -15,7 +15,7 @@ final class ImageCollectionViewCell: UICollectionViewCell {
     
     lazy var placeImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = 10
         return imageView
