@@ -16,12 +16,6 @@ protocol AlarmViewCoordinating {
 protocol CourseDetailCoordinating {
     func pushToCourseDetailViewController()
 }
-
-// TODO : - 코스등록ViewController로 연결
-protocol CourseRegistering {
-    func pushToCourseRegisterViewController()
-}
-
 struct Constellation {
     let name: String
     let data: String
@@ -30,10 +24,13 @@ struct Constellation {
 
 final class HomeViewModel: BaseViewModel {
     
+    private let domain: String = "http://15.165.72.196:3059/users/me"
+    var user: User?
+
     var coordinator: Coordinator
     
     var hasMate = true
-    
+
     var numberOfColum: Int {
         switch constellations.count {
         case 0...1:
@@ -77,6 +74,42 @@ final class HomeViewModel: BaseViewModel {
     }
     
     
+    init(coordinator: Coordinator) {
+        self.coordinator = coordinator
+        super.init()
+ 
+    }
+    
+    // MARK: async로 호출한 api함수
+    func fetchAsync() async throws {
+        let data = try await HomeAPIService.fetchUserAsync()
+        guard let myPlanineInfoDTO = try? JSONDecoder().decode(UserInfo.self, from: data) else {
+            print("Decoder오류")
+            return
+        }
+        self.user = User(nickName: myPlanineInfoDTO.me.name)
+    }
+    
+    // MARK: completion Handler(urlsession)로 호출한 api
+//    func fetch(completion: @escaping (User) -> Void ) {
+//        HomeAPIService.fetchUser { [weak self] result in
+//            switch result {
+//            case .success(let data):
+//                do {
+//                    guard let myPlanineInfoDTO = try? JSONDecoder().decode(UserInfo.self, from: data) else {
+//                        return print("gg")
+//                    }
+//                    completion(User(nickName: myPlanineInfoDTO.me.name))
+//                } catch {
+//                    print("디코딩실패")
+//                }
+//
+//            case .failure(let failure):
+//                print(failure)
+//            }
+//        }
+//    }
+
     func pushToAlarmView() {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
         coordinator.pushToAlarmViewController()
@@ -87,4 +120,8 @@ final class HomeViewModel: BaseViewModel {
         coordinator.pushToCourseDetailViewController()
     }
 
+    func startAddCourseFlow() {
+        guard let coordinator = coordinator as? HomeCoordinator else { return }
+        coordinator.startAddCourseFlow()
+    }
 }

@@ -12,12 +12,19 @@ struct User {
     let email: String
     let password: String
     let nickName: String
-    let myPlanet: Planet
+    var myPlanet: Planet?
     let satellites: [Planet]
+    
+    init(nickName: String, myPlanet: Planet? = nil) {
+        self.email = ""
+        self.password = ""
+        self.nickName = nickName
+        self.satellites = []
+    }
 }
 
-extension User {
-    static let testUser: User = {
-        .init(email: "matStar1015@gmail.com", password: "matStar1015", nickName: "맛스타", myPlanet: Planet.testUserPlanet, satellites: Planet.testUserSatellites)
-    }()
-}
+//extension User {
+//    static let testUser: User = {
+//        .init(email: "matStar1015@gmail.com", password: "matStar1015", nickName: "맛스타", myPlanet: Planet.testUserPlanet, satellites: Planet.testUserSatellites)
+//    }()
+//}

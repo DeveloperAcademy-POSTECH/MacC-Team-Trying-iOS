@@ -8,15 +8,67 @@
 
 import Combine
 import CoreLocation
+import MapKit
 
 final class PlaceSearchViewModel: BaseViewModel {
-    var places: [Place] = [
-        Place(title: "포항공대", category: "대학교", address: "경북 포항시 남구 효리단길", location: CLLocationCoordinate2D(latitude: 36.01436040811483, longitude: 129.32476193278993)),
-        Place(title: "효자초등학교", category: "초등학교", address: "경북 포항시 남구 이효리", location: CLLocationCoordinate2D(latitude: 36.00553989283799, longitude: 129.33772074559323)),
-        Place(title: "포항종합운동장", category: "체육 시설", address: "경북 포항시 북구 양학동", location: CLLocationCoordinate2D(latitude: 36.00862889200349, longitude: 129.36398259910183)),
-        Place(title: "광안리해수욕장", category: "해수욕장", address: "부산 남구 대연동", location: CLLocationCoordinate2D(latitude: 35.15320527228295, longitude: 129.1189083767537)),
-        Place(title: "H에비뉴호텔", category: "호텔", address: "서울특별시 어딘가", location: CLLocationCoordinate2D(latitude: 35.153193894044534, longitude: 129.12470143429098)),
-        Place(title: "널구지공원", category: "공원", address: "충북 서산시 어딘가", location: CLLocationCoordinate2D(latitude: 35.16319093471162, longitude: 129.1291314739054)),
-        Place(title: "금련산", category: "산", address: "경북 포항시 북구 창포동", location: CLLocationCoordinate2D(latitude: 35.161204733671845, longitude: 129.09472209989778))
-    ]
+    var coordinator: Coordinator
+    @Published var places: [Place]
+    
+    init(coordinator: Coordinator, places: [Place] = []) {
+        self.coordinator = coordinator
+        self.places = places
+    }
+}
+
+// MARK: - Coordinating
+extension PlaceSearchViewModel {
+    func pop() {
+        guard let coordinator = coordinator as? Popable else { return }
+        coordinator.popViewController()
+    }
+}
+
+// MARK: - Business Logic
+extension PlaceSearchViewModel {
+    /// 검색 결과를 가지고 MKLocalSearch를 수행합니다.
+    /// - Parameter text: TextField에 입력된 String
+    func searchPlace(_ text: String) {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = text
+        let search = MKLocalSearch(request: request)
+        
+        var tempPlaces: [Place] = []
+        search.start { [weak self] response, _ in
+            guard let response = response, let self = self else { return }
+            
+            response.mapItems.forEach { [weak self] place in
+                guard let self = self else { return }
+                // MARK: 검색 지역을 대한민국으로 제한합니다.
+                if place.placemark.countryCode == "KR" {
+                    tempPlaces.append(self.convertToPlace(place))
+                }
+            }
+            self.places = tempPlaces
+        }
+    }
+    
+    func addCourse(_ index: Int) {
+        // TODO: 코스추가 눌렀을 때 annotation 추가하기
+//        places[index]
+        let selectedPlace = places[index]
+    }
+}
+
+// MARK: - Helper
+extension PlaceSearchViewModel {
+    private func convertToPlace(_ place: MKMapItem) -> Place {
+        let address = "\(place.placemark.administrativeArea ?? "") \(place.placemark.locality ?? "") \(place.placemark.thoroughfare ?? "") \(place.placemark.subThoroughfare ?? "")"
+        
+        return Place(
+            title: place.name ?? "",
+            category: place.pointOfInterestCategory?.koreanCategory ?? "",
+            address: address,
+            location: place.placemark.coordinate
+        )
+    }
 }

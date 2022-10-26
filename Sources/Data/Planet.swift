@@ -36,19 +36,28 @@ enum PlanetType {
 }
 
 struct Planet {
+    let planetId: Int
     let name: String
     let planetTyle: PlanetType
     let createdDate: String
     let courses: [Course]
+    
+    init(planetId: Int, name: String, planetTyle: PlanetType, createdDate: String) {
+        self.planetId = planetId
+        self.name = name
+        self.planetTyle = planetTyle
+        self.createdDate = createdDate
+        self.courses = []
+    }
 }
 
-extension Planet {
-    static let testUserPlanet: Planet = {
-        .init(name: "맛스타행성", planetTyle: .blue, createdDate: "2022년 10월 15일", courses: [Course.firstDateCoures, Course.secondDateCourse])
-    }()
-    
-    static let testUserSatellites: [Planet] = [
-        Planet(name: "루미행성", planetTyle: .pink, createdDate: "2022년 09월 01일", courses: []),
-        Planet(name: "유스행성", planetTyle: .orange, createdDate: "2022년 08월 01일", courses: [])
-    ]
-}
+//extension Planet {
+//    static let testUserPlanet: Planet = {
+//        .init(name: "맛스타행성", planetTyle: .blue, createdDate: "2022년 10월 15일", courses: [Course.firstDateCoures, Course.secondDateCourse])
+//    }()
+//    
+//    static let testUserSatellites: [Planet] = [
+//        Planet(name: "루미행성", planetTyle: .pink, createdDate: "2022년 09월 01일", courses: []),
+//        Planet(name: "유스행성", planetTyle: .orange, createdDate: "2022년 08월 01일", courses: [])
+//    ]
+//}

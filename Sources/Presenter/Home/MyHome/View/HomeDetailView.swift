@@ -58,7 +58,7 @@ class HomeDetailView: UIView {
     lazy var ddayLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.text = "D+273"
+        label.text = "D+123"
         return label
     }()
     

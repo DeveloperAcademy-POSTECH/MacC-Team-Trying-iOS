@@ -13,8 +13,8 @@ import SnapKit
 final class PlaceListView: UIView {
     weak var parentView: UIView?
     var numberOfItems: Int
-    private var isContainerCollapsed = true             // PlaceListContainerView가 펼쳐져있는지 접혀있는지 저장하는 변수입니다.
-    private let minimumChangeValue: CGFloat = 50.0      // 최소로 움직여야 하는 값을 50으로 설정합니다.
+    var isContainerCollapsed = true                 // PlaceListContainerView가 펼쳐져있는지 접혀있는지 저장하는 변수입니다.
+    private let minimumChangeValue: CGFloat = 50.0  // 최소로 움직여야 하는 값을 50으로 설정합니다.
     private var minHeight: CGFloat {
         switch numberOfItems {
         case 1:
@@ -176,7 +176,7 @@ extension PlaceListView {
         DispatchQueue.main.async {
             self.snp.remakeConstraints { make in
                 make.leading.trailing.bottom.equalToSuperview()
-                make.top.equalTo(parentView.safeAreaLayoutGuide)
+                make.top.equalTo(parentView.safeAreaLayoutGuide).offset(10)
             }
             
             UIView.animate(

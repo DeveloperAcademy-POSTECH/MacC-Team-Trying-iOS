@@ -6,8 +6,8 @@
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
-import Foundation
 import CoreLocation
+import MapKit
 
 struct Place {
     let title: String
@@ -20,7 +20,7 @@ extension Place {
     static let firstDatePlaces = [
         Place(title: "포항공대", category: "대학교", address: "경북 포항시 남구 효리단길", location: CLLocationCoordinate2D(latitude: 36.01436040811483, longitude: 129.32476193278993)),
         Place(title: "효자초등학교", category: "초등학교", address: "경북 포항시 남구 이효리", location: CLLocationCoordinate2D(latitude: 36.00553989283799, longitude: 129.33772074559323)),
-        Place(title: "포항종합운동장",category: "체육 시설", address: "경북 포항시 북구 양학동", location: CLLocationCoordinate2D(latitude: 36.00862889200349, longitude: 129.36398259910183))
+        Place(title: "포항종합운동장", category: "체육 시설", address: "경북 포항시 북구 양학동", location: CLLocationCoordinate2D(latitude: 36.00862889200349, longitude: 129.36398259910183))
     ]
     static let secondDatePlaces = [
         Place(title: "광안리해수욕장", category: "해수욕장", address: "부산 남구 대연동", location: CLLocationCoordinate2D(latitude: 35.15320527228295, longitude: 129.1189083767537)),
