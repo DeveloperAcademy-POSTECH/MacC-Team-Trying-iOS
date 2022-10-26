@@ -32,12 +32,6 @@ class HomeDetailView: UIView {
         return imageView
     }()
     
-    lazy var otherPlanets: [UIImageView] = [
-        UIImageView(image: UIImage(named: "PodingPlanet")),
-        UIImageView(image: UIImage(named: "WoodyPlanet")),
-        UIImageView(image: UIImage(named: "YouthPlanet"))
-    ]
-    
     // TODO : - 추후 필드명 변경되면 변수명 수정(mate)
     lazy var otherProfileImage: UIImageView = {
         let imageView = UIImageView()

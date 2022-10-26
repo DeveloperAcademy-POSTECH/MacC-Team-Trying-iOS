@@ -20,6 +20,7 @@ final class HomeViewController: BaseViewController {
     let viewModel: HomeViewModel
     let changeMyPlanetScale: Double = 0.5
     let screenHeight = DeviceInfo.screenHeight - 20
+    var planetImages: [RandomPlanetView] = []
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -45,6 +46,7 @@ final class HomeViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         carouselView = CarouselCollectionView(pages: viewModel.constellations.count, delegate: self)
+        setRandomPlanets()
         bind()
         setAttributes()
     }
@@ -60,15 +62,18 @@ final class HomeViewController: BaseViewController {
     ///   - myPlanetTransform: 어떻게 변할지, 주로 scale에 관한 값
     ///   - constellationAlpha: 제스처에따라 alpha값이 변하는 요소는 어떻값으로 변할지
     ///   - alreadyAlphaExist: 이미 alpha값을 가지고있는 요소는 같은 값을 공유할수없기때문에 다른 계산식이 필요하다
-    private func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationAlpha: CGFloat, alreadyAlphaExist: CGFloat) {
+    private func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationMinusAlpha: CGFloat, alreadyAlphaExist: CGFloat, constellationPlusAlpha: CGFloat) {
         self.homeDetailView.myPlanetImage.center = center
         self.homeDetailView.myPlanetImage.transform = myPlanetTransform
-        self.carouselView?.alpha = constellationAlpha
-        self.homeDetailView.courseNameButton.alpha = constellationAlpha
-        self.homeDetailView.currentImageBox.alpha = constellationAlpha
-        self.homeDetailView.dateLabel.alpha = constellationAlpha
+        self.carouselView?.alpha = constellationMinusAlpha
+        self.homeDetailView.courseNameButton.alpha = constellationMinusAlpha
+        self.homeDetailView.currentImageBox.alpha = constellationMinusAlpha
+        self.homeDetailView.dateLabel.alpha = constellationMinusAlpha
         self.homeDetailView.beforeImageButton.alpha = alreadyAlphaExist
         self.homeDetailView.afterImageButton.alpha = alreadyAlphaExist
+        self.planetImages.forEach { planetImage in
+            planetImage.alpha = constellationPlusAlpha
+        }
     }
     
     @objc
@@ -82,15 +87,15 @@ final class HomeViewController: BaseViewController {
             if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
                 changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight / 2), screenHeight)),
                                myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
-                               constellationAlpha: changeAlpha(yPoint: imageCenterY),
-                               alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.2))
+                               constellationMinusAlpha: changeAlpha(yPoint: imageCenterY),
+                               alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.2), constellationPlusAlpha: changeAlpha(minus: imageCenterY))
                 
             }
         } else if gesture.state == .ended {
             if imageCenterY > screenHeight * 8 / 9 {
                 DispatchQueue.main.async {
                     UIView.animate(withDuration: 0.5) {
-                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationAlpha: 1, alreadyAlphaExist: 0.2)
+                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationMinusAlpha: 1, alreadyAlphaExist: 0.2, constellationPlusAlpha: 0)
                     }
                 }
             } else {
@@ -98,8 +103,9 @@ final class HomeViewController: BaseViewController {
                     UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
                         self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight / 2),
                                             myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
-                                            constellationAlpha: 0,
-                                            alreadyAlphaExist: 0)
+                                            constellationMinusAlpha: 0,
+                                            alreadyAlphaExist: 0,
+                                            constellationPlusAlpha: 1)
                         self.homeDetailView.beforeImageButton.alpha = 0
                         self.homeDetailView.afterImageButton.alpha = 0
                     } completion: { _ in
@@ -122,23 +128,26 @@ final class HomeViewController: BaseViewController {
             if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
                 changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight / 2), screenHeight)),
                                myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
-                               constellationAlpha: changeAlpha(yPoint: imageCenterY),
-                               alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.2))
+                               constellationMinusAlpha: changeAlpha(yPoint: imageCenterY),
+                               alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.2),
+                               constellationPlusAlpha: changeAlpha(minus: imageCenterY))
             }
         } else if gesture.state == .ended {
             if self.homeDetailView.myPlanetImage.center.y < (screenHeight / 2) * 7 / 6 {
                 UIView.animate(withDuration: 0.3) {
                     self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight / 2),
                                         myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
-                                        constellationAlpha: 0,
-                                        alreadyAlphaExist: 0)
+                                        constellationMinusAlpha: 0,
+                                        alreadyAlphaExist: 0,
+                                        constellationPlusAlpha: 1)
                 }
             } else {
                 UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
                     self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight),
                                         myPlanetTransform: CGAffineTransform(scaleX: 1, y: 1),
-                                        constellationAlpha: 1,
-                                        alreadyAlphaExist: 0.2)
+                                        constellationMinusAlpha: 1,
+                                        alreadyAlphaExist: 0.2,
+                                        constellationPlusAlpha: 0)
                 } completion: { _ in
                     myPlanet.removeGestureRecognizer(gesture)
                 }
@@ -185,6 +194,20 @@ final class HomeViewController: BaseViewController {
         carouselView.carouselCollectionView.scrollToItem(at: NSIndexPath(item: carouselView.currentPage, section: 0) as IndexPath, at: .right, animated: true)
     }
     
+    @objc
+    /// 랜덤 행성을 tap했을때 실행되는 함수
+    /// - Parameter sender: tap한 행성(tap한 행성의 tag에 따라 데이터를 index로 추출해서 다음 VC로 보내줌
+    func productTapped(_ sender: UITapGestureRecognizer) {
+        guard let view = sender.view else { return }
+        print(view.tag)
+        let nextVC = RandomPlanetViewController()
+        let backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        backBarButtonItem.tintColor = .white
+        self.navigationItem.backBarButtonItem = backBarButtonItem
+        nextVC.randomPlanet = viewModel.planets[view.tag]
+        navigationController?.pushViewController(nextVC, animated: true)
+    }
+    
     /// 이미지의 center위치(y)값에 따라 곱해줄 scale값을 return해주는 함수
     /// - Parameter yPoint: 이미지center의 yPoint
     /// - Returns: 이미지에 곱해줄 scale값
@@ -213,6 +236,12 @@ final class HomeViewController: BaseViewController {
     private func changeAlpha(yPoint: Double, beforeAlpha: Double) -> CGFloat {
         let gredient = (2 * beforeAlpha) / screenHeight
         let interceptionY = -beforeAlpha
+        return CGFloat((gredient * yPoint) + interceptionY)
+    }
+    
+    private func changeAlpha(minus yPoint: Double) -> CGFloat {
+        let gredient = -2 / screenHeight
+        let interceptionY = +2.0
         return CGFloat((gredient * yPoint) + interceptionY)
     }
 }
@@ -257,6 +286,23 @@ extension HomeViewController {
         homeDetailView.beforeImageButton.addTarget(self, action: #selector(beforeImageButtonTapped), for: .touchUpInside)
         homeDetailView.afterImageButton.addTarget(self, action: #selector(afterImageButtonTapped), for: .touchUpInside)
         homeDetailView.courseNameButton.addTarget(self, action: #selector(courseNameButtonTapped), for: .touchUpInside)
+    }
+    
+    
+    /// 각 View마다 tag를 달아서 어떤 View를 tap했는지를 알려줄수있게 View를 생성하고 UI에 띄워주는 함수
+    func setRandomPlanets() {
+        for index in self.viewModel.planets.indices {
+            let productView = RandomPlanetView()
+            productView.planet = viewModel.planets[index]
+            productView.tag = index
+            productView.isUserInteractionEnabled = true
+            let producttap = UITapGestureRecognizer(target: self, action: #selector(self.productTapped(_:)))
+            productView.addGestureRecognizer(producttap)
+            productView.frame = CGRect(x: viewModel.loction[index].x, y: viewModel.loction[index].y, width: 65, height: 92)
+            productView.alpha = 0.0
+            self.planetImages.append(productView)
+            view.addSubview(productView)
+        }
     }
 }
 

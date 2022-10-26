@@ -32,9 +32,7 @@ final class HomeViewModel: BaseViewModel {
     
     var coordinator: Coordinator
     
-    init(coordinator: Coordinator) {
-        self.coordinator = coordinator
-    }
+    var hasMate = true
     
     var numberOfColum: Int {
         switch constellations.count {
@@ -46,8 +44,6 @@ final class HomeViewModel: BaseViewModel {
             return 3
         }
     }
-
-    var hasMate = true
     
     var constellations: [Constellation] = [
         Constellation(name: "창원 야구장", data: "2022-10-01(토)", image: UIImage(named: "Changwon")),
@@ -59,6 +55,27 @@ final class HomeViewModel: BaseViewModel {
         Constellation(name: "부산대학교", data: "2022-10-07(금)", image: UIImage(named: "Busan")),
         Constellation(name: "인천ssg파크", data: "2022-10-08(토)", image: UIImage(named: "Pohang"))
     ]
+    
+    var planets: [Planet] = [
+        Planet(name: "우디", planetTyle: .red, createdDate: "우디행성 입니다", courses: []),
+        Planet(name: "유스", planetTyle: .purple, createdDate: "유스행성 입니다", courses: []),
+        Planet(name: "포딩", planetTyle: .pink, createdDate: "포딩행성 입니다", courses: []),
+        Planet(name: "찰리", planetTyle: .orange, createdDate: "찰리행성 입니다", courses: []),
+        Planet(name: "루미", planetTyle: .pink, createdDate: "루미행성 입니다", courses: [])
+    ]
+    
+    var loction: [CGPoint] = [
+        CGPoint(x: 50, y: 210),
+        CGPoint(x: 175, y: 186),
+        CGPoint(x: 319, y: 276),
+        CGPoint(x: 58, y: 566),
+        CGPoint(x: 254, y: 555)
+    ]
+    
+    init(coordinator: Coordinator) {
+        self.coordinator = coordinator
+    }
+    
     
     func pushToAlarmView() {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }

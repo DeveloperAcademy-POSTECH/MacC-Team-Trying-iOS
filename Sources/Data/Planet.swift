@@ -12,6 +12,8 @@ enum PlanetType {
     case blue
     case pink
     case orange
+    case purple
+    case red
     
     var planetImage: UIImage? {
         switch self {
@@ -19,10 +21,16 @@ enum PlanetType {
             return UIImage(named: "MyPlanetImage")
             
         case .pink:
-            return UIImage(named: "LumiPlanet")
+            return UIImage(named: "Planet1")
             
         case .orange:
-            return UIImage(named: "YouthPlanet")
+            return UIImage(named: "Planet2")
+            
+        case .purple:
+            return UIImage(named: "Planet3")
+            
+        case .red:
+            return UIImage(named: "Planet4")
         }
     }
 }
