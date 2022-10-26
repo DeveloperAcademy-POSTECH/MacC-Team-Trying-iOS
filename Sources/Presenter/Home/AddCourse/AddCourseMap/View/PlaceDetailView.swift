@@ -52,23 +52,44 @@ final class PlaceDetailView: UIView {
         return label
     }()
     lazy var addCourseButton = SmallRectButton(type: .add)
-    private lazy var relatedCourseContainerView: UIView = {
+    private lazy var placeInfoContrainerView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 10
         view.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
         return view
     }()
-    private lazy var relatedCourseLabel: UILabel = {
+    private lazy var placeInformationLabel: UILabel = {
         let label = UILabel()
-        label.text = "연관 코스"
-        label.font = .designSystem(weight: .regular, size: ._15)
-        label.textColor = .designSystem(.grayC5C5C5)
+        label.text = "위치 정보"
+        label.font = .designSystem(weight: .bold, size: ._15)
+        label.textColor = .designSystem(.white)
         return label
     }()
-    private lazy var relatedCourseNumberLabel: UILabel = {
+    private lazy var timeLabel: UILabel = {
         let label = UILabel()
-        label.text = "0개"
-        label.font = .designSystem(weight: .bold, size: ._20)
+        label.text = "영업시간"
+        label.font = .designSystem(weight: .regular, size: ._13)
+        label.textColor = .designSystem(.white)
+        return label
+    }()
+    private lazy var holidayLabel: UILabel = {
+        let label = UILabel()
+        label.text = "휴무일"
+        label.font = .designSystem(weight: .regular, size: ._13)
+        label.textColor = .designSystem(.white)
+        return label
+    }()
+    private lazy var placeTimeLabel: UILabel = {
+        let label = UILabel()
+        label.text = "매일 10:00 ~ 23:00"
+        label.font = .designSystem(weight: .bold, size: ._13)
+        label.textColor = .designSystem(.mainYellow)
+        return label
+    }()
+    private lazy var placeHolidayLabel: UILabel = {
+        let label = UILabel()
+        label.text = "매주 월요일"
+        label.font = .designSystem(weight: .bold, size: ._13)
         label.textColor = .designSystem(.mainYellow)
         return label
     }()
@@ -87,9 +108,19 @@ final class PlaceDetailView: UIView {
         self.backgroundColor = .designSystem(.black)
         self.layer.cornerRadius = 20
         
-        placeInfoView.addSubviews(titleLabel, categoryLabel, addressLabel)
-        relatedCourseContainerView.addSubviews(relatedCourseLabel, relatedCourseNumberLabel)
-        self.addSubviews(placeInfoView, addCourseButton, relatedCourseContainerView)
+        placeInfoView.addSubviews(
+            titleLabel,
+            categoryLabel,
+            addressLabel
+        )
+        placeInfoContrainerView.addSubviews(
+            placeInformationLabel,
+            timeLabel,
+            holidayLabel,
+            placeTimeLabel,
+            placeHolidayLabel
+        )
+        self.addSubviews(placeInfoView, addCourseButton, placeInfoContrainerView)
         
         placeInfoView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(33)
@@ -116,18 +147,34 @@ final class PlaceDetailView: UIView {
             make.trailing.equalToSuperview().inset(20)
         }
         
-        relatedCourseContainerView.snp.makeConstraints { make in
+        placeInfoContrainerView.snp.makeConstraints { make in
             make.top.equalTo(placeInfoView.snp.bottom).offset(30)
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(100)
         }
-        relatedCourseLabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().inset(24)
+        
+        placeInformationLabel.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview().inset(15)
         }
-        relatedCourseNumberLabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().inset(24)
+        
+        timeLabel.snp.makeConstraints { make in
+            make.top.equalTo(placeInformationLabel.snp.bottom).offset(10)
+            make.leading.equalToSuperview().inset(15)
+        }
+        
+        holidayLabel.snp.makeConstraints { make in
+            make.top.equalTo(timeLabel.snp.bottom).offset(10)
+            make.leading.equalToSuperview().inset(15)
+        }
+        
+        placeTimeLabel.snp.makeConstraints { make in
+            make.leading.equalTo(timeLabel.snp.trailing).offset(20)
+            make.centerY.equalTo(timeLabel)
+        }
+        
+        placeHolidayLabel.snp.makeConstraints { make in
+            make.leading.equalTo(placeTimeLabel.snp.leading)
+            make.centerY.equalTo(holidayLabel)
         }
     }
 }

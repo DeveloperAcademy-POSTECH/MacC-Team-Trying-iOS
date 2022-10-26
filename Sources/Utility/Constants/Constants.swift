@@ -27,11 +27,13 @@ struct Constants {
         static let x_mark_circle_fill = "xmark.circle.fill"
         static let magnifyingglass = "magnifyingglass"
         static let deleteButton = "delete_button"
+        static let navBarDeleteButton = "nav_bar_delete_button"
         static let photoIcon = "photo.on.rectangle.angled"
         static let closedLockIcon = "lock_closed"
         static let openLockIcon = "lock_open"
         static let appIcon = "app_icon"
         static let starAnnotation = "star_annotation"
+        static let purplePlanet = "purple_planet"
     }
     
     struct Lottie {

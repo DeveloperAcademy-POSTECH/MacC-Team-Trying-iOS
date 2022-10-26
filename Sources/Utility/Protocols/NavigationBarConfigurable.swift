@@ -23,7 +23,8 @@ protocol NavigationBarConfigurable: BaseViewController {
     ///   - target: Target
     ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
     ///   - doneAction: 완료 버튼이 눌렸을 때 실행할 @objc 메소드
-    func configureSearchNavigationBar(target: Any, popAction: Selector, doneAction: Selector)
+    ///   - textEditingAction: TextField 편집 시 실행할 @objc 메소드
+    func configureSearchNavigationBar(target: Any, popAction: Selector, doneAction: Selector, textEditingAction: Selector)
     
     /// 코스 등록 과정에서 코스 이름, 내용, 사진을 입력하는 화면에서 사용되는 Navigation Bar를 설정합니다.
     /// - Parameters:
@@ -37,7 +38,7 @@ extension NavigationBarConfigurable {
     func configureMapNavigationBar(target: Any, dismissAction: Selector, pushAction: Selector) {
         let dismissButton: UIButton = {
             let button = UIButton()
-            button.setImage(UIImage(named: Constants.Image.deleteButton), for: .normal)
+            button.setImage(UIImage(named: Constants.Image.navBarDeleteButton), for: .normal)
             button.addTarget(target, action: dismissAction, for: .touchUpInside)
             return button
         }()
@@ -66,14 +67,18 @@ extension NavigationBarConfigurable {
         navigationItem.rightBarButtonItem = rightButtonItem
     }
     
-    func configureSearchNavigationBar(target: Any, popAction: Selector, doneAction: Selector) {
+    func configureSearchNavigationBar(target: Any, popAction: Selector, doneAction: Selector, textEditingAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
             button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
             button.addTarget(target, action: popAction, for: .touchUpInside)
             return button
         }()
-        let textFieldView = CustomTextField(type: .placeSearch)
+        let textFieldView: CustomTextField = {
+            let textField = CustomTextField(type: .placeSearch)
+            textField.addTarget(target, action: textEditingAction, for: .editingChanged)
+            return textField
+        }()
         let doneButton: UIButton = {
             let button = UIButton(type: .custom)
             button.setTitle("완료", for: .normal)

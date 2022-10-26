@@ -14,9 +14,14 @@ protocol HomeCoordinating {
 
 final class AddCourseCompleteViewModel: BaseViewModel {
     var coordinator: Coordinator
+    var places: [Place]
     
-    init(coordinator: Coordinator) {
+    init(
+        coordinator: Coordinator,
+        places: [Place]
+    ) {
         self.coordinator = coordinator
+        self.places = places
     }
 }
 

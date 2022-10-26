@@ -34,9 +34,20 @@ final class PlaceSearchViewController: BaseViewController {
         // input
         
         // output
-        if viewModel.places.isEmpty {
-            navigationItem.rightBarButtonItem?.isEnabled = false
-        }
+        viewModel.$places
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] places in
+                guard let self = self else { return }
+                if places.isEmpty {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = false
+                    self.presentEmptyResultView()
+                } else {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self.hideEmptyResultView()
+                }
+                self.placeSearchTableView.reloadData()
+            }
+            .cancel(with: cancelBag)
     }
     
     init(viewModel: PlaceSearchViewModel) {
@@ -59,7 +70,7 @@ final class PlaceSearchViewController: BaseViewController {
 // MARK: - UI
 extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), doneAction: #selector(doneButtonPressed(_:)))
+        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), doneAction: #selector(doneButtonPressed(_:)), textEditingAction: #selector(textFieldEditing(_:)))
         setAttributes()
         setLayout()
     }
@@ -68,6 +79,11 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setAttributes() {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(screenPressed(_:)))
         view.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
+    @objc
+    private func textFieldEditing(_ sender: UITextField) {
+        viewModel.searchPlace(sender.text ?? "")
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -79,10 +95,6 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalToSuperview()
         }
-        
-        if viewModel.places.isEmpty {
-            self.presentEmptyResultView()
-        }
     }
     
     private func presentEmptyResultView() {
@@ -92,6 +104,10 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
             make.top.bottom.equalToSuperview().inset(357)
             make.leading.trailing.equalToSuperview().inset(124)
         }
+    }
+    
+    private func hideEmptyResultView() {
+        emptyResultView.removeFromSuperview()
     }
 }
 
@@ -145,6 +161,6 @@ extension PlaceSearchViewController {
     @objc
     private func addCourseButtonPressed(_ sender: UIButton) {
         navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
-        print("\(sender.tag) button pressed")
+        viewModel.addCourse(sender.tag)
     }
 }

@@ -45,15 +45,26 @@ final class HomeViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         carouselView = CarouselCollectionView(pages: viewModel.constellations.count, delegate: self)
+        Task {
+            try await viewModel.fetchAsync()
+            self.homeDetailView.ddayLabel.text = viewModel.user?.nickName
+        }
+        
         bind()
         setAttributes()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        carouselView?.configureView(with: viewModel.constellations)
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         navigationController?.tabBarController?.tabBar.isHidden = false
     }
+    
 //     override func viewDidAppear(_ animated: Bool) {
 //         super.viewDidAppear(animated)
 //         carouselView?.configureView(with: viewModel.constellations)

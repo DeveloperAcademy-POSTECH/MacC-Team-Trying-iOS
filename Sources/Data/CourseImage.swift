@@ -13,17 +13,17 @@ struct CourseImage {
     // 이미지 이름
     let name: String
 }
-
-extension CourseImage {
-    static let firstDateCourseImages: [CourseImage] = [
-        CourseImage(belongedCourse: Course.firstDateCoures, name: "첫번째 사진"),
-        CourseImage(belongedCourse: Course.firstDateCoures, name: "두번째 사진")
-    ]
-    
-    static let secondDateCourseImages: [CourseImage] = [
-        CourseImage(belongedCourse: Course.secondDateCourse, name: "세번째 사진"),
-        CourseImage(belongedCourse: Course.secondDateCourse, name: "네번쨰사진"),
-        CourseImage(belongedCourse: Course.secondDateCourse, name: "다섯번째사진"),
-        CourseImage(belongedCourse: Course.secondDateCourse, name: "여섯번째사진")
-    ]
-}
+//
+//extension CourseImage {
+//    static let firstDateCourseImages: [CourseImage] = [
+//        CourseImage(belongedCourse: Course.firstDateCoures, name: "첫번째 사진"),
+//        CourseImage(belongedCourse: Course.firstDateCoures, name: "두번째 사진")
+//    ]
+//    
+//    static let secondDateCourseImages: [CourseImage] = [
+//        CourseImage(belongedCourse: Course.secondDateCourse, name: "세번째 사진"),
+//        CourseImage(belongedCourse: Course.secondDateCourse, name: "네번쨰사진"),
+//        CourseImage(belongedCourse: Course.secondDateCourse, name: "다섯번째사진"),
+//        CourseImage(belongedCourse: Course.secondDateCourse, name: "여섯번째사진")
+//    ]
+//}

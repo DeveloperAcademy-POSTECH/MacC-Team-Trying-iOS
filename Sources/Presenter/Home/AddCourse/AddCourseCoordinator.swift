@@ -30,15 +30,15 @@ final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, Register
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToRegisterCourseViewController() {
-        let viewModel = RegisterCourseViewModel(coordinator: self)
+    func pushToRegisterCourseViewController(places: [Place]) {
+        let viewModel = RegisterCourseViewModel(coordinator: self, places: places)
         let viewController = RegisterCourseViewController(viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToAddCourseCompleteViewController() {
-        let viewModel = AddCourseCompleteViewModel(coordinator: self)
+    func pushToAddCourseCompleteViewController(places: [Place]) {
+        let viewModel = AddCourseCompleteViewModel(coordinator: self, places: places)
         let viewController = AddCourseCompleteViewController(viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
