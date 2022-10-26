@@ -10,7 +10,7 @@ import Combine
 import UIKit
 
 protocol AddCourseCompleteCoordinating {
-    func pushToAddCourseCompleteViewController(places: [Place])
+    func pushToAddCourseCompleteViewController(courseTitle: String, courseContent: String, isPublic: Bool, places: [Place])
 }
 
 final class RegisterCourseViewModel: BaseViewModel {
@@ -36,9 +36,9 @@ extension RegisterCourseViewModel {
         coordinator.popViewController()
     }
     
-    func pushToAddCourseCompleteView() {
+    func pushToAddCourseCompleteView(courseTitle: String, courseContent: String, isPublic: Bool) {
         guard let coordinator = coordinator as? AddCourseCompleteCoordinating else { return }
-        coordinator.pushToAddCourseCompleteViewController(places: places)
+        coordinator.pushToAddCourseCompleteViewController(courseTitle: courseTitle, courseContent: courseContent, isPublic: isPublic, places: places)
     }
 }
 

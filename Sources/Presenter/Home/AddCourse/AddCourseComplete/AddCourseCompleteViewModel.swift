@@ -14,13 +14,22 @@ protocol HomeCoordinating {
 
 final class AddCourseCompleteViewModel: BaseViewModel {
     var coordinator: Coordinator
-    var places: [Place]
+    private let courseTitle: String
+    private let courseContent: String
+    private let isPublic: Bool
+    private let places: [Place]
     
     init(
         coordinator: Coordinator,
+        courseTitle: String,
+        courseContent: String,
+        isPublic: Bool,
         places: [Place]
     ) {
         self.coordinator = coordinator
+        self.courseTitle = courseTitle
+        self.courseContent = courseContent
+        self.isPublic = isPublic
         self.places = places
     }
 }
