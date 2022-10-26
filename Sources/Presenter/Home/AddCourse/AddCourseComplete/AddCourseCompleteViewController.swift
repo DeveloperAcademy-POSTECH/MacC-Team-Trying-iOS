@@ -12,8 +12,10 @@ import UIKit
 import CancelBag
 import Lottie
 import SnapKit
+import CoreLocation
 
 final class AddCourseCompleteViewController: BaseViewController {
+
     var viewModel: AddCourseCompleteViewModel
     
     private lazy var completeLabel: UILabel = {
@@ -42,7 +44,7 @@ final class AddCourseCompleteViewController: BaseViewController {
     private lazy var constellationImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: "Changwon")
+        imageView.image = viewModel.makeStars(stars: viewModel.places)
         return imageView
     }()
     private lazy var doneButton: MainButton = {
@@ -56,7 +58,6 @@ final class AddCourseCompleteViewController: BaseViewController {
         // input
         
         // output
-        
     }
     
     init(viewModel: AddCourseCompleteViewModel) {
@@ -70,7 +71,6 @@ final class AddCourseCompleteViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setUI()
         bind()
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
@@ -78,7 +78,6 @@ final class AddCourseCompleteViewController: BaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
 }
