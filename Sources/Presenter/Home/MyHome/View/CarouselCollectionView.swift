@@ -76,7 +76,7 @@ extension CarouselCollectionView {
         carouselLayout.minimumLineSpacing = cellPadding * 2
         carouselCollectionView.collectionViewLayout = carouselLayout
         carouselData = data
-        carouselCollectionView.reloadData()
+//        carouselCollectionView.reloadData()
     }
     
     func getCurrentPage() -> Int {

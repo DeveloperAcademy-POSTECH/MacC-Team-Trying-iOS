@@ -15,7 +15,7 @@ import Lottie
 
 final class HomeViewController: BaseViewController {
 
-    private var carouselView: CarouselCollectionView?
+    private lazy var carouselView = CarouselCollectionView(pages: viewModel.constellations.count, delegate: self)
     let homeDetailView = HomeDetailView()
     let viewModel: HomeViewModel
     let changeMyPlanetScale: Double = 0.5
@@ -45,25 +45,33 @@ final class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        carouselView = CarouselCollectionView(pages: viewModel.constellations.count, delegate: self)
         setRandomPlanets()
         Task {
             try await viewModel.fetchAsync()
             self.homeDetailView.ddayLabel.text = viewModel.user?.nickName
+            self.carouselView.configureView(with: viewModel.constellations)
+            self.carouselView.carouselCollectionView.reloadData()
+            self.homeDetailView.courseNameButton.setTitle(viewModel.constellations.first?.name, for: .normal)
+            self.homeDetailView.dateLabel.text = viewModel.constellations.first?.data
+            self.homeDetailView.currentImage.image = viewModel.constellations.first?.image
+            if viewModel.constellations.count > 1 {
+                homeDetailView.afterImageButton.isHidden = false
+                homeDetailView.afterImageButton.setImage(self.viewModel.constellations[1].image, for: .normal)
+            }
+            self.homeDetailView.courseNameButton.snp.makeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.top.equalToSuperview().offset(160)
+                make.height.equalTo(44)
+                guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
+                make.width.equalTo((text as NSString).size().width + 90)
+            }
         }
-        
         bind()
         setAttributes()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        carouselView?.configureView(with: viewModel.constellations)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         navigationController?.tabBarController?.tabBar.isHidden = false
     }
     
@@ -81,7 +89,7 @@ final class HomeViewController: BaseViewController {
     private func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationMinusAlpha: CGFloat, alreadyAlphaExist: CGFloat, constellationPlusAlpha: CGFloat) {
         self.homeDetailView.myPlanetImage.center = center
         self.homeDetailView.myPlanetImage.transform = myPlanetTransform
-        self.carouselView?.alpha = constellationMinusAlpha
+        self.carouselView.alpha = constellationMinusAlpha
         self.homeDetailView.courseNameButton.alpha = constellationMinusAlpha
         self.homeDetailView.currentImageBox.alpha = constellationMinusAlpha
         self.homeDetailView.dateLabel.alpha = constellationMinusAlpha
@@ -195,7 +203,7 @@ final class HomeViewController: BaseViewController {
     @objc
     /// 버튼을 누르면 자동으로 다음 스크롤로 넘어가게 해주는 함수
     func beforeImageButtonTapped() {
-        guard let carouselView = carouselView else { return }
+//        guard let carouselView = carouselView else { return }
         carouselView.currentPage -= 1
         carouselView.carouselCollectionView.scrollToItem(at: NSIndexPath(item: carouselView.currentPage, section: 0) as IndexPath, at: .left, animated: true)
     }
@@ -203,7 +211,7 @@ final class HomeViewController: BaseViewController {
     @objc
     /// 버튼을 누르면 자동으로 이전 스크롤로 넘어가게 해주는 함수
     func afterImageButtonTapped() {
-        guard let carouselView = carouselView else { return }
+//        guard let carouselView = carouselView else { return }
         carouselView.currentPage += 1
         carouselView.carouselCollectionView.scrollToItem(at: NSIndexPath(item: carouselView.currentPage, section: 0) as IndexPath, at: .right, animated: true)
     }
@@ -263,11 +271,6 @@ final class HomeViewController: BaseViewController {
 // MARK: - UI
 extension HomeViewController {
     func setAttributes() {
-        
-        // MARK: 기본값 세팅
-        homeDetailView.courseNameButton.setTitle(viewModel.constellations.first?.name, for: .normal)
-        homeDetailView.dateLabel.text = viewModel.constellations.first?.data
-        homeDetailView.currentImage.image = viewModel.constellations.first?.image
 
         // MARK: input으로 들어오는 String에 따라 width가 달라져야하기 때문에 ViewController에서 레이아웃을 잡아줌
         self.homeDetailView.courseNameButton.snp.makeConstraints { make in
@@ -279,18 +282,11 @@ extension HomeViewController {
         }
         
         // MARK: CarouselView의 경우 viewController의 ViewModel에서 데이터를 받아서 처리해야하기때문에 ViewController에서 작업
-        guard let carouselView = carouselView else { return }
         view.addSubview(carouselView)
         carouselView.snp.makeConstraints { make in
             make.top.equalTo(homeDetailView.courseNameButton.snp.bottom).offset(40)
             make.left.right.equalToSuperview()
             make.bottom.equalTo(homeDetailView.myPlanetImage.snp.top).offset(-120)
-        }
-        
-        // MARK: 별자리가 1개라면 다음 별자리를 보여주는 버튼이 필요없음(제약조건)
-        if viewModel.constellations.count > 1 {
-            homeDetailView.afterImageButton.isHidden = false
-            homeDetailView.afterImageButton.setImage(self.viewModel.constellations[1].image, for: .normal)
         }
         
         // MARK: detailView의 button을 addTarget으로 연결해줌
@@ -301,7 +297,6 @@ extension HomeViewController {
         homeDetailView.afterImageButton.addTarget(self, action: #selector(afterImageButtonTapped), for: .touchUpInside)
         homeDetailView.courseNameButton.addTarget(self, action: #selector(courseNameButtonTapped), for: .touchUpInside)
     }
-    
     
     /// 각 View마다 tag를 달아서 어떤 View를 tap했는지를 알려줄수있게 View를 생성하고 UI에 띄워주는 함수
     func setRandomPlanets() {

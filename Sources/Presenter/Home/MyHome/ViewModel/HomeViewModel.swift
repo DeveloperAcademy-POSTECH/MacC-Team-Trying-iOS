@@ -25,40 +25,21 @@ struct Constellation {
 final class HomeViewModel: BaseViewModel {
     
     private let domain: String = "http://15.165.72.196:3059/users/me"
+    
     var user: User?
 
     var coordinator: Coordinator
     
     var hasMate = true
-
-    var numberOfColum: Int {
-        switch constellations.count {
-        case 0...1:
-            return 1
-        case 2...4:
-            return 2
-        default:
-            return 3
-        }
-    }
     
-    var constellations: [Constellation] = [
-        Constellation(name: "창원 야구장", data: "2022-10-01(토)", image: UIImage(named: "Changwon")),
-        Constellation(name: "광안대교 야경", data: "2022-10-02(일)", image: UIImage(named: "Busan")),
-        Constellation(name: "포항공대", data: "2022-10-03(월)", image: UIImage(named: "Pohang")),
-        Constellation(name: "부산", data: "2022-10-04(화)", image: UIImage(named: "Busan")),
-        Constellation(name: "애플아카데미", data: "2022-10-05(수)", image: UIImage(named: "Pohang")),
-        Constellation(name: "포항", data: "2022-10-06(목)", image: UIImage(named: "Pohang")),
-        Constellation(name: "부산대학교", data: "2022-10-07(금)", image: UIImage(named: "Busan")),
-        Constellation(name: "인천ssg파크", data: "2022-10-08(토)", image: UIImage(named: "Pohang"))
-    ]
+    var constellations: [Constellation] = []
     
     var planets: [Planet] = [
-        Planet(name: "우디", planetTyle: .red, createdDate: "우디행성 입니다", courses: []),
-        Planet(name: "유스", planetTyle: .purple, createdDate: "유스행성 입니다", courses: []),
-        Planet(name: "포딩", planetTyle: .pink, createdDate: "포딩행성 입니다", courses: []),
-        Planet(name: "찰리", planetTyle: .orange, createdDate: "찰리행성 입니다", courses: []),
-        Planet(name: "루미", planetTyle: .pink, createdDate: "루미행성 입니다", courses: [])
+        Planet(planetId: 1, name: "우디", planetTyle: .red, createdDate: "우디행성 입니다"),
+        Planet(planetId: 2, name: "유스", planetTyle: .purple, createdDate: "유스행성 입니다"),
+        Planet(planetId: 3, name: "포딩", planetTyle: .pink, createdDate: "포딩행성 입니다"),
+        Planet(planetId: 4, name: "찰리", planetTyle: .orange, createdDate: "찰리행성 입니다"),
+        Planet(planetId: 5, name: "루미", planetTyle: .pink, createdDate: "루미행성 입니다")
     ]
     
     var loction: [CGPoint] = [
@@ -67,17 +48,11 @@ final class HomeViewModel: BaseViewModel {
         CGPoint(x: 319, y: 276),
         CGPoint(x: 58, y: 566),
         CGPoint(x: 254, y: 555)
-    ]
-    
-    init(coordinator: Coordinator) {
-        self.coordinator = coordinator
-    }
-    
+    ]    
     
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
         super.init()
- 
     }
     
     // MARK: async로 호출한 api함수
@@ -88,6 +63,16 @@ final class HomeViewModel: BaseViewModel {
             return
         }
         self.user = User(nickName: myPlanineInfoDTO.me.name)
+        self.constellations = [
+            Constellation(name: "창원 야구장", data: "2022-10-01(토)", image: UIImage(named: "Changwon")),
+            Constellation(name: "광안대교 야경", data: "2022-10-02(일)", image: UIImage(named: "Busan")),
+            Constellation(name: "포항공대", data: "2022-10-03(월)", image: UIImage(named: "Pohang")),
+            Constellation(name: "부산", data: "2022-10-04(화)", image: UIImage(named: "Busan")),
+            Constellation(name: "애플아카데미", data: "2022-10-05(수)", image: UIImage(named: "Pohang")),
+            Constellation(name: "포항", data: "2022-10-06(목)", image: UIImage(named: "Pohang")),
+            Constellation(name: "부산대학교", data: "2022-10-07(금)", image: UIImage(named: "Busan")),
+            Constellation(name: "인천ssg파크", data: "2022-10-08(토)", image: UIImage(named: "Pohang"))
+        ]
     }
     
     // MARK: completion Handler(urlsession)로 호출한 api
