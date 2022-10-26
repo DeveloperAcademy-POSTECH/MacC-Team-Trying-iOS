@@ -9,14 +9,19 @@
 import Combine
 
 protocol AddCourseCompleteCoordinating {
-    func pushToAddCourseCompleteViewController()
+    func pushToAddCourseCompleteViewController(places: [Place])
 }
 
 final class RegisterCourseViewModel: BaseViewModel {
     var coordinator: Coordinator
+    var places: [Place]
     
-    init(coordinator: Coordinator) {
+    init(
+        coordinator: Coordinator,
+        places: [Place]
+    ) {
         self.coordinator = coordinator
+        self.places = places
     }
     
     // MARK: Mock
@@ -38,6 +43,6 @@ extension RegisterCourseViewModel {
     
     func pushToAddCourseCompleteView() {
         guard let coordinator = coordinator as? AddCourseCompleteCoordinating else { return }
-        coordinator.pushToAddCourseCompleteViewController()
+        coordinator.pushToAddCourseCompleteViewController(places: places)
     }
 }
