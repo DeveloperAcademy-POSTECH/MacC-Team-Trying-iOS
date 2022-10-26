@@ -59,6 +59,17 @@ final class HomeViewController: BaseViewController {
         carouselView?.configureView(with: viewModel.constellations)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.tabBarController?.tabBar.isHidden = false
+    }
+    
+//     override func viewDidAppear(_ animated: Bool) {
+//         super.viewDidAppear(animated)
+//         carouselView?.configureView(with: viewModel.constellations)
+//     }
+
     /// pangesture에 따라서 요소들을 변화시키는 함수
     /// - Parameters:
     ///   - center: 이미지의 center좌표
@@ -153,13 +164,11 @@ final class HomeViewController: BaseViewController {
     
     @objc
     func courseRegistrationButtonTapped() {
-        print("코스등록하기 버튼이 눌림")
-        
+        viewModel.startAddCourseFlow()
     }
     
     @objc
     func alarmButtonTapped() {
-        print("알림 버튼이 눌림")
         viewModel.pushToAlarmView()
     }
     

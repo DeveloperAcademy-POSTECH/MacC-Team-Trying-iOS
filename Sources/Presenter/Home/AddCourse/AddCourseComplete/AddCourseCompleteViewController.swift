@@ -14,7 +14,7 @@ import Lottie
 import SnapKit
 
 final class AddCourseCompleteViewController: BaseViewController {
-    var viewModel: AddCourseCompleteViewModel?
+    var viewModel: AddCourseCompleteViewModel
     
     private lazy var completeLabel: UILabel = {
         let label = UILabel()
@@ -45,7 +45,11 @@ final class AddCourseCompleteViewController: BaseViewController {
         imageView.image = UIImage(named: "Changwon")
         return imageView
     }()
-    private lazy var doneButton = MainButton(type: .done)
+    private lazy var doneButton: MainButton = {
+        let button = MainButton(type: .done)
+        button.addTarget(self, action: #selector(didTapDoneButton(_:)), for: .touchUpInside)
+        return button
+    }()
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -54,12 +58,28 @@ final class AddCourseCompleteViewController: BaseViewController {
         // output
         
     }
-
+    
+    init(viewModel: AddCourseCompleteViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()
         bind()
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
 }
 
@@ -105,5 +125,13 @@ extension AddCourseCompleteViewController {
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
         }
+    }
+}
+
+// MARK: - User Interactions
+extension AddCourseCompleteViewController {
+    @objc
+    private func didTapDoneButton(_ sender: UIButton) {
+        viewModel.popToHomeView()
     }
 }

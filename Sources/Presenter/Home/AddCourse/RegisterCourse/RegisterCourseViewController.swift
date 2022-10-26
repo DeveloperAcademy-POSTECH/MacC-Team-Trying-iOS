@@ -14,8 +14,14 @@ import CancelBag
 import SnapKit
 
 final class RegisterCourseViewController: BaseViewController {
-    var viewModel: RegisterCourseViewModel?
+    var viewModel: RegisterCourseViewModel
     
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.isScrollEnabled = false
+        return scrollView
+    }()
+    private let contentView = UIView()
     private lazy var datePickerContainer: UIView = {
         let view = UIView()
         view.isHidden = true
@@ -64,7 +70,11 @@ final class RegisterCourseViewController: BaseViewController {
         return textView
     }()
     private lazy var publicSwitch = CustomToggleButton()
-    private lazy var nextButton = MainButton(type: .next)
+    private lazy var nextButton: MainButton = {
+        let button = MainButton(type: .next)
+        button.addTarget(self, action: #selector(nextButtonPressed(_:)), for: .touchUpInside)
+        return button
+    }()
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -72,6 +82,15 @@ final class RegisterCourseViewController: BaseViewController {
         
         // output
         
+    }
+    
+    init(viewModel: RegisterCourseViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -86,22 +105,13 @@ final class RegisterCourseViewController: BaseViewController {
 extension RegisterCourseViewController: NavigationBarConfigurable {
     private func setUI() {
         configureCourseDetailNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), selectDateAction: #selector(selectDateButtonPressed(_:)))
-        setAttributes()
         setLayout()
-        setInteractions()
-        
-        // FIXME: Tab bar hidden처리 앞 단에서 하기
-        tabBarController?.tabBar.isHidden = true
-    }
-    
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        view.addSubviews(
+        datePickerContainer.addSubview(datePicker)
+        contentView.addSubviews(
             imageCollectionView,
             courseTitleTextField,
             contentTextView,
@@ -109,10 +119,21 @@ extension RegisterCourseViewController: NavigationBarConfigurable {
             nextButton,
             datePickerContainer
         )
-        datePickerContainer.addSubview(datePicker)
+        scrollView.addSubview(contentView)
+        view.addSubview(scrollView)
+        
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        contentView.snp.makeConstraints { make in
+            make.edges.equalTo(scrollView.contentLayoutGuide)
+            make.width.equalTo(scrollView.snp.width)
+            make.height.greaterThanOrEqualTo(view.snp.height).priority(.low)
+        }
         
         imageCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
+            make.top.equalToSuperview().inset(10)
             make.leading.equalToSuperview().inset(20)
             make.trailing.equalToSuperview()
             if UIDevice.current.hasNotch {
@@ -130,7 +151,7 @@ extension RegisterCourseViewController: NavigationBarConfigurable {
         contentTextView.snp.makeConstraints { make in
             make.top.equalTo(courseTitleTextField.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview().inset(20)
-            make.bottom.equalTo(nextButton.snp.top).offset(-15)
+            make.height.equalTo(370)
         }
         
         publicSwitch.snp.makeConstraints { make in
@@ -138,8 +159,8 @@ extension RegisterCourseViewController: NavigationBarConfigurable {
         }
         
         nextButton.snp.makeConstraints { make in
+            make.top.equalTo(contentTextView.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview().inset(20)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(10)
         }
         
         datePickerContainer.snp.makeConstraints { make in
@@ -157,7 +178,7 @@ extension RegisterCourseViewController: NavigationBarConfigurable {
 // MARK: - UICollectionViewDataSource
 extension RegisterCourseViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        (viewModel?.imageNames.count)! + 1
+        viewModel.imageNames.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -168,7 +189,7 @@ extension RegisterCourseViewController: UICollectionViewDataSource {
         } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCollectionViewCell.identifier, for: indexPath) as? ImageCollectionViewCell else { return UICollectionViewCell() }
             
-            cell.placeImageView.image = UIImage(named: (viewModel?.imageNames[indexPath.row - 1])!)
+            cell.placeImageView.image = UIImage(named: viewModel.imageNames[indexPath.row - 1])
             cell.deleteButton.addTarget(self, action: #selector(deleteButtonPressed(_:)), for: .touchUpInside)
             
             return cell
@@ -194,11 +215,6 @@ extension RegisterCourseViewController: PHPickerViewControllerDelegate {
 
 // MARK: - User Interactions
 extension RegisterCourseViewController: UITextViewDelegate {
-    private func setInteractions() {
-//        guard let selectDateButton = navigationItem.titleView as? SmallRoundButton else { return }
-//        selectDateButton.addTarget(self, action: #selector(datePickButtonPressed(_:)), for: .touchUpInside)
-    }
-    
     /// UIButton의 터치가 아닐 때, dismissAllActivatedComponents() 메소드를 호출합니다.
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if touch.view as? UIButton != nil { return false }
@@ -210,6 +226,7 @@ extension RegisterCourseViewController: UITextViewDelegate {
     }
     
     /// TextView의 편집이 시작되었을 때, DatePicker가 활성화 되어있다면 dismiss하고, placeholder로 사용되던 text를 삭제합니다.
+    /// 추가로 키보드 높이만큼 화면을 위로 이동시킵니다.
     func textViewDidBeginEditing(_ textView: UITextView) {
         if !datePicker.isHidden {
             dismissDatePicker()
@@ -218,18 +235,30 @@ extension RegisterCourseViewController: UITextViewDelegate {
         if textView.text == "내용을 입력해 주세요." {
             textView.text = nil
         }
+
+        let offset = CGPoint(x: 0, y: 245)
+        scrollView.setContentOffset(offset, animated: true)
     }
 
     /// TextView의 편집이 끝났을 때, 텍스트가 없다면 placeholder로 사용될 text를 설정합니다.
+    /// 추가로 키보드 높이만큼 화면을 아래로 이동시킵니다.
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
             textView.text = "내용을 입력해 주세요."
         }
+        
+        let offset = CGPoint(x: 0, y: 0)
+        scrollView.setContentOffset(offset, animated: true)
     }
     
     @objc
     private func backButtonPressed(_ sender: UIButton) {
-        print("pop")
+        viewModel.pop()
+    }
+    
+    @objc
+    private func nextButtonPressed(_ sender: UIButton) {
+        viewModel.pushToAddCourseCompleteView()
     }
     
     /// TextField의 편집이 시작될 때, DatePicker가 활성화 되어있다면 dismiss합니다.
@@ -245,10 +274,6 @@ extension RegisterCourseViewController: UITextViewDelegate {
     private func dismissAllActivatedComponents() {
         courseTitleTextField.resignFirstResponder()
         contentTextView.resignFirstResponder()
-        
-        if !datePicker.isHidden {
-            dismissDatePicker()
-        }
     }
     
     /// 일정 선택 버튼이 눌렸을 때, 키보드를 dismiss하고 DatePicker를 present하거나 dismiss합니다.
@@ -275,6 +300,7 @@ extension RegisterCourseViewController: UITextViewDelegate {
     private func dateSelected(_ sender: UIDatePicker) {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy - MM - dd (E)"
+        formatter.locale = Locale(identifier: "ko")
         let stringDate = formatter.string(from: sender.date)
         guard let selectDateButton = navigationItem.titleView as? SmallRoundButton else { return }
         
@@ -282,7 +308,7 @@ extension RegisterCourseViewController: UITextViewDelegate {
             selectDateButton.setTitle(stringDate, for: .normal)
             
             selectDateButton.snp.remakeConstraints { make in
-                make.width.equalTo(144)
+                make.width.equalTo(150)
             }
             
             UIView.animate(

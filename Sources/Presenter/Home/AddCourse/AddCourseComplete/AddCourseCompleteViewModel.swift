@@ -8,6 +8,27 @@
 
 import Combine
 
-final class AddCourseCompleteViewModel: BaseViewModel {
+protocol HomeCoordinating {
+    func popToHomeViewController()
+}
 
+final class AddCourseCompleteViewModel: BaseViewModel {
+    var coordinator: Coordinator
+    var places: [Place]
+    
+    init(
+        coordinator: Coordinator,
+        places: [Place]
+    ) {
+        self.coordinator = coordinator
+        self.places = places
+    }
+}
+
+// MARK: - Coordinating
+extension AddCourseCompleteViewModel {
+    func popToHomeView() {
+        guard let coordinator = coordinator as? HomeCoordinating else { return }
+        coordinator.popToHomeViewController()
+    }
 }
