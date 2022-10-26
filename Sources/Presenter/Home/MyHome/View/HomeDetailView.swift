@@ -64,7 +64,7 @@ class HomeDetailView: UIView {
     lazy var ddayLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.text = "D+273"
+        label.text = "D+123"
         return label
     }()
     
@@ -92,12 +92,69 @@ class HomeDetailView: UIView {
         return button
     }()
     
-    lazy var constellationCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(ConstellationCollectionViewCell.self, forCellWithReuseIdentifier: ConstellationCollectionViewCell.identifier)
-        collectionView.backgroundColor = .clear
-        return collectionView
+    lazy var courseNameButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.backgroundColor = .clear
+        button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+        button.clipsToBounds = true
+        button.layer.borderColor = UIColor.white.cgColor
+        button.layer.borderWidth = 1
+        button.layer.cornerRadius = 22
+        button.setImage(UIImage(systemName: "list.bullet"), for: .normal)
+        button.semanticContentAttribute = .forceRightToLeft
+        button.setTitleColor(UIColor.gray, for: .highlighted)
+        button.tintColor = .white
+        button.contentHorizontalAlignment = .center
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 5)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: -5)
+        return button
+    }()
+    
+    lazy var dateLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .designSystem(.white)
+        label.backgroundColor = .clear
+        label.font = .designSystem(weight: .light, size: ._13)
+        return label
+    }()
+    
+    lazy var currentImageBox: UIImageView = {
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 15
+        imageView.layer.borderColor = .designSystem(.mainYellow)
+        imageView.layer.borderWidth = 0.5
+        return imageView
+    }()
+    
+    lazy var currentImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    lazy var beforeImageButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.imageEdgeInsets = .init(top: 10, left: 10, bottom: 10, right: 10)
+        button.backgroundColor = .blue
+        button.alpha = 0.2
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 15
+        button.isHidden = true
+        return button
+    }()
+    
+    lazy var afterImageButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.imageEdgeInsets = .init(top: 10, left: 10, bottom: 10, right: 10)
+        button.backgroundColor = .blue
+        button.alpha = 0.2
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 15
+        button.isHidden = true
+        return button
     }()
     
     lazy var courseRegistrationButton: UIButton = {
@@ -143,13 +200,17 @@ class HomeDetailView: UIView {
         addSubview(profileStackView)
         addSubview(alarmButton)
         addSubview(myPlanetImage)
-        addSubview(constellationCollectionView)
         addSubview(courseRegistrationButton)
+        addSubview(courseNameButton)
+        addSubview(dateLabel)
+        addSubview(currentImageBox)
+        currentImageBox.addSubview(currentImage)
+        addSubview(beforeImageButton)
+        addSubview(afterImageButton)
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
-        constellationCollectionView.contentInset = UIEdgeInsets(top: 50, left: 20, bottom: 20, right: 20)
         homeLottie.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -163,8 +224,8 @@ class HomeDetailView: UIView {
         }
         
         profileStackView.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(20)
-            make.top.equalToSuperview().offset(60)
+            make.left.equalToSuperview().inset(20)
+            make.top.equalToSuperview().inset(60)
             make.height.equalTo(50)
         }
         
@@ -182,18 +243,39 @@ class HomeDetailView: UIView {
             make.centerY.equalTo(labelStackView.snp.centerY)
         }
         
-        constellationCollectionView.snp.makeConstraints { make in
-            make.left.right.equalToSuperview()
-            make.top.equalTo(labelStackView.snp.bottom)
-            make.bottom.equalTo(myPlanetImage.snp.top)
+        dateLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(courseNameButton.snp.bottom).offset(15)
+            make.height.equalTo(15)
         }
         
-        myPlanetImage.snp.makeConstraints { make in
-            let bounds = UIScreen.main.bounds
-            make.centerY.equalTo(self.snp.bottom).inset(20)
+        currentImageBox.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.width.equalTo(bounds.width * 1.2)
-            make.height.equalTo(bounds.width * 1.2)
+            make.size.equalTo(50)
+            make.bottom.equalTo(myPlanetImage.snp.top).offset(-47)
+        }
+        
+        currentImage.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.size.equalTo(30)
+        }
+        
+        beforeImageButton.snp.makeConstraints { make in
+            make.left.equalToSuperview().inset(55)
+            make.size.equalTo(50)
+            make.centerY.equalTo(currentImageBox.snp.centerY).offset(30)
+        }
+        
+        afterImageButton.snp.makeConstraints { make in
+            make.right.equalToSuperview().inset(55)
+            make.size.equalTo(50)
+            make.centerY.equalTo(currentImageBox.snp.centerY).offset(30)
+        }
+    
+        myPlanetImage.snp.makeConstraints { make in
+            make.centerY.equalTo(self.snp.bottom).offset(-20)
+            make.centerX.equalToSuperview()
+            make.size.equalTo(DeviceInfo.screenWidth * 1.2)
         }
         
         courseRegistrationButton.snp.makeConstraints { make in

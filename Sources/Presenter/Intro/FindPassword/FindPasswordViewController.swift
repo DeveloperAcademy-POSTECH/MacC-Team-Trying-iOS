@@ -23,11 +23,15 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
     override func setAttribute() {
         super.setAttribute()
         
-        title = "비밀번호 찾기"
-        sendEmailButton.title = "확인"
+        navigationItem.title = "비밀번호 찾기"
+
         titleLabels.title = "회원가입 시 등록한 이메일 정보로"
         titleLabels.subTitle = "비밀번호를 재설정 할 수 있습니다."
+
+        sendEmailButton.title = "확인"
         sendEmailButton.addTarget(self, action: #selector(sendEmailButtonDidTapped), for: .touchUpInside)
+
+        setNofification()
     }
 
     override func setLayout() {
@@ -48,6 +52,51 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
         sendEmailButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
+    }
+}
+
+extension FindPasswordViewController {
+
+    private func setNofification() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    @objc
+    func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+
+            self.sendEmailButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardHeight)
+            }
+
+            UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+                self.view.layoutIfNeeded()
+            })
+        }
+    }
+
+    @objc
+    func keyboardWillHide(notification: NSNotification) {
+        self.sendEmailButton.snp.updateConstraints { make in
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(16)
+        }
+
+        UIView.animate(withDuration: 1) {
+            self.view.layoutIfNeeded()
         }
     }
 }

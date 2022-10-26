@@ -15,10 +15,13 @@ enum Font {
     }
     
     enum Size: CGFloat {
+        case _10 = 10
 		case _11 = 11
         case _13 = 13
         case _15 = 15
+        case _17 = 17
         case _20 = 20
+        case _30 = 30
     }
 
     enum Weight: String {
@@ -79,7 +82,7 @@ extension Font {
     static var fonts: [CustomFont] {
         [
             CustomFont(name: .gmarketsans, weight: .light),
-            CustomFont(name: .gmarketsans, weight: .regular),
+            CustomFont(name: .gmarketsans, weight: .medium),
             CustomFont(name: .gmarketsans, weight: .bold)
         ]
     }

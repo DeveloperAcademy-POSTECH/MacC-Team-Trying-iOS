@@ -17,8 +17,9 @@ final class SearchCoordinator: Coordinator {
     
     func start() {
         guard let navigationController = navigationController else { return }
-        let viewModel = AddCourseMapViewModel(coordinator: self)
-        let viewController = AddCourseMapViewController(viewModel: viewModel)
+        let viewController = SearchViewController()
+        let viewModel = SearchViewModel()
+        viewController.viewModel = viewModel
         
         navigationController.pushViewController(viewController, animated: true)
     }

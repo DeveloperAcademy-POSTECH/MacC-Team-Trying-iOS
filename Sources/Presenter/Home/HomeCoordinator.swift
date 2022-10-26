@@ -24,7 +24,12 @@ final class HomeCoordinator: Coordinator {
     }
 }
 
-extension HomeCoordinator: AlarmViewCoordinating {
+extension HomeCoordinator: AlarmViewCoordinating, CourseDetailCoordinating {
+    func pushToCourseDetailViewController() {
+        let courseDetailViewController = CoursesViewController()
+        self.navigationController?.pushViewController(courseDetailViewController, animated: true)
+    }
+    
     func pushToAlarmViewController() {
         let alarmViewController = AlarmViewController()
         self.navigationController?.pushViewController(alarmViewController, animated: true)
@@ -35,3 +40,4 @@ extension HomeCoordinator: AlarmViewCoordinating {
         addCourseCoordinator.start()
     }
 }
+

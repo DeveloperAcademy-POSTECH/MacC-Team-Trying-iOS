@@ -12,7 +12,7 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class EnterPasswordViewController: IntroAnimatedViewController<EnterPasswordViewModel> {
+final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPasswordViewModel> {
 
     lazy var titleLabels = IntroTitleLabels()
     lazy var passwordTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .password)
@@ -20,28 +20,25 @@ final class EnterPasswordViewController: IntroAnimatedViewController<EnterPasswo
     lazy var findPasswordButton = FindPasswordButton(type: .system)
     lazy var planetImageView = UIImageView()
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        self.passwordTextFieldView.textFieldBecomeFirstResponder()
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        animateInitViews()
+        beginAnimations()
+        bringsInteractionFront()
     }
 
     override func setAttribute() {
         super.setAttribute()
 
-        title = "로그인"
-        planetImageView.alpha = 0
-        planetImageView.image = .init(.img_planet)
-        loginButton.title = "들어가기"
         titleLabels.title = "다시 찾아주셨네요!"
         titleLabels.subTitle = "반갑습니다"
+
+        planetImageView.alpha = 0
+        planetImageView.image = .init(.img_planet)
+
+        loginButton.title = "들어가기"
         loginButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
+        
         findPasswordButton.addTarget(self, action: #selector(findPasswordButtonDidTapped), for: .touchUpInside)
     }
 
@@ -74,25 +71,26 @@ final class EnterPasswordViewController: IntroAnimatedViewController<EnterPasswo
             make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(-46)
         }
-        planetImageView.sizeToFit()
     }
 }
 
 // MARK: - UI
 extension EnterPasswordViewController {
 
-    private func animateInitViews() {
-        planetImageView.snp.updateConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(179)
-        }
-        UIView.animate(
-            withDuration: fastDuration,
-            delay: fastDelay,
-            animations: {
-                self.planetImageView.alpha = 1
-                self.view.layoutIfNeeded()
+    private func beginAnimations() {
+        enterAnimator?.addAnimations {
+            self.planetImageView.alpha = 1
+            self.planetImageView.snp.updateConstraints { make in
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(179)
             }
-        )
+            self.view.layoutIfNeeded()
+        }
+
+        enterAnimator?.startAnimation(afterDelay: fastDelay)
+    }
+
+    private func bringsInteractionFront() {
+
         view.bringSubviewToFront(passwordTextFieldView)
         view.bringSubviewToFront(loginButton)
         view.bringSubviewToFront(findPasswordButton)
