@@ -23,7 +23,7 @@ final class ImageCollectionViewCell: UICollectionViewCell {
     
     lazy var deleteButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: Constants.Image.deleteButton), for: .normal)
+        button.setImage(UIImage(named: Constants.Image.deleteButton)?.resizableImage(withCapInsets: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)), for: .normal)
         return button
     }()
     

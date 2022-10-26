@@ -40,7 +40,6 @@ final class SearchTestViewController: BaseViewController {
 // MARK: - UI
 extension SearchTestViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), doneAction: #selector(doneButtonPressed(_:)))
         setAttributes()
         setLayout()
     }
