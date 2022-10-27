@@ -12,44 +12,39 @@ protocol IntroCoordinatorProtocol: Coordinator,
                                    LoginCoordinatorLogic,
                                    EnterEmailCoordinatorLogic,
                                    EnterPasswordCoordinatorLogic,
+                                   ConfirmSignUpCoordinatorLogic,
+                                   EnterCodeCoordinatorLogic,
+                                   SignUpEnterPasswordCoordinatorLogic,
+                                   SignUpEnterNicknameCoordinatorLogic,
                                    FindPasswordCoordinatorLogic,
-                                   ConfirmPasswordCoordinatorLogic {
+                                   ConfirmPasswordCoordinatorLogic,
+                                   CreatePlanetCoordinatorLogic,
+                                   CreatePlanetCompleteCoordinatorLogic,
+                                   WaitingInvitationCoordinatorLogic,
+                                   InvitationCodeCoordinatorLogic,
+                                   FindPlanetCoordinatorLogic,
+                                   WaitingInvitationCoordinatorLogic {
     var navigationController: UINavigationController? { get }
+}
+
+protocol IntroCoordinatorDelegate: AnyObject {
+    func coordinateToMainScene()
 }
 
 final class IntroCoordinator: IntroCoordinatorProtocol {
 
     weak var navigationController: UINavigationController?
 
+    weak var delegate: IntroCoordinatorDelegate?
+
     init(navigationController: UINavigationController?) {
         self.navigationController = navigationController
     }
 
     func start() {
-        let startController = createLoginScene()
+        let startController = LoginViewController(viewModel: LoginViewModel(coordinator: self))
         navigationController?.setViewControllers([startController], animated: false)
         navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-
-    func createLoginScene() -> UIViewController {
-        let loginViewModel = LoginViewModel(coordinator: self)
-        return LoginViewController(viewModel: loginViewModel)
-    }
-
-    func createEnterEmailScene() -> UIViewController {
-        EnterEmailViewController(viewModel: .init(coordinator: self))
-    }
-
-    func createEnterPasswordScene() -> UIViewController {
-        EnterPasswordViewController(viewModel: .init(coordinator: self))
-    }
-
-    func createFindPasswordScene() -> UIViewController {
-        FindPasswordViewController(viewModel: .init(coordinator: self))
-    }
-
-    func createConfirmPasswordScene() -> UIViewController {
-        ConfirmPasswordViewController(viewModel: .init(coordinator: self))
     }
 }
 
@@ -57,25 +52,125 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
 extension IntroCoordinator {
 
     func coordinateToEnterEmailScene() {
-        navigationController?.pushViewController(createEnterEmailScene(), animated: true)
+        let enterEmail = EnterEmailViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(enterEmail, animated: true)
     }
 
-    func coordinateToEnterPasswordScene() {
-        navigationController?.pushViewController(createEnterPasswordScene(), animated: true)
+    func coordinateToEnterPasswordScene(email: String) {
+        let enterPassword = EnterPasswordViewController(viewModel: .init(email: email, coordinator: self))
+        navigationController?.pushViewController(enterPassword, animated: true)
     }
 
-    func coordinateToHomeScene() {
-        // TODO: 홈으로 넘어가는 델리게이트구현
+    func coordinateToMainScene() {
+        delegate?.coordinateToMainScene()
     }
 
-    func coordinateToFindPasswordScene() {
-        navigationController?.pushViewController(createFindPasswordScene(), animated: true)
+    func coordinateToFindPasswordScene(email: String) {
+        let findPassword = FindPasswordViewController(
+            viewModel: .init(
+                email: email,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(findPassword, animated: true)
     }
 
     func coordinateToConfirmPasswordScene() {
-        navigationController?.pushViewController(createConfirmPasswordScene(), animated: true)
+        let confirmPassword = ConfirmPasswordViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(confirmPassword, animated: true)
     }
 
+    func coordinateToEnterCodeScene(email: String) {
+        let enterCode = EnterCodeViewController(
+            viewModel: .init(
+                email: email,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(enterCode, animated: true)
+    }
+
+    func coordinateToConfirmSignUpScene(email: String) {
+        let confirmSignUp = ConfirmSignUpViewController(
+            viewModel: .init(
+                viewType: .confirmSignUp,
+                email: email,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(confirmSignUp, animated: true)
+    }
+
+    func coordinateToSignUpEmailScene() {
+        let signUp = ConfirmSignUpViewController(
+            viewModel: .init(
+                viewType: .signup,
+                email: "",
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(signUp, animated: true)
+    }
+
+    func coordinateToFindPlanetScene(planetName: String, planetImageName: String, code: String) {
+        let findPlanet = FindPlanetViewController(viewModel: .init(planetImage: planetImageName, planetName: planetName, code: code, coordinator: self))
+        navigationController?.pushViewController(findPlanet, animated: true)
+    }
+
+    func coordinateToSignUpEnterPassword(email: String) {
+        let signUpEnterPassword = SignUpEnterPasswordViewController(
+            viewModel: .init(
+                email: email,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(signUpEnterPassword, animated: true)
+    }
+
+    func coordinateSignUpEnterNickname(email: String, password: String) {
+        let signUpEnterNickname = SignUpEnterNicknameViewController(
+            viewModel: .init(
+                email: email,
+                password: password,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(signUpEnterNickname, animated: true)
+    }
+
+    func coordinateToCreatePlanetScene() {
+        let createPlanet = CreatePlanetViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(createPlanet, animated: true)
+    }
+
+    func coordinateToCreatePlanetCompleteScene(selectedPlanet: String, planetName: String, code: String) {
+        let createPlanetComplete = CreatePlanetCompleteViewController(
+            viewModel: .init(
+                selectedPlanet: selectedPlanet,
+                planetName: planetName,
+                code: code,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(createPlanetComplete, animated: true)
+    }
+
+    func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String, code: String) {
+        let waitingInvitationViewController = WaitingInvitationViewController(
+            viewModel: .init(
+                selectedPlanet: selectedPlanet,
+                planetName: planetName,
+                code: code,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(waitingInvitationViewController, animated: true)
+    }
+
+    func coordinateToInvitationCodeScene() {
+        let invitationCodeViewController = InvitationCodeViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(invitationCodeViewController, animated: true)
+    }
     func backToConfirmPasswordScene() {
         let viewControllers: [UIViewController] = self.navigationController?.viewControllers ?? []
         if viewControllers.count >= 3 {

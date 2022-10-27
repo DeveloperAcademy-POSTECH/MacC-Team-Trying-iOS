@@ -41,6 +41,7 @@ final class TextFieldWithMessageView: UIView {
         case email
         case certificationNumber
         case noText
+        case invitationCode
     }
 
     private var textType: TextType
@@ -50,6 +51,14 @@ final class TextFieldWithMessageView: UIView {
         self.init(frame: .zero)
         self.textType = textType
         self.textField.placeholder = textType.placeholder
+        switch textType {
+        case .email:
+            textField.keyboardType = .emailAddress
+        case .password:
+            textField.isSecureTextEntry = true
+        default:
+            break
+        }
     }
 
     override init(frame: CGRect) {
@@ -64,17 +73,21 @@ final class TextFieldWithMessageView: UIView {
     }
 
     lazy var textField = UITextField()
-    lazy var errorLabel = UILabel()
+    lazy var stateLabel = UILabel()
 }
 
 // MARK: - TextFieldWithMessageViewComponent
 extension TextFieldWithMessageView: TextFieldWithMessageViewComponent {
 
-    func showError(type errorType: IntroErrorType) {
-        errorLabel.isHidden = errorType == .noError
-        errorLabel.textColor = errorType.color
-        errorLabel.text = errorType.message
-        textField.layer.borderColor = errorType.color?.cgColor
+    func updateText(_ text: String) {
+        textField.text = text
+    }
+
+    func updateState(_ state: TextFieldState) {
+        stateLabel.isHidden = state == .good
+        stateLabel.textColor = state.textColor
+        stateLabel.text = state.message
+        textField.layer.borderColor = state.borderColor?.cgColor
         textField.layer.borderWidth = 1
 
     }
@@ -90,6 +103,10 @@ extension TextFieldWithMessageView: TextFieldWithMessageViewComponent {
     func textFieldBecomeFirstResponder() {
         textField.becomeFirstResponder()
     }
+
+    func textFieldResignFirstResponder() {
+        textField.resignFirstResponder()
+    }
 }
 
 // MARK: - UI
@@ -101,8 +118,8 @@ extension TextFieldWithMessageView {
     }
 
     private func setAttribute() {
-        errorLabel.textColor = normalColor
-        errorLabel.font = .designSystem(weight: .regular, size: ._15)
+        stateLabel.textColor = normalColor
+        stateLabel.font = .designSystem(weight: .regular, size: ._11)
         textField.addTarget(self, action: #selector(textFieldDidchange), for: .editingChanged)
         textField.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.2)
         textField.attributedPlaceholder = NSAttributedString(
@@ -112,6 +129,7 @@ extension TextFieldWithMessageView {
                 NSAttributedString.Key.font: UIFont.designSystem(weight: .regular, size: ._15)
             ]
         )
+        textField.clearButtonMode = .whileEditing
         textField.textColor = .white
         textField.leftView = UIView(frame: .init(x: 0, y: 0, width: 15, height: textField.frame.height))
         textField.leftViewMode = .always
@@ -124,7 +142,7 @@ extension TextFieldWithMessageView {
 
     private func addSubviews() {
         addSubview(textField)
-        addSubview(errorLabel)
+        addSubview(stateLabel)
     }
 
     private func setLayout() {
@@ -132,7 +150,7 @@ extension TextFieldWithMessageView {
             make.height.equalTo(50)
             make.top.leading.trailing.equalToSuperview()
         }
-        errorLabel.snp.makeConstraints { make in
+        stateLabel.snp.makeConstraints { make in
             make.top.equalTo(textField.snp.bottom).offset(7)
             make.leading.trailing.equalToSuperview().inset(8)
             make.height.equalTo(15)
@@ -158,6 +176,8 @@ extension TextFieldWithMessageView.TextType {
             return "인증번호를 입력해 주세요."
         case .noText:
             return ""
+        case .invitationCode:
+            return "초대코드를 입력해 주세요."
         }
     }
 }

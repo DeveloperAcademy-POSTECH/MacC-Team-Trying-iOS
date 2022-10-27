@@ -27,10 +27,10 @@ final class IntroButton: BaseButton {
     override func setAttribute() {
         super.setAttribute()
         var configuration = UIButton.Configuration.filled()
-        configuration.activityIndicatorColorTransformer = .monochromeTint
+        configuration.activityIndicatorColorTransformer = .grayscale
         configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
-            outgoing.font = .boldSystemFont(ofSize: 15)
+            outgoing.font = .designSystem(weight: .bold, size: ._15)
             return outgoing
         }
         configuration.cornerStyle = .large
@@ -50,6 +50,7 @@ final class IntroButton: BaseButton {
 
     private func setConfigurationUpdateHandler() {
         self.configurationUpdateHandler = { [weak self] button in
+
             guard let self = self else { return }
             var newConfiguration = button.configuration
             newConfiguration?.showsActivityIndicator = self.loading
