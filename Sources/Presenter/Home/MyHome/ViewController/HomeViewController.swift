@@ -15,11 +15,12 @@ import Lottie
 
 final class HomeViewController: BaseViewController {
 
-    private var carouselView: CarouselCollectionView?
+    private lazy var carouselView = CarouselCollectionView(pages: viewModel.constellations.count, delegate: self)
     let homeDetailView = HomeDetailView()
     let viewModel: HomeViewModel
     let changeMyPlanetScale: Double = 0.5
     let screenHeight = DeviceInfo.screenHeight - 20
+    var planetImages: [RandomPlanetView] = []
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -44,24 +45,45 @@ final class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        carouselView = CarouselCollectionView(pages: viewModel.constellations.count, delegate: self)
+        setRandomPlanets()
         Task {
             try await viewModel.fetchAsync()
-            self.homeDetailView.ddayLabel.text = viewModel.user?.nickName
+            guard let dday = viewModel.user?.myPlanet?.dday else { return }
+            guard let nickName = viewModel.user?.nickName else { return }
+            self.homeDetailView.ddayLabel.text = "D+" + String(dday)
+            self.homeDetailView.nameLabel.attributedText = String.makeAtrributedString(
+                name: nickName,
+                appendString: " 와 함께",
+                changeAppendStringSize: 15,
+                changeAppendStringWieght: .regular,
+                changeAppendStringColor: .white
+            )
+            guard let course = viewModel.user?.myCourses else { return }
+            guard let count = viewModel.user?.myCourses.count else { return }
+            self.carouselView.configureView(with: course)
+            self.carouselView.carouselCollectionView.reloadData()
+            self.homeDetailView.courseNameButton.setTitle(viewModel.user?.myCourses[0]?.title, for: .normal)
+            self.homeDetailView.dateLabel.text = viewModel.user?.myCourses[0]?.createdDate
+            self.homeDetailView.currentImage.image = UIImage(named: "Changwon")
+            if count > 1 {
+                homeDetailView.afterImageButton.isHidden = false
+                homeDetailView.afterImageButton.setImage(UIImage(named: "Changwon"), for: .normal)
+            }
+            self.homeDetailView.courseNameButton.snp.makeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.top.equalToSuperview().offset(160)
+                make.height.equalTo(44)
+                guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
+                make.width.equalTo((text as NSString).size().width + 90)
+            }
         }
-        
         bind()
         setAttributes()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        carouselView?.configureView(with: viewModel.constellations)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        homeDetailView.homeLottie.play()
         navigationController?.tabBarController?.tabBar.isHidden = false
     }
     
@@ -76,15 +98,18 @@ final class HomeViewController: BaseViewController {
     ///   - myPlanetTransform: 어떻게 변할지, 주로 scale에 관한 값
     ///   - constellationAlpha: 제스처에따라 alpha값이 변하는 요소는 어떻값으로 변할지
     ///   - alreadyAlphaExist: 이미 alpha값을 가지고있는 요소는 같은 값을 공유할수없기때문에 다른 계산식이 필요하다
-    private func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationAlpha: CGFloat, alreadyAlphaExist: CGFloat) {
+    private func changeMyPlanet(center: CGPoint, myPlanetTransform: CGAffineTransform, constellationMinusAlpha: CGFloat, alreadyAlphaExist: CGFloat, constellationPlusAlpha: CGFloat) {
         self.homeDetailView.myPlanetImage.center = center
         self.homeDetailView.myPlanetImage.transform = myPlanetTransform
-        self.carouselView?.alpha = constellationAlpha
-        self.homeDetailView.courseNameButton.alpha = constellationAlpha
-        self.homeDetailView.currentImageBox.alpha = constellationAlpha
-        self.homeDetailView.dateLabel.alpha = constellationAlpha
+        self.carouselView.alpha = constellationMinusAlpha
+        self.homeDetailView.courseNameButton.alpha = constellationMinusAlpha
+        self.homeDetailView.currentImageBox.alpha = constellationMinusAlpha
+        self.homeDetailView.dateLabel.alpha = constellationMinusAlpha
         self.homeDetailView.beforeImageButton.alpha = alreadyAlphaExist
         self.homeDetailView.afterImageButton.alpha = alreadyAlphaExist
+        self.planetImages.forEach { planetImage in
+            planetImage.alpha = constellationPlusAlpha
+        }
     }
     
     @objc
@@ -98,15 +123,15 @@ final class HomeViewController: BaseViewController {
             if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
                 changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight / 2), screenHeight)),
                                myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
-                               constellationAlpha: changeAlpha(yPoint: imageCenterY),
-                               alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.2))
+                               constellationMinusAlpha: changeAlpha(yPoint: imageCenterY),
+                               alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.7), constellationPlusAlpha: changeAlpha(minus: imageCenterY))
                 
             }
         } else if gesture.state == .ended {
             if imageCenterY > screenHeight * 8 / 9 {
                 DispatchQueue.main.async {
                     UIView.animate(withDuration: 0.5) {
-                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationAlpha: 1, alreadyAlphaExist: 0.2)
+                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationMinusAlpha: 1, alreadyAlphaExist: 0.7, constellationPlusAlpha: 0)
                     }
                 }
             } else {
@@ -114,8 +139,9 @@ final class HomeViewController: BaseViewController {
                     UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
                         self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight / 2),
                                             myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
-                                            constellationAlpha: 0,
-                                            alreadyAlphaExist: 0)
+                                            constellationMinusAlpha: 0,
+                                            alreadyAlphaExist: 0,
+                                            constellationPlusAlpha: 1)
                         self.homeDetailView.beforeImageButton.alpha = 0
                         self.homeDetailView.afterImageButton.alpha = 0
                     } completion: { _ in
@@ -138,23 +164,26 @@ final class HomeViewController: BaseViewController {
             if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
                 changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight / 2), screenHeight)),
                                myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
-                               constellationAlpha: changeAlpha(yPoint: imageCenterY),
-                               alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.2))
+                               constellationMinusAlpha: changeAlpha(yPoint: imageCenterY),
+                               alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.7),
+                               constellationPlusAlpha: changeAlpha(minus: imageCenterY))
             }
         } else if gesture.state == .ended {
             if self.homeDetailView.myPlanetImage.center.y < (screenHeight / 2) * 7 / 6 {
                 UIView.animate(withDuration: 0.3) {
                     self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight / 2),
                                         myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
-                                        constellationAlpha: 0,
-                                        alreadyAlphaExist: 0)
+                                        constellationMinusAlpha: 0,
+                                        alreadyAlphaExist: 0,
+                                        constellationPlusAlpha: 1)
                 }
             } else {
                 UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
                     self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight),
                                         myPlanetTransform: CGAffineTransform(scaleX: 1, y: 1),
-                                        constellationAlpha: 1,
-                                        alreadyAlphaExist: 0.2)
+                                        constellationMinusAlpha: 1,
+                                        alreadyAlphaExist: 0.7,
+                                        constellationPlusAlpha: 0)
                 } completion: { _ in
                     myPlanet.removeGestureRecognizer(gesture)
                 }
@@ -186,7 +215,7 @@ final class HomeViewController: BaseViewController {
     @objc
     /// 버튼을 누르면 자동으로 다음 스크롤로 넘어가게 해주는 함수
     func beforeImageButtonTapped() {
-        guard let carouselView = carouselView else { return }
+//        guard let carouselView = carouselView else { return }
         carouselView.currentPage -= 1
         carouselView.carouselCollectionView.scrollToItem(at: NSIndexPath(item: carouselView.currentPage, section: 0) as IndexPath, at: .left, animated: true)
     }
@@ -194,9 +223,23 @@ final class HomeViewController: BaseViewController {
     @objc
     /// 버튼을 누르면 자동으로 이전 스크롤로 넘어가게 해주는 함수
     func afterImageButtonTapped() {
-        guard let carouselView = carouselView else { return }
+//        guard let carouselView = carouselView else { return }
         carouselView.currentPage += 1
         carouselView.carouselCollectionView.scrollToItem(at: NSIndexPath(item: carouselView.currentPage, section: 0) as IndexPath, at: .right, animated: true)
+    }
+    
+    @objc
+    /// 랜덤 행성을 tap했을때 실행되는 함수
+    /// - Parameter sender: tap한 행성(tap한 행성의 tag에 따라 데이터를 index로 추출해서 다음 VC로 보내줌
+    func productTapped(_ sender: UITapGestureRecognizer) {
+        guard let view = sender.view else { return }
+        print(view.tag)
+        let nextVC = RandomPlanetViewController()
+        let backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        backBarButtonItem.tintColor = .white
+        self.navigationItem.backBarButtonItem = backBarButtonItem
+        nextVC.randomPlanet = viewModel.planets[view.tag]
+        navigationController?.pushViewController(nextVC, animated: true)
     }
     
     /// 이미지의 center위치(y)값에 따라 곱해줄 scale값을 return해주는 함수
@@ -229,16 +272,17 @@ final class HomeViewController: BaseViewController {
         let interceptionY = -beforeAlpha
         return CGFloat((gredient * yPoint) + interceptionY)
     }
+    
+    private func changeAlpha(minus yPoint: Double) -> CGFloat {
+        let gredient = -2 / screenHeight
+        let interceptionY = +2.0
+        return CGFloat((gredient * yPoint) + interceptionY)
+    }
 }
 
 // MARK: - UI
 extension HomeViewController {
     func setAttributes() {
-        
-        // MARK: 기본값 세팅
-        homeDetailView.courseNameButton.setTitle(viewModel.constellations.first?.name, for: .normal)
-        homeDetailView.dateLabel.text = viewModel.constellations.first?.data
-        homeDetailView.currentImage.image = viewModel.constellations.first?.image
 
         // MARK: input으로 들어오는 String에 따라 width가 달라져야하기 때문에 ViewController에서 레이아웃을 잡아줌
         self.homeDetailView.courseNameButton.snp.makeConstraints { make in
@@ -250,18 +294,11 @@ extension HomeViewController {
         }
         
         // MARK: CarouselView의 경우 viewController의 ViewModel에서 데이터를 받아서 처리해야하기때문에 ViewController에서 작업
-        guard let carouselView = carouselView else { return }
         view.addSubview(carouselView)
         carouselView.snp.makeConstraints { make in
             make.top.equalTo(homeDetailView.courseNameButton.snp.bottom).offset(40)
             make.left.right.equalToSuperview()
             make.bottom.equalTo(homeDetailView.myPlanetImage.snp.top).offset(-120)
-        }
-        
-        // MARK: 별자리가 1개라면 다음 별자리를 보여주는 버튼이 필요없음(제약조건)
-        if viewModel.constellations.count > 1 {
-            homeDetailView.afterImageButton.isHidden = false
-            homeDetailView.afterImageButton.setImage(self.viewModel.constellations[1].image, for: .normal)
         }
         
         // MARK: detailView의 button을 addTarget으로 연결해줌
@@ -272,6 +309,22 @@ extension HomeViewController {
         homeDetailView.afterImageButton.addTarget(self, action: #selector(afterImageButtonTapped), for: .touchUpInside)
         homeDetailView.courseNameButton.addTarget(self, action: #selector(courseNameButtonTapped), for: .touchUpInside)
     }
+    
+    /// 각 View마다 tag를 달아서 어떤 View를 tap했는지를 알려줄수있게 View를 생성하고 UI에 띄워주는 함수
+    func setRandomPlanets() {
+        for index in self.viewModel.planets.indices {
+            let productView = RandomPlanetView()
+            productView.planet = viewModel.planets[index]
+            productView.tag = index
+            productView.isUserInteractionEnabled = true
+            let producttap = UITapGestureRecognizer(target: self, action: #selector(self.productTapped(_:)))
+            productView.addGestureRecognizer(producttap)
+            productView.frame = CGRect(x: viewModel.loction[index].x, y: viewModel.loction[index].y, width: 65, height: 92)
+            productView.alpha = 0.0
+            self.planetImages.append(productView)
+            view.addSubview(productView)
+        }
+    }
 }
 
 extension HomeViewController: CarouselViewDelegate {
@@ -279,9 +332,9 @@ extension HomeViewController: CarouselViewDelegate {
     /// - Parameter page: 페이지(몇번째 별자리인지)
     func currentPageDidChange(to page: Int) {
         // MARK: page가 변할때마다 변하는 요소들 1)코스이름 2)코스날짜 3)현재별자리(가운데아래 작은 네모)
-            self.homeDetailView.courseNameButton.setTitle(self.viewModel.constellations[page].name, for: .normal)
-            self.homeDetailView.dateLabel.text = self.viewModel.constellations[page].data
-            self.homeDetailView.currentImage.image = self.viewModel.constellations[page].image
+        self.homeDetailView.courseNameButton.setTitle(self.viewModel.user?.myCourses[page]?.title, for: .normal)
+        self.homeDetailView.dateLabel.text = self.viewModel.user?.myCourses[page]?.createdDate
+            self.homeDetailView.currentImage.image = UIImage(named: "Changwon")
             
             // MARK: String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
             self.homeDetailView.courseNameButton.snp.updateConstraints { make in
@@ -293,11 +346,15 @@ extension HomeViewController: CarouselViewDelegate {
             }
         
         // MARK: 마지막페이지와 첫페이지에서는 특정 버튼이 보이지 않아야함
+        guard let count = self.viewModel.user?.myCourses.count else { return }
         self.homeDetailView.beforeImageButton.isHidden = (page == 0) ? true : false
-        self.homeDetailView.afterImageButton.isHidden = (page == viewModel.constellations.count - 1) ? true : false
+        self.homeDetailView.afterImageButton.isHidden = (page == count - 1) ? true : false
         
         // MARK: 이전 별자리와 다음별자리가 보여야하는데, range를 벗어나지 않게 min과 max함수로 제약조건 추가
-        self.homeDetailView.beforeImageButton.setImage(self.viewModel.constellations[max(page - 1, 0)].image, for: .normal)
-        self.homeDetailView.afterImageButton.setImage(self.viewModel.constellations[min(page + 1, viewModel.constellations.count - 1)].image, for: .normal)
+        self.homeDetailView.beforeImageButton.setImage(UIImage(named: "Changwon"), for: .normal)
+        self.homeDetailView.afterImageButton.setImage(UIImage(named: "Changwon"), for: .normal)
+        
+//        self.homeDetailView.beforeImageButton.setImage(self.viewModel.user?.myCourses[max(page - 1, 0)].image, for: .normal)
+//        self.homeDetailView.afterImageButton.setImage(self.viewModel.user?.myCourses[min(page + 1, viewModel.constellations.count - 1)].image, for: .normal)
     }
 }
