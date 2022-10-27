@@ -13,8 +13,8 @@ final class SignUpButton: BaseButton {
     override func setAttribute() {
         super.setAttribute()
         let signUpAttributedString = NSMutableAttributedString()
-            .regular(string: "아직도 회원이 아닌가요? ", fontSize: 13)
-            .bold(string: "회원가입하러가기", fontSize: 13)
+            .regular(string: "아직 회원이 아닌가요? ", fontSize: 13)
+            .bold(string: "회원가입", fontSize: 13)
         self.setAttributedTitle(signUpAttributedString, for: .normal)
         self.setTitleColor(.white, for: .normal)
     }

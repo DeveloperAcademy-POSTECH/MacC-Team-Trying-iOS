@@ -72,7 +72,7 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
 
         title = "로그인"
 
-        titleLabels.title = "맛스타 이용을 위해서"
+        titleLabels.title = "COME IT 이용을 위해서"
         titleLabels.subTitle = "로그인을 해주세요!"
 
         planetImageView.alpha = 0
