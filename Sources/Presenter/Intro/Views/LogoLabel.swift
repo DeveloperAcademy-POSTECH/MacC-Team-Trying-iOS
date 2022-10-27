@@ -11,9 +11,8 @@ import Foundation
 final class LogoLabel: BaseLabel {
     override func setAttribute() {
         super.setAttribute()
-        self.text = "맛스타"
+        self.text = "COME IT"
         self.textAlignment = .center
-        #warning("폰트 수정 필요합니다")
-        self.font = .boldSystemFont(ofSize: 25)
+        self.font = .gmarksans(weight: .bold, size: ._30)
     }
 }

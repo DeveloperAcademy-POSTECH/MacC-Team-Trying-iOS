@@ -21,6 +21,8 @@ enum TextFieldState {
     case empty
     case emptyPassword
     case emptyNickname
+    case duplicatedSignUp
+    case isNotSignUp
 
     var message: String? {
         switch self {
@@ -48,6 +50,10 @@ enum TextFieldState {
             return nil
         case .empty:
             return ""
+        case .duplicatedSignUp:
+            return "이미 가입된 이메일 주소입니다!"
+        case .isNotSignUp:
+            return "처음 보는 이메일 주소예요!"
         }
     }
 

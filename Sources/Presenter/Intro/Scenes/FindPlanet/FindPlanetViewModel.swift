@@ -12,7 +12,7 @@ import Combine
 import CancelBag
 
 protocol FindPlanetCoordinatorLogic {
-    func coordinateToHomeScene()
+    func coordinateToMainScene()
 }
 
 protocol FindPlanetBusinessLogic: BusinessLogic {
@@ -50,7 +50,7 @@ final class FindPlanetViewModel: BaseViewModel, FindPlanetBusinessLogic {
                 isLoading = false
 
                 DispatchQueue.main.async {
-                    self.coordinator.coordinateToHomeScene()
+                    self.coordinator.coordinateToMainScene()
                 }
             } catch {
 

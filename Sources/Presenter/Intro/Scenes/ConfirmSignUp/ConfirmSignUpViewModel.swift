@@ -66,6 +66,7 @@ final class ConfirmSignUpViewModel: BaseViewModel, ConfirmSignUpBuisnessLogic {
                 isLoading = false
                 leaveAnimation = true
             } catch {
+                emailTextFieldState = .duplicatedSignUp
                 isLoading = false
             }
         }

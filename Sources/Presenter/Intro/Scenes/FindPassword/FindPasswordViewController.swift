@@ -35,6 +35,7 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
         viewModel.$emailState
             .receive(on: DispatchQueue.main)
             .sink { [weak self] currentState in
+                self?.emailView.updateState(currentState)
                 self?.sendEmailButton.isEnabled = currentState == .good
             }
             .cancel(with: cancelBag)
@@ -81,6 +82,12 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.view.endEditing(true)
+//        self.emailView.resignFirstResponder()
     }
 
     private func setNotifications() {

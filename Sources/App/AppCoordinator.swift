@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AppCoordinator: Coordinator {
+final class AppCoordinator: Coordinator, IntroCoordinatorDelegate {
     let window: UIWindow
     weak var navigationController: UINavigationController?
 
@@ -23,12 +23,24 @@ class AppCoordinator: Coordinator {
     
     func start() {
         window.rootViewController = navigationController
-        
-        // TODO: 로그인 분기처리
+
+        if UserDefaults.standard.string(forKey: "accessToken") != nil {
+            let coordinator = MainCoordinator(navigationController: navigationController)
+            coordinator.start()
+            window.makeKeyAndVisible()
+            return
+        }
+
         let coordinator = IntroCoordinator(navigationController: navigationController)
 //        let coordinator = MainCoordinator(navigationController: navigationController)
         coordinator.start()
-        
+        coordinator.delegate = self
         window.makeKeyAndVisible()
+        return
+    }
+
+    func coordinateToMainScene() {
+        let coordinator = MainCoordinator(navigationController: navigationController)
+        coordinator.start()
     }
 }

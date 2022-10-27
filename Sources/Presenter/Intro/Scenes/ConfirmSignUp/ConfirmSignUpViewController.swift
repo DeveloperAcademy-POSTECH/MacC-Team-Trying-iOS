@@ -63,6 +63,7 @@ final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSig
         viewModel.$emailTextFieldState
             .receive(on: DispatchQueue.main)
             .sink { [weak self] currentState in
+                self?.emailTextFieldView.updateState(currentState)
                 self?.signUpButton.isEnabled = currentState == .good
             }
             .cancel(with: cancelBag)

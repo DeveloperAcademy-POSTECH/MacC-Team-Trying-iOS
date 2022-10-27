@@ -72,7 +72,7 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
 
         title = "로그인"
 
-        titleLabels.title = "맛스타 이용을 위해서"
+        titleLabels.title = "COME IT 이용을 위해서"
         titleLabels.subTitle = "로그인을 해주세요!"
 
         planetImageView.alpha = 0
@@ -109,6 +109,12 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
             make.leading.trailing.equalToSuperview().inset(-46)
             make.height.equalTo(planetImageView.snp.width).multipliedBy(1)
         }
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.view.endEditing(true)
+//        self.emailTextFieldView.resignFirstResponder()
     }
 }
 

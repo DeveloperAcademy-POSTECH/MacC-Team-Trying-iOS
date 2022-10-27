@@ -58,6 +58,7 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
         planetNameLabel.font = UIFont.designSystem(weight: .bold, size: ._20)
 
         nextButton.title = "확인"
+        nextButton.addTarget(self, action: #selector(nextButtonDidTapped), for: .touchUpInside)
     }
 
     override func setLayout() {
@@ -106,4 +107,8 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
 
 extension WaitingInvitationViewController {
 
+    @objc
+    func nextButtonDidTapped() {
+        viewModel.nextButtonDidTapped()
+    }
 }
