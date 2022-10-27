@@ -11,11 +11,11 @@ import Combine
 import CancelBag
 
 protocol WaitingInvitationCoordinatorLogic {
-
+    func coordinateToMainScene()
 }
 
 protocol WaitingInvitationBusinessLogic: BusinessLogic {
-
+    func nextButtonDidTapped()
 }
 
 final class WaitingInvitationViewModel: BaseViewModel, WaitingInvitationBusinessLogic {
@@ -35,5 +35,9 @@ final class WaitingInvitationViewModel: BaseViewModel, WaitingInvitationBusiness
         self.planetName = planetName
         self.code = code
         self.coordinator = coordinator
+    }
+
+    func nextButtonDidTapped() {
+        coordinator.coordinateToMainScene()
     }
 }

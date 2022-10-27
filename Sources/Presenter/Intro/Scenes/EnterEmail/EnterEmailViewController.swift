@@ -110,6 +110,12 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
             make.height.equalTo(planetImageView.snp.width).multipliedBy(1)
         }
     }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.view.endEditing(true)
+//        self.emailTextFieldView.resignFirstResponder()
+    }
 }
 
 extension EnterEmailViewController {

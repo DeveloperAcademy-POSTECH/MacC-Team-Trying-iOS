@@ -84,6 +84,12 @@ final class EnterCodeViewController: IntroBaseViewController<EnterCodeViewModel>
         }
     }
 
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.view.endEditing(true)
+//        self.codeTextFieldView.resignFirstResponder()
+    }
+
     private func setNotifications() {
         NotificationCenter.default.addObserver(
             self,

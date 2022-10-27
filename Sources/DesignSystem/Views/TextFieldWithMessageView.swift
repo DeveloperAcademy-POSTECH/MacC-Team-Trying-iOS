@@ -51,6 +51,14 @@ final class TextFieldWithMessageView: UIView {
         self.init(frame: .zero)
         self.textType = textType
         self.textField.placeholder = textType.placeholder
+        switch textType {
+        case .email:
+            textField.keyboardType = .emailAddress
+        case .password:
+            textField.isSecureTextEntry = true
+        default:
+            break
+        }
     }
 
     override init(frame: CGRect) {
@@ -94,6 +102,10 @@ extension TextFieldWithMessageView: TextFieldWithMessageViewComponent {
 
     func textFieldBecomeFirstResponder() {
         textField.becomeFirstResponder()
+    }
+
+    func textFieldResignFirstResponder() {
+        textField.resignFirstResponder()
     }
 }
 

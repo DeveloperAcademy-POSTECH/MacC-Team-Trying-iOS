@@ -50,6 +50,7 @@ final class IntroButton: BaseButton {
 
     private func setConfigurationUpdateHandler() {
         self.configurationUpdateHandler = { [weak self] button in
+
             guard let self = self else { return }
             var newConfiguration = button.configuration
             newConfiguration?.showsActivityIndicator = self.loading

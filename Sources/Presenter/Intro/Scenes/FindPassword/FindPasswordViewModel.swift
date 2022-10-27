@@ -45,9 +45,8 @@ final class FindPasswordViewModel: BaseViewModel, FindPasswordBusinessLogic {
                 DispatchQueue.main.async {
                     self.coordinator.coordinateToConfirmPasswordScene()
                 }
-
             } catch {
-
+                emailState = .isNotSignUp
             }
         }
     }

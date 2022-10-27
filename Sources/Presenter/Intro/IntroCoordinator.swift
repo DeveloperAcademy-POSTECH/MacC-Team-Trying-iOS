@@ -22,35 +22,29 @@ protocol IntroCoordinatorProtocol: Coordinator,
                                    CreatePlanetCompleteCoordinatorLogic,
                                    WaitingInvitationCoordinatorLogic,
                                    InvitationCodeCoordinatorLogic,
-                                   FindPlanetCoordinatorLogic {
+                                   FindPlanetCoordinatorLogic,
+                                   WaitingInvitationCoordinatorLogic {
     var navigationController: UINavigationController? { get }
+}
+
+protocol IntroCoordinatorDelegate: AnyObject {
+    func coordinateToMainScene()
 }
 
 final class IntroCoordinator: IntroCoordinatorProtocol {
 
     weak var navigationController: UINavigationController?
 
+    weak var delegate: IntroCoordinatorDelegate?
+
     init(navigationController: UINavigationController?) {
         self.navigationController = navigationController
     }
 
     func start() {
-        let startController = createLoginScene()
+        let startController = LoginViewController(viewModel: LoginViewModel(coordinator: self))
         navigationController?.setViewControllers([startController], animated: false)
         navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-
-    func createLoginScene() -> UIViewController {
-        let loginViewModel = LoginViewModel(coordinator: self)
-        return LoginViewController(viewModel: loginViewModel)
-    }
-
-    func createEnterEmailScene() -> UIViewController {
-        EnterEmailViewController(viewModel: .init(coordinator: self))
-    }
-
-    func createConfirmPasswordScene() -> UIViewController {
-        ConfirmPasswordViewController(viewModel: .init(coordinator: self))
     }
 }
 
@@ -58,7 +52,8 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
 extension IntroCoordinator {
 
     func coordinateToEnterEmailScene() {
-        navigationController?.pushViewController(createEnterEmailScene(), animated: true)
+        let enterEmail = EnterEmailViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(enterEmail, animated: true)
     }
 
     func coordinateToEnterPasswordScene(email: String) {
@@ -66,8 +61,8 @@ extension IntroCoordinator {
         navigationController?.pushViewController(enterPassword, animated: true)
     }
 
-    func coordinateToHomeScene() {
-        // TODO: 홈으로 넘어가는 델리게이트구현
+    func coordinateToMainScene() {
+        delegate?.coordinateToMainScene()
     }
 
     func coordinateToFindPasswordScene(email: String) {
@@ -81,7 +76,8 @@ extension IntroCoordinator {
     }
 
     func coordinateToConfirmPasswordScene() {
-        navigationController?.pushViewController(createConfirmPasswordScene(), animated: true)
+        let cofirmPassword = ConfirmPasswordViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(cofirmPassword, animated: true)
     }
 
     func coordinateToEnterCodeScene(email: String) {

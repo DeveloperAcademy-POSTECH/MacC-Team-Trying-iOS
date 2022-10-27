@@ -107,6 +107,12 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
             make.height.equalTo(planetImageView.snp.width).multipliedBy(1)
         }
     }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.view.endEditing(true)
+//        self.passwordTextFieldView.resignFirstResponder()
+    }
 }
 
 // MARK: - UI
