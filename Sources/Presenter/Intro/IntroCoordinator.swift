@@ -76,8 +76,8 @@ extension IntroCoordinator {
     }
 
     func coordinateToConfirmPasswordScene() {
-        let cofirmPassword = ConfirmPasswordViewController(viewModel: .init(coordinator: self))
-        navigationController?.pushViewController(cofirmPassword, animated: true)
+        let confirmPassword = ConfirmPasswordViewController(viewModel: .init(coordinator: self))
+        navigationController?.pushViewController(confirmPassword, animated: true)
     }
 
     func coordinateToEnterCodeScene(email: String) {
