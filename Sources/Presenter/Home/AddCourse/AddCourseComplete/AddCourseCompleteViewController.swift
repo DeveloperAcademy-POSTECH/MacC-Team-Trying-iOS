@@ -44,7 +44,7 @@ final class AddCourseCompleteViewController: BaseViewController {
     private lazy var constellationImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = viewModel.makeStars(stars: viewModel.places)
+        imageView.image = viewModel.makeStars(places: viewModel.places)
         return imageView
     }()
     private lazy var doneButton: MainButton = {

@@ -9,5 +9,5 @@
 import UIKit
 
 protocol StarCreatable {
-    func makeStars(stars: [Place]) -> UIImage?
+    func makeStars(places: [Place]) -> UIImage?
 }
