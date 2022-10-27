@@ -19,6 +19,7 @@ class HomeDetailView: UIView {
         let lottie = LottieAnimationView.init(name: "shooting-star")
         lottie.contentMode = .scaleAspectFill
         lottie.animationSpeed = 0.5
+        lottie.backgroundColor = .clear
         lottie.loopMode = .loop
         return lottie
     }()
@@ -169,6 +170,7 @@ class HomeDetailView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUI()
+        self.backgroundColor = .clear
     }
     
     required init?(coder: NSCoder) {

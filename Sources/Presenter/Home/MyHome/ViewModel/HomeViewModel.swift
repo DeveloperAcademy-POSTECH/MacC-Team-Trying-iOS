@@ -62,7 +62,7 @@ final class HomeViewModel: BaseViewModel {
             print("Decoder오류")
             return
         }
-        let courseData = try await HomeAPIService.fetchUserCourseAsync(planetId: 39)
+        let courseData = try await HomeAPIService.fetchUserCourseAsync(planetId: 27)
         guard let myCourseInfoDTO = try? JSONDecoder().decode(UserCourseInfo.self, from: courseData) else {
             print("Course Decoder오류")
             return
@@ -77,7 +77,9 @@ final class HomeViewModel: BaseViewModel {
 //            Constellation(name: "부산대학교", data: "2022-10-07(금)", image: UIImage(named: "Busan")),
 //            Constellation(name: "인천ssg파크", data: "2022-10-08(토)", image: UIImage(named: "Pohang"))
 //        ]
-        
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
+        dump(myCourseInfoDTO)
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
         self.user = User(nickName: myPlanineInfoDTO.me.name, myPlanet: myPlanineInfoDTO.planet, myCourses: myCourseInfoDTO.courses)
     }
     
@@ -116,5 +118,3 @@ final class HomeViewModel: BaseViewModel {
         coordinator.startAddCourseFlow()
     }
 }
-
-

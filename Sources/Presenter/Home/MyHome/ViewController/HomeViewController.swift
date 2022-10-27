@@ -14,13 +14,14 @@ import SnapKit
 import Lottie
 
 final class HomeViewController: BaseViewController {
-
+    lazy var backgroundView = BackgroundView(frame: view.bounds)
     private lazy var carouselView = CarouselCollectionView(pages: 0, delegate: self)
     let homeDetailView = HomeDetailView()
     let viewModel: HomeViewModel
     let changeMyPlanetScale: Double = 0.5
     let screenHeight = DeviceInfo.screenHeight - 20
     var planetImages: [RandomPlanetView] = []
+
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -69,14 +70,11 @@ final class HomeViewController: BaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        view.addSubview(backgroundView)
+        view.sendSubviewToBack(backgroundView)
         homeDetailView.homeLottie.play()
         navigationController?.tabBarController?.tabBar.isHidden = false
     }
-    
-//     override func viewDidAppear(_ animated: Bool) {
-//         super.viewDidAppear(animated)
-//         carouselView?.configureView(with: viewModel.constellations)
-//     }
 
     /// pangesture에 따라서 요소들을 변화시키는 함수
     /// - Parameters:
@@ -268,7 +266,6 @@ final class HomeViewController: BaseViewController {
 // MARK: - UI
 extension HomeViewController {
     func setAttributes() {
-
         // MARK: input으로 들어오는 String에 따라 width가 달라져야하기 때문에 ViewController에서 레이아웃을 잡아줌
         self.homeDetailView.courseNameButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -342,9 +339,6 @@ extension HomeViewController: CarouselViewDelegate {
         self.homeDetailView.afterImageButton.isHidden = (page == user.myCourses.count - 1) ? true : false
         
         // MARK: 이전 별자리와 다음별자리가 보여야하는데, range를 벗어나지 않게 min과 max함수로 제약조건 추가
-        self.homeDetailView.beforeImageButton.setImage(UIImage(named: "Changwon"), for: .normal)
-        self.homeDetailView.afterImageButton.setImage(UIImage(named: "Changwon"), for: .normal)
-
         self.homeDetailView.beforeImageButton.setImage(StarMaker.makeStars(places: beforeButtonImage.coordinates), for: .normal)
         self.homeDetailView.afterImageButton.setImage(StarMaker.makeStars(places: afterButtonImage.coordinates), for: .normal)
     }
