@@ -39,6 +39,20 @@ final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSig
 
     override func bind() {
 
+        viewModel.$viewType
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewType  in
+                switch viewType {
+                case .confirmSignUp:
+                    self?.titleLabels.title = "등록된 이메일이 없네요."
+                    self?.titleLabels.subTitle = "가입하시겠어요?"
+                case .signup:
+                    self?.titleLabels.title = "가입하실 이메일 주소를"
+                    self?.titleLabels.subTitle = "입력해주세요!"
+                }
+            }
+            .cancel(with: cancelBag)
+
         viewModel.$email
             .receive(on: DispatchQueue.main)
             .sink { [weak self] email in
@@ -52,15 +66,31 @@ final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSig
                 self?.signUpButton.isEnabled = currentState == .good
             }
             .cancel(with: cancelBag)
+
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                self?.signUpButton.loading = isLoading
+            }
+            .cancel(with: cancelBag)
+
+        viewModel.$leaveAnimation
+            .receive(on: DispatchQueue.main)
+            .filter { $0 == true }
+            .sink { [weak self] _ in
+                self?.leaveAnimator?.addCompletion { [weak self] _ in
+                    self?.viewModel.goNext()
+                }
+
+                self?.leaveAnimator?.startAnimation()
+            }
+            .cancel(with: cancelBag)
     }
 
     override func setAttribute() {
         super.setAttribute()
 
-        title = "로그인"
-
-        titleLabels.title = "등록된 이메일이 없네요."
-        titleLabels.subTitle = "가입하시겠어요?"
+        navigationItem.title = "회원가입"
 
         planetImageView.alpha = 0
         planetImageView.image = .init(.img_planet)
@@ -94,6 +124,7 @@ final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSig
         planetImageView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(-46)
+            make.height.equalTo(planetImageView.snp.width).multipliedBy(1)
         }
     }
 }
@@ -105,7 +136,7 @@ extension ConfirmSignUpViewController {
         enterAnimator?.addAnimations {
             self.planetImageView.alpha = 1
             self.planetImageView.snp.updateConstraints { make in
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(179)
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(149)
             }
             self.view.layoutIfNeeded()
         }

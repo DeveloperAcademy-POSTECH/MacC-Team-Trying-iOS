@@ -46,6 +46,25 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
                 self?.nextButton.isEnabled = currentState == .good
             }
             .cancel(with: cancelBag)
+
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                self?.nextButton.loading = isLoading
+            }
+            .cancel(with: cancelBag)
+
+        viewModel.$leaveAnimation
+            .receive(on: DispatchQueue.main)
+            .filter { $0 == true }
+            .sink { [weak self] _ in
+                self?.leaveAnimator?.addCompletion { _ in
+                    self?.viewModel.goNext()
+                }
+                self?.leaveAnimator?.startAnimation()
+            }
+            .cancel(with: cancelBag)
+
     }
 
     override func setAttribute() {
@@ -88,6 +107,7 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
         planetImageView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(-46)
+            make.height.equalTo(planetImageView.snp.width).multipliedBy(1)
         }
     }
 }
@@ -99,7 +119,7 @@ extension EnterEmailViewController {
         enterAnimator?.addAnimations {
             self.planetImageView.alpha = 1
             self.planetImageView.snp.updateConstraints { make in
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(179)
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(149)
             }
             self.view.layoutIfNeeded()
         }
@@ -119,12 +139,7 @@ extension EnterEmailViewController {
 
     @objc
     func loginButtonDidTapped() {
-
-        leaveAnimator?.addCompletion { [weak self] _ in
-            self?.viewModel.enterEmailButtonDidTapped()
-        }
-
-        leaveAnimator?.startAnimation()
+        viewModel.enterEmailButtonDidTapped()
     }
 }
 

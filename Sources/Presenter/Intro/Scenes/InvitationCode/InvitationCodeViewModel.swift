@@ -6,12 +6,13 @@
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
+import Foundation
 import Combine
 
 import CancelBag
 
 protocol InvitationCodeCoordinatorLogic {
-
+    func coordinateToFindPlanetScene(planetName: String, planetImageName: String, code: String)
 }
 
 protocol InvitationCodeBusinessLogic: BusinessLogic {
@@ -22,44 +23,41 @@ protocol InvitationCodeBusinessLogic: BusinessLogic {
 final class InvitationCodeViewModel: BaseViewModel, InvitationCodeBusinessLogic {
     let coordinator: InvitationCodeCoordinatorLogic
 
-    enum Stage {
-        case notFound
-        case found
-    }
+    private let planetService = PlanetService()
 
     @Published var textFieldState: TextFieldState
-    @Published var stage: Stage
+    @Published var isLoading: Bool
+    var code: String
 
     init(coordinator: InvitationCodeCoordinatorLogic) {
         self.textFieldState = .empty
-        self.stage = .notFound
+        self.code = ""
+        self.isLoading = false
         self.coordinator = coordinator
     }
 
     func nextButtonDidTapped() {
-        switch stage {
-        case .notFound:
-            // TODO: 통신
-            self.stage = .found
-        case .found:
-            break
+        Task {
+            do {
+                isLoading = true
+                let planetInfo = try await planetService.getPlanetByCode(.init(code: code))
+                isLoading = false
 
+                DispatchQueue.main.async {
+                    self.coordinator.coordinateToFindPlanetScene(
+                        planetName: planetInfo.name,
+                        planetImageName: planetInfo.image,
+                        code: self.code
+                    )
+                }
+            } catch {
+
+            }
         }
     }
 
     func textFieldDidChange(_ text: String) {
-        if text == rightCode {
-            stage = .found
-            textFieldState = .empty
-        } else {
-            stage = .notFound
-            #warning("초대코드가 맞지 않을 경우 오류메시지 정하가")
-        }
-    }
-}
-
-extension InvitationCodeViewModel {
-    var rightCode: String {
-        "aaa"
+        self.code = text
+        self.textFieldState = text.count >= 6 ? .good : .empty
     }
 }

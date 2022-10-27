@@ -27,7 +27,7 @@ final class IntroButton: BaseButton {
     override func setAttribute() {
         super.setAttribute()
         var configuration = UIButton.Configuration.filled()
-        configuration.activityIndicatorColorTransformer = .monochromeTint
+        configuration.activityIndicatorColorTransformer = .grayscale
         configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
             outgoing.font = .designSystem(weight: .bold, size: ._15)

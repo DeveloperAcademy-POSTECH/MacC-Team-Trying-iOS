@@ -12,7 +12,7 @@ import CancelBag
 
 protocol LoginCoordinatorLogic {
     func coordinateToEnterEmailScene()
-    #warning("지워줄것")
+    func coordinateToSignUpEmailScene()
     func coordinateToCreatePlanetScene()
 }
 
@@ -33,8 +33,6 @@ final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
     }
 
     func signUpButtonDidTapped() {
-        #warning("지워줄것")
-        coordinator.coordinateToCreatePlanetScene()
-//        coordinator.coordinateToEnterEmailScene()
+        coordinator.coordinateToSignUpEmailScene()
     }
 }

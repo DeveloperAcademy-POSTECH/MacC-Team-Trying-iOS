@@ -6,12 +6,13 @@
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
+import Foundation
 import Combine
 
 import CancelBag
 
 protocol EnterCodeCoordinatorLogic {
-    func coordinateToSignUpEnterPassword()
+    func coordinateToSignUpEnterPassword(email: String)
 }
 
 protocol EnterCodeBuisnessLogic: BusinessLogic {
@@ -20,35 +21,48 @@ protocol EnterCodeBuisnessLogic: BusinessLogic {
 }
 
 final class EnterCodeViewModel: BaseViewModel, EnterCodeBuisnessLogic {
+
     let coordinator: EnterCodeCoordinatorLogic
 
-    @Published var codeTextFieldState: TextFieldState
-    var certificationCode: String
+    private let emailVerificationService = EmailVerificationService()
 
-    init(coordinator: EnterCodeCoordinatorLogic) {
+    @Published var codeTextFieldState: TextFieldState
+    @Published var isLoading: Bool
+
+    var certificationCode: String
+    let email: String
+
+    init(
+        email: String,
+        coordinator: EnterCodeCoordinatorLogic
+    ) {
+        self.email = email
         self.codeTextFieldState = .empty
         self.certificationCode = ""
+        self.isLoading = false
         self.coordinator = coordinator
     }
 
     func nextButtonDidTapped() {
+        Task {
+            do {
+                self.isLoading = true
+                _ = try await emailVerificationService.verificateCode(.init(email: self.email, code: self.certificationCode))
+                self.isLoading = false
 
-        // TODO: 통신
-        if rightCode == certificationCode {
-            coordinator.coordinateToSignUpEnterPassword()
-        } else {
-            codeTextFieldState = .wrongCertificationNumber
+                DispatchQueue.main.async {
+                    self.coordinator.coordinateToSignUpEnterPassword(email: self.email)
+                }
+                
+            } catch {
+                self.isLoading = false
+                codeTextFieldState = .wrongCertificationNumber
+            }
         }
     }
 
     func textFieldDidChange(_ text: String) {
         certificationCode = text
-        codeTextFieldState = .empty
-    }
-}
-
-extension EnterCodeViewModel {
-    var rightCode: String {
-        "aaaaaa"
+        codeTextFieldState = text.count >= 6 ? .good : .empty
     }
 }

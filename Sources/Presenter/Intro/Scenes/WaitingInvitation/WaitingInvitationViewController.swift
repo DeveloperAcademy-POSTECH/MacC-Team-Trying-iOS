@@ -20,6 +20,7 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
     lazy var planetNameLabel = UILabel()
     lazy var mateLabel = UILabel()
     lazy var invitationCodeButton = InvitationCodeButton(type: .system)
+    lazy var nextButton = IntroButton(type: .system)
 
     override func bind() {
 
@@ -36,6 +37,13 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
                 self?.planetNameLabel.text = planetName
             }
             .cancel(with: cancelBag)
+
+        viewModel.$code
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] code in
+                self?.invitationCodeButton.invitationCode = code
+            }
+            .cancel(with: cancelBag)
     }
 
     override func setAttribute() {
@@ -46,6 +54,10 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
 
         mateLabel.text = "메이트를 초대해서 같이 행성을 꾸며보세요!"
         mateLabel.font = UIFont.designSystem(weight: .regular, size: ._15)
+
+        planetNameLabel.font = UIFont.designSystem(weight: .bold, size: ._20)
+
+        nextButton.title = "확인"
     }
 
     override func setLayout() {
@@ -57,6 +69,7 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
         view.addSubview(planetNameLabel)
         view.addSubview(mateLabel)
         view.addSubview(invitationCodeButton)
+        view.addSubview(nextButton)
 
         currentProgressView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(42)
@@ -79,6 +92,10 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
             make.centerX.equalToSuperview()
         }
         invitationCodeButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(nextButton.snp.top).offset(-15)
+        }
+        nextButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }

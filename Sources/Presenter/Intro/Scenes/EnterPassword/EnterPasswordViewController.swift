@@ -38,14 +38,37 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
         enterAnimator?.startAnimation(afterDelay: fastDelay)
     }
 
+    override func bind() {
+
+        viewModel.$passwordTextFieldState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.passwordTextFieldView.updateState(currentState)
+            }
+            .cancel(with: cancelBag)
+
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                self?.loginButton.loading = isLoading
+            }
+            .cancel(with: cancelBag)
+
+    }
+
     override func setAttribute() {
         super.setAttribute()
+
+        navigationItem.backButtonTitle = ""
+        navigationItem.title = "로그인"
 
         titleLabels.title = "다시 찾아주셨네요!"
         titleLabels.subTitle = "반갑습니다"
 
         planetImageView.alpha = 0
         planetImageView.image = .init(.img_planet)
+
+        passwordTextFieldView.delegate = self
 
         loginButton.title = "들어가기"
         loginButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
@@ -81,6 +104,7 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
         planetImageView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(-46)
+            make.height.equalTo(planetImageView.snp.width).multipliedBy(1)
         }
     }
 }
@@ -92,7 +116,7 @@ extension EnterPasswordViewController {
         enterAnimator?.addAnimations {
             self.planetImageView.alpha = 1
             self.planetImageView.snp.updateConstraints { make in
-                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(179)
+                make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(149)
             }
             self.view.layoutIfNeeded()
         }
@@ -110,5 +134,12 @@ extension EnterPasswordViewController {
     @objc
     func findPasswordButtonDidTapped() {
         viewModel.findPasswordButtonDidTapped()
+    }
+}
+
+extension EnterPasswordViewController: TextFieldWithMessageViewComponentDelegate {
+
+    func textFieldDidChange(_ text: String) {
+        viewModel.textFieldDidChange(text)
     }
 }

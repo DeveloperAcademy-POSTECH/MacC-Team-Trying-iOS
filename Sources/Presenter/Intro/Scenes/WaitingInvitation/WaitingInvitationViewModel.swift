@@ -23,14 +23,17 @@ final class WaitingInvitationViewModel: BaseViewModel, WaitingInvitationBusiness
 
     @Published var selectedPlanet: String
     @Published var planetName: String
+    @Published var code: String
 
     init(
         selectedPlanet: String,
         planetName: String,
+        code: String,
         coordinator: WaitingInvitationCoordinatorLogic
     ) {
         self.selectedPlanet = selectedPlanet
         self.planetName = planetName
+        self.code = code
         self.coordinator = coordinator
     }
 }

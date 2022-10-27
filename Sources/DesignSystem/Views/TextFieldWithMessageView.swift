@@ -117,6 +117,7 @@ extension TextFieldWithMessageView {
                 NSAttributedString.Key.font: UIFont.designSystem(weight: .regular, size: ._15)
             ]
         )
+        textField.clearButtonMode = .whileEditing
         textField.textColor = .white
         textField.leftView = UIView(frame: .init(x: 0, y: 0, width: 15, height: textField.frame.height))
         textField.leftViewMode = .always
