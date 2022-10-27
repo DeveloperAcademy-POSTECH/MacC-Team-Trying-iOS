@@ -13,6 +13,8 @@ excluded:
 
 # Default Rules 가운데 제외시키는 Rules
 disabled_rules:
+    - force_cast
+    - identifier_name
     - line_length
     - todo                            # TODOs, FIXMEs 에 대하여 warning을 띄우지 않습니다.
     - trailing_whitespace             # Trailing whitespace를 허용합니다.
@@ -44,7 +46,6 @@ opt_in_rules:
     - file_name_no_space                            # 파일 이름에는 빈 칸이 있으면 안됩니다.
     - first_where                                   # Collection에서 .filter { }.first 말고 .first(where: )를 사용합니다.
     - flatmap_over_map_reduce                       # map과 reduce를 같이 사용할 때에는 flatMap을 사용합니다.
-    - force_unwrapping                              # 강제 언래핑을 지양합니다.
     - identical_operands                            # 같은 것을 비교할 필요 없습니다.
     - implicit_return                               # closure, functions, getter에서 암묵적 return을 지향합니다.
     - implicitly_unwrapped_optional                 # 암시적 언래핑을 지양합니다. (IBOutlet은 예외)
@@ -83,9 +84,3 @@ nesting:                    # nesting을 설정합니다.
         warning: 3
     statement_level:
         warning: 5
-    
-identifier_name:
-    excluded:
-        - id                # id라는 변수명에 대해서는 identifier_name rule을 적용하지 않습니다.
-    allowed_symbols:
-        - _                 # underscore에 대해서는 예외처리합니다.
