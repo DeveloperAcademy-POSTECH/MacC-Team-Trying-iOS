@@ -1,7 +1,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let projectName: String = "MatStar"
+let projectName: String = "ComeIt"
 
 let project = Project(
     name: projectName,
@@ -33,7 +33,7 @@ let project = Project(
             name: "\(projectName)Tests",
             platform: .iOS,
             product: .unitTests,
-            bundleId: "comr.Try-ing.\(projectName)Tests",
+            bundleId: "com.Try-ing.\(projectName)Tests",
             infoPlist: .default,
             sources: ["Tests/**"],
             dependencies: [.target(name: projectName)]
