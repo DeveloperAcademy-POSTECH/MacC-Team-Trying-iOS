@@ -57,12 +57,13 @@ final class HomeViewModel: BaseViewModel {
     
     // MARK: async로 호출한 api함수
     func fetchAsync() async throws {
-        let data = try await HomeAPIService.fetchUserAsync()
+        guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else { return }
+        let data = try await HomeAPIService.fetchUserAsync(accessToken: accessToken)
         guard let myPlanineInfoDTO = try? JSONDecoder().decode(UserInfo.self, from: data) else {
             print("Decoder오류")
             return
         }
-        let courseData = try await HomeAPIService.fetchUserCourseAsync(planetId: 27)
+        let courseData = try await HomeAPIService.fetchUserCourseAsync(planetId: myPlanineInfoDTO.planet?.planetId)
         guard let myCourseInfoDTO = try? JSONDecoder().decode(UserCourseInfo.self, from: courseData) else {
             print("Course Decoder오류")
             return
@@ -77,9 +78,6 @@ final class HomeViewModel: BaseViewModel {
 //            Constellation(name: "부산대학교", data: "2022-10-07(금)", image: UIImage(named: "Busan")),
 //            Constellation(name: "인천ssg파크", data: "2022-10-08(토)", image: UIImage(named: "Pohang"))
 //        ]
-        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
-        dump(myCourseInfoDTO)
-        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
         self.user = User(nickName: myPlanineInfoDTO.me.name, myPlanet: myPlanineInfoDTO.planet, myCourses: myCourseInfoDTO.courses)
     }
     

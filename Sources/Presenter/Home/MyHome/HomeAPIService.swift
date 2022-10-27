@@ -21,12 +21,12 @@ let courseToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjU4MzI4NDU2LWRjNDAtNDNmO
 
 class HomeAPIService {
     
-    static func fetchUserAsync() async throws -> Data {
+    static func fetchUserAsync(accessToken: String) async throws -> Data {
         guard let url = URL(string: fetchUserUrl) else {
             throw HomeApiError.urlResponse
         }
         var request = URLRequest(url: url)
-        request.setValue(token, forHTTPHeaderField: "accessToken")
+        request.setValue(accessToken, forHTTPHeaderField: "accessToken")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
             throw HomeApiError.response

@@ -18,10 +18,18 @@ final class HomeViewController: BaseViewController {
     private lazy var carouselView = CarouselCollectionView(pages: 0, delegate: self)
     let homeDetailView = HomeDetailView()
     let viewModel: HomeViewModel
-    let changeMyPlanetScale: Double = 0.5
-    let screenHeight = DeviceInfo.screenHeight - 20
+    let changeMyPlanetScale: Double = 0.30
+    let screenHeight = DeviceInfo.screenHeight + 120
     var planetImages: [RandomPlanetView] = []
-
+    
+    let courseEmptyView: UILabel = {
+        let label = UILabel()
+        label.text = "아직 생성된 행성이 없습니다"
+        label.textColor = .white
+        label.backgroundColor = .black
+        label.textAlignment = .center
+        return label
+    }()
     
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -51,6 +59,7 @@ final class HomeViewController: BaseViewController {
             try await viewModel.fetchAsync()
             guard let dday = viewModel.user?.myPlanet?.dday else { return }
             guard let nickName = viewModel.user?.nickName else { return }
+            
             self.homeDetailView.ddayLabel.text = "D+" + String(dday)
             self.homeDetailView.nameLabel.attributedText = String.makeAtrributedString(
                 name: nickName,
@@ -60,6 +69,8 @@ final class HomeViewController: BaseViewController {
                 changeAppendStringColor: .white
             )
             guard let user = viewModel.user else { return }
+            guard let image = user.myPlanet?.image else { return }
+            self.homeDetailView.myPlanetImage.image = UIImage(named: image)
             carouselView.configureView(with: user.myCourses)
             carouselView.carouselCollectionView.reloadData()
             currentPageDidChange(to: 0)
@@ -67,7 +78,7 @@ final class HomeViewController: BaseViewController {
         bind()
         setAttributes()
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         view.addSubview(backgroundView)
@@ -75,7 +86,7 @@ final class HomeViewController: BaseViewController {
         homeDetailView.homeLottie.play()
         navigationController?.tabBarController?.tabBar.isHidden = false
     }
-
+    
     /// pangesture에 따라서 요소들을 변화시키는 함수
     /// - Parameters:
     ///   - center: 이미지의 center좌표
@@ -121,7 +132,7 @@ final class HomeViewController: BaseViewController {
             } else {
                 DispatchQueue.main.async {
                     UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
-                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight / 2),
+                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: DeviceInfo.screenHeight / 2),
                                             myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
                                             constellationMinusAlpha: 0,
                                             alreadyAlphaExist: 0,
@@ -132,7 +143,7 @@ final class HomeViewController: BaseViewController {
                         myPlanet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
                     }
                 }
-
+                
             }
         }
     }
@@ -196,7 +207,7 @@ final class HomeViewController: BaseViewController {
         nextVC.courses = myCourses
         navigationController?.pushViewController(nextVC, animated: true)
     }
-
+    
     @objc
     /// 버튼을 누르면 자동으로 다음 스크롤로 넘어가게 해주는 함수
     func beforeImageButtonTapped() {
@@ -313,33 +324,41 @@ extension HomeViewController: CarouselViewDelegate {
     /// carousel에서 Page가 변할때마다 호출되는 델리게이트 함수
     /// - Parameter page: 페이지(몇번째 별자리인지)
     func currentPageDidChange(to page: Int) {
-        // MARK: page가 변할때마다 변하는 요소들 1)코스이름 2)코스날짜 3)현재별자리(가운데아래 작은 네모)
-        guard let user = self.viewModel.user else { return }
-        guard let beforeButtonImage = user.myCourses[max(page - 1, 0)] else { return }
-        guard let afterButtonImage = user.myCourses[min(page + 1, user.myCourses.count - 1)] else { return }
-        guard let currentImage = user.myCourses[page] else { return }
-        
-        self.homeDetailView.courseNameButton.setTitle(self.viewModel.user?.myCourses[page]?.title, for: .normal)
-        self.homeDetailView.dateLabel.text = self.viewModel.user?.myCourses[page]?.createdDate
-        self.homeDetailView.currentImage.image = StarMaker.makeStars(places: currentImage.coordinates)
-        
-        // MARK: String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
-        self.homeDetailView.courseNameButton.snp.remakeConstraints { make in
-            guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
-            let cellWidth = text.size(withAttributes:[.font: UIFont.systemFont(ofSize:17)]).width + 60
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(160)
-            make.height.equalTo(44)
-            make.width.equalTo(cellWidth)
+        if ((self.viewModel.user?.myCourses.isEmpty) != nil) {
+            view.addSubview(courseEmptyView)
+            courseEmptyView.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+                make.width.equalTo(200)
+                make.height.equalTo(100)
+            }
+        } else {
+            // MARK: page가 변할때마다 변하는 요소들 1)코스이름 2)코스날짜 3)현재별자리(가운데아래 작은 네모)
+            guard let user = self.viewModel.user else { return }
+            guard let beforeButtonImage = user.myCourses[max(page - 1, 0)] else { return }
+            guard let afterButtonImage = user.myCourses[min(page + 1, user.myCourses.count - 1)] else { return }
+            guard let currentImage = user.myCourses[page] else { return }
+            
+            self.homeDetailView.courseNameButton.setTitle(self.viewModel.user?.myCourses[page]?.title, for: .normal)
+            self.homeDetailView.dateLabel.text = self.viewModel.user?.myCourses[page]?.createdDate
+            self.homeDetailView.currentImage.image = StarMaker.makeStars(places: currentImage.coordinates)
+            
+            // MARK: String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
+            self.homeDetailView.courseNameButton.snp.remakeConstraints { make in
+                guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
+                let cellWidth = text.size(withAttributes:[.font: UIFont.systemFont(ofSize: 17)]).width + 60
+                make.centerX.equalToSuperview()
+                make.top.equalToSuperview().offset(160)
+                make.height.equalTo(44)
+                make.width.equalTo(cellWidth)
+            }
+            
+            // MARK: 마지막페이지와 첫페이지에서는 특정 버튼이 보이지 않아야함
+            self.homeDetailView.beforeImageButton.isHidden = (page == 0) ? true : false
+            self.homeDetailView.afterImageButton.isHidden = (page == user.myCourses.count - 1) ? true : false
+            
+            // MARK: 이전 별자리와 다음별자리가 보여야하는데, range를 벗어나지 않게 min과 max함수로 제약조건 추가
+            self.homeDetailView.beforeImageButton.setImage(StarMaker.makeStars(places: beforeButtonImage.coordinates), for: .normal)
+            self.homeDetailView.afterImageButton.setImage(StarMaker.makeStars(places: afterButtonImage.coordinates), for: .normal)
         }
-        
-        // MARK: 마지막페이지와 첫페이지에서는 특정 버튼이 보이지 않아야함
-
-        self.homeDetailView.beforeImageButton.isHidden = (page == 0) ? true : false
-        self.homeDetailView.afterImageButton.isHidden = (page == user.myCourses.count - 1) ? true : false
-        
-        // MARK: 이전 별자리와 다음별자리가 보여야하는데, range를 벗어나지 않게 min과 max함수로 제약조건 추가
-        self.homeDetailView.beforeImageButton.setImage(StarMaker.makeStars(places: beforeButtonImage.coordinates), for: .normal)
-        self.homeDetailView.afterImageButton.setImage(StarMaker.makeStars(places: afterButtonImage.coordinates), for: .normal)
     }
 }

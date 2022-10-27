@@ -19,10 +19,10 @@ struct StarMaker {
         let latitudeArray = places.map { CGFloat($0.latitude) }
         let longtitudeArray = places.map { CGFloat($0.longitude) }
 
-        guard let minX = latitudeArray.min() else {return nil}
-        guard let maxX = latitudeArray.max() else {return nil}
-        guard let minY = longtitudeArray.min() else {return nil}
-        guard let maxY = longtitudeArray.max() else {return nil}
+        guard let minX = latitudeArray.min() else { return nil }
+        guard let maxX = latitudeArray.max() else { return nil }
+        guard let minY = longtitudeArray.min() else { return nil }
+        guard let maxY = longtitudeArray.max() else { return nil }
 
         let deltaX: CGFloat = {
             if maxX - minX == 0 {
