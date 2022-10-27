@@ -30,7 +30,7 @@ final class IntroButton: BaseButton {
         configuration.activityIndicatorColorTransformer = .monochromeTint
         configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
-            outgoing.font = .boldSystemFont(ofSize: 15)
+            outgoing.font = .designSystem(weight: .bold, size: ._15)
             return outgoing
         }
         configuration.cornerStyle = .large

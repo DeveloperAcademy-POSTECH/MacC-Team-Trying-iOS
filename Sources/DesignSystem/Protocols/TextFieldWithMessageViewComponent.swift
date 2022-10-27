@@ -12,7 +12,9 @@ protocol TextFieldWithMessageViewComponent: Component {
     var delegate: TextFieldWithMessageViewComponentDelegate? { get set }
     /// 에러메시지를 보여주는 함수
     /// - Parameter direction:성공, 실패 
-    func showError(type errorType: IntroErrorType)
+    func updateState(_ errorType: TextFieldState)
     /// 텍스트필드의 키보드를 올립니다
     func textFieldBecomeFirstResponder()
+    /// 텍스트를 수정합니다.
+    func updateText(_ text: String)
 }

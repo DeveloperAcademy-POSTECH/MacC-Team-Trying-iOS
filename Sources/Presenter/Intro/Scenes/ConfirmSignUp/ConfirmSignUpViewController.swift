@@ -1,8 +1,8 @@
 //
-//  EnterEmailViewController.swift
+//  ConfirmSignUpViewController.swift
 //  MatStar
 //
-//  Created by Jaeyong Lee on 2022/10/14.
+//  Created by Jaeyong Lee on 2022/10/24.
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
@@ -12,18 +12,46 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailViewModel> {
+final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSignUpViewModel> {
 
     lazy var titleLabels = IntroTitleLabels()
     lazy var emailTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .email)
-    lazy var nextButton = IntroButton(type: .system)
+    lazy var signUpButton = IntroButton(type: .system)
     lazy var planetImageView = UIImageView()
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        setupAnimations()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        leaveAnimator?.startAnimation()
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        beginAnimations()
-        bringsInteractionFront()
+        enterAnimator?.startAnimation(afterDelay: fastDelay)
+    }
+
+    override func bind() {
+
+        viewModel.$email
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] email in
+                self?.emailTextFieldView.updateText(email)
+            }
+            .cancel(with: cancelBag)
+
+        viewModel.$emailTextFieldState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentState in
+                self?.signUpButton.isEnabled = currentState == .good
+            }
+            .cancel(with: cancelBag)
     }
 
     override func setAttribute() {
@@ -31,16 +59,16 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
 
         title = "로그인"
 
-        titleLabels.title = "맛스타 이용을 위해서"
-        titleLabels.subTitle = "로그인을 해주세요!"
+        titleLabels.title = "등록된 이메일이 없네요."
+        titleLabels.subTitle = "가입하시겠어요?"
 
         planetImageView.alpha = 0
         planetImageView.image = .init(.img_planet)
 
         emailTextFieldView.delegate = self
 
-        nextButton.title = "계속하기"
-        nextButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
+        signUpButton.title = "가입하기"
+        signUpButton.addTarget(self, action: #selector(signUpButtonDidTapped), for: .touchUpInside)
     }
 
     override func setLayout() {
@@ -48,7 +76,7 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
 
         view.addSubview(titleLabels)
         view.addSubview(emailTextFieldView)
-        view.addSubview(nextButton)
+        view.addSubview(signUpButton)
         view.addSubview(planetImageView)
 
         titleLabels.snp.makeConstraints { make in
@@ -59,7 +87,7 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
             make.top.equalTo(titleLabels.snp.bottom).offset(30)
             make.leading.trailing.equalToSuperview().inset(20)
         }
-        nextButton.snp.makeConstraints { make in
+        signUpButton.snp.makeConstraints { make in
             make.top.equalTo(emailTextFieldView.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(20)
         }
@@ -70,10 +98,9 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
     }
 }
 
-// MARK: - UI
-extension EnterEmailViewController {
+extension ConfirmSignUpViewController {
 
-    private func beginAnimations() {
+    private func setupAnimations() {
 
         enterAnimator?.addAnimations {
             self.planetImageView.alpha = 1
@@ -83,21 +110,6 @@ extension EnterEmailViewController {
             self.view.layoutIfNeeded()
         }
 
-        enterAnimator?.startAnimation(afterDelay: fastDelay)
-    }
-
-    private func bringsInteractionFront() {
-
-        view.bringSubviewToFront(emailTextFieldView)
-        view.bringSubviewToFront(nextButton)
-    }
-}
-
-// MARK: - Button Clicked
-extension EnterEmailViewController {
-
-    @objc
-    func loginButtonDidTapped() {
         leaveAnimator?.addAnimations {
             self.planetImageView.alpha = 0
             self.planetImageView.snp.updateConstraints { make in
@@ -105,26 +117,22 @@ extension EnterEmailViewController {
             }
             self.view.layoutIfNeeded()
         }
-
-        leaveAnimator?.addCompletion { [weak self] _ in
-            self?.viewModel.enterEmailButtonDidTapped()
-        }
-
-        leaveAnimator?.startAnimation()
     }
 }
 
-// MARK: TextFieldWithMessageViewComponentDelegate
-extension EnterEmailViewController: TextFieldWithMessageViewComponentDelegate {
+// MARK: - Button Clicked
+
+extension ConfirmSignUpViewController {
+
+    @objc
+    func signUpButtonDidTapped() {
+        viewModel.signUpButtonDidTapped()
+    }
+}
+
+extension ConfirmSignUpViewController: TextFieldWithMessageViewComponentDelegate {
 
     func textFieldDidChange(_ text: String) {
-        let emailPattern = #"^\S+@\S+\.\S+$"#
-        let result = text.range(of: emailPattern, options: .regularExpression)
-        let validEmail = (result != nil)
-        if validEmail {
-            emailTextFieldView.showError(type: .noError)
-        } else {
-            emailTextFieldView.showError(type: .invalidEmail)
-        }
+        viewModel.textFieldDidChange(text)
     }
 }

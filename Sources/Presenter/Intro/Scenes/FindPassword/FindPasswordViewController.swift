@@ -18,7 +18,17 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
     lazy var emailView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .email)
     lazy var sendEmailButton = IntroButton(type: .system)
 
-    override func bind() {}
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        setNotifications()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        removeNotifications()
+    }
 
     override func setAttribute() {
         super.setAttribute()
@@ -30,8 +40,6 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
 
         sendEmailButton.title = "확인"
         sendEmailButton.addTarget(self, action: #selector(sendEmailButtonDidTapped), for: .touchUpInside)
-
-        setNofification()
     }
 
     override func setLayout() {
@@ -54,11 +62,8 @@ final class FindPasswordViewController: IntroBaseViewController<FindPasswordView
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
     }
-}
 
-extension FindPasswordViewController {
-
-    private func setNofification() {
+    private func setNotifications() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillShow),
@@ -68,6 +73,19 @@ extension FindPasswordViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    private func removeNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )

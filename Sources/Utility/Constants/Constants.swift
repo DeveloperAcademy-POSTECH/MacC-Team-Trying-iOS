@@ -39,4 +39,8 @@ struct Constants {
     struct Lottie {
         static let starLottie = "star_lottie"
     }
+
+    struct Constraints {
+        static let spaceBetweenkeyboardAndButton: CGFloat = -10
+    }
 }
