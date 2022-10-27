@@ -25,8 +25,8 @@ class AppCoordinator: Coordinator {
         window.rootViewController = navigationController
         
         // TODO: 로그인 분기처리
-        let coordinator = IntroCoordinator(navigationController: navigationController)
-//        let coordinator = MainCoordinator(navigationController: navigationController)
+//        let coordinator = IntroCoordinator(navigationController: navigationController)
+        let coordinator = MainCoordinator(navigationController: navigationController)
         coordinator.start()
         
         window.makeKeyAndVisible()
