@@ -16,6 +16,8 @@ enum HomeApiError: Error {
 let fetchUserUrl = "http://15.165.72.196:3059/users/me"
 let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjdkNTk4YWFmLTAwNmQtNDZlYy05ODZiLWFjMmQzN2U1NjdkYiIsImF1dGgiOiJVU0VSIn0.Pa8oQyIVeua1HzIGuBIYwFU-TsHV7t6POhrZrI84TRHyzCpw-ELKTbejqdFSg1Jknzt8snDZhV10-MjyuKR_jw"
 
+let courseToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImUyYmY1NWViLWZlNjMtNDQ4OS1iYTkxLWZmZGI2MjAyY2YxMyIsImF1dGgiOiJVU0VSIn0.neYeaNRUmR0EsMU2QWLLhzo47pWqsUEDpPl59iFG1gtIelv-MW9uhrHauo9bR2TwPMTfQqAiS_xmGjxCE3PLPg"
+
 class HomeAPIService {
     
     static func fetchUserAsync() async throws -> Data {
@@ -24,6 +26,22 @@ class HomeAPIService {
         }
         var request = URLRequest(url: url)
         request.setValue(token, forHTTPHeaderField: "accessToken")
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw HomeApiError.response
+        }
+        return data
+    }
+    
+    static func fetchUserCourseAsync(planetId: Int?) async throws -> Data {
+        guard let planetId = planetId else {
+            throw HomeApiError.urlResponse
+        }
+        guard let url = URL(string: "http://15.165.72.196:3059/planets/\(planetId)/courses?page=0&size=5") else {
+            throw HomeApiError.urlResponse
+        }
+        var request = URLRequest(url: url)
+        request.setValue(courseToken, forHTTPHeaderField: "accessToken")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
             throw HomeApiError.response

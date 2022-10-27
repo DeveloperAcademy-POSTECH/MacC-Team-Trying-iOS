@@ -62,17 +62,26 @@ final class HomeViewModel: BaseViewModel {
             print("Decoder오류")
             return
         }
-        self.user = User(nickName: myPlanineInfoDTO.me.name)
-        self.constellations = [
-            Constellation(name: "창원 야구장", data: "2022-10-01(토)", image: UIImage(named: "Changwon")),
-            Constellation(name: "광안대교 야경", data: "2022-10-02(일)", image: UIImage(named: "Busan")),
-            Constellation(name: "포항공대", data: "2022-10-03(월)", image: UIImage(named: "Pohang")),
-            Constellation(name: "부산", data: "2022-10-04(화)", image: UIImage(named: "Busan")),
-            Constellation(name: "애플아카데미", data: "2022-10-05(수)", image: UIImage(named: "Pohang")),
-            Constellation(name: "포항", data: "2022-10-06(목)", image: UIImage(named: "Pohang")),
-            Constellation(name: "부산대학교", data: "2022-10-07(금)", image: UIImage(named: "Busan")),
-            Constellation(name: "인천ssg파크", data: "2022-10-08(토)", image: UIImage(named: "Pohang"))
-        ]
+        let courseData = try await HomeAPIService.fetchUserCourseAsync(planetId: 31)
+        guard let myCourseInfoDTO = try? JSONDecoder().decode(UserCourseInfo.self, from: courseData) else {
+            print("Course Decoder오류")
+            return
+        }
+//        self.constellations = [
+//            Constellation(name: "창원 야구장", data: "2022-10-01(토)", image: UIImage(named: "Changwon")),
+//            Constellation(name: "광안대교 야경", data: "2022-10-02(일)", image: UIImage(named: "Busan")),
+//            Constellation(name: "포항공대", data: "2022-10-03(월)", image: UIImage(named: "Pohang")),
+//            Constellation(name: "부산", data: "2022-10-04(화)", image: UIImage(named: "Busan")),
+//            Constellation(name: "애플아카데미", data: "2022-10-05(수)", image: UIImage(named: "Pohang")),
+//            Constellation(name: "포항", data: "2022-10-06(목)", image: UIImage(named: "Pohang")),
+//            Constellation(name: "부산대학교", data: "2022-10-07(금)", image: UIImage(named: "Busan")),
+//            Constellation(name: "인천ssg파크", data: "2022-10-08(토)", image: UIImage(named: "Pohang"))
+//        ]
+
+        self.user = User(nickName: myPlanineInfoDTO.me.name, myPlanet: myPlanineInfoDTO.planet, myCourses: myCourseInfoDTO.courses)
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
+        dump(self.user?.myCourses)
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
     }
     
     // MARK: completion Handler(urlsession)로 호출한 api

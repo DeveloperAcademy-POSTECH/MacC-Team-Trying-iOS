@@ -16,11 +16,10 @@ import Lottie
 class HomeDetailView: UIView {
     
     lazy var homeLottie: LottieAnimationView = {
-        let lottie = LottieAnimationView.init(name: "HomeLottie")
+        let lottie = LottieAnimationView.init(name: "shooting-star")
         lottie.contentMode = .scaleAspectFill
         lottie.animationSpeed = 0.5
         lottie.loopMode = .loop
-        lottie.play()
         return lottie
     }()
     
@@ -45,13 +44,7 @@ class HomeDetailView: UIView {
         let label = UILabel()
         label.font = .designSystem(weight: .heavy, size: ._20)
         label.textColor = .white
-        label.attributedText = String.makeAtrributedString(
-            name: "카리나",
-            appendString: " 와 함께",
-            changeAppendStringSize: 15,
-            changeAppendStringWieght: .regular,
-            changeAppendStringColor: .white
-        )
+
         return label
     }()
     
@@ -131,8 +124,8 @@ class HomeDetailView: UIView {
         let button = UIButton(type: .custom)
         button.imageView?.contentMode = .scaleAspectFit
         button.imageEdgeInsets = .init(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .blue
-        button.alpha = 0.2
+        button.backgroundColor = UIColor.white.withAlphaComponent(0.1)
+        button.alpha = 0.7
         button.clipsToBounds = true
         button.layer.cornerRadius = 15
         button.isHidden = true
@@ -143,8 +136,8 @@ class HomeDetailView: UIView {
         let button = UIButton(type: .custom)
         button.imageView?.contentMode = .scaleAspectFit
         button.imageEdgeInsets = .init(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .blue
-        button.alpha = 0.2
+        button.backgroundColor = UIColor.white.withAlphaComponent(0.1)
+        button.alpha = 0.7
         button.clipsToBounds = true
         button.layer.cornerRadius = 15
         button.isHidden = true
