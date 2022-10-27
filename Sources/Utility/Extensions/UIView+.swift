@@ -16,7 +16,7 @@ extension UIView {
             addSubview(view)
         }
     }
- 
+
     /// View를 화면에 Fade In 시킵니다.
     /// - Parameters:
     ///   - withDuration: Animation Duration
@@ -54,6 +54,16 @@ extension UIView {
                     }
                 }
             )
+        }
+    }
+
+    /// UIView를 UIImage로 렌더링합니다.
+    /// - Returns: UIImage 렌더링 된 UIView
+    /// 사용방법: UIView.asImage()
+    func asImage() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(bounds: bounds)
+        return renderer.image { rendererContext in
+            layer.render(in: rendererContext.cgContext)
         }
     }
 }

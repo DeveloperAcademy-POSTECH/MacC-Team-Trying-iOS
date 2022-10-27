@@ -1,46 +1,24 @@
 //
-//  AddCourseCompleteViewModel.swift
+//  StarMaker.swift
 //  MatStar
 //
-//  Created by 김승창 on 2022/10/18.
-//  Copyright (c) 2022 Try-ing. All rights reserved.
+//  Created by YeongJin Jeong on 2022/10/27.
+//  Copyright © 2022 Try-ing. All rights reserved.
 //
 
+import Foundation
 import UIKit
-import Combine
 
-protocol HomeCoordinating {
-    func popToHomeViewController()
-}
-
-final class AddCourseCompleteViewModel: BaseViewModel, StarCreatable{
-    var coordinator: Coordinator
-    var places: [Place]
+struct StarMaker {
     
-    init(
-        coordinator: Coordinator,
-        places: [Place]
-    ) {
-        self.coordinator = coordinator
-        self.places = places
-    }
-}
-
-// MARK: - Coordinating
-extension AddCourseCompleteViewModel {
-    func popToHomeView() {
-        guard let coordinator = coordinator as? HomeCoordinating else { return }
-        coordinator.popToHomeViewController()
-    }
-
-    func makeStars(places: [Place]) -> UIImage? {
+    static func makeStars(places: [UserCourseInfo.Coordinates]) -> UIImage? {
         let starView = UIView()
-        starView.backgroundColor = .white
+        starView.backgroundColor = .clear
         starView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
 
-        let latitudeArray = places.map { CGFloat($0.location.latitude) }
-        let longtitudeArray = places.map { CGFloat($0.location.longitude) }
-        
+        let latitudeArray = places.map { CGFloat($0.latitude) }
+        let longtitudeArray = places.map { CGFloat($0.longitude) }
+
         guard let minX = latitudeArray.min() else {return nil}
         guard let maxX = latitudeArray.max() else {return nil}
         guard let minY = longtitudeArray.min() else {return nil}
@@ -95,7 +73,7 @@ extension AddCourseCompleteViewModel {
                 path.lineWidth = 2
                 path.lineJoinStyle = .round
                 path.close()
-                
+
                 let shapeLayer = CAShapeLayer()
                 shapeLayer.shadowOffset = .zero
                 shapeLayer.shadowRadius = 10

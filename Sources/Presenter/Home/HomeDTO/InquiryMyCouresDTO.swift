@@ -17,16 +17,11 @@ struct UserCourseInfo: Codable {
     struct Course: Codable {
         let courseId: Int
         let createdDate, title: String
-        let stars: [Star]
+        let coordinates: [Coordinates]
     }
 
     // MARK: - Star
-    struct Star: Codable {
-        let xpos, ypos: Double
-        
-        enum CodingKeys: String, CodingKey {
-            case xpos = "x"
-            case ypos = "y"
-        }
+    struct Coordinates: Codable {
+        let latitude, longitude: Double
     }
 }

@@ -81,7 +81,13 @@ final class RegisterCourseViewController: BaseViewController {
         // input
         
         // output
-        
+        viewModel.$images
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.imageCollectionView.reloadData()
+            }
+            .cancel(with: cancelBag)
     }
     
     init(viewModel: RegisterCourseViewModel) {
@@ -178,37 +184,22 @@ extension RegisterCourseViewController: NavigationBarConfigurable {
 // MARK: - UICollectionViewDataSource
 extension RegisterCourseViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.imageNames.count + 1
+        viewModel.images.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.row == 0 {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddImageCell.identifier, for: indexPath) as? AddImageCell else { return UICollectionViewCell() }
-            cell.addImageButton.addTarget(self, action: #selector(presentPHPicker(_:)), for: .touchUpInside)
+            cell.addImageButton.addTarget(self, action: #selector(pickImage(_:)), for: .touchUpInside)
             return cell
         } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCollectionViewCell.identifier, for: indexPath) as? ImageCollectionViewCell else { return UICollectionViewCell() }
             
-            cell.placeImageView.image = UIImage(named: viewModel.imageNames[indexPath.row - 1])
+            cell.placeImageView.image = viewModel.images[indexPath.row - 1]
+            cell.deleteButton.tag = indexPath.row - 1
             cell.deleteButton.addTarget(self, action: #selector(deleteButtonPressed(_:)), for: .touchUpInside)
             
             return cell
-        }
-    }
-}
-
-// MARK: - PHPickerViewControllerDelegate
-extension RegisterCourseViewController: PHPickerViewControllerDelegate {
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        picker.dismiss(animated: true)
-        let selectedPhoto = results.first?.itemProvider
-        
-        if let selectedPhoto = selectedPhoto,
-           selectedPhoto.canLoadObject(ofClass: UIImage.self) {
-            selectedPhoto.loadObject(ofClass: UIImage.self) { image, _ in
-                // TODO: Data binding with selected image
-                // guard let selectedImage = image as? UIImage else { return }
-            }
         }
     }
 }
@@ -326,16 +317,31 @@ extension RegisterCourseViewController: UITextViewDelegate {
     
     @objc
     private func deleteButtonPressed(_ sender: UIButton) {
-        // TODO: 사진 삭제
+        viewModel.deleteImage(sender.tag)
     }
     
     @objc
-    private func presentPHPicker(_ sender: UIButton) {
-        var configuration = PHPickerConfiguration()
-        configuration.filter = .images
-        let picker = PHPickerViewController(configuration: configuration)
-        picker.delegate = self
-        self.present(picker, animated: true)
+    private func pickImage(_ sender: UIButton) {
+        let imagePicker = UIImagePickerController()
+        imagePicker.fixCannotMoveEditingBox()
+        imagePicker.sourceType = .photoLibrary
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
+        self.present(imagePicker, animated: true)
+    }
+}
+
+// MARK: - UINavigationControllerDelegate, UIImagePickerControllerDelegate
+extension RegisterCourseViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        picker.dismiss(animated: true)
+        
+        guard let image = info[.editedImage] as? UIImage else { return }
+        self.viewModel.addImage(image)
     }
 }
 
