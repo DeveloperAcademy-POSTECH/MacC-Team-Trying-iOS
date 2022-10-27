@@ -16,7 +16,7 @@ enum HomeApiError: Error {
 let fetchUserUrl = "http://15.165.72.196:3059/users/me"
 let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjdkNTk4YWFmLTAwNmQtNDZlYy05ODZiLWFjMmQzN2U1NjdkYiIsImF1dGgiOiJVU0VSIn0.Pa8oQyIVeua1HzIGuBIYwFU-TsHV7t6POhrZrI84TRHyzCpw-ELKTbejqdFSg1Jknzt8snDZhV10-MjyuKR_jw"
 
-let courseToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImUyYmY1NWViLWZlNjMtNDQ4OS1iYTkxLWZmZGI2MjAyY2YxMyIsImF1dGgiOiJVU0VSIn0.neYeaNRUmR0EsMU2QWLLhzo47pWqsUEDpPl59iFG1gtIelv-MW9uhrHauo9bR2TwPMTfQqAiS_xmGjxCE3PLPg"
+let courseToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjU4MzI4NDU2LWRjNDAtNDNmOC1hZDkwLWMxMTMwYzA3NDNjMSIsImF1dGgiOiJVU0VSIn0.Q0cHg5ozXMbGxxZYjh4iSkeDTe86gxkNV13-kW6cpuHOAarUhntMdTU-SOfqA0j6c-AQ04Nb1F7_F57MMBlgmg"
 
 class HomeAPIService {
     

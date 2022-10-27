@@ -15,7 +15,7 @@ import Lottie
 
 final class HomeViewController: BaseViewController {
 
-    private lazy var carouselView = CarouselCollectionView(pages: viewModel.constellations.count, delegate: self)
+    private lazy var carouselView = CarouselCollectionView(pages: 0, delegate: self)
     let homeDetailView = HomeDetailView()
     let viewModel: HomeViewModel
     let changeMyPlanetScale: Double = 0.5
@@ -58,24 +58,10 @@ final class HomeViewController: BaseViewController {
                 changeAppendStringWieght: .regular,
                 changeAppendStringColor: .white
             )
-            guard let course = viewModel.user?.myCourses else { return }
-            guard let count = viewModel.user?.myCourses.count else { return }
-            self.carouselView.configureView(with: course)
-            self.carouselView.carouselCollectionView.reloadData()
-            self.homeDetailView.courseNameButton.setTitle(viewModel.user?.myCourses[0]?.title, for: .normal)
-            self.homeDetailView.dateLabel.text = viewModel.user?.myCourses[0]?.createdDate
-            self.homeDetailView.currentImage.image = UIImage(named: "Changwon")
-            if count > 1 {
-                homeDetailView.afterImageButton.isHidden = false
-                homeDetailView.afterImageButton.setImage(UIImage(named: "Changwon"), for: .normal)
-            }
-            self.homeDetailView.courseNameButton.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
-                make.top.equalToSuperview().offset(160)
-                make.height.equalTo(44)
-                guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
-                make.width.equalTo((text as NSString).size().width + 90)
-            }
+            guard let user = viewModel.user else { return }
+            carouselView.configureView(with: user.myCourses)
+            carouselView.carouselCollectionView.reloadData()
+            currentPageDidChange(to: 0)
         }
         bind()
         setAttributes()
@@ -208,14 +194,14 @@ final class HomeViewController: BaseViewController {
         let backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButtonItem.tintColor = .white
         self.navigationItem.backBarButtonItem = backBarButtonItem
-        nextVC.courses = viewModel.constellations
+        guard let myCourses = viewModel.user?.myCourses else { return }
+        nextVC.courses = myCourses
         navigationController?.pushViewController(nextVC, animated: true)
     }
 
     @objc
     /// 버튼을 누르면 자동으로 다음 스크롤로 넘어가게 해주는 함수
     func beforeImageButtonTapped() {
-//        guard let carouselView = carouselView else { return }
         carouselView.currentPage -= 1
         carouselView.carouselCollectionView.scrollToItem(at: NSIndexPath(item: carouselView.currentPage, section: 0) as IndexPath, at: .left, animated: true)
     }
@@ -223,7 +209,6 @@ final class HomeViewController: BaseViewController {
     @objc
     /// 버튼을 누르면 자동으로 이전 스크롤로 넘어가게 해주는 함수
     func afterImageButtonTapped() {
-//        guard let carouselView = carouselView else { return }
         carouselView.currentPage += 1
         carouselView.carouselCollectionView.scrollToItem(at: NSIndexPath(item: carouselView.currentPage, section: 0) as IndexPath, at: .right, animated: true)
     }
@@ -332,29 +317,35 @@ extension HomeViewController: CarouselViewDelegate {
     /// - Parameter page: 페이지(몇번째 별자리인지)
     func currentPageDidChange(to page: Int) {
         // MARK: page가 변할때마다 변하는 요소들 1)코스이름 2)코스날짜 3)현재별자리(가운데아래 작은 네모)
+        guard let user = self.viewModel.user else { return }
+        guard let beforeButtonImage = user.myCourses[max(page - 1, 0)] else { return }
+        guard let afterButtonImage = user.myCourses[min(page + 1, user.myCourses.count - 1)] else { return }
+        guard let currentImage = user.myCourses[page] else { return }
+        
         self.homeDetailView.courseNameButton.setTitle(self.viewModel.user?.myCourses[page]?.title, for: .normal)
         self.homeDetailView.dateLabel.text = self.viewModel.user?.myCourses[page]?.createdDate
-            self.homeDetailView.currentImage.image = UIImage(named: "Changwon")
-            
-            // MARK: String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
-            self.homeDetailView.courseNameButton.snp.updateConstraints { make in
-                guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
-                make.centerX.equalToSuperview()
-                make.top.equalToSuperview().offset(160)
-                make.height.equalTo(44)
-                make.width.equalTo((text as NSString).size().width + 90)
-            }
+        self.homeDetailView.currentImage.image = StarMaker.makeStars(places: currentImage.coordinates)
+        
+        // MARK: String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
+        self.homeDetailView.courseNameButton.snp.remakeConstraints { make in
+            guard let text = self.homeDetailView.courseNameButton.currentTitle else { return }
+            let cellWidth = text.size(withAttributes:[.font: UIFont.systemFont(ofSize:17)]).width + 60
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(160)
+            make.height.equalTo(44)
+            make.width.equalTo(cellWidth)
+        }
         
         // MARK: 마지막페이지와 첫페이지에서는 특정 버튼이 보이지 않아야함
-        guard let count = self.viewModel.user?.myCourses.count else { return }
+
         self.homeDetailView.beforeImageButton.isHidden = (page == 0) ? true : false
-        self.homeDetailView.afterImageButton.isHidden = (page == count - 1) ? true : false
+        self.homeDetailView.afterImageButton.isHidden = (page == user.myCourses.count - 1) ? true : false
         
         // MARK: 이전 별자리와 다음별자리가 보여야하는데, range를 벗어나지 않게 min과 max함수로 제약조건 추가
         self.homeDetailView.beforeImageButton.setImage(UIImage(named: "Changwon"), for: .normal)
         self.homeDetailView.afterImageButton.setImage(UIImage(named: "Changwon"), for: .normal)
-        
-//        self.homeDetailView.beforeImageButton.setImage(self.viewModel.user?.myCourses[max(page - 1, 0)].image, for: .normal)
-//        self.homeDetailView.afterImageButton.setImage(self.viewModel.user?.myCourses[min(page + 1, viewModel.constellations.count - 1)].image, for: .normal)
+
+        self.homeDetailView.beforeImageButton.setImage(StarMaker.makeStars(places: beforeButtonImage.coordinates), for: .normal)
+        self.homeDetailView.afterImageButton.setImage(StarMaker.makeStars(places: afterButtonImage.coordinates), for: .normal)
     }
 }
