@@ -27,7 +27,7 @@ class CarouselCollectionView: UIView {
     
     private var pages: Int
     private weak var delegate: CarouselViewDelegate?
-    private var carouselData = [Constellation]()
+    private var carouselData = [UserCourseInfo.Course?]()
     var currentPage = 0 {
         didSet {
             delegate?.currentPageDidChange(to: currentPage)
@@ -67,7 +67,7 @@ extension CarouselCollectionView {
         }
     }
     
-    public func configureView(with data: [Constellation]) {
+    public func configureView(with data: [UserCourseInfo.Course?]) {
         let cellPadding = (frame.width - 300) / 2
         let carouselLayout = UICollectionViewFlowLayout()
         carouselLayout.scrollDirection = .horizontal
@@ -76,7 +76,7 @@ extension CarouselCollectionView {
         carouselLayout.minimumLineSpacing = cellPadding * 2
         carouselCollectionView.collectionViewLayout = carouselLayout
         carouselData = data
-        carouselCollectionView.reloadData()
+//        carouselCollectionView.reloadData()
     }
     
     func getCurrentPage() -> Int {
@@ -97,8 +97,9 @@ extension CarouselCollectionView: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCollectionViewCell.cellId, for: indexPath) as? CarouselCollectionViewCell else { return UICollectionViewCell() }
-        let image = carouselData[indexPath.row].image
-        let text = carouselData[indexPath.row].name
+        guard let carouselData = carouselData[indexPath.row] else  { return UICollectionViewCell() }
+        let text = carouselData.title
+        let image = StarMaker.makeStars(places: carouselData.coordinates)
         cell.configure(image: image, text: text)
         return cell
     }

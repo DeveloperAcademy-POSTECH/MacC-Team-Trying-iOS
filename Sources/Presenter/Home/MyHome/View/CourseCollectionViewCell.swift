@@ -13,12 +13,12 @@ class CourseCollectionViewCell: UICollectionViewCell {
     
     static let cellId = "CourseCollectionViewCell"
     
-    var course: Constellation? {
+    var course: UserCourseInfo.Course? {
         didSet {
             guard let course = course else { return }
-            courseNameLabel.text = course.name
-            constellationImage.image = course.image
-            dateLabel.text = course.data
+            courseNameLabel.text = course.title
+            constellationImage.image = StarMaker.makeStars(places: course.coordinates) 
+            dateLabel.text = course.createdDate
         }
     }
     

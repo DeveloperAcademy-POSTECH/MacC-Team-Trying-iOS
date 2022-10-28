@@ -11,7 +11,7 @@ import SnapKit
 
 class CoursesViewController: BaseViewController {
     
-    var courses: [Constellation] = []
+    var courses: [UserCourseInfo.Course?] = []
     
     lazy var courseCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
