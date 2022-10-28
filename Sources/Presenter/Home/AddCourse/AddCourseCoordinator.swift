@@ -37,8 +37,15 @@ final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, Register
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToAddCourseCompleteViewController(places: [Place]) {
-        let viewModel = AddCourseCompleteViewModel(coordinator: self, places: places)
+    func pushToAddCourseCompleteViewController(courseTitle: String, courseContent: String, isPublic: Bool, places: [Place], images: [UIImage]) {
+        let viewModel = AddCourseCompleteViewModel(
+            coordinator: self,
+            courseTitle: courseTitle,
+            courseContent: courseContent,
+            isPublic: isPublic,
+            places: places,
+            images: images
+        )
         let viewController = AddCourseCompleteViewController(viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)

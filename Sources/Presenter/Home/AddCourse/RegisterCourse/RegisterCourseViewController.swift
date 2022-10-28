@@ -249,7 +249,7 @@ extension RegisterCourseViewController: UITextViewDelegate {
     
     @objc
     private func nextButtonPressed(_ sender: UIButton) {
-        viewModel.pushToAddCourseCompleteView()
+        viewModel.pushToAddCourseCompleteView(courseTitle: courseTitleTextField.text!, courseContent: contentTextView.text, isPublic: publicSwitch.isOn)
     }
     
     /// TextField의 편집이 시작될 때, DatePicker가 활성화 되어있다면 dismiss합니다.

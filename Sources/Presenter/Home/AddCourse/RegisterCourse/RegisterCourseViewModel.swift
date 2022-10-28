@@ -10,22 +10,34 @@ import Combine
 import UIKit
 
 protocol AddCourseCompleteCoordinating {
-    func pushToAddCourseCompleteViewController(places: [Place])
+    func pushToAddCourseCompleteViewController(
+        courseTitle: String,
+        courseContent: String,
+        isPublic: Bool,
+        places: [Place],
+        images: [UIImage]
+    )
 }
 
 final class RegisterCourseViewModel: BaseViewModel {
     var coordinator: Coordinator
     var places: [Place]
+    
     @Published var images: [UIImage]
+    var courseTitle: String?
+    var courseContent: String?
+    var isPublic: Bool
     
     init(
         coordinator: Coordinator,
         places: [Place],
-        images: [UIImage] = []
+        images: [UIImage] = [],
+        isPublic: Bool = true
     ) {
         self.coordinator = coordinator
         self.places = places
         self.images = images
+        self.isPublic = isPublic
     }
 }
 
@@ -36,9 +48,15 @@ extension RegisterCourseViewModel {
         coordinator.popViewController()
     }
     
-    func pushToAddCourseCompleteView() {
+    func pushToAddCourseCompleteView(courseTitle: String, courseContent: String, isPublic: Bool) {
         guard let coordinator = coordinator as? AddCourseCompleteCoordinating else { return }
-        coordinator.pushToAddCourseCompleteViewController(places: places)
+        coordinator.pushToAddCourseCompleteViewController(
+            courseTitle: courseTitle,
+            courseContent: courseContent,
+            isPublic: isPublic,
+            places: places,
+            images: images
+        )
     }
 }
 

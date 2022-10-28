@@ -131,6 +131,9 @@ extension AddCourseCompleteViewController {
 extension AddCourseCompleteViewController {
     @objc
     private func didTapDoneButton(_ sender: UIButton) {
+        Task {
+            try await viewModel.addCourse()
+        }
         viewModel.popToHomeView()
     }
 }
