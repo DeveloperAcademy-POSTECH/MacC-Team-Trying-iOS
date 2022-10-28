@@ -14,12 +14,13 @@ import SnapKit
 import Lottie
 
 final class HomeViewController: BaseViewController {
+    
     lazy var backgroundView = BackgroundView(frame: view.bounds)
     private lazy var carouselView = CarouselCollectionView(pages: 0, delegate: self)
     let homeDetailView = HomeDetailView()
     let viewModel: HomeViewModel
-    let changeMyPlanetScale: Double = 0.30
-    let screenHeight = DeviceInfo.screenHeight + 120
+    let changeMyPlanetScale: Double = 0.5
+    let screenHeight = DeviceInfo.screenHeight - 20
     var planetImages: [RandomPlanetView] = []
     
     let courseEmptyView: UILabel = {
@@ -54,12 +55,14 @@ final class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         setRandomPlanets()
         Task {
             try await viewModel.fetchAsync()
             guard let dday = viewModel.user?.myPlanet?.dday else { return }
             guard let nickName = viewModel.user?.nickName else { return }
-            
+            view.addSubview(backgroundView)
+            view.sendSubviewToBack(backgroundView)
             self.homeDetailView.ddayLabel.text = "D+" + String(dday)
             self.homeDetailView.nameLabel.attributedText = String.makeAtrributedString(
                 name: nickName,
@@ -69,8 +72,6 @@ final class HomeViewController: BaseViewController {
                 changeAppendStringColor: .white
             )
             guard let user = viewModel.user else { return }
-            guard let image = user.myPlanet?.image else { return }
-            self.homeDetailView.myPlanetImage.image = UIImage(named: image)
             carouselView.configureView(with: user.myCourses)
             carouselView.carouselCollectionView.reloadData()
             currentPageDidChange(to: 0)
@@ -81,9 +82,14 @@ final class HomeViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        view.addSubview(backgroundView)
-        view.sendSubviewToBack(backgroundView)
         homeDetailView.homeLottie.play()
+        Task {
+            try await viewModel.fetchAsync()
+            guard let user = viewModel.user else { return }
+            carouselView.configureView(with: user.myCourses)
+            carouselView.carouselCollectionView.reloadData()
+            print("viweWillAppear")
+        }
         navigationController?.tabBarController?.tabBar.isHidden = false
     }
     
@@ -106,47 +112,46 @@ final class HomeViewController: BaseViewController {
             planetImage.alpha = constellationPlusAlpha
         }
     }
-    
+
     @objc
-    func handlePanGesture(gesture: UIPanGestureRecognizer) {
-        let myPlanet = self.homeDetailView.myPlanetImage
-        let imageCenterY = myPlanet.center.y
-        let imageCenterX = myPlanet.center.x
-        let translation = gesture.translation(in: myPlanet)
-        gesture.setTranslation(.zero, in: myPlanet)
-        if gesture.state == .changed {
-            if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
-                changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight / 2), screenHeight)),
-                               myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
-                               constellationMinusAlpha: changeAlpha(yPoint: imageCenterY),
-                               alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.7), constellationPlusAlpha: changeAlpha(minus: imageCenterY))
-                
-            }
-        } else if gesture.state == .ended {
-            if imageCenterY > screenHeight * 8 / 9 {
-                DispatchQueue.main.async {
-                    UIView.animate(withDuration: 0.5) {
-                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationMinusAlpha: 1, alreadyAlphaExist: 0.7, constellationPlusAlpha: 0)
-                    }
-                }
-            } else {
-                DispatchQueue.main.async {
-                    UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
-                        self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: DeviceInfo.screenHeight / 2),
-                                            myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
-                                            constellationMinusAlpha: 0,
-                                            alreadyAlphaExist: 0,
-                                            constellationPlusAlpha: 1)
-                        self.homeDetailView.beforeImageButton.alpha = 0
-                        self.homeDetailView.afterImageButton.alpha = 0
-                    } completion: { _ in
-                        myPlanet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
-                    }
-                }
-                
-            }
-        }
-    }
+      func handlePanGesture(gesture: UIPanGestureRecognizer) {
+          let myPlanet = self.homeDetailView.myPlanetImage
+          let imageCenterY = myPlanet.center.y
+          let imageCenterX = myPlanet.center.x
+          let translation = gesture.translation(in: myPlanet)
+          gesture.setTranslation(.zero, in: myPlanet)
+          if gesture.state == .changed {
+              if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
+                  changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight/2), screenHeight)),
+                                 myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
+                                 constellationMinusAlpha: changeAlpha(yPoint: imageCenterY),
+                                 alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.7), constellationPlusAlpha: changeAlpha(minus: imageCenterY))
+              }
+          } else if gesture.state == .ended {
+              if imageCenterY > screenHeight * 8 / 9 {
+                  DispatchQueue.main.async {
+                      UIView.animate(withDuration: 0.5) {
+                          self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight), myPlanetTransform: .identity, constellationMinusAlpha: 1, alreadyAlphaExist: 0.7, constellationPlusAlpha: 0)
+                      }
+                  }
+              } else {
+                  DispatchQueue.main.async {
+                      UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut) {
+                          self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight/2),
+                                              myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
+                                              constellationMinusAlpha: 0,
+                                              alreadyAlphaExist: 0,
+                                              constellationPlusAlpha: 1)
+                          self.homeDetailView.beforeImageButton.alpha = 0
+                          self.homeDetailView.afterImageButton.alpha = 0
+                      } completion: { _ in
+                          myPlanet.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGestureAfter)))
+                      }
+                  }
+
+              }
+          }
+      }
     
     @objc
     func handlePanGestureAfter(gesture: UIPanGestureRecognizer) {
@@ -157,7 +162,7 @@ final class HomeViewController: BaseViewController {
         gesture.setTranslation(.zero, in: myPlanet)
         if gesture.state == .changed {
             if abs(gesture.velocity(in: myPlanet).y) > abs(gesture.velocity(in: myPlanet).x) {
-                changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, screenHeight / 2), screenHeight)),
+                changeMyPlanet(center: CGPoint(x: imageCenterX, y: min(max(imageCenterY + translation.y, DeviceInfo.screenHeight / 2), screenHeight)),
                                myPlanetTransform: CGAffineTransform(scaleX: changeScale(yPoint: imageCenterY), y: changeScale(yPoint: imageCenterY)),
                                constellationMinusAlpha: changeAlpha(yPoint: imageCenterY),
                                alreadyAlphaExist: changeAlpha(yPoint: imageCenterY, beforeAlpha: 0.7),
@@ -166,7 +171,7 @@ final class HomeViewController: BaseViewController {
         } else if gesture.state == .ended {
             if self.homeDetailView.myPlanetImage.center.y < (screenHeight / 2) * 7 / 6 {
                 UIView.animate(withDuration: 0.3) {
-                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: self.screenHeight / 2),
+                    self.changeMyPlanet(center: CGPoint(x: imageCenterX, y: DeviceInfo.screenHeight / 2),
                                         myPlanetTransform: CGAffineTransform(scaleX: self.changeMyPlanetScale, y: self.changeMyPlanetScale),
                                         constellationMinusAlpha: 0,
                                         alreadyAlphaExist: 0,
@@ -324,14 +329,7 @@ extension HomeViewController: CarouselViewDelegate {
     /// carousel에서 Page가 변할때마다 호출되는 델리게이트 함수
     /// - Parameter page: 페이지(몇번째 별자리인지)
     func currentPageDidChange(to page: Int) {
-        if ((self.viewModel.user?.myCourses.isEmpty) != nil) {
-            view.addSubview(courseEmptyView)
-            courseEmptyView.snp.makeConstraints { make in
-                make.center.equalToSuperview()
-                make.width.equalTo(200)
-                make.height.equalTo(100)
-            }
-        } else {
+
             // MARK: page가 변할때마다 변하는 요소들 1)코스이름 2)코스날짜 3)현재별자리(가운데아래 작은 네모)
             guard let user = self.viewModel.user else { return }
             guard let beforeButtonImage = user.myCourses[max(page - 1, 0)] else { return }
@@ -361,4 +359,3 @@ extension HomeViewController: CarouselViewDelegate {
             self.homeDetailView.afterImageButton.setImage(StarMaker.makeStars(places: afterButtonImage.coordinates), for: .normal)
         }
     }
-}

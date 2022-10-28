@@ -58,49 +58,19 @@ final class HomeViewModel: BaseViewModel {
     // MARK: async로 호출한 api함수
     func fetchAsync() async throws {
         guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else { return }
-        let data = try await HomeAPIService.fetchUserAsync(accessToken: accessToken)
+        let data = try await HomeAPIService.fetchUserAsync(accessToken: token)
         guard let myPlanineInfoDTO = try? JSONDecoder().decode(UserInfo.self, from: data) else {
             print("Decoder오류")
             return
         }
-        let courseData = try await HomeAPIService.fetchUserCourseAsync(planetId: myPlanineInfoDTO.planet?.planetId)
+        let courseData = try await HomeAPIService.fetchUserCourseAsync(planetId: 27)
         guard let myCourseInfoDTO = try? JSONDecoder().decode(UserCourseInfo.self, from: courseData) else {
             print("Course Decoder오류")
             return
         }
-//        self.constellations = [
-//            Constellation(name: "창원 야구장", data: "2022-10-01(토)", image: UIImage(named: "Changwon")),
-//            Constellation(name: "광안대교 야경", data: "2022-10-02(일)", image: UIImage(named: "Busan")),
-//            Constellation(name: "포항공대", data: "2022-10-03(월)", image: UIImage(named: "Pohang")),
-//            Constellation(name: "부산", data: "2022-10-04(화)", image: UIImage(named: "Busan")),
-//            Constellation(name: "애플아카데미", data: "2022-10-05(수)", image: UIImage(named: "Pohang")),
-//            Constellation(name: "포항", data: "2022-10-06(목)", image: UIImage(named: "Pohang")),
-//            Constellation(name: "부산대학교", data: "2022-10-07(금)", image: UIImage(named: "Busan")),
-//            Constellation(name: "인천ssg파크", data: "2022-10-08(토)", image: UIImage(named: "Pohang"))
-//        ]
         self.user = User(nickName: myPlanineInfoDTO.me.name, myPlanet: myPlanineInfoDTO.planet, myCourses: myCourseInfoDTO.courses)
     }
     
-    // MARK: completion Handler(urlsession)로 호출한 api
-//    func fetch(completion: @escaping (User) -> Void ) {
-//        HomeAPIService.fetchUser { [weak self] result in
-//            switch result {
-//            case .success(let data):
-//                do {
-//                    guard let myPlanineInfoDTO = try? JSONDecoder().decode(UserInfo.self, from: data) else {
-//                        return print("gg")
-//                    }
-//                    completion(User(nickName: myPlanineInfoDTO.me.name))
-//                } catch {
-//                    print("디코딩실패")
-//                }
-//
-//            case .failure(let failure):
-//                print(failure)
-//            }
-//        }
-//    }
-
     func pushToAlarmView() {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
         coordinator.pushToAlarmViewController()

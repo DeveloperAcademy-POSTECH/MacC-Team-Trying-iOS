@@ -38,7 +38,7 @@ class HomeAPIService {
         guard let planetId = planetId else {
             throw HomeApiError.urlResponse
         }
-        guard let url = URL(string: "http://15.165.72.196:3059/planets/\(planetId)/courses?page=0&size=5") else {
+        guard let url = URL(string: "http://15.165.72.196:3059/planets/\(planetId)/courses") else {
             throw HomeApiError.urlResponse
         }
         var request = URLRequest(url: url)

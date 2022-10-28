@@ -162,10 +162,9 @@ class HomeDetailView: UIView {
     
     lazy var myPlanetImage: UIImageView = {
         let imageView = UIImageView()
-//        imageView.image = UIImage(named: "planet_green")
-        imageView.contentMode = .scaleAspectFill
+        imageView.image = UIImage(named: "MyPlanetImage")
+        imageView.contentMode = .scaleAspectFit
         imageView.isUserInteractionEnabled = true
-        imageView.backgroundColor = .red
         return imageView
     }()
     
@@ -264,9 +263,9 @@ class HomeDetailView: UIView {
         }
     
         myPlanetImage.snp.makeConstraints { make in
-            make.centerY.equalTo(self.snp.bottom).offset(120)
+            make.centerY.equalTo(self.snp.bottom).offset(-20)
             make.centerX.equalToSuperview()
-            make.size.equalTo(DeviceInfo.screenWidth * 1.5)
+            make.size.equalTo(DeviceInfo.screenWidth * 1.2)
         }
         
         courseRegistrationButton.snp.makeConstraints { make in
