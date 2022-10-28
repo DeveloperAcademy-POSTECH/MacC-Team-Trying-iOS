@@ -19,7 +19,7 @@ final class AddCourseCompleteViewModel: BaseViewModel, StarCreatable{
     private let courseTitle: String
     private let courseContent: String
     private let isPublic: Bool
-    private let places: [Place]
+    let places: [Place]
     private let images: [UIImage]
     
     private let addCourseUseCase: AddCourseUseCase
