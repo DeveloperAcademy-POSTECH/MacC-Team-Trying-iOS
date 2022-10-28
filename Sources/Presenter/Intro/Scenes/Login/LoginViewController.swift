@@ -44,6 +44,7 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
         signUpButton.addTarget(self, action: #selector(signUpButtonDidTapped), for: .touchUpInside)
 
         logoImageView.image = .init(.planets)
+        logoImageView.contentMode = .scaleAspectFill
     }
 
     override func setLayout() {
@@ -59,7 +60,7 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
             make.top.equalTo(view.safeAreaLayoutGuide).offset(26)
         }
         logoImageView.snp.makeConstraints { make in
-            make.top.equalTo(logoLabel.snp.bottom).offset(30)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(190)
             make.leading.trailing.equalToSuperview()
             make.width.equalTo(logoImageView.snp.height).multipliedBy(436 / 449)
         }
