@@ -32,6 +32,11 @@ enum CustomTextFieldType {
     /// - Placeholder : 코스 이름을 입력해 주세요.
     case courseTitle
     
+    /// 한줄 메모에 사용되는 TextField
+    /// - Height : 50
+    /// - Placeholder : 􀈊 한줄 메모 (선택)
+    case memo
+    
     /// 검색 탭에서 사용되는 TextField
     /// - Width : 디바이스 가로 길이 - 20 * 2
     /// - Height : 36
@@ -87,6 +92,18 @@ final class CustomTextField: UITextField {
             self.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.1)
             self.layer.cornerRadius = 15
             
+        case .memo:
+            let imageView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
+            self.leftView = imageView
+            let image = UIImage(systemName: Constants.Image.pencil)
+            let attributedPlaceholder = NSMutableAttributedString(attachment: NSTextAttachment(image: image!))
+            let attributedString = NSAttributedString(string: " 한줄 메모 (선택)", attributes: [.font: UIFont.designSystem(weight: .bold, size: ._11), .foregroundColor: UIColor.designSystem(.grayC5C5C5) as Any])
+            attributedPlaceholder.append(attributedString)
+            self.attributedPlaceholder = attributedPlaceholder
+            self.textColor = .designSystem(.white)
+            self.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
+            self.layer.cornerRadius = 10
+            
         case .searchCourseAndPlanet:
             self.leftImage(UIImage(systemName: Constants.Image.magnifyingglass), imageWidth: 10, padding: 10)
             self.attributedPlaceholder = .init(string: "코스 또는 행성을 입력하세요.", attributes: [.foregroundColor: UIColor.designSystem(.grayEBEBF5) as Any])
@@ -107,7 +124,7 @@ final class CustomTextField: UITextField {
                 make.height.equalTo(44)
             }
             
-        case .shopTitle, .location, .courseTitle:
+        case .shopTitle, .location, .courseTitle, .memo:
             self.snp.makeConstraints { make in
                 make.height.equalTo(50)
             }
