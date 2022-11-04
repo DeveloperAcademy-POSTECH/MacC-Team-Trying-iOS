@@ -11,6 +11,11 @@ import UIKit
 import SnapKit
 
 enum MainButtonType {
+    /// 코스 추가하기 버튼
+    /// - Title : 코스 추가하러 가기
+    /// - Height : 58
+    case addCourse
+    
     /// 다음 버튼
     /// - Title : 다음
     /// - Height : 58
@@ -20,6 +25,15 @@ enum MainButtonType {
     /// - Title : 확인
     /// - Height : 58
     case done
+    
+    /// 홈으로 돌아가기 버튼
+    /// - Title: 홈으로 돌아가기
+    /// - Height : 58
+    case home
+    
+    /// 타이틀이 정해지지 않은 버튼
+    /// - Height : 58
+    case empty
 }
 
 final class MainButton: UIButton {
@@ -27,7 +41,7 @@ final class MainButton: UIButton {
     
     override var isEnabled: Bool {
         didSet {
-             self.backgroundColor = self.isEnabled ? .designSystem(.mainYellow) : .designSystem(.grayC5C5C5)
+             self.backgroundColor = self.isEnabled ? .designSystem(.mainYellow) : .designSystem(.gray818181)
         }
     }
     
@@ -45,11 +59,20 @@ final class MainButton: UIButton {
     
     private func setAttributes() {
         switch type {
+        case .addCourse:
+            self.setTitle("코스 추가하러 가기", for: .normal)
+            
         case .next:
             self.setTitle("다음", for: .normal)
             
         case .done:
             self.setTitle("확인", for: .normal)
+            
+        case .home:
+            self.setTitle("홈으로 돌아가기", for: .normal)
+            
+        case .empty:
+            break
         }
         self.setTitleColor(.designSystem(.black), for: .normal)
         self.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
