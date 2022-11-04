@@ -8,6 +8,11 @@
 
 import UIKit
 
+enum AddCourseFlow {
+    case plan
+    case record
+}
+
 final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, RegisterCourseCoordinating, AddCourseCompleteCoordinating, HomeCoordinating, Popable {
     weak var navigationController: UINavigationController?
     
@@ -15,9 +20,9 @@ final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, Register
         self.navigationController = navigationController
     }
     
-    func start() {
+    func start(flow: AddCourseFlow) {
         let viewModel = AddCourseMapViewModel(coordinator: self)
-        let viewController = AddCourseMapViewController(viewModel: viewModel)
+        let viewController = AddCourseMapViewController(flow: flow, viewModel: viewModel)
         
         self.navigationController?.isNavigationBarHidden = false
         self.navigationController?.pushViewController(viewController, animated: true)

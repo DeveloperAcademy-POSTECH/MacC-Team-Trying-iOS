@@ -34,6 +34,7 @@ struct Constants {
         static let appIcon = "app_icon"
         static let starAnnotation = "star_annotation"
         static let purplePlanet = "purple_planet"
+        static let pencil = "pencil"
     }
     
     struct Lottie {
