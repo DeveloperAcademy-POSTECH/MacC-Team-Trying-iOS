@@ -13,32 +13,32 @@ protocol AddCourseCompleteCoordinating {
     func pushToAddCourseCompleteViewController(
         courseTitle: String,
         courseContent: String,
-        isPublic: Bool,
         places: [Place],
-        images: [UIImage]
+        images: [UIImage],
+        isPublic: Bool
     )
 }
 
 final class RecordCourseViewModel: BaseViewModel {
     var coordinator: Coordinator
-    var places: [Place]
     
+    let courseTitle: String
+    let places: [Place]
     @Published var images: [UIImage]
-    var courseTitle: String
     var courseContent: String?
     var isPublic: Bool
     
     init(
         coordinator: Coordinator,
+        courseTitle: String,
         places: [Place],
         images: [UIImage] = [],
-        courseTitle: String,
         isPublic: Bool = true
     ) {
         self.coordinator = coordinator
+        self.courseTitle = courseTitle
         self.places = places
         self.images = images
-        self.courseTitle = courseTitle
         self.isPublic = isPublic
     }
 }
@@ -55,9 +55,9 @@ extension RecordCourseViewModel {
         coordinator.pushToAddCourseCompleteViewController(
             courseTitle: courseTitle,
             courseContent: courseContent ?? "",
-            isPublic: isPublic,
             places: places,
-            images: images
+            images: images,
+            isPublic: isPublic
         )
     }
 }

@@ -15,7 +15,7 @@ import CancelBag
 import SnapKit
 
 final class AddCourseMapViewController: BaseViewController {
-    var flow: AddCourseFlow
+    var type: AddCourseFlowType
     var viewModel: AddCourseMapViewModel
     
     private var placeListViewHeight: CGFloat {
@@ -91,8 +91,18 @@ final class AddCourseMapViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
+        self.placeDetailView.memoTextField.optionalTextPublisher()
+            .assign(to: &viewModel.$memo)
         
         // output
+        self.viewModel.$memo
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] memo in
+                guard let self = self else { return }
+                self.placeDetailView.memoTextField.text = memo
+            }
+            .cancel(with: cancelBag)
+        
         self.viewModel.$places
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] places in
@@ -105,8 +115,8 @@ final class AddCourseMapViewController: BaseViewController {
             .cancel(with: cancelBag)
     }
     
-    init(flow: AddCourseFlow, viewModel: AddCourseMapViewModel) {
-        self.flow = flow
+    init(type: AddCourseFlowType, viewModel: AddCourseMapViewModel) {
+        self.type = type
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -163,8 +173,6 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        navigationController?.tabBarController?.tabBar.isHidden = true
-        
         view.addSubviews(placeMapView, placeDetailView, placeListView, nextButton)
         
         placeMapView.snp.makeConstraints { make in
@@ -323,7 +331,11 @@ extension AddCourseMapViewController {
     
     @objc
     private func didTapNextButton(_ sender: UIButton) {
-        viewModel.pushToRecordCourseView()
+        if type == .record {
+            viewModel.pushToRecordCourseView()
+        } else {
+            viewModel.pushToAddCourseCompleteView()
+        }
     }
     
     private func presentPlaceDetailView(with place: CLPlacemark) {

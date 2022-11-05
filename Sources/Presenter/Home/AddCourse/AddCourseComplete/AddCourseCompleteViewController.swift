@@ -47,8 +47,12 @@ final class AddCourseCompleteViewController: BaseViewController {
         imageView.image = viewModel.makeStars(places: viewModel.places)
         return imageView
     }()
+    private lazy var courseTitleLabel: PaddingLabel = {
+        let label = PaddingLabel(padding: UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8))
+        return label
+    }()
     private lazy var doneButton: MainButton = {
-        let button = MainButton(type: .done)
+        let button = MainButton(type: .home)
         button.addTarget(self, action: #selector(didTapDoneButton(_:)), for: .touchUpInside)
         return button
     }()

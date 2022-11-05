@@ -58,14 +58,14 @@ final class AddCourseCoordinator: Coordinator,
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToRecordCourseViewController(places: [Place]) {
-        let viewModel = RecordCourseViewModel(coordinator: self, places: places, courseTitle: "Temp Title")
+    func pushToRecordCourseViewController(courseTitle: String, places: [Place]) {
+        let viewModel = RecordCourseViewModel(coordinator: self, courseTitle: courseTitle, places: places)
         let viewController = RecordCourseViewController(viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToAddCourseCompleteViewController(courseTitle: String, courseContent: String, isPublic: Bool, places: [Place], images: [UIImage]) {
+    func pushToAddCourseCompleteViewController(courseTitle: String, courseContent: String, places: [Place], images: [UIImage], isPublic: Bool) {
         let viewModel = AddCourseCompleteViewModel(
             coordinator: self,
             courseTitle: courseTitle,

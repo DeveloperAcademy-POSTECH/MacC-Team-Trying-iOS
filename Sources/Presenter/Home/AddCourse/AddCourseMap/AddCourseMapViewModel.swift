@@ -21,16 +21,25 @@ protocol PlaceSearchCoordinating {
 }
 
 protocol RecordCourseCoordinating {
-    func pushToRecordCourseViewController(places: [Place])
+    func pushToRecordCourseViewController(courseTitle: String, places: [Place])
 }
 
 final class AddCourseMapViewModel: BaseViewModel {
     var coordinator: Coordinator
+    
+    let courseTitle: String
     @Published var places: [Place]
+    @Published var memo: String?
     var annotations: [MKAnnotation]
     
-    init(coordinator: Coordinator, places: [Place] = [], annotations: [MKAnnotation] = []) {
+    init(
+        coordinator: Coordinator,
+        courseTitle: String,
+        places: [Place] = [],
+        annotations: [MKAnnotation] = []
+    ) {
         self.coordinator = coordinator
+        self.courseTitle = courseTitle
         self.places = places
         self.annotations = annotations
     }
@@ -50,14 +59,29 @@ extension AddCourseMapViewModel {
     
     func pushToRecordCourseView() {
         guard let coordinator = coordinator as? RecordCourseCoordinating else { return }
-        coordinator.pushToRecordCourseViewController(places: places)
+        coordinator.pushToRecordCourseViewController(
+            courseTitle: courseTitle,
+            places: places
+        )
+    }
+    
+    func pushToAddCourseCompleteView() {
+        guard let coordinator = coordinator as? AddCourseCompleteCoordinating else { return }
+        coordinator.pushToAddCourseCompleteViewController(
+            courseTitle: courseTitle,
+            courseContent: "",
+            places: places,
+            images: [],
+            isPublic: false
+        )
     }
 }
 
 // MARK: - Methods
 extension AddCourseMapViewModel {
     func addPlace(_ place: CLPlacemark) {
-        places.append(convertToPlace(place: place))
+        places.append(convertToPlace(place: place, memo: memo))
+        self.memo = nil
     }
     
     func deletePlace(_ index: Int) {
@@ -76,7 +100,7 @@ extension AddCourseMapViewModel {
 
 // MARK: - Helper
 extension AddCourseMapViewModel {
-    private func convertToPlace(place: CLPlacemark) -> Place {
+    private func convertToPlace(place: CLPlacemark, memo: String?) -> Place {
         let title = place.name ?? ""
         // TODO: 카테고리로 변경하기
         let category = place.country ?? ""
@@ -93,7 +117,8 @@ extension AddCourseMapViewModel {
             location: CLLocationCoordinate2D(
                 latitude: place.location?.coordinate.latitude ?? 0,
                 longitude: place.location?.coordinate.longitude ?? 0
-            )
+            ),
+            memo: memo
         )
     }
 }

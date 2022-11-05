@@ -13,6 +13,7 @@ import MapKit
 final class PlaceSearchViewModel: BaseViewModel {
     var coordinator: Coordinator
     @Published var places: [Place]
+    @Published var memo: String?
     
     init(coordinator: Coordinator, places: [Place] = []) {
         self.coordinator = coordinator
@@ -45,7 +46,7 @@ extension PlaceSearchViewModel {
                 guard let self = self else { return }
                 // MARK: 검색 지역을 대한민국으로 제한합니다.
                 if place.placemark.countryCode == "KR" {
-                    tempPlaces.append(self.convertToPlace(place))
+                    tempPlaces.append(self.convertToPlace(place, memo: self.memo))
                 }
             }
             self.places = tempPlaces
@@ -61,14 +62,15 @@ extension PlaceSearchViewModel {
 
 // MARK: - Helper
 extension PlaceSearchViewModel {
-    private func convertToPlace(_ place: MKMapItem) -> Place {
+    private func convertToPlace(_ place: MKMapItem, memo: String?) -> Place {
         let address = "\(place.placemark.administrativeArea ?? "") \(place.placemark.locality ?? "") \(place.placemark.thoroughfare ?? "") \(place.placemark.subThoroughfare ?? "")"
         
         return Place(
             title: place.name ?? "",
             category: place.pointOfInterestCategory?.koreanCategory ?? "",
             address: address,
-            location: place.placemark.coordinate
+            location: place.placemark.coordinate,
+            memo: memo
         )
     }
 }
