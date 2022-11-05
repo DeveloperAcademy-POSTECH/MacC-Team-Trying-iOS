@@ -11,15 +11,6 @@ import SnapKit
 
 final class MonthView: UIView {
 
-    lazy var yearAndMonth: String = "0000-00" {
-        didSet {
-            let dateInfos = yearAndMonth.components(separatedBy: "-").map { Int($0)! }
-            let (year, month) = (dateInfos[0], dateInfos[1])
-            if month < 10 { yearAndMonth = "\(year)-0\(month)" }
-            updateMonthLabelText(to: yearAndMonth)
-        }
-    }
-
     lazy var monthLabel = UILabel()
 
     override init(frame: CGRect) {
@@ -29,8 +20,7 @@ final class MonthView: UIView {
     }
 
     func updateYearAndMonth(to date: Date) {
-        let newYearAndMonth = "\(date.year)-\(date.month)"
-        yearAndMonth = newYearAndMonth
+        updateMonthLabelText(to: date)
     }
 
     required init?(coder: NSCoder) {
@@ -38,7 +28,7 @@ final class MonthView: UIView {
     }
 
     private func setupMonthLabel() {
-        updateMonthLabelText(to: "\(Date().year)-\(Date().month)")
+        updateMonthLabelText(to: .init())
         addSubview(monthLabel)
         monthLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
@@ -47,10 +37,9 @@ final class MonthView: UIView {
         }
     }
 
-    private func updateMonthLabelText(to yearAndMonth: String) {
+    private func updateMonthLabelText(to date: Date) {
         monthLabel.attributedText = NSMutableAttributedString()
-            .gmarketLight(string: "2022 ", fontSize: 15)
-            .gmarketBold(string: "11월", fontSize: 15)
-
+            .gmarketLight(string: "\(date.year)  ", fontSize: 15)
+            .gmarketBold(string: "\(date.month)월", fontSize: 15)
     }
 }
