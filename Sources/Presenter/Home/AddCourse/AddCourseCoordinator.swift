@@ -36,7 +36,7 @@ final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, RecordCo
     }
     
     func pushToRecordCourseViewController(places: [Place]) {
-        let viewModel = RecordCourseViewModel(coordinator: self, places: places)
+        let viewModel = RecordCourseViewModel(coordinator: self, places: places, courseTitle: "Temp Title")
         let viewController = RecordCourseViewController(viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)

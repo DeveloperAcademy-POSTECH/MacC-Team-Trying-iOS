@@ -59,11 +59,6 @@ final class RecordCourseViewController: BaseViewController {
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
-    private lazy var courseTitleTextField: CustomTextField = {
-        let textField = CustomTextField(type: .courseTitle)
-        textField.addTarget(self, action: #selector(textFieldDidBeginEditing(_:)), for: .editingDidBegin)
-        return textField
-    }()
     private lazy var contentTextView: CustomTextView = {
         let textView = CustomTextView()
         textView.delegate = self
@@ -119,7 +114,6 @@ extension RecordCourseViewController: NavigationBarConfigurable {
         datePickerContainer.addSubview(datePicker)
         contentView.addSubviews(
             imageCollectionView,
-            courseTitleTextField,
             contentTextView,
             publicSwitch,
             nextButton,
@@ -149,15 +143,10 @@ extension RecordCourseViewController: NavigationBarConfigurable {
             }
         }
         
-        courseTitleTextField.snp.makeConstraints { make in
+        contentTextView.snp.makeConstraints { make in
             make.top.equalTo(imageCollectionView.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview().inset(20)
-        }
-        
-        contentTextView.snp.makeConstraints { make in
-            make.top.equalTo(courseTitleTextField.snp.bottom).offset(15)
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(370)
+            make.height.equalTo(435)
         }
         
         publicSwitch.snp.makeConstraints { make in
@@ -223,23 +212,52 @@ extension RecordCourseViewController: UITextViewDelegate {
             dismissDatePicker()
         }
 
-        if textView.text == "내용을 입력해 주세요." {
+        if textView.text == "데이트 후기를 입력해 주세요." {
             textView.text = nil
         }
 
-        let offset = CGPoint(x: 0, y: 245)
+        let offset = CGPoint(x: 0, y: 180)
         scrollView.setContentOffset(offset, animated: true)
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            UIView.animate(
+                withDuration: 0.35,
+                delay: 0,
+                animations: {
+                    self.contentTextView.snp.updateConstraints { make in
+                        make.height.equalTo(370)
+                    }
+                    self.view.layoutIfNeeded()
+                }
+            )
+            
+        }
     }
 
     /// TextView의 편집이 끝났을 때, 텍스트가 없다면 placeholder로 사용될 text를 설정합니다.
     /// 추가로 키보드 높이만큼 화면을 아래로 이동시킵니다.
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
-            textView.text = "내용을 입력해 주세요."
+            textView.text = "데이트 후기를 입력해 주세요."
         }
         
         let offset = CGPoint(x: 0, y: 0)
         scrollView.setContentOffset(offset, animated: true)
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            UIView.animate(
+                withDuration: 0.35,
+                delay: 0,
+                animations: {
+                    self.contentTextView.snp.updateConstraints { make in
+                        make.height.equalTo(435)
+                    }
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
     }
     
     @objc
@@ -249,9 +267,10 @@ extension RecordCourseViewController: UITextViewDelegate {
     
     @objc
     private func nextButtonPressed(_ sender: UIButton) {
-        viewModel.pushToAddCourseCompleteView(courseTitle: courseTitleTextField.text!, courseContent: contentTextView.text, isPublic: publicSwitch.isOn)
+        viewModel.pushToAddCourseCompleteView()
     }
     
+    /*
     /// TextField의 편집이 시작될 때, DatePicker가 활성화 되어있다면 dismiss합니다.
     @objc
     private func textFieldDidBeginEditing(_ sender: UITextField) {
@@ -259,18 +278,19 @@ extension RecordCourseViewController: UITextViewDelegate {
             dismissDatePicker()
         }
     }
+    */
     
     /// 화면 터치 시 활성화 되어있는 모든 것들을 dismiss합니다. (keyboard, UIDatePicker)
     @objc
     private func dismissAllActivatedComponents() {
-        courseTitleTextField.resignFirstResponder()
+        // courseTitleTextField.resignFirstResponder()
         contentTextView.resignFirstResponder()
     }
     
     /// 일정 선택 버튼이 눌렸을 때, 키보드를 dismiss하고 DatePicker를 present하거나 dismiss합니다.
     @objc
     private func selectDateButtonPressed(_ sender: UIButton) {
-        courseTitleTextField.resignFirstResponder()
+        // courseTitleTextField.resignFirstResponder()
         contentTextView.resignFirstResponder()
         datePicker.isHidden ? presentDatePicker() : dismissDatePicker()
     }

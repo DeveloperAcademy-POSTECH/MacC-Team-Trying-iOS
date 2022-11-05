@@ -24,7 +24,7 @@ final class RecordCourseViewModel: BaseViewModel {
     var places: [Place]
     
     @Published var images: [UIImage]
-    var courseTitle: String?
+    var courseTitle: String
     var courseContent: String?
     var isPublic: Bool
     
@@ -32,11 +32,13 @@ final class RecordCourseViewModel: BaseViewModel {
         coordinator: Coordinator,
         places: [Place],
         images: [UIImage] = [],
+        courseTitle: String,
         isPublic: Bool = true
     ) {
         self.coordinator = coordinator
         self.places = places
         self.images = images
+        self.courseTitle = courseTitle
         self.isPublic = isPublic
     }
 }
@@ -48,11 +50,11 @@ extension RecordCourseViewModel {
         coordinator.popViewController()
     }
     
-    func pushToAddCourseCompleteView(courseTitle: String, courseContent: String, isPublic: Bool) {
+    func pushToAddCourseCompleteView() {
         guard let coordinator = coordinator as? AddCourseCompleteCoordinating else { return }
         coordinator.pushToAddCourseCompleteViewController(
             courseTitle: courseTitle,
-            courseContent: courseContent,
+            courseContent: courseContent ?? "",
             isPublic: isPublic,
             places: places,
             images: images
