@@ -15,7 +15,7 @@ import SnapKit
 import CoreLocation
 
 final class AddCourseCompleteViewController: BaseViewController {
-
+    private let type: AddCourseFlowType
     var viewModel: AddCourseCompleteViewModel
     
     private lazy var completeLabel: UILabel = {
@@ -23,9 +23,11 @@ final class AddCourseCompleteViewController: BaseViewController {
         label.numberOfLines = 0
         let attributedString = NSMutableAttributedString()
         let firstString = NSAttributedString(string: "새로운 별자리가", attributes: [.font: UIFont.gmarksans(weight: .light, size: ._15)])
-        let secondString = NSAttributedString(string: "\n생성됐습니다!", attributes: [.font: UIFont.gmarksans(weight: .medium, size: ._15)])
+        let secondString = NSAttributedString(string: type == .record ? "\n기록" : "\n계획", attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
+        let thirdString = NSAttributedString(string: "됐습니다!", attributes: [.font: UIFont.gmarksans(weight: .medium, size: ._15)])
         attributedString.append(firstString)
         attributedString.append(secondString)
+        attributedString.append(thirdString)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 5
         paragraphStyle.alignment = .center
@@ -49,6 +51,12 @@ final class AddCourseCompleteViewController: BaseViewController {
     }()
     private lazy var courseTitleLabel: PaddingLabel = {
         let label = PaddingLabel(padding: UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8))
+        label.textColor = .designSystem(.mainYellow)
+        label.font = .designSystem(weight: .bold, size: ._13)
+        label.backgroundColor = .designSystem(.black)
+        label.layer.borderColor = .designSystem(.mainYellow)
+        label.layer.borderWidth = 1
+        label.layer.cornerRadius = 12.5
         return label
     }()
     private lazy var doneButton: MainButton = {
@@ -62,9 +70,11 @@ final class AddCourseCompleteViewController: BaseViewController {
         // input
         
         // output
+        self.courseTitleLabel.text = viewModel.courseTitle
     }
     
-    init(viewModel: AddCourseCompleteViewModel) {
+    init(type: AddCourseFlowType, viewModel: AddCourseCompleteViewModel) {
+        self.type = type
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -94,7 +104,12 @@ final class AddCourseCompleteViewController: BaseViewController {
 extension AddCourseCompleteViewController {
     private func setUI() {
         setAttributes()
-        setLayout()
+        
+        if type == .record {
+            setRecordCompleteViewLayout()
+        } else {
+            setPlanCompleteViewLayout()
+        }
     }
     
     /// Attributes를 설정합니다.
@@ -102,9 +117,15 @@ extension AddCourseCompleteViewController {
         
     }
     
-    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setLayout() {
-        view.addSubviews(completeLabel, starLottie, constellationImageView, doneButton)
+    /// RecordComplete 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
+    private func setRecordCompleteViewLayout() {
+        view.addSubviews(
+            completeLabel,
+            starLottie,
+            constellationImageView,
+            courseTitleLabel,
+            doneButton
+        )
         
         completeLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -118,9 +139,41 @@ extension AddCourseCompleteViewController {
         }
         
         constellationImageView.snp.makeConstraints { make in
-            make.top.equalTo(starLottie.snp.bottom).offset(55)
+            make.top.equalTo(starLottie.snp.bottom).offset(45)
             make.leading.trailing.equalToSuperview().inset(150)
-            make.bottom.equalTo(doneButton.snp.top).offset(-160)
+        }
+        
+        courseTitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(constellationImageView.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(25)
+        }
+        
+        doneButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
+        }
+    }
+    
+    /// PlanComplete 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
+    private func setPlanCompleteViewLayout() {
+        view.addSubviews(
+            completeLabel,
+            starLottie,
+            constellationImageView,
+            doneButton
+        )
+        
+        completeLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(180)
+            make.centerX.equalToSuperview()
+        }
+        
+        starLottie.snp.makeConstraints { make in
+            make.top.equalTo(completeLabel.snp.bottom).offset(20)
+            make.leading.trailing.equalToSuperview().inset(105)
+            make.height.equalTo(170)
         }
         
         doneButton.snp.makeConstraints { make in

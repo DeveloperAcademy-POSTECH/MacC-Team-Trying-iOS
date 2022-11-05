@@ -74,7 +74,7 @@ final class AddCourseCoordinator: Coordinator,
             places: places,
             images: images
         )
-        let viewController = AddCourseCompleteViewController(viewModel: viewModel)
+        let viewController = AddCourseCompleteViewController(type: type, viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }

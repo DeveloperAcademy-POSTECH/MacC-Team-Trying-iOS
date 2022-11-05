@@ -16,7 +16,7 @@ protocol HomeCoordinating {
 
 final class AddCourseCompleteViewModel: BaseViewModel, StarCreatable{
     var coordinator: Coordinator
-    private let courseTitle: String
+    let courseTitle: String
     private let courseContent: String
     private let isPublic: Bool
     let places: [Place]
