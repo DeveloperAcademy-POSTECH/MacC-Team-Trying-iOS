@@ -75,14 +75,18 @@ final class AddCourseCompleteViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setUI()
         bind()
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
     }
 }
 
@@ -100,10 +104,6 @@ extension AddCourseCompleteViewController {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        // FIXME: 탭바 앞 단에서 hidden 처리하기
-        navigationController?.tabBarController?.tabBar.isHidden = true
-        
-        navigationController?.setNavigationBarHidden(true, animated: false)
         view.addSubviews(completeLabel, starLottie, constellationImageView, doneButton)
         
         completeLabel.snp.makeConstraints { make in
