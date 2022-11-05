@@ -22,6 +22,7 @@ final class RecordCourseViewController: BaseViewController {
         return scrollView
     }()
     private let contentView = UIView()
+    /*
     private lazy var datePickerContainer: UIView = {
         let view = UIView()
         view.isHidden = true
@@ -42,6 +43,7 @@ final class RecordCourseViewController: BaseViewController {
         datePicker.addTarget(self, action: #selector(dateSelected(_:)), for: .valueChanged)
         return datePicker
     }()
+    */
     private let flowLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -111,13 +113,13 @@ extension RecordCourseViewController: NavigationBarConfigurable {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        datePickerContainer.addSubview(datePicker)
+        // datePickerContainer.addSubview(datePicker)
         contentView.addSubviews(
             imageCollectionView,
             contentTextView,
             publicSwitch,
-            nextButton,
-            datePickerContainer
+            nextButton
+            // datePickerContainer
         )
         scrollView.addSubview(contentView)
         view.addSubview(scrollView)
@@ -158,6 +160,7 @@ extension RecordCourseViewController: NavigationBarConfigurable {
             make.leading.trailing.equalToSuperview().inset(20)
         }
         
+        /*
         datePickerContainer.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview().inset(50)
@@ -167,6 +170,7 @@ extension RecordCourseViewController: NavigationBarConfigurable {
             make.top.bottom.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(20)
         }
+        */
     }
 }
 
@@ -208,9 +212,11 @@ extension RecordCourseViewController: UITextViewDelegate {
     /// TextView의 편집이 시작되었을 때, DatePicker가 활성화 되어있다면 dismiss하고, placeholder로 사용되던 text를 삭제합니다.
     /// 추가로 키보드 높이만큼 화면을 위로 이동시킵니다.
     func textViewDidBeginEditing(_ textView: UITextView) {
+        /*
         if !datePicker.isHidden {
             dismissDatePicker()
         }
+        */
 
         if textView.text == "데이트 후기를 입력해 주세요." {
             textView.text = nil
@@ -292,9 +298,10 @@ extension RecordCourseViewController: UITextViewDelegate {
     private func selectDateButtonPressed(_ sender: UIButton) {
         // courseTitleTextField.resignFirstResponder()
         contentTextView.resignFirstResponder()
-        datePicker.isHidden ? presentDatePicker() : dismissDatePicker()
+        // datePicker.isHidden ? presentDatePicker() : dismissDatePicker()
     }
     
+    /*
     /// DatePicker를 보여줍니다.
     private func presentDatePicker() {
         self.datePicker.fadeIn(0.3)
@@ -334,6 +341,7 @@ extension RecordCourseViewController: UITextViewDelegate {
             )
         }
     }
+    */
     
     @objc
     private func deleteButtonPressed(_ sender: UIButton) {
@@ -365,6 +373,7 @@ extension RecordCourseViewController: UINavigationControllerDelegate, UIImagePic
     }
 }
 
+/*
 // MARK: - Helper Methods
 extension RecordCourseViewController {
     /// DatePicker에서 선택할 수 있는 최대, 최소 날짜를 설정합니다.
@@ -383,3 +392,4 @@ extension RecordCourseViewController {
         datePicker.minimumDate = minDate
     }
 }
+*/
