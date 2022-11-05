@@ -27,9 +27,9 @@ enum CustomTextFieldType {
     /// - Placeholder : 방문하신 가게 위치를 입력해 주세요.
     case location
     
-    /// 코스 기록 화면에서 사용되는 TextField
+    /// 코스 등록 과정에서 Course Title을 입력하는 화면에서 사용되는 TextField
     /// - Height : 50
-    /// - Placeholder : 코스 이름을 입력해 주세요.
+    /// - Placeholder : ex) 부산여행
     case courseTitle
     
     /// 한줄 메모에 사용되는 TextField
@@ -87,9 +87,9 @@ final class CustomTextField: UITextField {
         case .courseTitle:
             let imageView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
             self.leftView = imageView
-            self.attributedPlaceholder = .init(string: "코스 이름을 입력해 주세요.", attributes: [.foregroundColor: UIColor.designSystem(.white) as Any])
+            self.attributedPlaceholder = .init(string: "ex) 부산여행", attributes: [.foregroundColor: UIColor.designSystem(.grayC5C5C5) as Any])
             self.textColor = .designSystem(.white)
-            self.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.1)
+            self.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.2)
             self.layer.cornerRadius = 15
             
         case .memo:

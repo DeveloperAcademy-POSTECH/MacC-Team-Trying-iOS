@@ -11,6 +11,18 @@ import UIKit
 import SnapKit
 
 protocol NavigationBarConfigurable: BaseViewController {
+    /// 데이트 기록 과정에서 Course Title을 입력하는 화면에서 사용되는 Navigation Bar를 설정합니다.
+    /// - Parameters:
+    ///   - target: Target
+    ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
+    func configureRecordTitleNavigationBar(target: Any, popAction: Selector)
+    
+    /// 데이트 계획 과정에서 Course Title을 입력하는 화면에서 사용되는 Navigation Bar를 설정합니다.
+    /// - Parameters:
+    ///   - target: Target
+    ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
+    func configurePlanTitleNavigationBar(target: Any, popAction: Selector)
+    
     /// 데이트 기록 과정에서 지도가 있는 화면에서 사용되는 Navigation Bar를 설정합니다.
     /// - Parameters:
     ///   - target: Target
@@ -41,6 +53,45 @@ protocol NavigationBarConfigurable: BaseViewController {
 }
 
 extension NavigationBarConfigurable {
+    func configureRecordTitleNavigationBar(target: Any, popAction: Selector) {
+        let backButton: UIButton = {
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
+            button.addTarget(target, action: popAction, for: .touchUpInside)
+            return button
+        }()
+        let titleLabel: UILabel = {
+            let label = UILabel()
+            label.text = "코스 기록"
+            label.textColor = .designSystem(.white)
+            label.font = .gmarksans(weight: .bold, size: ._15)
+            return label
+        }()
+        let leftButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem = leftButtonItem
+        navigationItem.titleView = titleLabel
+    }
+    
+    func configurePlanTitleNavigationBar(target: Any, popAction: Selector) {
+        let backButton: UIButton = {
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
+            button.addTarget(target, action: popAction, for: .touchUpInside)
+            return button
+        }()
+        let titleLabel: UILabel = {
+            let label = UILabel()
+            label.text = "코스 계획"
+            label.textColor = .designSystem(.white)
+            label.font = .gmarksans(weight: .bold, size: ._15)
+            return label
+        }()
+        
+        let leftButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem = leftButtonItem
+        navigationItem.titleView = titleLabel
+    }
+    
     func configureRecordMapNavigationBar(target: Any, dismissAction: Selector, pushAction: Selector) {
         let dismissButton: UIButton = {
             let button = UIButton()

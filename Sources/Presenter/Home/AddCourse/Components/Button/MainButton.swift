@@ -75,6 +75,7 @@ final class MainButton: UIButton {
             break
         }
         self.setTitleColor(.designSystem(.black), for: .normal)
+        self.setTitleColor(.designSystem(.white), for: .disabled)
         self.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
         self.layer.cornerRadius = 15
         self.isEnabled = true

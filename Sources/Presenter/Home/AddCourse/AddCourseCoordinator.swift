@@ -8,23 +8,46 @@
 
 import UIKit
 
-enum AddCourseFlow {
+enum AddCourseFlowType {
     case plan
     case record
 }
 
-final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, RecordCourseCoordinating, AddCourseCompleteCoordinating, HomeCoordinating, Popable {
+final class AddCourseCoordinator: Coordinator,
+                                  AddCourseMapCoordinating,
+                                  PlaceSearchCoordinating,
+                                  RecordCourseCoordinating,
+                                  AddCourseCompleteCoordinating,
+                                  HomeCoordinating,
+                                  Popable {
+    var type: AddCourseFlowType
     weak var navigationController: UINavigationController?
     
-    init(navigationController: UINavigationController?) {
+    init(type: AddCourseFlowType, navigationController: UINavigationController?) {
+        self.type = type
         self.navigationController = navigationController
     }
     
-    func start(flow: AddCourseFlow) {
+    func start() {
+        let viewModel = AddCourseTitleViewModel(coordinator: self)
+        let viewController = AddCourseTitleViewController(type: type, viewModel: viewModel)
+        
+//        self.navigationController?.tabBarController?.tabBar.isHidden = true
+        self.navigationController?.pushViewController(viewController, animated: true)
+        
+        /*
         let viewModel = AddCourseMapViewModel(coordinator: self)
         let viewController = AddCourseMapViewController(flow: flow, viewModel: viewModel)
         
         self.navigationController?.isNavigationBarHidden = false
+        self.navigationController?.pushViewController(viewController, animated: true)
+        */
+    }
+    
+    func pushToAddCourseMapViewController(courseTitle: String) {
+        let viewModel = AddCourseMapViewModel(coordinator: self, courseTitle: courseTitle)
+        let viewController = AddCourseMapViewController(type: type, viewModel: viewModel)
+        
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
