@@ -334,6 +334,9 @@ extension AddCourseMapViewController {
         if type == .record {
             viewModel.pushToRecordCourseView()
         } else {
+            Task {
+                try await viewModel.addCoursePlan()
+            }
             viewModel.pushToAddCourseCompleteView()
         }
     }

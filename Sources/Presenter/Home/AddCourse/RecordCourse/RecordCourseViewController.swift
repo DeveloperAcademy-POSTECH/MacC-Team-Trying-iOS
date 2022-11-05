@@ -273,6 +273,9 @@ extension RecordCourseViewController: UITextViewDelegate {
     
     @objc
     private func nextButtonPressed(_ sender: UIButton) {
+        Task {
+            try await viewModel.addCourseRecord()
+        }
         viewModel.pushToAddCourseCompleteView()
     }
     

@@ -25,6 +25,7 @@ protocol RecordCourseCoordinating {
 }
 
 final class AddCourseMapViewModel: BaseViewModel {
+    private let addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl()
     var coordinator: Coordinator
     
     let courseTitle: String
@@ -119,6 +120,44 @@ extension AddCourseMapViewModel {
                 longitude: place.location?.coordinate.longitude ?? 0
             ),
             memo: memo
+        )
+    }
+}
+
+// MARK: - API
+extension AddCourseMapViewModel {
+    func addCoursePlan() async throws {
+        let dto = self.convertToDTO(
+            planetId: "27",
+            courseTitle: courseTitle,
+            courseContent: "",
+            isPublic: false,
+            places: places
+        )
+        try await addCourseUseCase.addCourse(addCourseDTO: dto, images: [])
+    }
+    
+    private func convertToDTO(
+        planetId: String,
+        courseTitle: String,
+        courseContent: String,
+        isPublic: Bool,
+        places: [Place]
+    ) -> AddCourseDTO {
+        var tags: [AddCourseDTO.Tag] = []
+        places.forEach { place in
+            let place = AddCourseDTO.Place(name: place.title, latitude: place.location.latitude, longitude: place.location.longitude)
+            // TODO: place 이름과 tag 이름 다르게 하기
+            let tag = AddCourseDTO.Tag(place: place, name: place.name)
+            tags.append(tag)
+        }
+        
+        return AddCourseDTO(
+            planetId: planetId,
+            title: courseTitle,
+            body: courseContent,
+            access: isPublic ? "PUBLIC" : "PRIVATE",
+            tags: tags
         )
     }
 }

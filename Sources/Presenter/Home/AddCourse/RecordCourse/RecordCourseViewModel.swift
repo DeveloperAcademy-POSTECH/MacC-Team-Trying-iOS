@@ -20,6 +20,7 @@ protocol AddCourseCompleteCoordinating {
 }
 
 final class RecordCourseViewModel: BaseViewModel {
+    private let addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl()
     var coordinator: Coordinator
     
     let courseTitle: String
@@ -70,5 +71,45 @@ extension RecordCourseViewModel {
     
     func deleteImage(_ index: Int) {
         images.remove(at: index)
+    }
+}
+
+// MARK: - API
+extension RecordCourseViewModel {
+    // TODO: api call
+    // FIXME: Planet ID 수정하기
+    func addCourseRecord() async throws {
+        let dto = self.convertToDTO(
+            planetId: "27",
+            courseTitle: courseTitle,
+            courseContent: courseContent ?? "",
+            isPublic: isPublic,
+            places: places
+        )
+        try await addCourseUseCase.addCourse(addCourseDTO: dto, images: images)
+    }
+    
+    private func convertToDTO(
+        planetId: String,
+        courseTitle: String,
+        courseContent: String,
+        isPublic: Bool,
+        places: [Place]
+    ) -> AddCourseDTO {
+        var tags: [AddCourseDTO.Tag] = []
+        places.forEach { place in
+            let place = AddCourseDTO.Place(name: place.title, latitude: place.location.latitude, longitude: place.location.longitude)
+            // TODO: place 이름과 tag 이름 다르게 하기
+            let tag = AddCourseDTO.Tag(place: place, name: place.name)
+            tags.append(tag)
+        }
+        
+        return AddCourseDTO(
+            planetId: planetId,
+            title: courseTitle,
+            body: courseContent,
+            access: isPublic ? "PUBLIC" : "PRIVATE",
+            tags: tags
+        )
     }
 }
