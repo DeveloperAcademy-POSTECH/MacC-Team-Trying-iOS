@@ -12,11 +12,10 @@ final class WeekdayCollectionView: UICollectionView {
 
     convenience init() {
         let layout = UICollectionViewFlowLayout()
-        let inset: CGFloat = 18
-        layout.sectionInset = .zero
-        layout.minimumLineSpacing = inset
-        layout.minimumInteritemSpacing = inset
-        let width: CGFloat = (DeviceInfo.screenWidth - 80 - inset * 6 - 1) / 7
+        layout.sectionInset = .init(top: 0, left: 10, bottom: 0, right: 10)
+        layout.minimumLineSpacing = CalendarView.inset
+        layout.minimumInteritemSpacing = CalendarView.inset
+        let width: CGFloat = (DeviceInfo.screenWidth - 80 - CalendarView.inset * 6 - 20) / 7
         let height: CGFloat = 12
         layout.itemSize = .init(width: width, height: height)
         self.init(frame: .zero, collectionViewLayout: layout)

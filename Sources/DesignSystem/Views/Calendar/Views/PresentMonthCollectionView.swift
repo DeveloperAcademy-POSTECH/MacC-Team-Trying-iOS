@@ -8,15 +8,14 @@
 
 import UIKit
 
-final class CalendarCollectionView: UICollectionView {
+final class PresentMonthCollectionView: UICollectionView {
 
     convenience init() {
         let layout = UICollectionViewFlowLayout()
-        let inset: CGFloat = 18
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.minimumLineSpacing = inset
-        layout.minimumInteritemSpacing = inset
-        let width: CGFloat = (DeviceInfo.screenWidth - 80 - inset * 6 - 1) / 7
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        layout.minimumLineSpacing = CalendarView.inset
+        layout.minimumInteritemSpacing = CalendarView.inset
+        let width: CGFloat = (DeviceInfo.screenWidth - 80 - CalendarView.inset * 6 - 1) / 7
         layout.itemSize = CGSize(width: width, height: width)
         self.init(frame: .zero, collectionViewLayout: layout)
         self.backgroundColor = .clear
