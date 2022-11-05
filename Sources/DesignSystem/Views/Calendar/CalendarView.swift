@@ -10,22 +10,39 @@ import UIKit
 import SnapKit
 
 protocol CalendarViewDelegate: AnyObject {
-    func layoutIfNeeded()
+    func scrollViewDidEndDecelerating()
 }
 
 final class CalendarView: BaseView {
 
     static let inset: CGFloat = 18
-    static let numberOfMonthRow: Int = 6
     static let cellHeight: CGFloat = (DeviceInfo.screenWidth - 80 - 1 - CalendarView.inset * 6) / 7
-    static let calendarHeight: CGFloat = CGFloat(CalendarView.numberOfMonthRow) * (CalendarView.cellHeight + CalendarView.inset)
-    static let height: CGFloat = CGFloat(CalendarView.numberOfMonthRow) * (CalendarView.cellHeight + CalendarView.inset) + 100
 
     // MARK: - Properties
 
     weak var delegate: CalendarViewDelegate?
 
+    private var numberOfMonthRow: Int = 6 {
+        didSet {
+            scrollView.snp.updateConstraints { make in
+                make.height.equalTo(calendarHeight)
+            }
+            scrollView.contentSize.height = calendarHeight
+            delegate?.scrollViewDidEndDecelerating()
+        }
+    }
+
+    private var calendarHeight: CGFloat {
+        CGFloat(numberOfMonthRow) * (CalendarView.cellHeight + CalendarView.inset)
+    }
+
     // 달력과 관련된 프로퍼티
+
+    enum MonthType {
+        case previous
+        case present
+        case following
+    }
 
     private var numberOfDaysInMonth: [Int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     private var today: Date
@@ -49,6 +66,15 @@ final class CalendarView: BaseView {
         self.frame.width - self.scrollViewInset
     }
 
+    // 주간 월간 달력
+
+    enum CalendarShape {
+        case week
+        case month
+    }
+
+    private var shape: CalendarShape = .month
+
     // MARK: - Views
 
     lazy var monthView = MonthView()
@@ -65,6 +91,8 @@ final class CalendarView: BaseView {
         self.followingMonthDate = today.monthAfter ?? .init()
 
         super.init(frame: frame)
+        let resetCellCount = minimumCellNumberOfPresentMonth % 7
+        numberOfMonthRow = resetCellCount == 0 ? minimumCellNumberOfPresentMonth / 7 : minimumCellNumberOfPresentMonth / 7 + 1
     }
     
     required init?(coder: NSCoder) {
@@ -106,16 +134,20 @@ final class CalendarView: BaseView {
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(weekdayView.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview().inset(scrollViewInset / 2)
-            make.height.equalTo(Self.calendarHeight)
+            make.height.equalTo(calendarHeight)
             make.bottom.equalToSuperview()
         }
-        let scrollViewWidth = self.frame.width - 20
-        previousMonthCollectionView.frame = .init(x: 0, y: 0, width: scrollViewWidth, height: Self.calendarHeight)
-        presentMonthCollectionView.frame = .init(x: scrollViewWidth, y: 0, width: scrollViewWidth, height: Self.calendarHeight)
-        followingMonthCollectionView.frame = .init(x: scrollViewWidth * 2, y: 0, width: scrollViewWidth, height: Self.calendarHeight)
 
-        scrollView.contentSize = .init(width: scrollViewWidth * 3, height: Self.calendarHeight)
+        let scrollViewWidth = self.frame.width - 20
+        previousMonthCollectionView.frame = .init(x: 0, y: 0, width: scrollViewWidth, height: calendarHeight)
+        presentMonthCollectionView.frame = .init(x: scrollViewWidth, y: 0, width: scrollViewWidth, height: calendarHeight)
+        followingMonthCollectionView.frame = .init(x: scrollViewWidth * 2, y: 0, width: scrollViewWidth, height: calendarHeight)
+
+        scrollView.contentSize = .init(width: scrollViewWidth * 3, height: calendarHeight)
         scrollView.setContentOffset(CGPoint(x: scrollViewWidth, y: 0), animated: false)
+
+        let restCellCount = minimumCellNumberOfPresentMonth % 7
+        self.numberOfMonthRow = restCellCount == 0 ? minimumCellNumberOfPresentMonth / 7 : minimumCellNumberOfPresentMonth / 7 + 1
     }
 }
 
@@ -132,6 +164,19 @@ extension CalendarView: UIScrollViewDelegate {
         case scrollViewWidth * 2:
             scrollDirection = .right
         default:
+            break
+        }
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        switch scrollDirection {
+        case .left:
+            let restCellCount = minimumCellNumberOfPreviousMonth % 7
+            self.numberOfMonthRow = restCellCount == 0 ? minimumCellNumberOfPreviousMonth / 7 : minimumCellNumberOfPreviousMonth / 7 + 1
+        case .right:
+            let restCellCount = minimumCellNumberOfFollowingMonth % 7
+            self.numberOfMonthRow = restCellCount == 0 ?  minimumCellNumberOfFollowingMonth / 7 : minimumCellNumberOfFollowingMonth / 7 + 1
+        case .no:
             break
         }
     }
@@ -260,35 +305,35 @@ extension CalendarView: UICollectionViewDataSource {
 
     private func previousCollectionViewCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
         if indexPath.item < startWeekdayOfPreviousMonthIndex {
-            return beforeMonthCell(month: previousMonth, startWeekday: startWeekdayOfPreviousMonthIndex, for: indexPath, collectionView: collectionView)
+            return previousMonthCell(month: previousMonth, startWeekday: startWeekdayOfPreviousMonthIndex, for: indexPath, collectionView: collectionView)
         } else if indexPath.item < minimumCellNumberOfPreviousMonth {
-            return followingMonthCell(startWeekday: startWeekdayOfPreviousMonthIndex, for: indexPath, collectionView: collectionView)
+            return presentMonthCell(startWeekday: startWeekdayOfPreviousMonthIndex, for: indexPath, collectionView: collectionView, type: .previous)
         } else {
-            return afterMonthCell(minimumCellNumber: minimumCellNumberOfPreviousMonth, for: indexPath, collectionView: collectionView)
+            return followingMonthCell(minimumCellNumber: minimumCellNumberOfPreviousMonth, for: indexPath, collectionView: collectionView)
         }
     }
 
     private func presentCollectionViewCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
         if indexPath.item < startWeekdayOfPresentMonthIndex {
-            return beforeMonthCell(month: presentMonth, startWeekday: startWeekdayOfPresentMonthIndex, for: indexPath, collectionView: collectionView)
+            return previousMonthCell(month: presentMonth, startWeekday: startWeekdayOfPresentMonthIndex, for: indexPath, collectionView: collectionView)
         } else if indexPath.item < minimumCellNumberOfPresentMonth {
-            return followingMonthCell(startWeekday: startWeekdayOfPresentMonthIndex, for: indexPath, collectionView: collectionView)
+            return presentMonthCell(startWeekday: startWeekdayOfPresentMonthIndex, for: indexPath, collectionView: collectionView, type: .present)
         } else {
-            return afterMonthCell(minimumCellNumber: minimumCellNumberOfPresentMonth, for: indexPath, collectionView: collectionView)
+            return followingMonthCell(minimumCellNumber: minimumCellNumberOfPresentMonth, for: indexPath, collectionView: collectionView)
         }
     }
 
     private func followingCollectionViewCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
         if indexPath.item < startWeekdayOfFollowingMonthIndex {
-            return beforeMonthCell(month: followingMonth, startWeekday: startWeekdayOfFollowingMonthIndex, for: indexPath, collectionView: collectionView)
+            return previousMonthCell(month: followingMonth, startWeekday: startWeekdayOfFollowingMonthIndex, for: indexPath, collectionView: collectionView)
         } else if indexPath.item < minimumCellNumberOfFollowingMonth {
-            return followingMonthCell(startWeekday: startWeekdayOfFollowingMonthIndex, for: indexPath, collectionView: collectionView)
+            return presentMonthCell(startWeekday: startWeekdayOfFollowingMonthIndex, for: indexPath, collectionView: collectionView, type: .following)
         } else {
-            return afterMonthCell(minimumCellNumber: minimumCellNumberOfFollowingMonth, for: indexPath, collectionView: collectionView)
+            return followingMonthCell(minimumCellNumber: minimumCellNumberOfFollowingMonth, for: indexPath, collectionView: collectionView)
         }
     }
 
-    private func beforeMonthCell(month: Int, startWeekday: Int, for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+    private func previousMonthCell(month: Int, startWeekday: Int, for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(DateCell.self, for: indexPath)
 
         let previousMonth = month == 1 ? 12 : month - 1
@@ -300,23 +345,39 @@ extension CalendarView: UICollectionViewDataSource {
         return  cell
     }
 
-    private func followingMonthCell(startWeekday: Int, for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+    private func presentMonthCell(startWeekday: Int, for indexPath: IndexPath, collectionView: UICollectionView, type: MonthType) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(DateCell.self, for: indexPath)
 
         let day = indexPath.item - startWeekday + 1
+        cell.configure(with: day)
+
+        if findToday(day: day, type: type) {
+            cell.isToday()
+        } else {
+            cell.isPresentMonthCell()
+        }
+
+        return cell
+    }
+
+    private func followingMonthCell(minimumCellNumber: Int, for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(DateCell.self, for: indexPath)
+
+        let day = indexPath.item - minimumCellNumber + 1
         cell.configure(with: day)
         cell.isFollowingMonthCell()
 
         return cell
     }
 
-    private func afterMonthCell(minimumCellNumber: Int, for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(DateCell.self, for: indexPath)
-
-        let day = indexPath.item - minimumCellNumber + 1
-        cell.configure(with: day)
-        cell.isNextMonthCell()
-
-        return cell
+    private func findToday(day: Int, type: MonthType) -> Bool {
+        switch type {
+        case .previous:
+            return (day == today.day && previousMonth == today.month && previousYear == today.year)
+        case .present:
+            return (day == today.day && presentMonth == today.month && presentYear == today.year)
+        case .following:
+            return (day == today.day && followingMonth == today.month && followingYear == today.year)
+        }
     }
 }

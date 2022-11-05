@@ -37,4 +37,14 @@ extension Date {
     var monthAfter: Date? {
         Calendar.current.date(byAdding: .month, value: 1, to: self)
     }
+
+    func getDate(year: Int, month: Int, day: Int) -> Date? {
+        var datecomponents = DateComponents()
+        datecomponents.year = year
+        datecomponents.month = month
+        datecomponents.day = day
+        datecomponents.timeZone = .autoupdatingCurrent
+
+        return Calendar.current.date(from: datecomponents)
+    }
 }
