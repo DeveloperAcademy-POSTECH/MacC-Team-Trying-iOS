@@ -17,6 +17,7 @@ final class DateCell: UICollectionViewCell {
         dateLabel.font = .gmarksans(weight: .bold, size: ._13)
         dateLabel.textColor = .white
         dateLabel.textAlignment = .center
+        contentView.backgroundColor = .clear
         contentView.addSubview(dateLabel)
         dateLabel.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -29,18 +30,36 @@ final class DateCell: UICollectionViewCell {
 
     func configure(with day: Int) {
         dateLabel.text = String(day)
+    }
 
+    func isToday() {
+        dateLabel.textColor = .yellow
+        contentView.layer.cornerRadius = contentView.bounds.width / 2
+    }
+
+    func isSelected() {
+        contentView.backgroundColor = .black
     }
 
     func isPreviousMonthCell() {
         dateLabel.textColor = .white.withAlphaComponent(0.3)
+        contentView.backgroundColor = .clear
+    }
+
+    func isPresentMonthCell() {
+        dateLabel.textColor = .white
+        contentView.backgroundColor = .clear
     }
 
     func isFollowingMonthCell() {
-        dateLabel.textColor = .white
+        dateLabel.textColor = .white.withAlphaComponent(0.3)
+        contentView.backgroundColor = .clear
     }
 
-    func isNextMonthCell() {
-        dateLabel.textColor = .white.withAlphaComponent(0.3)
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        dateLabel.textColor = .white
+        dateLabel.backgroundColor = .clear
     }
 }
