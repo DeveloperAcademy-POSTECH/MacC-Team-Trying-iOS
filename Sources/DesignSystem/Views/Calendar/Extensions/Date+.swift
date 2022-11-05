@@ -29,4 +29,12 @@ extension Date {
     var firstDayOfTheMonth: Date? {
         Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: self))
     }
+
+    var monthBefore: Date? {
+        Calendar.current.date(byAdding: .month, value: -1, to: self)
+    }
+
+    var monthAfter: Date? {
+        Calendar.current.date(byAdding: .month, value: 1, to: self)
+    }
 }

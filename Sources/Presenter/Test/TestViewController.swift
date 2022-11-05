@@ -11,7 +11,7 @@ import SnapKit
 
 class TestViewController: UIViewController {
 
-    let calendarView = CalendarView(today: .init())
+    lazy var calendarView = CalendarView(today: .init(), frame: .init(origin: .zero, size: .init(width: DeviceInfo.screenWidth - 40, height: 0)))
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,12 +21,6 @@ class TestViewController: UIViewController {
         calendarView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(140)
             make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(CalendarView.height)
         }
-    }
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        calendarView.calendarCollectionView.collectionViewLayout.invalidateLayout()
     }
 }
