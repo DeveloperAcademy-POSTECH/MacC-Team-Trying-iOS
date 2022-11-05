@@ -14,6 +14,7 @@ protocol CalendarViewDelegate: AnyObject {
 }
 
 final class CalendarView: BaseView {
+
     static let inset: CGFloat = 18
     static let numberOfMonthRow: Int = 6
     static let cellHeight: CGFloat = (DeviceInfo.screenWidth - 80 - 1 - CalendarView.inset * 6) / 7
@@ -24,12 +25,29 @@ final class CalendarView: BaseView {
 
     weak var delegate: CalendarViewDelegate?
 
-    let numberOfDaysInMonth: [Int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    var today: Date
-    var presentMonthDate: Date
-    var previousMonthDate: Date
-    var followingMonthDate: Date
-    var numberOfMonthRow: Int = 6
+    // 달력과 관련된 프로퍼티
+
+    private var numberOfDaysInMonth: [Int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    private var today: Date
+    private var presentMonthDate: Date
+    private var previousMonthDate: Date
+    private var followingMonthDate: Date
+
+    // 스크롤과 관련된 프로퍼티
+
+    enum ScrollDirection {
+        case left
+        case right
+        case no
+    }
+
+    private var scrollDirection: ScrollDirection = .no
+
+    private var scrollViewInset: CGFloat = 20
+
+    private var scrollViewWidth: CGFloat {
+        self.frame.width - self.scrollViewInset
+    }
 
     // MARK: - Views
 
@@ -59,6 +77,7 @@ final class CalendarView: BaseView {
         self.layer.borderWidth = 0.3
         self.backgroundColor = .designSystem(.calendarRed)?.withAlphaComponent(0.2)
 
+        scrollView.delegate = self
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
         previousMonthCollectionView.dataSource = self
@@ -86,11 +105,10 @@ final class CalendarView: BaseView {
         }
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(weekdayView.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(10)
+            make.leading.trailing.equalToSuperview().inset(scrollViewInset / 2)
             make.height.equalTo(Self.calendarHeight)
             make.bottom.equalToSuperview()
         }
-
         let scrollViewWidth = self.frame.width - 20
         previousMonthCollectionView.frame = .init(x: 0, y: 0, width: scrollViewWidth, height: Self.calendarHeight)
         presentMonthCollectionView.frame = .init(x: scrollViewWidth, y: 0, width: scrollViewWidth, height: Self.calendarHeight)
@@ -101,8 +119,58 @@ final class CalendarView: BaseView {
     }
 }
 
+// MARK: UIScrollViewDelegate
+
 extension CalendarView: UIScrollViewDelegate {
 
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        switch targetContentOffset.pointee.x {
+        case 0:
+            scrollDirection = .left
+        case scrollViewWidth * 1:
+            scrollDirection = .no
+        case scrollViewWidth * 2:
+            scrollDirection = .right
+        default:
+            break
+        }
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        switch scrollDirection {
+        case .left:
+            updateCalendar(present: previousMonthDate)
+        case .right:
+            updateCalendar(present: followingMonthDate)
+        case .no:
+            break
+        }
+    }
+
+    private func updateCalendar(present: Date) {
+
+        checkLeapYear(date: present)
+        
+        monthView.updateYearAndMonth(to: present)
+        presentMonthDate = present
+        previousMonthDate = present.monthBefore ?? .init()
+        followingMonthDate = present.monthAfter ?? .init()
+
+        previousMonthCollectionView.reloadData()
+        presentMonthCollectionView.reloadData()
+        followingMonthCollectionView.reloadData()
+
+        scrollView.setContentOffset(.init(x: scrollViewWidth, y: 0), animated: false)
+    }
+
+    private func checkLeapYear(date: Date) {
+        if date.month == 2,
+           date.year % 4 == 0 {
+            numberOfDaysInMonth[1] = 29
+        } else {
+            numberOfDaysInMonth[1] = 28
+        }
+    }
 }
 
 extension CalendarView: UICollectionViewDataSource {
@@ -170,19 +238,12 @@ extension CalendarView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == previousMonthCollectionView {
             let resetCellCount = minimumCellNumberOfPreviousMonth % 7
-            print(minimumCellNumberOfPreviousMonth)
-            print(previousMonth)
             return resetCellCount == 0 ? minimumCellNumberOfPreviousMonth : minimumCellNumberOfPreviousMonth + (7 - resetCellCount)
         } else if collectionView == presentMonthCollectionView {
             let resetCellCount = minimumCellNumberOfPresentMonth % 7
-            print(minimumCellNumberOfPresentMonth)
-            print(presentMonth)
-            print((resetCellCount))
             return resetCellCount == 0 ? minimumCellNumberOfPresentMonth : minimumCellNumberOfPresentMonth + (7 - resetCellCount)
         } else {
             let resetCellCount = minimumCellNumberOfFollowingMonth % 7
-            print(minimumCellNumberOfFollowingMonth)
-            print(followingMonth)
             return resetCellCount == 0 ? minimumCellNumberOfFollowingMonth : minimumCellNumberOfFollowingMonth + (7 - resetCellCount)
         }
     }
