@@ -21,6 +21,7 @@ final class AddCourseMapViewController: BaseViewController {
     private var placeListViewHeight: CGFloat {
         // 기본으로 줘야하는 높이 : 45
         // indicator 영역 높이 : 15
+        // headerView로 사용되는 label의 높이 : 40
         // main button 높이 : 58
         // 위 3개는 최소 높이. (45 + 15 + 58 = 118)
         // 이후 셀 하나가 추가되는 만큼 셀 높이 추가해주기
@@ -29,11 +30,11 @@ final class AddCourseMapViewController: BaseViewController {
         case 0:
             return 0
         case 1:
-            return 185
+            return 225
         case 2:
-            return 252
+            return 292
         default:
-            return 319
+            return 359
         }
     }
     
@@ -76,13 +77,13 @@ final class AddCourseMapViewController: BaseViewController {
         return view
     }()
     private lazy var placeListView: PlaceListView = {
-        let view = PlaceListView(parentView: self.view, numberOfItems: viewModel.places.count)
+        let view = PlaceListView(parentView: self.view)
         view.mapPlaceTableView.dataSource = self
         view.mapPlaceTableView.delegate = self
         return view
     }()
     private lazy var nextButton: MainButton = {
-        let button = MainButton(type: .next)
+        let button = MainButton(type: .empty)
         button.addTarget(self, action: #selector(didTapNextButton(_:)), for: .touchUpInside)
         return button
     }()
@@ -97,7 +98,9 @@ final class AddCourseMapViewController: BaseViewController {
             .sink(receiveValue: { [weak self] places in
                 guard let self = self else { return }
                 self.placeListView.numberOfItems = places.count
+                self.placeListView.numberLabel.text = "\(places.count)개"
                 self.placeListView.mapPlaceTableView.reloadData()
+                self.nextButton.setTitle("\(places.count)개 선택 완료", for: .normal)
             })
             .cancel(with: cancelBag)
     }
