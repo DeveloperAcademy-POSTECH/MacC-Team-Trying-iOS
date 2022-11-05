@@ -1,0 +1,21 @@
+//
+//  YearMonthDayDate.swift
+//  ComeIt
+//
+//  Created by Jaeyong Lee on 2022/11/06.
+//  Copyright © 2022 Try-ing. All rights reserved.
+//
+
+import Foundation
+
+struct YearMonthDayDate: Equatable {
+    let year: Int
+    let month: Int
+    let day: Int
+}
+
+extension YearMonthDayDate {
+    func compareDate(with date: YearMonthDayDate) -> Bool {
+        date.year == self.year && date.month == self.month && date.day == self.day
+    }
+}

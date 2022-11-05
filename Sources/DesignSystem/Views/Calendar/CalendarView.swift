@@ -22,6 +22,24 @@ final class CalendarView: BaseView {
 
     weak var delegate: CalendarViewDelegate?
 
+    var selectedDate: YearMonthDayDate {
+        didSet {
+            print(selectedDate)
+        }
+    }
+
+    // 일정과 관련된 프로퍼티
+
+    var scheduleList: [YearMonthDayDate] = [
+        YearMonthDayDate(year: 2022, month: 10, day: 31),
+        YearMonthDayDate(year: 2022, month: 11, day: 6),
+        YearMonthDayDate(year: 2022, month: 11, day: 10),
+        YearMonthDayDate(year: 2022, month: 11, day: 23),
+        YearMonthDayDate(year: 2022, month: 11, day: 30)
+    ]
+
+    // 달력 높이와 관련된 프로퍼티
+
     private var numberOfMonthRow: Int = 6 {
         didSet {
             scrollView.snp.updateConstraints { make in
@@ -89,6 +107,7 @@ final class CalendarView: BaseView {
         self.presentMonthDate = today
         self.previousMonthDate = today.monthBefore ?? .init()
         self.followingMonthDate = today.monthAfter ?? .init()
+        self.selectedDate = .init(year: today.year, month: today.month, day: today.day)
 
         super.init(frame: frame)
         let resetCellCount = minimumCellNumberOfPresentMonth % 7
@@ -110,6 +129,7 @@ final class CalendarView: BaseView {
         scrollView.showsHorizontalScrollIndicator = false
         previousMonthCollectionView.dataSource = self
         presentMonthCollectionView.dataSource = self
+        presentMonthCollectionView.delegate = self
         followingMonthCollectionView.dataSource = self
     }
 
@@ -173,9 +193,19 @@ extension CalendarView: UIScrollViewDelegate {
         case .left:
             let restCellCount = minimumCellNumberOfPreviousMonth % 7
             self.numberOfMonthRow = restCellCount == 0 ? minimumCellNumberOfPreviousMonth / 7 : minimumCellNumberOfPreviousMonth / 7 + 1
+            if today.year == previousYear, today.month == previousMonth {
+                self.selectedDate = .init(year: previousYear, month: previousMonth, day: today.day)
+            } else {
+                self.selectedDate = .init(year: previousYear, month: previousMonth, day: 1)
+            }
         case .right:
             let restCellCount = minimumCellNumberOfFollowingMonth % 7
             self.numberOfMonthRow = restCellCount == 0 ?  minimumCellNumberOfFollowingMonth / 7 : minimumCellNumberOfFollowingMonth / 7 + 1
+            if today.year == followingYear, today.month == followingMonth {
+                self.selectedDate = .init(year: followingYear, month: followingMonth, day: today.day)
+            } else {
+                self.selectedDate = .init(year: followingYear, month: followingMonth, day: 1)
+            }
         case .no:
             break
         }
@@ -215,6 +245,14 @@ extension CalendarView: UIScrollViewDelegate {
         } else {
             numberOfDaysInMonth[1] = 28
         }
+    }
+}
+
+extension CalendarView: UICollectionViewDelegate {
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? DateCell else { return }
+        self.selectedDate = .init(year: presentYear, month: presentMonth, day: cell.day)
     }
 }
 
@@ -339,7 +377,7 @@ extension CalendarView: UICollectionViewDataSource {
         let previousMonth = month == 1 ? 12 : month - 1
         let previousMonthDate = numberOfDaysInMonth[previousMonth - 1]
         let day = previousMonthDate - (startWeekday - 1) + indexPath.item
-        cell.configure(with: day)
+        cell.configure(with: day, isSchedule: checkSchedule(day: day, type: .previous))
         cell.isPreviousMonthCell()
 
         return  cell
@@ -349,12 +387,17 @@ extension CalendarView: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(DateCell.self, for: indexPath)
 
         let day = indexPath.item - startWeekday + 1
-        cell.configure(with: day)
+        cell.configure(with: day, isSchedule: checkSchedule(day: day, type: type))
 
+        // 오늘인지 체크
         if findToday(day: day, type: type) {
             cell.isToday()
         } else {
             cell.isPresentMonthCell()
+        }
+
+        if selectedDate == .init(year: presentYear, month: presentMonth, day: day) {
+            collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .top)
         }
 
         return cell
@@ -364,10 +407,24 @@ extension CalendarView: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(DateCell.self, for: indexPath)
 
         let day = indexPath.item - minimumCellNumber + 1
-        cell.configure(with: day)
+        cell.configure(with: day, isSchedule: checkSchedule(day: day, type: .following))
         cell.isFollowingMonthCell()
 
         return cell
+    }
+
+    private func checkSchedule(day: Int, type: MonthType) -> Bool {
+        switch type {
+        case .previous:
+            let date = YearMonthDayDate(year: previousYear, month: previousMonth, day: day)
+            return scheduleList.contains(date)
+        case .present:
+            let date = YearMonthDayDate(year: presentYear, month: presentMonth, day: day)
+            return scheduleList.contains(date)
+        case .following:
+            let date = YearMonthDayDate(year: followingYear, month: followingMonth, day: day)
+            return scheduleList.contains(date)
+        }
     }
 
     private func findToday(day: Int, type: MonthType) -> Bool {
