@@ -13,7 +13,7 @@ enum AddCourseFlow {
     case record
 }
 
-final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, RegisterCourseCoordinating, AddCourseCompleteCoordinating, HomeCoordinating, Popable {
+final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, RecordCourseCoordinating, AddCourseCompleteCoordinating, HomeCoordinating, Popable {
     weak var navigationController: UINavigationController?
     
     init(navigationController: UINavigationController?) {
@@ -35,9 +35,9 @@ final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, Register
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToRegisterCourseViewController(places: [Place]) {
-        let viewModel = RegisterCourseViewModel(coordinator: self, places: places)
-        let viewController = RegisterCourseViewController(viewModel: viewModel)
+    func pushToRecordCourseViewController(places: [Place]) {
+        let viewModel = RecordCourseViewModel(coordinator: self, places: places)
+        let viewController = RecordCourseViewController(viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }

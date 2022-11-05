@@ -323,7 +323,7 @@ extension AddCourseMapViewController {
     
     @objc
     private func didTapNextButton(_ sender: UIButton) {
-        viewModel.pushToRegisterCourseView()
+        viewModel.pushToRecordCourseView()
     }
     
     private func presentPlaceDetailView(with place: CLPlacemark) {

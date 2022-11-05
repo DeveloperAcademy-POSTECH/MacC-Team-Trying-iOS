@@ -1,5 +1,5 @@
 //
-//  RegisterCourseViewModel.swift
+//  RecordCourseViewModel.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/17.
@@ -19,7 +19,7 @@ protocol AddCourseCompleteCoordinating {
     )
 }
 
-final class RegisterCourseViewModel: BaseViewModel {
+final class RecordCourseViewModel: BaseViewModel {
     var coordinator: Coordinator
     var places: [Place]
     
@@ -42,7 +42,7 @@ final class RegisterCourseViewModel: BaseViewModel {
 }
 
 // MARK: - Coordinating
-extension RegisterCourseViewModel {
+extension RecordCourseViewModel {
     func pop() {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
@@ -61,7 +61,7 @@ extension RegisterCourseViewModel {
 }
 
 // MARK: - Business Logic
-extension RegisterCourseViewModel {
+extension RecordCourseViewModel {
     func addImage(_ image: UIImage) {
         images.append(image)
     }

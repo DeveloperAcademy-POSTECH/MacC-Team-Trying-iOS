@@ -1,5 +1,5 @@
 //
-//  RegisterCourseViewController.swift
+//  RecordCourseViewController.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/17.
@@ -13,8 +13,8 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class RegisterCourseViewController: BaseViewController {
-    var viewModel: RegisterCourseViewModel
+final class RecordCourseViewController: BaseViewController {
+    var viewModel: RecordCourseViewModel
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -90,7 +90,7 @@ final class RegisterCourseViewController: BaseViewController {
             .cancel(with: cancelBag)
     }
     
-    init(viewModel: RegisterCourseViewModel) {
+    init(viewModel: RecordCourseViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -108,9 +108,9 @@ final class RegisterCourseViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension RegisterCourseViewController: NavigationBarConfigurable {
+extension RecordCourseViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureCourseDetailNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), selectDateAction: #selector(selectDateButtonPressed(_:)))
+        configureCourseDetailNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
         setLayout()
     }
     
@@ -182,7 +182,7 @@ extension RegisterCourseViewController: NavigationBarConfigurable {
 }
 
 // MARK: - UICollectionViewDataSource
-extension RegisterCourseViewController: UICollectionViewDataSource {
+extension RecordCourseViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.images.count + 1
     }
@@ -205,7 +205,7 @@ extension RegisterCourseViewController: UICollectionViewDataSource {
 }
 
 // MARK: - User Interactions
-extension RegisterCourseViewController: UITextViewDelegate {
+extension RecordCourseViewController: UITextViewDelegate {
     /// UIButton의 터치가 아닐 때, dismissAllActivatedComponents() 메소드를 호출합니다.
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if touch.view as? UIButton != nil { return false }
@@ -332,7 +332,7 @@ extension RegisterCourseViewController: UITextViewDelegate {
 }
 
 // MARK: - UINavigationControllerDelegate, UIImagePickerControllerDelegate
-extension RegisterCourseViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+extension RecordCourseViewController: UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
     }
@@ -346,7 +346,7 @@ extension RegisterCourseViewController: UINavigationControllerDelegate, UIImageP
 }
 
 // MARK: - Helper Methods
-extension RegisterCourseViewController {
+extension RecordCourseViewController {
     /// DatePicker에서 선택할 수 있는 최대, 최소 날짜를 설정합니다.
     /// - Parameters:
     ///   - datePicker: 설정할 DatePicker를 Reference로 전달합니다.

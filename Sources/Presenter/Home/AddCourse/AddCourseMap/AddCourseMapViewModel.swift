@@ -20,8 +20,8 @@ protocol PlaceSearchCoordinating {
     func pushToPlaceSearchViewController()
 }
 
-protocol RegisterCourseCoordinating {
-    func pushToRegisterCourseViewController(places: [Place])
+protocol RecordCourseCoordinating {
+    func pushToRecordCourseViewController(places: [Place])
 }
 
 final class AddCourseMapViewModel: BaseViewModel {
@@ -48,9 +48,9 @@ extension AddCourseMapViewModel {
         coordinator.pushToPlaceSearchViewController()
     }
     
-    func pushToRegisterCourseView() {
-        guard let coordinator = coordinator as? RegisterCourseCoordinating else { return }
-        coordinator.pushToRegisterCourseViewController(places: places)
+    func pushToRecordCourseView() {
+        guard let coordinator = coordinator as? RecordCourseCoordinating else { return }
+        coordinator.pushToRecordCourseViewController(places: places)
     }
 }
 
