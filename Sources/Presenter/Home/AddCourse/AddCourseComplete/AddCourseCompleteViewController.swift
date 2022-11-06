@@ -43,12 +43,7 @@ final class AddCourseCompleteViewController: BaseViewController {
         lottie.play()
         return lottie
     }()
-    private lazy var constellationImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.image = viewModel.makeStars(places: viewModel.places)
-        return imageView
-    }()
+    private lazy var constellationView: UIView = self.makeConstellation(places: viewModel.places)
     private lazy var courseTitleLabel: PaddingLabel = {
         let label = PaddingLabel(padding: UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8))
         label.textColor = .designSystem(.mainYellow)
@@ -122,7 +117,7 @@ extension AddCourseCompleteViewController {
         view.addSubviews(
             completeLabel,
             starLottie,
-            constellationImageView,
+            constellationView,
             courseTitleLabel,
             doneButton
         )
@@ -138,13 +133,14 @@ extension AddCourseCompleteViewController {
             make.height.equalTo(170)
         }
         
-        constellationImageView.snp.makeConstraints { make in
+        constellationView.snp.makeConstraints { make in
             make.top.equalTo(starLottie.snp.bottom).offset(45)
-            make.leading.trailing.equalToSuperview().inset(150)
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(200)
         }
         
         courseTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(constellationImageView.snp.bottom).offset(20)
+            make.top.equalTo(constellationView.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
             make.height.equalTo(25)
         }
@@ -161,7 +157,6 @@ extension AddCourseCompleteViewController {
         view.addSubviews(
             completeLabel,
             starLottie,
-            constellationImageView,
             doneButton
         )
         
@@ -181,6 +176,71 @@ extension AddCourseCompleteViewController {
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
         }
+    }
+    
+    func makeConstellation(places: [Place]) -> UIView {
+        let constellationView = UIView()
+        constellationView.backgroundColor = .clear
+        constellationView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+        
+        let latitudeArray = places.map { CGFloat($0.location.latitude) }
+        let longitudeArray = places.map { CGFloat($0.location.longitude) }
+        
+        guard let minX = latitudeArray.min(),
+              let maxX = latitudeArray.max(),
+              let minY = longitudeArray.min(),
+              let maxY = longitudeArray.max() else { return UIView() }
+        
+        let deltaX: CGFloat = maxX == minX ? 1 : maxX - minX
+        let deltaY: CGFloat = maxY == minY ? 1 : maxY - minY
+        
+        let adjustedLatitude = latitudeArray.map { (CGFloat(($0 - minX) / deltaX ) * 200) * 0.8 }
+        let adjustedLongitude = longitudeArray.map { (CGFloat(($0 - minY) / deltaY) * 200) * 0.8 }
+        
+        let xOffset = (200 - abs(adjustedLatitude.max()!)) / 2 - 12.5
+        let yOffset = (200 - abs(adjustedLongitude.max()!)) / 2 - 12.5
+
+        for index in places.indices {
+            let starLottie = LottieAnimationView(name: Constants.Lottie.mainStar)
+            starLottie.contentMode = .scaleAspectFit
+            starLottie.frame = CGRect(x: adjustedLatitude[index] + xOffset, y: adjustedLongitude[index] + yOffset, width: 40, height: 40)
+            starLottie.animationSpeed = CGFloat.random(in: 0.3...2.0)
+            starLottie.loopMode = .autoReverse
+            starLottie.play()
+
+            constellationView.addSubview(starLottie)
+
+            if index < places.count - 1 {
+                let xPan = (adjustedLatitude[index + 1] - adjustedLatitude[index])
+                let yPan = (adjustedLongitude[index + 1] - adjustedLongitude[index])
+
+                let distance = ((xPan * xPan) + (yPan * yPan)).squareRoot()
+                let editX = 13 / distance * xPan
+                let editY = 13 / distance * yPan
+
+                let path = UIBezierPath()
+                path.move(to: CGPoint(x: adjustedLatitude[index] + starLottie.frame.size.width / 2 + editX + xOffset, y: adjustedLongitude[index] + starLottie.frame.size.height / 2 + editY + yOffset))
+                path.addLine(to: CGPoint(x: adjustedLatitude[index + 1] + starLottie.frame.size.width / 2 - editX + xOffset, y: adjustedLongitude[index + 1] + starLottie.frame.size.height / 2 - editY + yOffset))
+                path.lineWidth = 2
+                path.lineJoinStyle = .round
+                path.close()
+                
+                let shapeLayer = CAShapeLayer()
+                shapeLayer.shadowOffset = .zero
+                shapeLayer.shadowRadius = 10
+                shapeLayer.shadowColor = UIColor.red.cgColor
+                shapeLayer.shadowOpacity = 2.0
+
+                shapeLayer.path = path.cgPath
+                shapeLayer.lineWidth = path.lineWidth
+                shapeLayer.fillColor = UIColor.systemYellow.cgColor
+
+                shapeLayer.strokeColor = UIColor.systemYellow.cgColor
+                constellationView.layer.addSublayer(shapeLayer)
+            }
+        }
+        
+        return constellationView
     }
 }
 
