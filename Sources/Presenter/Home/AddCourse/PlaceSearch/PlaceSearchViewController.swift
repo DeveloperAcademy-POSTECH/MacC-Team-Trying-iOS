@@ -70,7 +70,7 @@ final class PlaceSearchViewController: BaseViewController {
 // MARK: - UI
 extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), doneAction: #selector(doneButtonPressed(_:)), textEditingAction: #selector(textFieldEditing(_:)))
+        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), mapAction: #selector(mapButtonPressed(_:)), textEditingAction: #selector(textFieldEditing(_:)))
         setAttributes()
         setLayout()
     }
@@ -148,8 +148,7 @@ extension PlaceSearchViewController {
     }
     
     @objc
-    private func doneButtonPressed(_ sender: UIButton) {
-        // TODO: 완료 처리하기
+    private func mapButtonPressed(_ sender: UIButton) {
         viewModel.pop()
     }
     

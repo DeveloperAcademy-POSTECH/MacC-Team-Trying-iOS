@@ -41,9 +41,9 @@ protocol NavigationBarConfigurable: BaseViewController {
     /// - Parameters:
     ///   - target: Target
     ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
-    ///   - doneAction: 완료 버튼이 눌렸을 때 실행할 @objc 메소드
+    ///   - mapAction: 지도 버튼이 눌렸을 때 실행할 @objc 메소드
     ///   - textEditingAction: TextField 편집 시 실행할 @objc 메소드
-    func configureSearchNavigationBar(target: Any, popAction: Selector, doneAction: Selector, textEditingAction: Selector)
+    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector, textEditingAction: Selector)
     
     /// 데이트 기록 과정에서 사진, 데이트 후기를 입력하는 화면에서 사용되는 Navigation Bar를 설정합니다.
     /// - Parameters:
@@ -170,7 +170,7 @@ extension NavigationBarConfigurable {
         navigationItem.rightBarButtonItem = rightButtonItem
     }
     
-    func configureSearchNavigationBar(target: Any, popAction: Selector, doneAction: Selector, textEditingAction: Selector) {
+    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector, textEditingAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
             button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
@@ -182,13 +182,13 @@ extension NavigationBarConfigurable {
             textField.addTarget(target, action: textEditingAction, for: .editingChanged)
             return textField
         }()
-        let doneButton: UIButton = {
+        let mapButton: UIButton = {
             let button = UIButton(type: .custom)
-            button.setTitle("완료", for: .normal)
-            button.setTitleColor(.designSystem(.white), for: .normal)
-            button.setTitleColor(.designSystem(.gray818181), for: .disabled)
-            button.titleLabel?.font = .designSystem(weight: .regular, size: ._15)
-            button.addTarget(target, action: doneAction, for: .touchUpInside)
+            let configuration = UIImage.SymbolConfiguration(pointSize: 20)
+            let mapImage = UIImage(systemName: Constants.Image.map, withConfiguration: configuration)
+            button.setImage(mapImage, for: .normal)
+            button.tintColor = .designSystem(.white)
+            button.addTarget(target, action: mapAction, for: .touchUpInside)
             return button
         }()
         
@@ -201,7 +201,7 @@ extension NavigationBarConfigurable {
         }
 
         let leftButtonItem = UIBarButtonItem(customView: textFieldView)
-        let rightButtonItem = UIBarButtonItem(customView: doneButton)
+        let rightButtonItem = UIBarButtonItem(customView: mapButton)
         navigationItem.leftBarButtonItem = leftButtonItem
         navigationItem.rightBarButtonItem = rightButtonItem
     }

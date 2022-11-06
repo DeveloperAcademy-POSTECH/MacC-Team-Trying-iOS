@@ -12,7 +12,7 @@ import SnapKit
 
 enum CustomTextFieldType {
     /// 코스 등록 과정의 장소 검색 화면에서 사용되는 TextField
-    /// - Width : 디바이스 가로 길이 * 0.7743
+    /// - Width : 디바이스 가로 길이 * 0.8051
     /// - Height : 50
     /// - Placeholder : 장소를 입력해 주세요.
     case placeSearch
@@ -120,7 +120,7 @@ final class CustomTextField: UITextField {
         switch type {
         case .placeSearch:
             self.snp.makeConstraints { make in
-                make.width.equalTo(DeviceInfo.screenWidth * 0.7743)
+                make.width.equalTo(DeviceInfo.screenWidth * 0.8051)
                 make.height.equalTo(44)
             }
             
