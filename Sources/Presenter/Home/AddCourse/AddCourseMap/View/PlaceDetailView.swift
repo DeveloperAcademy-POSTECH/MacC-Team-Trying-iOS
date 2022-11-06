@@ -67,6 +67,8 @@ final class PlaceDetailView: UIView {
     private func setUI() {
         self.backgroundColor = .designSystem(.black)
         self.layer.cornerRadius = 20
+        self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        self.layer.masksToBounds = true
         
         placeInfoView.addSubviews(
             titleLabel,

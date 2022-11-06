@@ -257,9 +257,10 @@ extension AddCourseMapViewController {
                 UIView.animate(
                     withDuration: 0.3,
                     delay: 0,
+                    options: .curveEaseOut,
                     animations: {
                         self.placeDetailView.snp.updateConstraints { make in
-                            make.bottom.equalToSuperview().inset(keyboardHeight)
+                            make.bottom.equalToSuperview().inset(keyboardHeight - 8)
                         }
                         self.view.layoutIfNeeded()
                     }
@@ -273,8 +274,9 @@ extension AddCourseMapViewController {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             UIView.animate(
-                withDuration: 0.3,
+                withDuration: 0.27,
                 delay: 0,
+                options: .curveEaseOut,
                 animations: {
                     self.placeDetailView.snp.updateConstraints { make in
                         make.bottom.equalToSuperview()
