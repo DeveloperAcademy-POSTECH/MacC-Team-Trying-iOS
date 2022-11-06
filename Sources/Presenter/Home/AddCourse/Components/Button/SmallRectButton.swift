@@ -11,17 +11,23 @@ import UIKit
 import SnapKit
 
 enum SmallRectButtonType {
-    /// 코스 추가 버튼
+    /// 코스추가 버튼
     /// - Title : 코스추가
-    /// - Width: 70
+    /// - Width : 70
     /// - Height : 30
     case add
     
     /// 취소 버튼
     /// - Title : 취소
-    /// - Width: 70
+    /// - Width : 70
     /// - Height : 30
     case cancel
+    
+    /// 상세보기 버튼
+    /// - Title: 상세보기
+    /// - Width : 70
+    /// - Height : 30
+    case detail
 }
 
 final class SmallRectButton: UIButton {
@@ -48,6 +54,10 @@ final class SmallRectButton: UIButton {
         case .cancel:
             self.setTitle("취소", for: .normal)
             self.layer.borderColor = .designSystem(.red)
+            
+        case .detail:
+            self.setTitle("상세보기", for: .normal)
+            self.layer.borderColor = .designSystem(.mainYellow)
         }
         self.layer.cornerRadius = 10
         self.layer.borderWidth = 1

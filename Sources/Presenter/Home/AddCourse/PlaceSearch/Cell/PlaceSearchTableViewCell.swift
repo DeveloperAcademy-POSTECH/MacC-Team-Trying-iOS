@@ -32,7 +32,7 @@ final class PlaceSearchTableViewCell: UITableViewCell {
         label.font = .designSystem(weight: .regular, size: ._13)
         return label
     }()
-    lazy var addCourseButton = SmallRectButton(type: .add)
+    lazy var detailButton = SmallRectButton(type: .detail)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -47,8 +47,15 @@ final class PlaceSearchTableViewCell: UITableViewCell {
     private func setUI() {
         contentView.backgroundColor = .designSystem(.black)
         
-        placeContainerView.addSubviews(titleLabel, categoryLabel, addressLabel)
-        contentView.addSubviews(placeContainerView, addCourseButton)
+        placeContainerView.addSubviews(
+            titleLabel,
+            categoryLabel,
+            addressLabel
+        )
+        contentView.addSubviews(
+            placeContainerView,
+            detailButton
+        )
         
         placeContainerView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(15)
@@ -68,7 +75,7 @@ final class PlaceSearchTableViewCell: UITableViewCell {
             make.leading.bottom.equalToSuperview()
         }
         
-        addCourseButton.snp.makeConstraints { make in
+        detailButton.snp.makeConstraints { make in
             make.centerY.trailing.equalToSuperview()
         }
     }

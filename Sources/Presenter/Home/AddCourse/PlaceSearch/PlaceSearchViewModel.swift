@@ -52,12 +52,6 @@ extension PlaceSearchViewModel {
             self.places = tempPlaces
         }
     }
-    
-    func addCourse(_ index: Int) {
-        // TODO: 코스추가 눌렀을 때 annotation 추가하기
-//        places[index]
-        let selectedPlace = places[index]
-    }
 }
 
 // MARK: - Helper

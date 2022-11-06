@@ -123,9 +123,9 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
         cell.titleLabel.text = place.title
         cell.addressLabel.text = place.address
         cell.categoryLabel.text = place.category
-        cell.addCourseButton.tag = indexPath.row
+        cell.detailButton.tag = indexPath.row
         
-        cell.addCourseButton.addTarget(self, action: #selector(addCourseButtonPressed(_:)), for: .touchUpInside)
+        cell.detailButton.addTarget(self, action: #selector(detailButtonPressed(_:)), for: .touchUpInside)
         return cell
     }
     
@@ -158,8 +158,7 @@ extension PlaceSearchViewController {
     }
     
     @objc
-    private func addCourseButtonPressed(_ sender: UIButton) {
+    private func detailButtonPressed(_ sender: UIButton) {
         navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
-        viewModel.addCourse(sender.tag)
     }
 }
