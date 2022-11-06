@@ -20,7 +20,7 @@ final class PlaceSearchViewController: BaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(PlaceSearchTableViewCell.self, forCellReuseIdentifier: PlaceSearchTableViewCell.identifier)
-        tableView.backgroundColor = .designSystem(.black)
+        tableView.backgroundColor = .clear
         tableView.sectionHeaderHeight = 1
         tableView.allowsSelection = false
         tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)

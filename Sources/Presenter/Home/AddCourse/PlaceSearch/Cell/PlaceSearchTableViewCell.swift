@@ -45,7 +45,7 @@ final class PlaceSearchTableViewCell: UITableViewCell {
     }
     
     private func setUI() {
-        contentView.backgroundColor = .designSystem(.black)
+        self.backgroundColor = .designSystem(.black)?.withAlphaComponent(0.1)
         
         placeContainerView.addSubviews(
             titleLabel,

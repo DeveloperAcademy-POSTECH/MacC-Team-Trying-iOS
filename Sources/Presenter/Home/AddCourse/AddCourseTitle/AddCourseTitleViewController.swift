@@ -16,7 +16,6 @@ final class AddCourseTitleViewController: BaseViewController {
     var type: AddCourseFlowType
     var viewModel: AddCourseTitleViewModel
     
-    private lazy var backgroundView = BackgroundView(frame: view.bounds)
     private let descriptionLabel1: UILabel = {
         let label = UILabel()
         label.text = "생성할 코스의 이름을"
@@ -110,7 +109,6 @@ extension AddCourseTitleViewController: NavigationBarConfigurable {
         }
         
         view.addSubviews(
-            backgroundView,
             descriptionLabel1,
             descriptionLabel2,
             titleTextField,
