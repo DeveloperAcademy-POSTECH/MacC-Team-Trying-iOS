@@ -413,6 +413,7 @@ extension AddCourseMapViewController {
     @objc
     private func didTapMapView(_ sender: UITapGestureRecognizer) {
         placeDetailView.memoTextField.resignFirstResponder()
+        viewModel.memo = nil
         let location = sender.location(in: placeMapView)
         let mapPoint = placeMapView.convert(location, toCoordinateFrom: placeMapView)
         
