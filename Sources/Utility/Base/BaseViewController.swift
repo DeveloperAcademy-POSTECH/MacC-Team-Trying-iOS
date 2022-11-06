@@ -16,17 +16,16 @@ import SnapKit
 class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
     let cancelBag = CancelBag()
     
-    private var lastXOffset: CGFloat = 0
-    private var lastYOffset: CGFloat = 0
-    private lazy var backgroundView = BackgroundView(frame: CGRect(x: 0, y: 0, width: view.frame.width + 30, height: view.frame.height + 30))
+    var lastXOffset: CGFloat = 0
+    var lastYOffset: CGFloat = 0
+    lazy var backgroundView = BackgroundView(frame: CGRect(x: 0, y: 0, width: view.frame.width + 30, height: view.frame.height + 30))
 
-    private var motionManager: CMMotionManager?
+    var motionManager: CMMotionManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.addSubview(backgroundView)
-        setGyroMotionManager()
         // view.backgroundColor = .designSystem(.black)                                // 화면 배경 색상을 설정합니다.
         navigationController?.interactivePopGestureRecognizer?.delegate = self      // Swipe-gesture를 통해 pop을 합니다.
     }
@@ -37,7 +36,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         motionManager?.stopGyroUpdates()
     }
     
-    private func setGyroMotionManager() {
+    func setBackgroundGyroMotion() {
         motionManager = CMMotionManager()
         
         motionManager?.gyroUpdateInterval = 0.01

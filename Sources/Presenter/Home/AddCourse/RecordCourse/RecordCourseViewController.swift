@@ -108,6 +108,7 @@ final class RecordCourseViewController: BaseViewController {
 extension RecordCourseViewController: NavigationBarConfigurable {
     private func setUI() {
         configureCourseDetailNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
+        setBackgroundGyroMotion()
         setLayout()
     }
     

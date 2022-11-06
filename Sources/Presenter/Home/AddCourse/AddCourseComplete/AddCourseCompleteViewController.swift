@@ -7,6 +7,7 @@
 //
 
 import Combine
+import CoreMotion
 import UIKit
 
 import CancelBag
@@ -43,7 +44,11 @@ final class AddCourseCompleteViewController: BaseViewController {
         lottie.play()
         return lottie
     }()
-    private lazy var constellationView: UIView = self.makeConstellation(places: viewModel.places)
+    private lazy var constellationView: UIView = {
+        let view = self.makeConstellation(places: viewModel.places)
+        view.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+        return view
+    }()
     private lazy var courseTitleLabel: PaddingLabel = {
         let label = PaddingLabel(padding: UIEdgeInsets(top: 2, left: 8, bottom: 2, right: 8))
         label.textColor = .designSystem(.mainYellow)
@@ -99,6 +104,7 @@ final class AddCourseCompleteViewController: BaseViewController {
 extension AddCourseCompleteViewController {
     private func setUI() {
         setAttributes()
+        setGyroMotion()
         
         if type == .record {
             setRecordCompleteViewLayout()
@@ -133,15 +139,9 @@ extension AddCourseCompleteViewController {
             make.height.equalTo(170)
         }
         
-        constellationView.snp.makeConstraints { make in
-            make.top.equalTo(starLottie.snp.bottom).offset(45)
-            make.centerX.equalToSuperview()
-            make.width.height.equalTo(200)
-        }
-        
         courseTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(constellationView.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
+            make.bottom.equalTo(doneButton.snp.top).offset(-100)
             make.height.equalTo(25)
         }
         
@@ -241,6 +241,31 @@ extension AddCourseCompleteViewController {
         }
         
         return constellationView
+    }
+    
+    private func setGyroMotion() {
+        motionManager = CMMotionManager()
+        
+        motionManager?.gyroUpdateInterval = 0.01
+        motionManager?.startGyroUpdates(to: .main, withHandler: { [weak self] data, _ in
+            guard let self = self,
+                  let data = data else { return }
+            
+            let offsetRate = 0.2
+            self.lastXOffset += data.rotationRate.x * offsetRate
+            self.lastYOffset += data.rotationRate.y * offsetRate
+            
+            let constellationOffsetRate = 1.3
+
+            self.backgroundView.center = CGPoint(
+                x: DeviceInfo.screenWidth / 2 + self.lastYOffset,
+                y: DeviceInfo.screenHeight / 2 + self.lastXOffset
+            )
+            self.constellationView.center = CGPoint(
+                x: DeviceInfo.screenWidth / 2 - self.lastYOffset * constellationOffsetRate,
+                y: (DeviceInfo.screenHeight / 2) - (self.lastXOffset * constellationOffsetRate) + 50
+            )
+        })
     }
 }
 

@@ -71,6 +71,7 @@ final class PlaceSearchViewController: BaseViewController {
 extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setUI() {
         configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), mapAction: #selector(mapButtonPressed(_:)), textEditingAction: #selector(textFieldEditing(_:)))
+        setBackgroundGyroMotion()
         setAttributes()
         setLayout()
     }

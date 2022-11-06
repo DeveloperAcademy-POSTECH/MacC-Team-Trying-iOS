@@ -91,6 +91,7 @@ final class AddCourseTitleViewController: BaseViewController {
 // MARK: - UI
 extension AddCourseTitleViewController: NavigationBarConfigurable {
     private func setUI() {
+        setBackgroundGyroMotion()
         setAttributes()
         setLayout()
     }
