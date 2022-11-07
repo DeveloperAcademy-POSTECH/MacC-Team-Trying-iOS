@@ -14,13 +14,13 @@ import SnapKit
 
 final class SearchViewController: BaseViewController {
     
-    var viewModel: SearchViewModel?
-    private lazy var courseTableView = CourseTableView(viewModel: viewModel)
+    var searchViewModel: SearchViewModel?
+    private lazy var courseTableView = CourseTableView(viewModel: searchViewModel)
     private let coursePlanetSegmentedControlView = CoursePlanetSegmentedControlView(buttonTitles: ["코스", "행성"])
     private let navigationTextField = SearchTextField()
     
     private func bind() {
-        viewModel?.bind(navigationTextField, to: \.searchString)
+        searchViewModel?.bind(navigationTextField, to: \.searchString)
     }
 
     override func viewDidLoad() {
@@ -63,7 +63,7 @@ extension SearchViewController {
             
     private func configure() {
         coursePlanetSegmentedControlView.segmentChanged = { [weak self] coursePlanet in
-            guard let viewModel = self?.viewModel else { return }
+            guard let viewModel = self?.searchViewModel else { return }
             viewModel.changeTo(coursePlanet)
         }
     }

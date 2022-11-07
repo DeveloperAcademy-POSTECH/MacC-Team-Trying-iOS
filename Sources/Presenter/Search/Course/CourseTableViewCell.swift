@@ -12,9 +12,16 @@ class CourseTableViewCell: UITableViewCell {
 
     private var imageURLStrings: [String] = []
     static let identifier = "CourseTableViewCell"
+    
+    private var courseId: Int?
+    
+    private var likeState: Bool = false {
+        didSet {
+            likeButton.toggleLike(isLike: likeState)
+        }
+    }
 
-    var likeTapped: (() -> Void)?
-    var followTapped: (() -> Void)?
+    var likeTapped: ((Int, Bool) -> Void)?
 
     var course: SearchCourse? {
         didSet {
@@ -26,14 +33,14 @@ class CourseTableViewCell: UITableViewCell {
             timeLabel.text = course.timeString
             locationNameLabel.text = course.locationString
             imageURLStrings = course.imageURLStrings
-            likeButton.setButtonImage(isLike: course.isLike)
-            followButton.setButtonDetailConfiguration(isFollow: course.isFollow)
+            likeState = course.isLike
+            courseId = course.courseId
         }
     }
     
     private lazy var planetImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -58,11 +65,11 @@ class CourseTableViewCell: UITableViewCell {
         return label
     }()
     
-    private lazy var followButton: FollowButton = {
-        let button = FollowButton()
-        button.addTarget(self, action: #selector(toggleFollow), for: .touchUpInside)
-        return button
-    }()
+//    private lazy var followButton: FollowButton = {
+//        let button = FollowButton()
+//        button.addTarget(self, action: #selector(toggleFollow), for: .touchUpInside)
+//        return button
+//    }()
     
     private lazy var likeButton: LikeButton = {
         let button = LikeButton()
@@ -119,7 +126,7 @@ class CourseTableViewCell: UITableViewCell {
     }
     
     private func setAttributes() {
-        contentView.addSubviews(planetImageView, planetNameLocationVStackView, followButton, likeButton, courseImageCollectionView)
+        contentView.addSubviews(planetImageView, planetNameLocationVStackView, likeButton, courseImageCollectionView)
     }
 
     private func setConstraints() {
@@ -129,24 +136,14 @@ class CourseTableViewCell: UITableViewCell {
             make.width.height.equalTo(50)
         }
         
-        followButton.snp.makeConstraints { make in
-            make.width.equalTo(67.5)
-            make.height.equalTo(25)
-        }
-        
         likeButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(20)
-            make.centerY.equalTo(planetImageView)
-        }
-        
-        followButton.snp.makeConstraints { make in
-            make.trailing.equalTo(likeButton.snp.leading).offset(-16.5)
             make.centerY.equalTo(planetImageView)
         }
 
         planetNameLocationVStackView.snp.makeConstraints { make in
             make.leading.equalTo(planetImageView.snp.trailing).offset(10)
-            make.trailing.equalTo(followButton.snp.leading).offset(4)
+            make.trailing.equalTo(likeButton.snp.leading).offset(4)
             make.centerY.equalTo(planetImageView)
         }
         
@@ -161,13 +158,13 @@ class CourseTableViewCell: UITableViewCell {
     
     @objc
     private func toggleLike() {
-        likeButton.toggleLike()
-        likeTapped?()
-    }
-    
-    @objc
-    private func toggleFollow() {
-        followTapped?()
+        guard let courseId = courseId,
+              let likeToggleTapped = likeTapped
+        else {
+            return
+        }
+        likeState.toggle()
+        likeToggleTapped(courseId, likeState)
     }
     
     required init?(coder: NSCoder) {
@@ -177,7 +174,7 @@ class CourseTableViewCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-
+    
 }
 
 extension CourseTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource {

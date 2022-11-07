@@ -127,8 +127,3 @@ extension CoursePlanetSegmentedControlView {
         }
     }
 }
-
-enum CoursePlanet: Int, CaseIterable {
-    case course
-    case planet
-}

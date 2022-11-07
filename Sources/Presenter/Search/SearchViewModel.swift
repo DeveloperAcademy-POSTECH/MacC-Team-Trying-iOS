@@ -11,7 +11,6 @@ import UIKit
 
 import CancelBag
 
-
 final class SearchViewModel: BaseViewModel {
     
     @Published var currentCategory: CoursePlanet = .course
@@ -22,8 +21,21 @@ final class SearchViewModel: BaseViewModel {
     
     @Published var searchString: String
     
+    private var searchPlanetUseCase: SearchableDelegate
+    private var courseLikeUseCase: LikeTogglableDelegate
+    private var planetFollowUseCase: FollowTogglableDelegate
+    
+    private var countOfItem = 0
+    private var canFetch: Bool = false
+    private var currentPage: Int = 0
+    private var modifiedLikedDictionary: [Int: Bool] = [:]
+    private var modifiedFollowDictionary: [Int: Bool] = [:]
+    
     override init() {
         searchString = ""
+        self.searchPlanetUseCase = SearchPlanetUseCase(planetRepository: SearchPlanetRepository())
+        self.courseLikeUseCase = CourseLikeUseCase(courseToggleImpl: CourseLikeRepository())
+        self.planetFollowUseCase = PlanetFollowUseCase(planetToggleImpl: PlanetFollowRepository())
         super.init()
         bind()
     }
@@ -34,20 +46,41 @@ final class SearchViewModel: BaseViewModel {
         currentCategory = coursePlanet
     }
     
-    private func bind() {
+    func prefetchIndexAt(_ index: Int?) {
         
+        guard let index = index else {
+            return
+        }
+        if index + 10 >= countOfItem {
+            if canFetch {
+                currentPage += 1
+                switch currentCategory {
+                case .course:
+                    fetchCourses(searchString, page: currentPage)
+                case .planet:
+                    fetchPlanets2(searchString, page: currentPage)
+                }
+                canFetch.toggle()
+            }
+        }
+    }
+    
+    private func bind() {
         $searchString
             .debounce(for: 0.5, scheduler: DispatchQueue.main)
             .removeDuplicates()
             .dropFirst()
             .compactMap { $0 }
             .sink { str in
-                print("call")
+                self.coursesOrPlanets = []
+                self.currentPage = 0
+                self.countOfItem = 0
                 switch self.currentCategory {
                 case .course:
-                    self.fetchCourses(str)
+                    self.fetchCourses(str, page: 0, isFirst: true)
                 case .planet:
-                    self.fetchPlanets(str)
+                    self.fetchPlanets2(str, page: 0, isFirst: true)
+                    
                 }
             }
             .cancel(with: cancelBag)
@@ -55,18 +88,34 @@ final class SearchViewModel: BaseViewModel {
         $currentCategory
             .debounce(for: 0.5, scheduler: DispatchQueue.main)
             .sink { coursePlanet in
+                self.coursesOrPlanets = []
+                self.currentPage = 0
+                self.countOfItem = 0
                 switch coursePlanet {
                 case .course:
-                    self.fetchCourses(self.searchString)
+                    self.fetchCourses(self.searchString, page: 0, isFirst: true)
                 case .planet:
-                    self.fetchPlanets(self.searchString)
+                    self.fetchPlanets2(self.searchString, page: 0, isFirst: true)
                 }
             }
             .cancel(with: cancelBag)
         
         Publishers.Merge($planets, $courses)
             .sink { infos in
-                self.coursesOrPlanets = infos
+                self.coursesOrPlanets += infos
+                self.countOfItem = self.coursesOrPlanets.count
+            }
+            .cancel(with: cancelBag)
+    }
+}
+
+extension SearchViewModel {
+    func fetchPlanets2(_ planetName: String, page: Int, isFirst: Bool = false) {
+        searchPlanetUseCase.execute(searchType: .planet, planetName: planetName, page: page, isFirst: isFirst)
+            .sink { _ in
+            } receiveValue: { response in
+                self.planets = response.0
+                self.canFetch = response.1
             }
             .cancel(with: cancelBag)
     }
@@ -74,29 +123,66 @@ final class SearchViewModel: BaseViewModel {
 
 extension SearchViewModel {
     
-    func fetchCourses(_ string: String) {
-        //MARK: 임시 데이터 타입입니다.
-            guard self.currentCategory == .course else { return }
-            self.courses = ([
-                SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "한규", isFollow: false, isLike: true, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
-                SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "두규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
-                SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "세규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"]),
-                SearchCourse(planetImageString: "MyPlanetImage", planetNameString: "한규행성", timeString: "32분 전", locationString: "네규", isFollow: false, isLike: false, imageURLStrings: ["picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample", "picture_sample"])
-            ] as [SearchCourse])
-            .filter { $0.locationString.contains(string) }
-    }
-    
-    func fetchPlanets(_ string: String) {
-        //MARK: 임시 데이터 타입입니다.
-            guard self.currentCategory == .planet else { return }
-            self.planets = ([
-                SearchPlanet(planetImageString: "MyPlanetImage", planetNameString: "두규행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"]),
-                SearchPlanet(planetImageString: "MyPlanetImage", planetNameString: "규한행성", isFollow: true, hosts: ["이한규", "엠마왔쓴"])
-            ] as [SearchPlanet])
-            .filter { $0.planetNameString.contains(string) }
+    func fetchCourses(_ courseName: String, page: Int, isFirst: Bool = false) {
+        searchPlanetUseCase.execute(searchType: .course, planetName: courseName, page: page, isFirst: isFirst)
+            .sink { _ in
+            } receiveValue: { response in
+                self.courses = response.0
+                guard let coursess = self.courses as? [SearchCourse] else { return }
+                self.canFetch = response.1
+            }
+            .cancel(with: cancelBag)
     }
 }
 
+extension SearchViewModel {
+    func toggleLike(courseId: Int, isLike: Bool) {
+        courseLikeUseCase.courseLikeToggle(courseId: courseId, isLike: isLike)
+        modifiedLikedDictionary.updateValue(isLike, forKey: courseId)
+    }
+    
+    func toggleFollow(planetId: Int, isFollow: Bool) {
+        planetFollowUseCase.courseLikeToggle(planetId: planetId, isFollow: isFollow)
+        modifiedFollowDictionary.updateValue(isFollow, forKey: planetId)
+    }
+    
+    func getCourseIndexPathAt(_ indexPath: IndexPath) -> SearchCourse? {
+        guard let course = coursesOrPlanets[indexPath.row] as? SearchCourse else { return nil }
+        return SearchCourse(
+            planetImageString: convertToProperImageString(course.planetImageString),
+            planetNameString: course.planetNameString,
+            timeString: course.timeString,
+            locationString: course.locationString,
+            isLike: modifiedLikedDictionary[course.courseId] ?? course.isLike,
+            imageURLStrings: course.imageURLStrings,
+            courseId: course.courseId
+        )
+    }
+    
+    func getPlanetIndexPathAt(_ indexPath: IndexPath) -> SearchPlanet? {
+        guard let planet = coursesOrPlanets[indexPath.row] as? SearchPlanet else { return nil }
+        return SearchPlanet(
+            planetId: planet.planetId,
+            planetImageString: convertToProperImageString(planet.planetImageString),
+            planetNameString: planet.planetNameString,
+            isFollow: modifiedFollowDictionary[planet.planetId] ?? planet.isFollow,
+            hosts: planet.hosts
+        )
+    }
+}
+
+extension SearchViewModel {
+    //TODO: enum
+    private func convertToProperImageString(_ string: String) -> String {
+        if string == "EARTH" {
+            return "img_planet"
+        } else if string == "planet" {
+            return "img_planet2"
+        } else {
+            return "img_planet3"
+        }
+    }
+}
 extension SearchViewModel {
     func bind(_ textField: UITextField, to property: ReferenceWritableKeyPath<SearchViewModel, String>) {
             NotificationCenter.default.publisher(for: UITextField.textDidChangeNotification, object: textField)
@@ -109,20 +195,7 @@ extension SearchViewModel {
         }
 }
 
-//MARK: 임시 데이터 타입입니다.
-struct SearchCourse {
-    let planetImageString: String
-    let planetNameString: String
-    let timeString: String
-    let locationString: String
-    let isFollow: Bool
-    let isLike: Bool
-    let imageURLStrings: [String]
-}
-
-struct SearchPlanet {
-    let planetImageString: String
-    let planetNameString: String
-    let isFollow: Bool
-    let hosts: [String]
+enum CoursePlanet: Int, CaseIterable {
+    case course
+    case planet
 }

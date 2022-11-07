@@ -30,21 +30,21 @@ class FollowButton: UIButton {
         configuration.background = background
         self.configuration = configuration
         
-        setConfigurationHandler()
+//        setConfigurationHandler()
     }
-    
-    private func setConfigurationHandler() {
-        configurationUpdateHandler = { _ in
-            self.setButtonDetailConfiguration(isFollow: !self.isFollow)
-        }
-    }
+//
+//    private func setConfigurationHandler() {
+//        configurationUpdateHandler = { _ in
+//            self.setButtonDetailConfiguration(isFollow: !self.isFollow)
+//        }
+//    }
     
     func setButtonDetailConfiguration(isFollow: Bool) {
         self.isFollow = isFollow
         var background = self.configuration?.background
     
         self.configuration?.baseForegroundColor = isFollow ? .designSystem(.mainYellow) : .designSystem(.black)
-        self.configuration?.baseBackgroundColor = isFollow ? .designSystem(.black) : .designSystem(.gray818181)
+        self.configuration?.baseBackgroundColor = isFollow ? .clear : .designSystem(.gray818181)
         background?.strokeColor = isFollow ? .designSystem(.mainYellow) : .designSystem(.gray818181)
         self.configuration?.background = background ?? .clear()
     }

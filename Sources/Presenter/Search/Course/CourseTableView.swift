@@ -11,7 +11,6 @@ import UIKit
 
 import CancelBag
 
-
 class CourseTableView: UITableView {
     var searchViewModel: SearchViewModel?
     let cancelBag = CancelBag()
@@ -36,8 +35,9 @@ class CourseTableView: UITableView {
         register(PlanetTableViewCell.self, forCellReuseIdentifier: PlanetTableViewCell.identifier)
         backgroundColor = .designSystem(.black)
         separatorColor = .clear
-        showsVerticalScrollIndicator = false
+        showsVerticalScrollIndicator = true
         dataSource = self
+        prefetchDataSource = self
     }
     
     private func bind() {
@@ -66,17 +66,28 @@ extension CourseTableView: UITableViewDataSource {
         
         switch viewModel.currentCategory {
         case .course:
-            courseTableCell.course = viewModel.coursesOrPlanets[indexPath.row] as? SearchCourse
-            //TODO: 버튼 누를 시 ViewModel 데이터 넘기기
-            courseTableCell.likeTapped = { }
-            courseTableCell.followTapped = { }
+            courseTableCell.course = viewModel.getCourseIndexPathAt(indexPath)
+            courseTableCell.likeTapped = { courseId, isLike in
+                viewModel.toggleLike(courseId: courseId, isLike: isLike)
+            }
+            
             return courseTableCell
         case .planet:
-            planetTableCell.planet = viewModel.coursesOrPlanets[indexPath.row] as? SearchPlanet
-            //TODO: 버튼 누를 시 ViewModel 데이터 넘기기
-            planetTableCell.followTapped = { }
+            planetTableCell.planet = viewModel.getPlanetIndexPathAt(indexPath)
+            planetTableCell.followTapped = { planetId, isFollow in
+                viewModel.toggleFollow(planetId: planetId, isFollow: isFollow)
+            }
             return planetTableCell
         }
+    }
+    
+}
+
+extension CourseTableView: UITableViewDataSourcePrefetching {
+    
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        guard let viewmodel = searchViewModel else { return }
+        viewmodel.prefetchIndexAt(indexPaths.last?.row)
     }
     
 }

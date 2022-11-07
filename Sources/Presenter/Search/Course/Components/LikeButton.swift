@@ -22,14 +22,9 @@ class LikeButton: UIButton {
         }
     }
     
-    func setButtonImage(isLike: Bool) {
+    func toggleLike(isLike: Bool) {
+        print(isLike)
         setImage(UIImage(named: isLike ? "like_image" : "unlike_image"), for: .normal)
-        
-    }
-    
-    func toggleLike() {
-        setImage(currentImage == UIImage(named: "like_image") ? UIImage(named: "unlike_image") :
-                    UIImage(named: "like_image"), for: .normal)
     }
     
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {

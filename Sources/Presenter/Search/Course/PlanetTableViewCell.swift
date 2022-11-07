@@ -10,8 +10,9 @@ import UIKit
 
 class PlanetTableViewCell: UITableViewCell {
 
+    private var planetId: Int?
     static let identifier = "PlanetTableViewCell"
-    var followTapped: (() -> Void)?
+    var followTapped: ((Int, Bool) -> Void)?
     
     var planet: SearchPlanet? {
         didSet {
@@ -21,10 +22,17 @@ class PlanetTableViewCell: UITableViewCell {
             planetImageView.image = UIImage(named: planet.planetImageString)
             planetNameLabel.text = planet.planetNameString
             ownerLabel.text = planet.hosts.joined(separator: ", ")
-            followButton.setButtonDetailConfiguration(isFollow: planet.isFollow)
+            followState = planet.isFollow
+            planetId = planet.planetId
         }
     }
     
+    private var followState: Bool = false {
+        didSet {
+            followButton.setButtonDetailConfiguration(isFollow: followState)
+        }
+    }
+        
     private var containerView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 10
@@ -34,7 +42,7 @@ class PlanetTableViewCell: UITableViewCell {
     
     private var planetImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -118,7 +126,13 @@ class PlanetTableViewCell: UITableViewCell {
     
     @objc
     private func toggleFollow() {
-        followTapped?()
+        guard let planetId = planetId,
+              let followTapped = followTapped
+        else {
+            return
+        }
+        followState.toggle()
+        followTapped(planetId, followState)
     }
     
     required init?(coder: NSCoder) {
