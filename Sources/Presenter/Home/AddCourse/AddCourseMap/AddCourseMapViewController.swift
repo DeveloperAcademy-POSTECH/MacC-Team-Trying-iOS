@@ -469,6 +469,9 @@ extension AddCourseMapViewController: MKMapViewDelegate {
         
         annotationView?.image = UIImage(named: Constants.Image.starAnnotation)
         
+        annotationView?.clusteringIdentifier = viewModel.courseTitle
+        annotationView?.displayPriority = .defaultHigh
+        
         return annotationView
     }
 }

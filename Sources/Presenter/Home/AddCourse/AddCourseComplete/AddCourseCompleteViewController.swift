@@ -19,6 +19,14 @@ final class AddCourseCompleteViewController: BaseViewController {
     private let type: AddCourseFlowType
     var viewModel: AddCourseCompleteViewModel
     
+    private lazy var mediumStarBackgroundView = MediumStarBackgroundView(
+        frame: CGRect(
+            x: 0,
+            y: 0,
+            width: view.frame.width + 30,
+            height: view.frame.height + 30
+        )
+    )
     private lazy var completeLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
@@ -121,6 +129,7 @@ extension AddCourseCompleteViewController {
     /// RecordComplete 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setRecordCompleteViewLayout() {
         view.addSubviews(
+            mediumStarBackgroundView,
             completeLabel,
             // starLottie,
             constellationView,
@@ -203,11 +212,12 @@ extension AddCourseCompleteViewController {
         let yOffset = (200 - abs(adjustedLongitude.max()!)) / 2 - 12.5
 
         for index in places.indices {
+            let randomStarLottieSize = CGFloat.random(in: (30.0...60.0))
             let starLottie = LottieAnimationView(name: Constants.Lottie.mainStar)
             starLottie.contentMode = .scaleAspectFit
-            starLottie.frame = CGRect(x: adjustedLatitude[index] + xOffset, y: adjustedLongitude[index] + yOffset, width: 40, height: 40)
-            starLottie.animationSpeed = CGFloat.random(in: 0.3...2.0)
-            starLottie.loopMode = .autoReverse
+            starLottie.frame = CGRect(x: adjustedLatitude[index] + xOffset, y: adjustedLongitude[index] + yOffset, width: randomStarLottieSize, height: randomStarLottieSize)
+            starLottie.animationSpeed = CGFloat.random(in: 0.05...0.3)
+            starLottie.loopMode = .loop
             starLottie.play()
 
             constellationView.addSubview(starLottie)
@@ -223,8 +233,7 @@ extension AddCourseCompleteViewController {
                 let path = UIBezierPath()
                 path.move(to: CGPoint(x: adjustedLatitude[index] + starLottie.frame.size.width / 2 + editX + xOffset, y: adjustedLongitude[index] + starLottie.frame.size.height / 2 + editY + yOffset))
                 path.addLine(to: CGPoint(x: adjustedLatitude[index + 1] + starLottie.frame.size.width / 2 - editX + xOffset, y: adjustedLongitude[index + 1] + starLottie.frame.size.height / 2 - editY + yOffset))
-                path.lineWidth = 0.5
-                path.lineJoinStyle = .round
+                path.lineWidth = 0.15
                 path.close()
                 
                 let shapeLayer = CAShapeLayer()
@@ -259,12 +268,19 @@ extension AddCourseCompleteViewController {
             self.lastXOffset += data.rotationRate.x * offsetRate
             self.lastYOffset += data.rotationRate.y * offsetRate
             
+            let backgroundOffsetRate = 0.3
             let constellationOffsetRate = 1.3
 
             self.backgroundView.center = CGPoint(
+                x: DeviceInfo.screenWidth / 2 + self.lastYOffset * backgroundOffsetRate,
+                y: DeviceInfo.screenHeight / 2 + self.lastXOffset * backgroundOffsetRate
+            )
+            
+            self.mediumStarBackgroundView.center = CGPoint(
                 x: DeviceInfo.screenWidth / 2 + self.lastYOffset,
                 y: DeviceInfo.screenHeight / 2 + self.lastXOffset
             )
+            
             self.constellationView.center = CGPoint(
                 x: DeviceInfo.screenWidth / 2 - self.lastYOffset * constellationOffsetRate,
                 y: (DeviceInfo.screenHeight / 2) - (self.lastXOffset * constellationOffsetRate)
