@@ -122,7 +122,7 @@ extension AddCourseCompleteViewController {
     private func setRecordCompleteViewLayout() {
         view.addSubviews(
             completeLabel,
-            starLottie,
+            // starLottie,
             constellationView,
             courseTitleLabel,
             doneButton
@@ -133,11 +133,13 @@ extension AddCourseCompleteViewController {
             make.top.equalTo(view.safeAreaLayoutGuide).inset(80)
         }
         
+        /*
         starLottie.snp.makeConstraints { make in
             make.top.equalTo(completeLabel.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview().inset(105)
             make.height.equalTo(170)
         }
+        */
         
         courseTitleLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -221,21 +223,23 @@ extension AddCourseCompleteViewController {
                 let path = UIBezierPath()
                 path.move(to: CGPoint(x: adjustedLatitude[index] + starLottie.frame.size.width / 2 + editX + xOffset, y: adjustedLongitude[index] + starLottie.frame.size.height / 2 + editY + yOffset))
                 path.addLine(to: CGPoint(x: adjustedLatitude[index + 1] + starLottie.frame.size.width / 2 - editX + xOffset, y: adjustedLongitude[index + 1] + starLottie.frame.size.height / 2 - editY + yOffset))
-                path.lineWidth = 2
+                path.lineWidth = 0.5
                 path.lineJoinStyle = .round
                 path.close()
                 
                 let shapeLayer = CAShapeLayer()
+                /*
                 shapeLayer.shadowOffset = .zero
                 shapeLayer.shadowRadius = 10
                 shapeLayer.shadowColor = UIColor.red.cgColor
                 shapeLayer.shadowOpacity = 2.0
+                */
 
                 shapeLayer.path = path.cgPath
                 shapeLayer.lineWidth = path.lineWidth
-                shapeLayer.fillColor = UIColor.systemYellow.cgColor
+                // shapeLayer.fillColor = .designSystem(.whiteFFFBD9)
 
-                shapeLayer.strokeColor = UIColor.systemYellow.cgColor
+                shapeLayer.strokeColor = .designSystem(.whiteFFFBD9)
                 constellationView.layer.addSublayer(shapeLayer)
             }
         }
@@ -263,7 +267,7 @@ extension AddCourseCompleteViewController {
             )
             self.constellationView.center = CGPoint(
                 x: DeviceInfo.screenWidth / 2 - self.lastYOffset * constellationOffsetRate,
-                y: (DeviceInfo.screenHeight / 2) - (self.lastXOffset * constellationOffsetRate) + 50
+                y: (DeviceInfo.screenHeight / 2) - (self.lastXOffset * constellationOffsetRate)
             )
         })
     }

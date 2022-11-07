@@ -323,6 +323,7 @@ extension AddCourseMapViewController {
     @objc
     private func didTapDeleteButton(_ sender: UIButton) {
         let index = sender.tag
+        HapticManager.instance.selection()
         viewModel.deletePlace(index)
         viewModel.deleteAnnotation(map: self.placeMapView, at: index)
         

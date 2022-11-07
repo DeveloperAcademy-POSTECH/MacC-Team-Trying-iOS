@@ -66,7 +66,7 @@ final class RecordCourseViewController: BaseViewController {
         textView.delegate = self
         return textView
     }()
-    private lazy var publicSwitch = CustomToggleButton()
+    // private lazy var publicSwitch = CustomToggleButton()
     private lazy var nextButton: MainButton = {
         let button = MainButton(type: .next)
         button.addTarget(self, action: #selector(nextButtonPressed(_:)), for: .touchUpInside)
@@ -118,7 +118,7 @@ extension RecordCourseViewController: NavigationBarConfigurable {
         contentView.addSubviews(
             imageCollectionView,
             contentTextView,
-            publicSwitch,
+            // publicSwitch,
             nextButton
             // datePickerContainer
         )
@@ -152,9 +152,11 @@ extension RecordCourseViewController: NavigationBarConfigurable {
             make.height.equalTo(435)
         }
         
+        /*
         publicSwitch.snp.makeConstraints { make in
             make.trailing.bottom.equalTo(contentTextView).offset(-15)
         }
+        */
         
         nextButton.snp.makeConstraints { make in
             make.top.equalTo(contentTextView.snp.bottom).offset(15)
@@ -297,6 +299,7 @@ extension RecordCourseViewController: UITextViewDelegate {
         contentTextView.resignFirstResponder()
     }
     
+    /*
     /// 일정 선택 버튼이 눌렸을 때, 키보드를 dismiss하고 DatePicker를 present하거나 dismiss합니다.
     @objc
     private func selectDateButtonPressed(_ sender: UIButton) {
@@ -304,8 +307,7 @@ extension RecordCourseViewController: UITextViewDelegate {
         contentTextView.resignFirstResponder()
         // datePicker.isHidden ? presentDatePicker() : dismissDatePicker()
     }
-    
-    /*
+     
     /// DatePicker를 보여줍니다.
     private func presentDatePicker() {
         self.datePicker.fadeIn(0.3)

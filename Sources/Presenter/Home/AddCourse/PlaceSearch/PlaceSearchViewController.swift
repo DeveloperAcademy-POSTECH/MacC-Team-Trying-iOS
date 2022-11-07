@@ -21,10 +21,11 @@ final class PlaceSearchViewController: BaseViewController {
         tableView.delegate = self
         tableView.register(PlaceSearchTableViewCell.self, forCellReuseIdentifier: PlaceSearchTableViewCell.identifier)
         tableView.backgroundColor = .clear
-        tableView.sectionHeaderHeight = 1
         tableView.allowsSelection = false
-        tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
-        tableView.separatorStyle = .none
+        tableView.separatorStyle = .singleLine
+        tableView.separatorInset = .init(top: 0, left: -15, bottom: 0, right: 0)
+        tableView.separatorInsetReference = .fromAutomaticInsets
+        tableView.separatorColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
         return tableView
     }()
     private lazy var emptyResultView = EmptyResultView()
@@ -134,11 +135,13 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
         67
     }
     
+    /*
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
         headerView.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
         return headerView
     }
+    */
 }
 
 // MARK: - User Interaction
