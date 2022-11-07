@@ -16,11 +16,8 @@ import SnapKit
 final class LogViewController: BaseViewController {
 
     var viewModel: LogViewModel?
-//    private var feedCollectionView: UICollectionView?
     
     private var logTicketView = LogTicketView()
-
-    private var data = [TestViewModel]() // MARK: 임시 데이터 연동
     /// View Model과 bind 합니다.
     private func bind() {
         // input
@@ -30,17 +27,12 @@ final class LogViewController: BaseViewController {
     // MARK: Life-Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setData()
+        view.addSubview(logTicketView)
+        configure()
         setUI()
         bind()
-        view.addSubview(logTicketView)
-        logTicketView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalToSuperview().multipliedBy(0.9)
-        }
     }
 }
-
 // MARK: - UI
 extension LogViewController {
     private func setUI() {
@@ -49,25 +41,28 @@ extension LogViewController {
     }
     /// Attributes를 설정합니다.
     private func setAttributes() {
-    }
-    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setLayout() {
         
     }
-    // TODO: MOCK용 임시 함수
-    private func setData() {
-        for _ in 0...10 {
-            let model = TestViewModel(
-                id: 1,
-                planet: "우디네 행성",
-                planetImage: "woodyPlanetImage",
-                title: "부산풀코스",
-                body: "배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.",
-                date: "2022년 10월 20일",
-                tag: ["삐갈레브레드", "포항공과대학교", "귀여운승창이"],
-                images: ["lakeImage", "lakeImage", "lakeImage", "lakeImage"]
-            )
-            data.append(model)
+    
+    private func configure() {
+        guard let viewModel = viewModel else {
+            print("fatal error")
+            return
+        }
+        logTicketView.dateLabel.text = viewModel.data?.date
+        logTicketView.numberLabel.text = "\(viewModel.data!.id)번째"
+        logTicketView.courseNameLabel.text = viewModel.data?.title
+        logTicketView.fromLabel.text = viewModel.data?.planet
+        logTicketView.imageUrl = viewModel.data!.images
+    }
+    
+    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
+    private func setLayout() {
+        logTicketView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(DeviceInfo.screenHeight * 0.05924170616)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(DeviceInfo.screenWidth * 0.8974358974)
+            make.height.equalTo(DeviceInfo.screenHeight * 0.8163507109)
         }
     }
 }
