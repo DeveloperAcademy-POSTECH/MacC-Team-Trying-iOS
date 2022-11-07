@@ -23,7 +23,9 @@ struct Constants {
     }
 
     struct Image {
-        static let chevron_left = "chevron_left"
+        static let navBackButton = "nav_chevron_left"
+        static let chevron_left = "chevron.left"
+        static let chevron_right = "chevron.right"
         static let x_mark_circle_fill = "xmark.circle.fill"
         static let magnifyingglass = "magnifyingglass"
         static let deleteButton = "delete_button"
@@ -34,6 +36,7 @@ struct Constants {
         static let appIcon = "app_icon"
         static let starAnnotation = "star_annotation"
         static let purplePlanet = "purple_planet"
+        static let setting = "gearshape.fill"
     }
     
     struct Lottie {
