@@ -17,9 +17,8 @@ final class ProfileCoordinator: Coordinator {
     
     func start() {
         guard let navigationController = navigationController else { return }
-        let viewController = ProfileTestViewController()
-        let viewModel = ProfileTestViewModel()
-        viewController.viewModel = viewModel
+        let viewModel = ProfileViewModel(coordinator: self)
+        let viewController = ProfileViewController(viewModel: viewModel)
         
         navigationController.pushViewController(viewController, animated: true)
     }
