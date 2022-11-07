@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 extension String {
     /// 특정글자의 font와 textColor를 바꿀수 있는 메서드
     /// - Parameters:
@@ -20,13 +19,17 @@ extension String {
     /// - Returns: UILabel속성이라면 .text가 아니라 .attributedText로 받아야함
     static func makeAtrributedString(name: String,
                                      appendString: String,
-                                     changeAppendStringSize: CGFloat,
-                                     changeAppendStringWieght: UIFont.Weight,
+                                     changeAppendStringSize: Font.Size,
+                                     changeAppendStringWieght: Font.Weight,
                                      changeAppendStringColor: UIColor) -> NSMutableAttributedString {
         let profileString = name + appendString
         let attributedQuote = NSMutableAttributedString(string: profileString)
-        attributedQuote.addAttribute(.foregroundColor, value: changeAppendStringColor, range: (profileString as NSString).range(of: appendString))
-        attributedQuote.addAttribute(.font, value: UIFont.systemFont(ofSize: changeAppendStringSize, weight: .regular), range: (profileString as NSString).range(of: appendString))
+        attributedQuote.addAttribute(.foregroundColor,
+                                     value: changeAppendStringColor,
+                                     range: (profileString as NSString).range(of: appendString))
+        attributedQuote.addAttribute(.font,
+                                     value: UIFont.gmarksans(weight: changeAppendStringWieght, size: changeAppendStringSize),
+                                     range: (profileString as NSString).range(of: appendString))
         return attributedQuote
     }
 }

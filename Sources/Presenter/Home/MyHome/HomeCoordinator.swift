@@ -18,26 +18,26 @@ final class HomeCoordinator: Coordinator {
     func start() {
         guard let navigationController = navigationController else { return }
         let viewModel = HomeViewModel(coordinator: self)
-        let viewController = LogViewController(viewModel: viewModel)
+        let viewController = HomeViewController(viewModel: viewModel)
         
         navigationController.pushViewController(viewController, animated: true)
     }
 }
-
-extension HomeCoordinator: AlarmViewCoordinating, CourseDetailCoordinating {
-    func pushToCourseDetailViewController() {
-        let courseDetailViewController = CoursesViewController()
-        self.navigationController?.pushViewController(courseDetailViewController, animated: true)
-    }
-    
-    func pushToAlarmViewController() {
-        let alarmViewController = AlarmViewController()
-        self.navigationController?.pushViewController(alarmViewController, animated: true)
-    }
-    
-    func startAddCourseFlow() {
-        let addCourseCoordinator = AddCourseCoordinator(navigationController: navigationController)
-        addCourseCoordinator.start()
-    }
-}
+//
+//extension HomeCoordinator: AlarmViewCoordinating, CourseDetailCoordinating {
+//    func pushToCourseDetailViewController() {
+////        let courseDetailViewController = CoursesViewController()
+////        self.navigationController?.pushViewController(courseDetailViewController, animated: true)
+//    }
+//    
+//    func pushToAlarmViewController() {
+//        let alarmViewController = AlarmViewController()
+//        self.navigationController?.pushViewController(alarmViewController, animated: true)
+//    }
+//    
+//    func startAddCourseFlow() {
+//        let addCourseCoordinator = AddCourseCoordinator(navigationController: navigationController)
+//        addCourseCoordinator.start()
+//    }
+//}
 
