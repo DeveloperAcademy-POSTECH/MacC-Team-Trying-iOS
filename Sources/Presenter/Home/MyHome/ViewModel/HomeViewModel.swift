@@ -58,12 +58,12 @@ final class HomeViewModel: BaseViewModel {
     // MARK: async로 호출한 api함수
     func fetchAsync() async throws {
         guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else { return }
-        let data = try await HomeAPIService.fetchUserAsync(accessToken: token)
+        let data = try await LogAPIService.fetchUserAsync(accessToken: token)
         guard let myPlanineInfoDTO = try? JSONDecoder().decode(UserInfo.self, from: data) else {
             print("Decoder오류")
             return
         }
-        let courseData = try await HomeAPIService.fetchUserCourseAsync(planetId: 27)
+        let courseData = try await LogAPIService.fetchUserCourseAsync(planetId: 27)
         guard let myCourseInfoDTO = try? JSONDecoder().decode(UserCourseInfo.self, from: courseData) else {
             print("Course Decoder오류")
             return
