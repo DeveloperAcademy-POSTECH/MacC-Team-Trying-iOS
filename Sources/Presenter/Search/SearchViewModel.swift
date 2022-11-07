@@ -128,7 +128,7 @@ extension SearchViewModel {
             .sink { _ in
             } receiveValue: { response in
                 self.courses = response.0
-                guard let coursess = self.courses as? [SearchCourse] else { return }
+                guard self.courses is [SearchCourse] else { return }
                 self.canFetch = response.1
             }
             .cancel(with: cancelBag)
