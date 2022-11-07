@@ -10,9 +10,9 @@
 import Combine
 import Foundation
 
-final class FeedViewModel: BaseViewModel {
+final class LogViewModel: BaseViewModel {
 
-    static let shared = FeedViewModel()
+    static let shared = LogViewModel()
 
     override private init() {}
 

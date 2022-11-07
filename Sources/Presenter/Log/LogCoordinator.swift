@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class FeedCoordinator: Coordinator {
+final class LogCoordinator: Coordinator {
     weak var navigationController: UINavigationController?
     
     init(navigationController: UINavigationController) {
@@ -17,8 +17,8 @@ final class FeedCoordinator: Coordinator {
     
     func start() {
         guard let navigationController = navigationController else { return }
-        let viewController = FeedViewController()
-        let viewModel = FeedViewModel.shared
+        let viewController = LogViewController()
+        let viewModel = LogViewModel.shared
         viewController.viewModel = viewModel
         
         navigationController.pushViewController(viewController, animated: true)
