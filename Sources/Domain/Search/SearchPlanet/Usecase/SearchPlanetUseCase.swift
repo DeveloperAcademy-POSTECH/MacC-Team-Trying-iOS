@@ -34,15 +34,15 @@ final class SearchPlanetUseCase: SearchableDelegate {
             as AnyPublisher<CourseResponse, Error>
             return coursePublisher
                 .map { courseResponse -> ([SearchCourse], Bool) in
-                    (courseResponse.courses.map { 
+                    (courseResponse.courses.map { course in
                         .init(
-                              planetImageString: $0.planet.image,
-                              planetNameString: $0.planet.name,
-                              timeString: $0.createdDate,
+                              planetImageString: course.planet.image,
+                              planetNameString: course.planet.name,
+                              timeString: course.createdDate,
                               locationString: "장소",
-                              isLike: $0.liked,
-                              imageURLStrings: $0.images,
-                              courseId: $0.courseID
+                              isLike: course.liked,
+                              imageURLStrings: course.images,
+                              courseId: course.courseID
                         )
                     },
                      courseResponse.hasNext)
@@ -60,13 +60,14 @@ final class SearchPlanetUseCase: SearchableDelegate {
             
             return planetPublisher
                 .map { searchResponse -> ([SearchPlanet], Bool) in
-                    (searchResponse.planets.map {
+                    (searchResponse.planets.map { planet in
                         .init(
-                              planetId: $0.planetID,
-                              planetImageString: $0.image,
-                              planetNameString: $0.name,
-                              isFollow: $0.followed ?? false,
-                              hosts: ["not yet", "not yet"])
+                              planetId: planet.planetID,
+                              planetImageString: planet.image,
+                              planetNameString: planet.name,
+                              isFollow: planet.followed ?? false,
+                              hosts: ["not yet", "not yet"]
+                        )
                     },
                      searchResponse.hasNext
                     )

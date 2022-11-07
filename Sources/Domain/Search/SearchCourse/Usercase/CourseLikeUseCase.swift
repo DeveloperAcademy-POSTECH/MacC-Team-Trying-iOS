@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol LikeTogglableDelegate {
+protocol LikeTogglableDelegate: AnyObject {
     func courseLikeToggle(courseId: Int, isLike: Bool)
 }
 

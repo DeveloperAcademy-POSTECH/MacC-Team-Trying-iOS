@@ -172,7 +172,7 @@ extension SearchViewModel {
 }
 
 extension SearchViewModel {
-    //TODO: enum
+    //TODO: 이미지 이름 처리
     private func convertToProperImageString(_ string: String) -> String {
         if string == "EARTH" {
             return "img_planet"
