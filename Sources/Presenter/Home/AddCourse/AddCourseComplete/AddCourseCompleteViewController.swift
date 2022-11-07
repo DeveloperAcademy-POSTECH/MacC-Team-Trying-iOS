@@ -269,7 +269,8 @@ extension AddCourseCompleteViewController {
             self.lastYOffset += data.rotationRate.y * offsetRate
             
             let backgroundOffsetRate = 0.3
-            let constellationOffsetRate = 1.3
+            let mediumStarBackgroundOffsetRate = 1.5
+            let constellationOffsetRate = 2.0
 
             self.backgroundView.center = CGPoint(
                 x: DeviceInfo.screenWidth / 2 + self.lastYOffset * backgroundOffsetRate,
@@ -277,8 +278,8 @@ extension AddCourseCompleteViewController {
             )
             
             self.mediumStarBackgroundView.center = CGPoint(
-                x: DeviceInfo.screenWidth / 2 + self.lastYOffset,
-                y: DeviceInfo.screenHeight / 2 + self.lastXOffset
+                x: DeviceInfo.screenWidth / 2 + self.lastYOffset * mediumStarBackgroundOffsetRate,
+                y: DeviceInfo.screenHeight / 2 + self.lastXOffset * mediumStarBackgroundOffsetRate
             )
             
             self.constellationView.center = CGPoint(

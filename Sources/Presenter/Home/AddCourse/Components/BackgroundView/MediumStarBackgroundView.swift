@@ -20,7 +20,7 @@ final class MediumStarBackgroundView: UIView {
         self.backgroundColor = .clear
         
         for _ in 0..<numberOfStar {
-            let starLottie = LottieAnimationView(name: Constants.Lottie.mainStar)
+            let starLottie = LottieAnimationView(name: Constants.Lottie.middleStar)
             starLottie.frame = .init(origin: generateRandomPosition(), size: generateRandomSize())
             starLottie.contentMode = .scaleAspectFit
             starLottie.animationSpeed = CGFloat.random(in: 0.05...0.1)
@@ -46,7 +46,7 @@ final class MediumStarBackgroundView: UIView {
     }
     
     private func generateRandomSize() -> CGSize {
-        let randomSize = Double.random(in: 15.0...25.0)
+        let randomSize = Double.random(in: 20.0...35.0)
         return CGSize(width: randomSize, height: randomSize)
     }
 }
