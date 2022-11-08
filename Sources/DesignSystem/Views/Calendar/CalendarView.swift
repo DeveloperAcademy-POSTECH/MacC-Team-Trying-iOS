@@ -84,18 +84,13 @@ final class CalendarView: BaseView {
         self.frame.width - self.scrollViewInset
     }
 
-    // 주간 월간 달력
+    // 주간 월간 캘린더
 
-    enum CalendarShape {
-        case week
-        case month
-    }
-
-    private var shape: CalendarShape = .month
+    var calendarShape: MonthView.CalendarShape = .month
 
     // MARK: - Views
 
-    lazy var monthView = MonthView()
+    lazy var monthView = MonthView(calendarShape: calendarShape)
     lazy var weekdayView = WeekdayView()
     lazy var scrollView = UIScrollView()
     lazy var previousMonthCollectionView = PreviousMonthCollectionView()
@@ -124,6 +119,7 @@ final class CalendarView: BaseView {
         self.layer.borderWidth = 0.3
         self.backgroundColor = .designSystem(.calendarRed)?.withAlphaComponent(0.2)
 
+        monthView.delegate = self
         scrollView.delegate = self
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
@@ -168,6 +164,22 @@ final class CalendarView: BaseView {
 
         let restCellCount = minimumCellNumberOfPresentMonth % 7
         self.numberOfMonthRow = restCellCount == 0 ? minimumCellNumberOfPresentMonth / 7 : minimumCellNumberOfPresentMonth / 7 + 1
+    }
+}
+
+// MARK: MonthViewDelegate
+
+extension CalendarView: MonthViewDelegate {
+
+    func changeButtonDidTapped(shape calendarShape: MonthView.CalendarShape) {
+//        self.calendarShape = calendarShape
+//        monthView.updateYearAndMonth(to: today)
+//        presentMonthDate = today
+//        previousMonthDate = presentMonthDate.monthBefore ?? .init()
+//        followingMonthDate = presentMonthDate.monthAfter ?? .init()
+//
+//        scrollView.isScrollEnabled = calendarShape == .month
+//        scrollView.setContentOffset(.init(x: scrollViewWidth, y: 0), animated: false)
     }
 }
 

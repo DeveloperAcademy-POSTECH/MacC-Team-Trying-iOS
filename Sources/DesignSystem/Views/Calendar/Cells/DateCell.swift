@@ -35,16 +35,16 @@ final class DateCell: UICollectionViewCell {
         dateLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(8)
             make.bottom.equalToSuperview().inset(7)
-            make.leading.trailing.equalToSuperview().inset(6)
+            make.leading.trailing.equalToSuperview().inset(4)
         }
         scheduleDotView.snp.makeConstraints { make in
-            make.top.equalTo(dateLabel.snp.bottom)
+            make.top.equalTo(dateLabel.snp.bottom).offset(3)
             make.centerX.equalToSuperview()
             make.width.height.equalTo(3)
         }
 
         contentView.layer.cornerRadius = contentView.bounds.width / 2
-        scheduleDotView.layer.cornerRadius = scheduleDotView.bounds.width / 2
+        scheduleDotView.layer.cornerRadius = 1.5
     }
 
     required init?(coder: NSCoder) {
