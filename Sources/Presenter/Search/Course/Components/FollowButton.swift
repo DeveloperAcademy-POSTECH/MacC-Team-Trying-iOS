@@ -26,18 +26,9 @@ class FollowButton: UIButton {
         configuration.contentInsets = .init(top: 8, leading: 18, bottom: 8, trailing: 18)
         background.cornerRadius = 12.5
         background.strokeWidth = 1.25
-        
         configuration.background = background
         self.configuration = configuration
-        
-//        setConfigurationHandler()
     }
-//
-//    private func setConfigurationHandler() {
-//        configurationUpdateHandler = { _ in
-//            self.setButtonDetailConfiguration(isFollow: !self.isFollow)
-//        }
-//    }
     
     func setButtonDetailConfiguration(isFollow: Bool) {
         self.isFollow = isFollow

@@ -20,7 +20,7 @@ class SearchPlanetRepository {
 
 extension SearchPlanetRepository: SearchPlanetCourseRepository {
     func fetchPlanetsCourses<T>(searchType: SearchType, planetName: String, page: Int, isFirst: Bool) -> AnyPublisher<T, Error> where T: Decodable {
-        searchAPIService.getDataWithCombineSongs(searchType: searchType, parameter: planetName, page: page, isFirst: isFirst)
+        searchAPIService.fetchPlanetsCourses(searchType: searchType, parameter: planetName, page: page, isFirst: isFirst)
     }
 
 }

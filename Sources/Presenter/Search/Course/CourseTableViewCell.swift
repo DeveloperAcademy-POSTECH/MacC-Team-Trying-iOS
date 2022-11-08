@@ -65,12 +65,6 @@ class CourseTableViewCell: UITableViewCell {
         return label
     }()
     
-//    private lazy var followButton: FollowButton = {
-//        let button = FollowButton()
-//        button.addTarget(self, action: #selector(toggleFollow), for: .touchUpInside)
-//        return button
-//    }()
-    
     private lazy var likeButton: LikeButton = {
         let button = LikeButton()
         button.addTarget(self, action: #selector(toggleLike), for: .touchUpInside)

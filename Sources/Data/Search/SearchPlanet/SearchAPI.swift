@@ -44,7 +44,7 @@ class SearchAPI {
             .cancel(with: cancelBag)
     }
     
-    func getDataWithCombineSongs<T: Decodable>(searchType: SearchType, parameter: String, page: Int, isFirst: Bool) -> AnyPublisher<T, Error> {
+    func fetchPlanetsCourses<T: Decodable>(searchType: SearchType, parameter: String, page: Int, isFirst: Bool) -> AnyPublisher<T, Error> {
 
         let urlStr = encodeUrl(string: addStringParameter(searchType: searchType, parameter: parameter, page: page, isFirst: isFirst))
         let url = URL(string: urlStr)!
@@ -71,7 +71,7 @@ class SearchAPI {
     }
     
     private func encodeUrl(string: String) -> String {
-        return string.addingPercentEncoding( withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let modifiedString = string.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        return modifiedString
     }
-    
 }

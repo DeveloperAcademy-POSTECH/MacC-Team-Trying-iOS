@@ -1,5 +1,5 @@
 //
-//  CourseInterface.swift
+//  CourseToggleInterface.swift
 //  MatStar
 //
 //  Created by Hankyu Lee on 2022/10/29.
