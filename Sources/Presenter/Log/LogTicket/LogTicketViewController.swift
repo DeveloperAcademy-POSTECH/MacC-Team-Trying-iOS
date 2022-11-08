@@ -15,7 +15,7 @@ import SnapKit
 
 protocol LogTicketViewDelegate: AnyObject {
     func tapDismissButton(viewModel: LogTicketViewModel)
-    func tpaLikeButton(viewModel: LogTicketViewModel)
+    func tapLikeButton(viewModel: LogTicketViewModel)
     func tapFlopButton(viewModel: LogTicketViewModel)
 }
 
@@ -33,6 +33,16 @@ final class LogTicketViewController: BaseViewController {
         // output
     }
     // MARK: Life-Cycle
+    init(viewModel: LogTicketViewModel) {
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel = viewModel
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
@@ -82,7 +92,7 @@ extension LogTicketViewController {
     @objc
     func tapLikeButton() {
         guard let viewModel = viewModel else { return }
-        delegate?.tpaLikeButton(viewModel: viewModel)
+        delegate?.tapLikeButton(viewModel: viewModel)
         viewModel.tapLikeButton()
     }
     

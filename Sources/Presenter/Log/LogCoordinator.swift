@@ -8,7 +8,8 @@
 
 import UIKit
 
-final class LogCoordinator: Coordinator {
+final class LogCoordinator: Coordinator, TicketViewCoodinating, Popable{
+    
     weak var navigationController: UINavigationController?
     
     init(navigationController: UINavigationController) {
@@ -17,11 +18,21 @@ final class LogCoordinator: Coordinator {
     
     func start() {
         guard let navigationController = navigationController else { return }
-        let viewController = LogTicketViewController()
-        let viewModel = LogTicketViewModel.shared
-        viewController.viewModel = viewModel
-        
+        let viewModel = LogHomeViewModel(coordinator: self)
+        let viewController = LogHomeViewController(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
         navigationController.isNavigationBarHidden = true
     }
+    
+    func pushMyConstellationViewController() {
+        let viewModel = MyConstellationViewModel(coordinator: self)
+        let viewController = MyConstellationViewController(viewModel: viewModel)
+        self.navigationController?.pushViewController(viewController, animated: true)
+        navigationController?.isNavigationBarHidden = false
+    }
+    
+    func popViewController() {
+        self.navigationController?.popViewController(animated: true)
+    }
 }
+
