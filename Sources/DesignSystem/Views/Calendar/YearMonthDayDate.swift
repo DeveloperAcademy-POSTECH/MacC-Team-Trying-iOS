@@ -18,4 +18,12 @@ extension YearMonthDayDate {
     func compareDate(with date: YearMonthDayDate) -> Bool {
         date.year == self.year && date.month == self.month && date.day == self.day
     }
+
+    func asDate() -> Date? {
+        var dateComponents = DateComponents()
+        dateComponents.day = self.day
+        dateComponents.month = self.month
+        dateComponents.year = self.year
+        return Calendar.autoupdatingCurrent.date(from: dateComponents)
+    }
 }
