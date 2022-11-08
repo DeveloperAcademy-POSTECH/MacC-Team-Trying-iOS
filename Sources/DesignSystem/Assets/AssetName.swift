@@ -21,4 +21,9 @@ enum AssetName: String {
     case ic_planet_name
     case ic_yellow_star
     case planets
+    case btn_kakao
+    case btn_apple
+    case btn_email
+    case btn_check
+    case btn_uncheck
 }

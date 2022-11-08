@@ -43,7 +43,6 @@ final class NetworkProviderImpl<T: TargetType>: NetworkProvider {
                         }
 
                         let output = try JSONDecoder().decode(M.self, from: data)
-                        print(output)
                         continuation.resume(with: .success(output))
                     } catch {
                         continuation.resume(with: .failure(error))
