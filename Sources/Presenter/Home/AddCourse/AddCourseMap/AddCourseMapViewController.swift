@@ -216,7 +216,7 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
         cell.numberLabel.text = String(indexPath.row + 1)
         cell.titleLabel.text = place.title
         cell.categoryLabel.text = place.category
-        cell.addressLabel.text = place.address
+        cell.memoLabel.text = place.memo ?? "메모 없음"
         cell.deleteButton.tag = indexPath.row
         
         cell.deleteButton.addTarget(self, action: #selector(didTapDeleteButton(_:)), for: .touchUpInside)
