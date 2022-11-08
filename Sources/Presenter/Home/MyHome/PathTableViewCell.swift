@@ -13,6 +13,23 @@ protocol ActionSheetDelegate: AnyObject {
     func showActionSheet(alert: UIAlertController)
 }
 
+enum PathType {
+    case Car
+    case Walk
+    case PublicTransfer
+    
+    var parameter: String {
+        switch self {
+        case .Car:
+            return "navigation"
+        case .Walk:
+            return "route/walk"
+        case .PublicTransfer:
+            return "route/public"
+        }
+    }
+}
+
 enum NavigationError: String, Error {
     case encodeError = "인코딩 오류입니다"
     case urlError = "url변환 오류입니다"
@@ -100,6 +117,7 @@ class PathTableViewCell: UITableViewCell {
     
     func setUI() {
         addSubviews(title, comment, distance, pointCircle, lineUpper, lineLower)
+        // MARK: - addSubView를 하면 터치가 안되는 문제가 발생해 contentView위에다가 addsubView를 해줌
         contentView.addSubview(findPathButton)
         title.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
@@ -146,54 +164,46 @@ class PathTableViewCell: UITableViewCell {
     }
     
     func showActionSheet() {
-        
         guard let data = self.data else { return }
+        let actionSheet = UIAlertController(title: "", message: "이동수단을 선택해주세요!", preferredStyle: .actionSheet)
+        let drivePath = UIAlertAction(title: "차량으로 이동", style: .default) { _ in
+            self.moveToNaverMap(pathType: .Car, data: data)
+        }
+        let walkPath = UIAlertAction(title: "걸어서 이동", style: .default) { _ in
+            self.moveToNaverMap(pathType: .Walk, data: data)
+        }
+        let publicPath = UIAlertAction(title: "대중교통으로 이동", style: .default) { _ in
+            self.moveToNaverMap(pathType: .PublicTransfer, data: data)
+        }
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        actionSheet.addAction(walkPath)
+        actionSheet.addAction(publicPath)
+        actionSheet.addAction(drivePath)
+        actionSheet.addAction(cancel)
+        self.delegate?.showActionSheet(alert: actionSheet)
+    }
+    
+    
+    /// 버튼을 누르면 naverMap으로 이동시켜주는(URL Scheme)함수
+    /// - Parameters:
+    ///   - pathType: 도보이동 정보를 보여줄지, 자가이동 정보를 보여줄지, 대중교통이동 정보를 보여줄지를 선택
+    ///   - data: 내가 가고자하는 곳의 장소데이터
+    func moveToNaverMap(pathType: PathType, data: DatePath) {
         let encodeUrl = data.title.encodeUrl()
         guard let encodeUrl = encodeUrl else {
             NavigationError.encodeError.printErrorMessage
             return
         }
         
-        let actionSheet = UIAlertController(title: "뭐로이동하시는데요?", message: "차량으로 이동할건가요 도보로이동할건가요?", preferredStyle: .actionSheet)
-        let drivePath = UIAlertAction(title: "차량으로 이동", style: .default) { _ in
-
-            let url = URL(string: "nmap://navigation?dlat=\(data.location.latitude)&dlng=\(data.location.longitude)&dname=\(encodeUrl)&appname=com.example.myapp")
-            guard let url = url else {
-                NavigationError.urlError.printErrorMessage
-                return
-            }
-            
-            let appStoreURL = URL(string: "http://itunes.apple.com/app/id311867728?mt=8")!
-
-            if UIApplication.shared.canOpenURL(url) {
-              UIApplication.shared.open(url)
-            } else {
-              UIApplication.shared.open(appStoreURL)
-            }
+        let url = URL(string: "nmap://\(pathType.parameter)?dlat=\(data.location.latitude)&dlng=\(data.location.longitude)&dname=\(encodeUrl)&appname=com.example.myapp")
+        guard let url = url else {
+            NavigationError.urlError.printErrorMessage
+            return
         }
         
-        let walkPath = UIAlertAction(title: "도보로 이동", style: .default) { _ in
-            let url = URL(string: "nmap://route/walk?dlat=\(data.location.latitude)&dlng=\(data.location.longitude)&dname=\(encodeUrl)&appname=com.example.myapp")
-            guard let url = url else {
-                print("url 변환 오류")
-                return
-            }
-            
-            let appStoreURL = URL(string: "http://itunes.apple.com/app/id311867728?mt=8")!
-
-            if UIApplication.shared.canOpenURL(url) {
-              UIApplication.shared.open(url)
-            } else {
-              UIApplication.shared.open(appStoreURL)
-            }
-        }
-        
-        let cancel = UIAlertAction(title: "취소", style: .cancel)
-        actionSheet.addAction(drivePath)
-        actionSheet.addAction(walkPath)
-        actionSheet.addAction(cancel)
-        
-        self.delegate?.showActionSheet(alert: actionSheet)
+        let appStoreURL = URL(string: "http://itunes.apple.com/app/id311867728?mt=8")
+        guard let appStoreURL = appStoreURL else { return }
+        UIApplication.shared.canOpenURL(url) ? UIApplication.shared.open(url) : UIApplication.shared.open(appStoreURL)
     }
     
     @objc
