@@ -17,6 +17,21 @@ final class LogViewController: BaseViewController {
 
     var viewModel: LogViewModel?
     
+    let hello: UIImageView = {
+        let view = UIImageView()
+        view.image = UIImage(named: "star")
+        
+        view.frame = CGRect(x: 150, y: 450, width: 50, height: 50)
+       return view
+    }()
+    
+    let he2: UIView = {
+        let view = UIView()
+        view.backgroundColor = .red
+        view.frame = CGRect(x: 200, y: 400, width: 70, height: 70)
+        return view
+    }()
+    
     private var logTicketView = LogTicketView()
     /// View Model과 bind 합니다.
     private func bind() {
@@ -27,7 +42,11 @@ final class LogViewController: BaseViewController {
     // MARK: Life-Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.addSubview(hello)
+        view.addSubview(he2)
         view.addSubview(logTicketView)
+        
+        
         configure()
         setUI()
         bind()
@@ -54,6 +73,7 @@ extension LogViewController {
         logTicketView.courseNameLabel.text = viewModel.data?.title
         logTicketView.fromLabel.text = viewModel.data?.planet
         logTicketView.imageUrl = viewModel.data!.images
+        logTicketView.bodyTextView.text = viewModel.data?.body
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.

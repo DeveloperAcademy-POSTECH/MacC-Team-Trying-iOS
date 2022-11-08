@@ -40,4 +40,3 @@ extension HomeCoordinator: AlarmViewCoordinating, CourseDetailCoordinating {
         addCourseCoordinator.start()
     }
 }
-

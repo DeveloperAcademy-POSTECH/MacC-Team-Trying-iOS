@@ -11,18 +11,34 @@ import SnapKit
 
 class LogTicketView: UIView {
     
-    var courseNameLabel: UILabel = {
-        var label = UILabel()
-        label.font = UIFont.gmarksans(weight: .bold, size: ._15)
-        return label
-    }()
-    
     var imageUrl: [String] = [] {
         didSet {
             setScrollView()
             setPageControl()
         }
     }
+    
+    var courseNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.gmarksans(weight: .bold, size: ._15)
+        return label
+    }()
+    
+    private var dismissButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "unlike_image"), for: .normal)
+        return button
+    }()
+    
+    var bodyTextView: UITextView = {
+        let textView = UITextView()
+        textView.font = UIFont.designSystem(weight: .regular, size: ._13)
+        textView.textAlignment = .left
+        textView.backgroundColor = .clear
+        textView.showsVerticalScrollIndicator = false
+        textView.isEditable = false
+        return textView
+    }()
     
     private let dateTitleLabel = LogTicketLabel(title: "Date", color: .white)
     private let numberTitleLabel = LogTicketLabel(title: "No.", color: .white)
@@ -47,50 +63,24 @@ class LogTicketView: UIView {
         return scrollView
     }()
     
-    
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = UIColor.designSystem(Palette.glassPink)
         layer.cornerRadius = 18
-        print(imageUrl.count)
-        
-        self.addSubviews(courseNameLabel, ImageScrollView, dateTitleLabel, numberTitleLabel, fromTitleLabel, dateLabel, numberLabel, fromLabel, pageControl)
-        
-        ImageScrollView.snp.makeConstraints { make in
-            make.width.equalTo(DeviceInfo.screenWidth * 0.8974358974)
-            make.height.equalTo(DeviceInfo.screenHeight * 0.3471563981)
-            make.top.equalToSuperview()
-            make.centerX.equalToSuperview()
-        }
-        courseNameLabel.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(DeviceInfo.screenWidth * 0.05128205128)
-            make.top.equalTo(ImageScrollView.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
-        }
-        dateTitleLabel.snp.makeConstraints { make in
-            make.left.equalTo(courseNameLabel.snp.left)
-            make.top.equalTo(courseNameLabel.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
-        }
-        numberTitleLabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(dateTitleLabel.snp.top)
-        }
-        fromTitleLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-DeviceInfo.screenWidth * 0.05128205128)
-            make.top.equalTo(numberTitleLabel.snp.top)
-        }
-        dateLabel.snp.makeConstraints { make in
-            make.left.equalTo(dateTitleLabel.snp.left)
-            make.top.equalTo(dateTitleLabel.snp.bottom)
-        }
-        numberLabel.snp.makeConstraints { make in
-            make.left.equalTo(numberTitleLabel.snp.left)
-            make.top.equalTo(numberTitleLabel.snp.bottom)
-        }
-        fromLabel.snp.makeConstraints { make in
-            make.right.equalTo(fromTitleLabel.snp.right)
-            make.top.equalTo(fromTitleLabel.snp.bottom)
-        }
+        self.addSubviews(
+            courseNameLabel,
+            ImageScrollView,
+            dateTitleLabel,
+            numberTitleLabel,
+            fromTitleLabel,
+            dateLabel,
+            numberLabel,
+            fromLabel,
+            pageControl,
+            bodyTextView,
+            dismissButton
+        )
+        setBlur()
+        setConstraints()
         
     }
     
@@ -131,7 +121,7 @@ extension LogTicketView: UIScrollViewDelegate {
         pageControl.numberOfPages = imageUrl.count
         pageControl.pageIndicatorTintColor = UIColor.designSystem(Palette.grayC5C5C5)
         pageControl.currentPageIndicatorTintColor = UIColor.designSystem(Palette.pinkEB97D9)
-
+        
         pageControl.snp.makeConstraints { make in
             make.bottom.equalTo(ImageScrollView.snp.bottom)
             make.centerX.equalToSuperview()
@@ -140,18 +130,59 @@ extension LogTicketView: UIScrollViewDelegate {
 }
 
 extension LogTicketView {
-    func configure(with model: TestModel) {
-        dateTitleLabel.text = model.date
+    private func setConstraints() {
+        ImageScrollView.snp.makeConstraints { make in
+            make.width.equalTo(DeviceInfo.screenWidth * 0.8974358974)
+            make.height.equalTo(DeviceInfo.screenHeight * 0.3471563981)
+            make.top.equalToSuperview()
+            make.centerX.equalToSuperview()
+        }
+        courseNameLabel.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(DeviceInfo.screenWidth * 0.05128205128)
+            make.top.equalTo(ImageScrollView.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
+        }
+        dateTitleLabel.snp.makeConstraints { make in
+            make.left.equalTo(courseNameLabel.snp.left)
+            make.top.equalTo(courseNameLabel.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
+        }
+        numberTitleLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(dateTitleLabel.snp.top)
+        }
+        fromTitleLabel.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-DeviceInfo.screenWidth * 0.05128205128)
+            make.top.equalTo(numberTitleLabel.snp.top)
+        }
+        dateLabel.snp.makeConstraints { make in
+            make.left.equalTo(dateTitleLabel.snp.left)
+            make.top.equalTo(dateTitleLabel.snp.bottom)
+        }
+        numberLabel.snp.makeConstraints { make in
+            make.left.equalTo(numberTitleLabel.snp.left)
+            make.top.equalTo(numberTitleLabel.snp.bottom)
+        }
+        fromLabel.snp.makeConstraints { make in
+            make.right.equalTo(fromTitleLabel.snp.right)
+            make.top.equalTo(fromTitleLabel.snp.bottom)
+        }
+        bodyTextView.snp.makeConstraints { make in
+            make.top.equalTo(DeviceInfo.screenHeight * 0.5639810426)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.8974358974)
+            make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 0.04739336493)
+        }
+        dismissButton.snp.makeConstraints { make in
+            make.width.equalTo(DeviceInfo.screenWidth * 0.05641025641)
+            make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)
+            make.right.equalTo(fromLabel.snp.right)
+            make.centerY.equalTo(courseNameLabel.snp.centerY)
+        }
     }
     
     private func drawTicket() {
         let radious = DeviceInfo.screenWidth * 0.1282051282 / 2
-        
         let ticketShapeLayer = CAShapeLayer()
         ticketShapeLayer.frame = self.bounds
-        ticketShapeLayer.fillColor = UIColor.designSystem(.glassPink)?.cgColor
-        ticketShapeLayer.opacity = 1
-        
         let ticketShapePath = UIBezierPath(roundedRect: ticketShapeLayer.bounds, cornerRadius: radious)
         let bottomRightArcPath = UIBezierPath(
             arcCenter: CGPoint(
@@ -175,7 +206,6 @@ extension LogTicketView {
         bottomRightArcPath.close()
         
         let lineShapeLayer = CAShapeLayer()
-        
         lineShapeLayer.strokeColor = UIColor(displayP3Red: 1, green: 1, blue: 1, alpha: 0.3).cgColor
         lineShapeLayer.lineWidth = 3
         lineShapeLayer.lineDashPattern = [5, 5]
@@ -187,7 +217,6 @@ extension LogTicketView {
                 CGPoint(x: ticketShapeLayer.bounds.size.width - 18, y: DeviceInfo.screenHeight * 0.5106635071)
             ]
         )
-        
         lineShapeLayer.path = path
         ticketShapePath.append(bottomLeftArcPath)
         ticketShapePath.append(bottomRightArcPath.reversing())
@@ -198,5 +227,15 @@ extension LogTicketView {
         layer.shadowRadius = 10
         layer.shadowOffset = .zero
         layer.mask = ticketShapeLayer
+    }
+    
+    private func setBlur() {
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.regular)
+        let outerVisualEffectView = UIVisualEffectView(effect: blurEffect)
+        outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.glassPink)?.withAlphaComponent(0.8).cgColor
+        outerVisualEffectView.layer.opacity = 0.8
+        outerVisualEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
+        self.addSubview(outerVisualEffectView)
+        self.sendSubviewToBack(outerVisualEffectView)
     }
 }
