@@ -234,6 +234,10 @@ extension HomeViewController: UITableViewDataSource {
             switch indexPath.row {
             case 0:
                 cell.lineUpper.isHidden = true
+                // MARK: - 코스가 하나일때 분기처리
+                if viewModel.datePathList.count == 1 {
+                    cell.lineLower.isHidden = true
+                }
             case viewModel.datePathList.index(before: viewModel.datePathList.endIndex):
                 cell.lineLower.isHidden = true
             default:
@@ -257,7 +261,7 @@ extension HomeViewController: UITableViewDelegate {
             header.title.text = "포항 풀코스"
             return header
         }
-        return UIView()
+        return nil
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -271,7 +275,7 @@ extension HomeViewController: UITableViewDelegate {
             footer.delegate = self
             return footer
         }
-        return UIView()
+        return nil
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
