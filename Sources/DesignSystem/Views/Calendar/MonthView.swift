@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 
 protocol MonthViewDelegate: AnyObject {
-    func changeButtonDidTapped(shape calendarShape: MonthView.CalendarShape)
+    func switchCalendarButtonDidTapped(shape calendarShape: MonthView.CalendarShape)
 }
 
 final class MonthView: UIView {
@@ -29,9 +29,9 @@ final class MonthView: UIView {
         var buttonImage: UIImage? {
             switch self {
             case .week:
-                return .init(.btn_week_calendar)
-            case .month:
                 return .init(.btn_month_calendar)
+            case .month:
+                return .init(.btn_week_calendar)
             }
         }
     }
@@ -53,9 +53,9 @@ final class MonthView: UIView {
     }
 
     @objc
-    func changeButtonDidTapped() {
+    func switchCalendarButtonDidTapped() {
         calendarShape = calendarShape == .month ? .week : .month
-        delegate?.changeButtonDidTapped(shape: calendarShape)
+        delegate?.switchCalendarButtonDidTapped(shape: calendarShape)
         changeButton.setImage(calendarShape.buttonImage, for: .normal)
     }
 
@@ -65,7 +65,7 @@ final class MonthView: UIView {
 
     private func setupChangeButton() {
         changeButton.setImage(.init(.btn_week_calendar), for: .normal)
-        changeButton.addTarget(self, action: #selector(changeButtonDidTapped), for: .touchUpInside)
+        changeButton.addTarget(self, action: #selector(switchCalendarButtonDidTapped), for: .touchUpInside)
 
         addSubview(changeButton)
         changeButton.snp.makeConstraints { make in
@@ -89,7 +89,7 @@ final class MonthView: UIView {
 
     private func updateMonthLabelText(to date: Date) {
         monthLabel.attributedText = NSMutableAttributedString()
-            .gmarketLight(string: "\(date.year)  ", fontSize: 15)
-            .gmarketBold(string: "\(date.month)월", fontSize: 15)
+            .gmarketSansLight(string: "\(date.year)  ", fontSize: ._15)
+            .gmarketSansBold(string: "\(date.month)월", fontSize: ._15)
     }
 }
