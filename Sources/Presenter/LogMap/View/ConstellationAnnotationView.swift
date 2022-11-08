@@ -1,21 +1,22 @@
 //
-//  StarAnnotationView.swift
-//  MatStar
+//  ConstellationAnnotationView.swift
+//  ComeIt
 //
-//  Created by 김승창 on 2022/10/24.
+//  Created by 김승창 on 2022/11/08.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
+import Foundation
 import MapKit
-import UIKit
 
-import SnapKit
-
-final class StarAnnotationView: MKAnnotationView {
-    static let identifier = "StarAnnotationViewIdentifier"
+final class ConstellationAnnotationView: MKAnnotationView {
+    static let identifier = "ConstellationAnnotationViewIdentifier"
     
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        
+        displayPriority = .defaultHigh
+        collisionMode = .circle
         centerOffset = CGPoint(x: 0, y: -18)
     }
     
@@ -24,12 +25,10 @@ final class StarAnnotationView: MKAnnotationView {
     }
 }
 
-final class StarAnnotation: NSObject, MKAnnotation {
-    let courseTitle: String
+final class ConstellationAnnotation: NSObject, MKAnnotation {
     let coordinate: CLLocationCoordinate2D
     
-    init(courseTitle: String, coordinate: CLLocationCoordinate2D) {
-        self.courseTitle = courseTitle
+    init(coordinate: CLLocationCoordinate2D) {
         self.coordinate = coordinate
     }
 }
