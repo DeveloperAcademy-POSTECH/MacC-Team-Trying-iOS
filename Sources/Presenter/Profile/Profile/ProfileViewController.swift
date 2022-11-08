@@ -142,7 +142,7 @@ extension ProfileViewController: NavigationBarConfigurable {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        configureProfileNavigationBar(target: self, day: 333, settingAction: #selector(settingButtonPressed(_:)))
+        configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         
         view.addSubviews(
             backgroundView,

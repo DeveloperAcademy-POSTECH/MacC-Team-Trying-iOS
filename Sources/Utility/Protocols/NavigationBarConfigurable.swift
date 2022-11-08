@@ -36,9 +36,8 @@ protocol NavigationBarConfigurable: BaseViewController {
     /// 프로필 화면에서 사용되는 Navigation Bar를 설정합니다.
     /// - Parameters:
     ///   - target: Target
-    ///   - day: 날짜
     ///   - settingAction: 설정 버튼이 눌렸을 때 실행할 @objc 메소드
-    func configureProfileNavigationBar(target: Any, day: Int, settingAction: Selector)
+    func configureProfileNavigationBar(target: Any, settingAction: Selector)
     
     /// 디데이 수정을 하는 화면에서 사용되는 Navigation Bar를 설정합니다.
     /// - Parameters:
@@ -134,7 +133,7 @@ extension NavigationBarConfigurable {
         navigationItem.titleView = selectDateButton
     }
     
-    func configureProfileNavigationBar(target: Any, day: Int, settingAction: Selector) {
+    func configureProfileNavigationBar(target: Any, settingAction: Selector) {
         let titleView: UILabel = {
             let label = UILabel()
             label.text = "My"
@@ -142,6 +141,7 @@ extension NavigationBarConfigurable {
             label.font = .gmarksans(weight: .bold, size: ._25)
             return label
         }()
+        /*
         let dayLabel: UILabel = {
             let label = UILabel()
             label.text = "D+\(day)"
@@ -149,6 +149,7 @@ extension NavigationBarConfigurable {
             label.textColor = .designSystem(.white)
             return label
         }()
+        */
         let settingButton: UIButton = {
             let button = UIButton(type: .custom)
             let configuration = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
@@ -160,11 +161,11 @@ extension NavigationBarConfigurable {
         }()
 
         let leftTitleItem = UIBarButtonItem(customView: titleView)
-        let dayLabelButtonItem = UIBarButtonItem(customView: dayLabel)
+        // let dayLabelButtonItem = UIBarButtonItem(customView: dayLabel)
         let settingButtonItem = UIBarButtonItem(customView: settingButton)
         
         navigationItem.leftBarButtonItem = leftTitleItem
-        navigationItem.rightBarButtonItems = [settingButtonItem, dayLabelButtonItem]
+        navigationItem.rightBarButtonItem = settingButtonItem
     }
     
     func configureEditDayNavigationBar(target: Any, popAction: Selector) {
