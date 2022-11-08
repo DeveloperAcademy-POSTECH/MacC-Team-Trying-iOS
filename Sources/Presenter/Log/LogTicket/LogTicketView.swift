@@ -24,9 +24,16 @@ class LogTicketView: UIView {
         return label
     }()
     
-    private var dismissButton: UIButton = {
+    private var likebutton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "unlike_image"), for: .normal)
+        return button
+    }()
+    
+    private var dismissbutton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "xmark"), for: .normal)
+        button.tintColor = .white
         return button
     }()
     
@@ -77,7 +84,8 @@ class LogTicketView: UIView {
             fromLabel,
             pageControl,
             bodyTextView,
-            dismissButton
+            likebutton,
+            dismissbutton
         )
         setBlur()
         setConstraints()
@@ -171,11 +179,17 @@ extension LogTicketView {
             make.width.equalToSuperview().multipliedBy(0.8974358974)
             make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 0.04739336493)
         }
-        dismissButton.snp.makeConstraints { make in
-            make.width.equalTo(DeviceInfo.screenWidth * 0.05641025641)
-            make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)
+        likebutton.snp.makeConstraints { make in
+            make.width.equalTo(DeviceInfo.screenWidth * 0.05128205128)
+            make.height.equalTo(DeviceInfo.screenHeight * 0.02191943128)
             make.right.equalTo(fromLabel.snp.right)
             make.centerY.equalTo(courseNameLabel.snp.centerY)
+        }
+        dismissbutton.snp.makeConstraints { make in
+            make.width.equalTo(DeviceInfo.screenWidth * 0.05641025641)
+            make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)
+            make.right.equalToSuperview().offset(-DeviceInfo.screenWidth * 0.05128205128)
+            make.top.equalToSuperview().offset(DeviceInfo.screenHeight * 0.02369668246)
         }
     }
     
