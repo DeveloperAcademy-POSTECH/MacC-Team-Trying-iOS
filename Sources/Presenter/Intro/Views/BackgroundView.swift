@@ -11,8 +11,8 @@ import UIKit
 final class BackgroundView: UIView {
     let radius = 1
     lazy var starSize = CGSize(width: radius * 2, height: radius * 2)
-    let starCount: Int = 30
-    let duration: CGFloat = 5
+    let starCount: Int = 50
+    let duration: CGFloat = 3
     var starLayers = [CALayer]()
 
     override init(frame: CGRect) {

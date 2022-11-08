@@ -217,8 +217,9 @@ extension AddCourseCompleteViewController {
             starLottie.contentMode = .scaleAspectFit
             starLottie.frame = CGRect(x: adjustedLatitude[index] + xOffset, y: adjustedLongitude[index] + yOffset, width: randomStarLottieSize, height: randomStarLottieSize)
             starLottie.animationSpeed = CGFloat.random(in: 0.05...0.3)
+            starLottie.animationSpeed = 0.6
             starLottie.loopMode = .loop
-            starLottie.play()
+            starLottie.play(fromProgress: 0.0, toProgress: 0.9935)
 
             constellationView.addSubview(starLottie)
 
@@ -269,7 +270,7 @@ extension AddCourseCompleteViewController {
             self.lastYOffset += data.rotationRate.y * offsetRate
             
             let backgroundOffsetRate = 0.3
-            let mediumStarBackgroundOffsetRate = 1.5
+            let mediumStarBackgroundOffsetRate = 1.0
             let constellationOffsetRate = 2.0
 
             self.backgroundView.center = CGPoint(
