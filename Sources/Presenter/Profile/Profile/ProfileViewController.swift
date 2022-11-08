@@ -190,6 +190,8 @@ extension ProfileViewController {
         
         let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { action in
             // TODO: logic 추가
+            // FIXME: 임시로 화면전환 구현. 삭제하기
+            self.viewModel.pushToEditDayView()
         }
         let editDayAction = UIAlertAction(title: "디데이 수정", style: .default) { action in
             // TODO: logic 추가

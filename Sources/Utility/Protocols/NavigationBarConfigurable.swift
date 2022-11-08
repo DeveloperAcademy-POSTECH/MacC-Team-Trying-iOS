@@ -39,6 +39,12 @@ protocol NavigationBarConfigurable: BaseViewController {
     ///   - day: 날짜
     ///   - settingAction: 설정 버튼이 눌렸을 때 실행할 @objc 메소드
     func configureProfileNavigationBar(target: Any, day: Int, settingAction: Selector)
+    
+    /// 디데이 수정을 하는 화면에서 사용되는 Navigation Bar를 설정합니다.
+    /// - Parameters:
+    ///   - target: Target
+    ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
+    func configureEditDayNavigationBar(target: Any, popAction: Selector)
 }
 
 extension NavigationBarConfigurable {
@@ -159,5 +165,24 @@ extension NavigationBarConfigurable {
         
         navigationItem.leftBarButtonItem = leftTitleItem
         navigationItem.rightBarButtonItems = [settingButtonItem, dayLabelButtonItem]
+    }
+    
+    func configureEditDayNavigationBar(target: Any, popAction: Selector) {
+        let backButton: UIButton = {
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
+            button.addTarget(target, action: popAction, for: .touchUpInside)
+            return button
+        }()
+        let titleLabel: UILabel = {
+            let label = UILabel()
+            label.attributedText = NSAttributedString(string: "디데이 수정", attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
+            label.textColor = .designSystem(.white)
+            return label
+        }()
+        
+        let leftButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem = leftButtonItem
+        navigationItem.titleView = titleLabel
     }
 }

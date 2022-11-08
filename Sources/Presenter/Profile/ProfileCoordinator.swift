@@ -23,3 +23,17 @@ final class ProfileCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
 }
+
+// MARK: - Coordinating Methods
+extension ProfileCoordinator: EditDayViewCoordinating, Popable {
+    func pushToEditDayView() {
+        let viewModel = EditDayViewModel(coordinator: self)
+        let viewController = EditDayViewController(viewModel: viewModel)
+        
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func popViewController() {
+        navigationController?.popViewController(animated: true)
+    }
+}

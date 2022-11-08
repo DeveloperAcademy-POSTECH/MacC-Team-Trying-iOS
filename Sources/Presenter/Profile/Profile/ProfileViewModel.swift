@@ -10,6 +10,10 @@ import Combine
 
 import CancelBag
 
+protocol EditDayViewCoordinating {
+    func pushToEditDayView()
+}
+
 final class ProfileViewModel: BaseViewModel {
     var coordinator: Coordinator
     
@@ -21,5 +25,13 @@ final class ProfileViewModel: BaseViewModel {
     
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
+    }
+}
+
+// MARK: - Coordinating
+extension ProfileViewModel {
+    func pushToEditDayView() {
+        guard let coordinator = coordinator as? EditDayViewCoordinating else { return }
+        coordinator.pushToEditDayView()
     }
 }
