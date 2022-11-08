@@ -13,7 +13,7 @@ class DateTableViewCell: UITableViewCell {
     
     var dateData: DateDday? {
         didSet {
-            guard var dateData = dateData else { return }
+            guard let dateData = dateData else { return }
             title.text = "⭐️\(dateData.title) D-\(dateData.dday)"
         }
     }

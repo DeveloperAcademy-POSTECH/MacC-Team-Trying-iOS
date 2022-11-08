@@ -23,21 +23,20 @@ final class HomeCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
 }
-//
+
 //extension HomeCoordinator: AlarmViewCoordinating, CourseDetailCoordinating {
 //    func pushToCourseDetailViewController() {
-////        let courseDetailViewController = CoursesViewController()
-////        self.navigationController?.pushViewController(courseDetailViewController, animated: true)
+//        let courseDetailViewController = CoursesViewController()
+//        self.navigationController?.pushViewController(courseDetailViewController, animated: true)
 //    }
-//    
+//
 //    func pushToAlarmViewController() {
 //        let alarmViewController = AlarmViewController()
 //        self.navigationController?.pushViewController(alarmViewController, animated: true)
 //    }
-//    
+//
 //    func startAddCourseFlow() {
 //        let addCourseCoordinator = AddCourseCoordinator(navigationController: navigationController)
 //        addCourseCoordinator.start()
 //    }
 //}
-

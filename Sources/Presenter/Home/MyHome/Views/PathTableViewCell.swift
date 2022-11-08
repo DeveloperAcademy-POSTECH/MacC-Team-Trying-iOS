@@ -183,7 +183,6 @@ class PathTableViewCell: UITableViewCell {
         self.delegate?.showActionSheet(alert: actionSheet)
     }
     
-    
     /// 버튼을 누르면 naverMap으로 이동시켜주는(URL Scheme)함수
     /// - Parameters:
     ///   - pathType: 도보이동 정보를 보여줄지, 자가이동 정보를 보여줄지, 대중교통이동 정보를 보여줄지를 선택

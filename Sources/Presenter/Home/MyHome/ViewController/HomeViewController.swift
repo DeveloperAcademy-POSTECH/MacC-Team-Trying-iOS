@@ -144,7 +144,6 @@ final class HomeViewController: BaseViewController {
         print("알람버튼이눌렸습니다")
     }
     
-    
     @objc
     func moreButtonTapped() {
         dateInfoIsHidden.toggle()
