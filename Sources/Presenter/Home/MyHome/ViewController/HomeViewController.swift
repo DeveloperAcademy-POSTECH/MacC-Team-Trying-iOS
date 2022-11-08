@@ -144,6 +144,7 @@ final class HomeViewController: BaseViewController {
         print("알람버튼이눌렸습니다")
     }
     
+    
     @objc
     func moreButtonTapped() {
         dateInfoIsHidden.toggle()
@@ -165,6 +166,7 @@ extension HomeViewController {
         dateTableView.dataSource = self
         pathTableView.delegate = self
         pathTableView.dataSource = self
+        
     }
     
     func setUI() {
@@ -229,7 +231,7 @@ extension HomeViewController: UITableViewDataSource {
             return cell
         } else if tableView == pathTableView {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: PathTableViewCell.cellId, for: indexPath) as? PathTableViewCell else { return UITableViewCell() }
-            
+            cell.delegate = self
             switch indexPath.row {
             case 0:
                 cell.lineUpper.isHidden = true
@@ -275,5 +277,11 @@ extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         let footerHeight = 60.0
         return footerHeight
+    }
+}
+
+extension HomeViewController: ActionSheetDelegate {
+    func showActionSheet(alert: UIAlertController) {
+        self.present(alert, animated: true)
     }
 }

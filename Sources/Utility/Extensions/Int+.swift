@@ -12,7 +12,7 @@ extension Int {
     func changeDistance() -> String {
         switch self {
         case let self where self > 1000 :
-            return "\(self/1000)km"
+            return "\(self / 1000)km"
         default:
             return "\(self)m"
         }

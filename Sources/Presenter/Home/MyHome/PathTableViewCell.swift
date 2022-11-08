@@ -7,10 +7,31 @@
 //
 
 import UIKit
+import CoreLocation
+
+protocol ActionSheetDelegate: AnyObject {
+    func showActionSheet(alert: UIAlertController)
+}
+
+enum NavigationError: String, Error {
+    case encodeError = "인코딩 오류입니다"
+    case urlError = "url변환 오류입니다"
+    
+    var printErrorMessage: Void {
+        switch self {
+        case .encodeError:
+            print(NavigationError.encodeError.rawValue)
+        case .urlError:
+            print(NavigationError.urlError.rawValue)
+        }
+    }
+}
 
 class PathTableViewCell: UITableViewCell {
     
     static let cellId = "PathTableViewCell"
+    
+    weak var delegate: ActionSheetDelegate?
     
     var data: DatePath? {
         didSet {
@@ -61,9 +82,10 @@ class PathTableViewCell: UITableViewCell {
         return v
     }()
     
-    let findPathButton: UIButton = {
+    lazy var findPathButton: UIButton = {
         let v = UIButton(type: .custom)
         v.setImage(UIImage(named: "FindPathButton"), for: .normal)
+        v.addTarget(self, action: #selector(findPathButtonTapped), for: .touchUpInside)
         return v
     }()
 
@@ -78,6 +100,7 @@ class PathTableViewCell: UITableViewCell {
     
     func setUI() {
         addSubviews(title, comment, distance, pointCircle, lineUpper, lineLower)
+        contentView.addSubview(findPathButton)
         title.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
             make.leading.equalToSuperview().inset(70)
@@ -114,6 +137,67 @@ class PathTableViewCell: UITableViewCell {
             make.top.equalTo(pointCircle.snp.centerY)
             make.bottom.equalToSuperview()
         }
+        
+        findPathButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(20)
+            make.size.equalTo(20)
+            make.centerY.equalTo(pointCircle.snp.centerY)
+        }
     }
     
+    func showActionSheet() {
+        
+        guard let data = self.data else { return }
+        let encodeUrl = data.title.encodeUrl()
+        guard let encodeUrl = encodeUrl else {
+            NavigationError.encodeError.printErrorMessage
+            return
+        }
+        
+        let actionSheet = UIAlertController(title: "뭐로이동하시는데요?", message: "차량으로 이동할건가요 도보로이동할건가요?", preferredStyle: .actionSheet)
+        let drivePath = UIAlertAction(title: "차량으로 이동", style: .default) { _ in
+
+            let url = URL(string: "nmap://navigation?dlat=\(data.location.latitude)&dlng=\(data.location.longitude)&dname=\(encodeUrl)&appname=com.example.myapp")
+            guard let url = url else {
+                NavigationError.urlError.printErrorMessage
+                return
+            }
+            
+            let appStoreURL = URL(string: "http://itunes.apple.com/app/id311867728?mt=8")!
+
+            if UIApplication.shared.canOpenURL(url) {
+              UIApplication.shared.open(url)
+            } else {
+              UIApplication.shared.open(appStoreURL)
+            }
+        }
+        
+        let walkPath = UIAlertAction(title: "도보로 이동", style: .default) { _ in
+            let url = URL(string: "nmap://route/walk?dlat=\(data.location.latitude)&dlng=\(data.location.longitude)&dname=\(encodeUrl)&appname=com.example.myapp")
+            guard let url = url else {
+                print("url 변환 오류")
+                return
+            }
+            
+            let appStoreURL = URL(string: "http://itunes.apple.com/app/id311867728?mt=8")!
+
+            if UIApplication.shared.canOpenURL(url) {
+              UIApplication.shared.open(url)
+            } else {
+              UIApplication.shared.open(appStoreURL)
+            }
+        }
+        
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        actionSheet.addAction(drivePath)
+        actionSheet.addAction(walkPath)
+        actionSheet.addAction(cancel)
+        
+        self.delegate?.showActionSheet(alert: actionSheet)
+    }
+    
+    @objc
+    func findPathButtonTapped() {
+        showActionSheet()
+    }
 }
