@@ -186,20 +186,16 @@ extension ProfileViewController: NavigationBarConfigurable {
 extension ProfileViewController {
     @objc
     private func settingButtonPressed(_ sender: UIButton) {
-        print("asdasd")
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { action in
             // TODO: logic 추가
-            print("행성 이름 변경")
         }
         let editDayAction = UIAlertAction(title: "디데이 수정", style: .default) { action in
             // TODO: logic 추가
-            print("디데이 수정")
         }
         let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { action in
             // TODO: logic 추가
-            print("행성 나가기")
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         
