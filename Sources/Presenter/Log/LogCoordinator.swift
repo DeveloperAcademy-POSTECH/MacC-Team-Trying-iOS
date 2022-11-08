@@ -17,8 +17,8 @@ final class LogCoordinator: Coordinator {
     
     func start() {
         guard let navigationController = navigationController else { return }
-        let viewController = LogViewController()
-        let viewModel = LogViewModel.shared
+        let viewController = LogTicketViewController()
+        let viewModel = LogTicketViewModel.shared
         viewController.viewModel = viewModel
         
         navigationController.pushViewController(viewController, animated: true)

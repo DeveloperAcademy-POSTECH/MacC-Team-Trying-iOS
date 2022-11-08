@@ -25,7 +25,6 @@ final class LogHomeViewController: BaseViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
         setUI()
         bind()
     }

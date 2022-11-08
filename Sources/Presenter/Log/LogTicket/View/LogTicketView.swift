@@ -17,26 +17,27 @@ class LogTicketView: UIView {
             setPageControl()
         }
     }
-    
     var courseNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .bold, size: ._15)
         return label
     }()
-    
-    private var likebutton: UIButton = {
+    lazy var likebutton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "unlike_image"), for: .normal)
         return button
     }()
-    
-    private var dismissbutton: UIButton = {
+    lazy var dismissButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
         button.tintColor = .white
         return button
     }()
-    
+    lazy var flopButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "refresh"), for: .normal)
+        return button
+    }()
     var bodyTextView: UITextView = {
         let textView = UITextView()
         textView.font = UIFont.designSystem(weight: .regular, size: ._13)
@@ -46,7 +47,6 @@ class LogTicketView: UIView {
         textView.isEditable = false
         return textView
     }()
-    
     private let dateTitleLabel = LogTicketLabel(title: "Date", color: .white)
     private let numberTitleLabel = LogTicketLabel(title: "No.", color: .white)
     private let fromTitleLabel = LogTicketLabel(title: "From", color: .white)
@@ -85,10 +85,11 @@ class LogTicketView: UIView {
             pageControl,
             bodyTextView,
             likebutton,
-            dismissbutton
+            dismissButton,
+            flopButton
         )
         setBlur()
-        setConstraints()
+        setLayouts()
         
     }
     
@@ -128,7 +129,7 @@ extension LogTicketView: UIScrollViewDelegate {
         pageControl.currentPage = 0
         pageControl.numberOfPages = imageUrl.count
         pageControl.pageIndicatorTintColor = UIColor.designSystem(Palette.grayC5C5C5)
-        pageControl.currentPageIndicatorTintColor = UIColor.designSystem(Palette.pinkEB97D9)
+        pageControl.currentPageIndicatorTintColor = UIColor.designSystem(Palette.pinkFF0099)
         
         pageControl.snp.makeConstraints { make in
             make.bottom.equalTo(ImageScrollView.snp.bottom)
@@ -138,12 +139,11 @@ extension LogTicketView: UIScrollViewDelegate {
 }
 
 extension LogTicketView {
-    private func setConstraints() {
+    private func setLayouts() {
         ImageScrollView.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.8974358974)
             make.height.equalTo(DeviceInfo.screenHeight * 0.3471563981)
-            make.top.equalToSuperview()
-            make.centerX.equalToSuperview()
+            make.top.centerX.equalToSuperview()
         }
         courseNameLabel.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(DeviceInfo.screenWidth * 0.05128205128)
@@ -177,7 +177,7 @@ extension LogTicketView {
             make.top.equalTo(DeviceInfo.screenHeight * 0.5639810426)
             make.centerX.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.8974358974)
-            make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 0.04739336493)
+            make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 0.05628095212)
         }
         likebutton.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.05128205128)
@@ -185,14 +185,19 @@ extension LogTicketView {
             make.right.equalTo(fromLabel.snp.right)
             make.centerY.equalTo(courseNameLabel.snp.centerY)
         }
-        dismissbutton.snp.makeConstraints { make in
+        dismissButton.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.05641025641)
             make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)
             make.right.equalToSuperview().offset(-DeviceInfo.screenWidth * 0.05128205128)
             make.top.equalToSuperview().offset(DeviceInfo.screenHeight * 0.02369668246)
         }
+        flopButton.snp.makeConstraints { make in
+            make.width.equalTo(DeviceInfo.screenWidth * 0.06153846154)
+            make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)
+            make.centerX.equalTo(dismissButton.snp.centerX)
+            make.bottom.equalToSuperview().offset(-DeviceInfo.screenHeight * 0.02369668246)
+        }
     }
-    
     private func drawTicket() {
         let radious = DeviceInfo.screenWidth * 0.1282051282 / 2
         let ticketShapeLayer = CAShapeLayer()
@@ -242,11 +247,10 @@ extension LogTicketView {
         layer.shadowOffset = .zero
         layer.mask = ticketShapeLayer
     }
-    
     private func setBlur() {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.regular)
         let outerVisualEffectView = UIVisualEffectView(effect: blurEffect)
-        outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.glassPink)?.withAlphaComponent(0.8).cgColor
+        outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.8).cgColor
         outerVisualEffectView.layer.opacity = 0.8
         outerVisualEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
         self.addSubview(outerVisualEffectView)

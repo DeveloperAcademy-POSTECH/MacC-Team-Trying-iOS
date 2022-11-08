@@ -10,17 +10,16 @@
 import Combine
 import Foundation
 
-final class LogViewModel: BaseViewModel {
+final class LogTicketViewModel: BaseViewModel {
     
-    static let shared = LogViewModel()
+    static let shared = LogTicketViewModel()
     
-    override init() {
+    override private init() {
         super.init()
         fetchData()
     }
     
     var data: TestModel?
-    
     // TODO: MOCK용 임시 함수
     func fetchData() {
         self.data = TestModel(
@@ -31,18 +30,15 @@ final class LogViewModel: BaseViewModel {
             body: "배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.",
             date: "2022년 10월 20일",
             tag: ["삐갈레브레드", "포항공과대학교", "귀여운승창이"],
-            images: ["lakeImage", "lakeImage", "lakeImage", "lakeImage"]
+            images: ["KyuAndWoody", "lakeImage", "KyuAndWoody", "lakeImage"]
         )
     }
     
-    func didTapMapButton() { }
+    func tapDismissButton() { }
     
-    func didTapListButton() { }
+    func tapLikeButton() { }
     
-    func didTapLikeButton() { }
-    
-    func didTapFollowButton() { }
-    
+    func tapFlopButton() { }
 }
 
 // MARK: MOCK

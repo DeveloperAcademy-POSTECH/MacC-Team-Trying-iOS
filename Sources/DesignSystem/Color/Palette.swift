@@ -21,7 +21,8 @@ enum Palette: String {
     case pinkEB97D9
     case orange
     case blue110B38
-    case glassPink
+    case pinkF09BA1
+    case pinkFF0099
 
     var hexString: String {
         switch self {
@@ -53,8 +54,10 @@ enum Palette: String {
             return "#EB911AFF"
         case .blue110B38:
             return "#110B38FF"
-        case .glassPink:
-            return "#F09BA1FF"
+        case .pinkF09BA1:
+            return "#F09BA114"
+        case .pinkFF0099:
+            return "#FF0099FF"
         }
     }
 }
