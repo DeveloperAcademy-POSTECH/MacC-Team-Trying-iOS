@@ -268,6 +268,7 @@ extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         if tableView == pathTableView {
             guard let footer = tableView.dequeueReusableHeaderFooterView(withIdentifier: PathTableFooter.cellId) as? PathTableFooter else { return UIView() }
+            footer.delegate = self
             return footer
         }
         return UIView()
@@ -280,7 +281,11 @@ extension HomeViewController: UITableViewDelegate {
 }
 
 extension HomeViewController: ActionSheetDelegate {
-    func showActionSheet(alert: UIAlertController) {
+    func showPathActionSheet(alert: UIAlertController) {
+        self.present(alert, animated: true)
+    }
+    
+    func showSettingActionSheet(alert: UIAlertController) {
         self.present(alert, animated: true)
     }
 }

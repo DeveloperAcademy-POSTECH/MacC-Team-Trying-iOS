@@ -12,6 +12,8 @@ import SnapKit
 class PathTableFooter: UITableViewHeaderFooterView {
     static let cellId = "PathTableFooter"
     
+    weak var delegate: ActionSheetDelegate?
+    
     let registerReviewButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .clear
@@ -29,10 +31,11 @@ class PathTableFooter: UITableViewHeaderFooterView {
         return button
     }()
     
-    let settingButton: UIButton = {
+    lazy var settingButton: UIButton = {
         let buttonImage = UIImage(named: "PathSettingButton")
         let button = UIButton(type: .custom)
         button.setImage(buttonImage, for: .normal)
+        button.addTarget(self, action: #selector(settingButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -53,6 +56,18 @@ class PathTableFooter: UITableViewHeaderFooterView {
             make.centerY.equalToSuperview()
             
         }
+    }
+    
+    @objc
+    func settingButtonTapped() {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let modify = UIAlertAction(title: "별자리 수정하기", style: .default)
+        let delete = UIAlertAction(title: "별자리 삭제하기", style: .default)
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        actionSheet.addAction(modify)
+        actionSheet.addAction(delete)
+        actionSheet.addAction(cancel)
+        self.delegate?.showSettingActionSheet(alert: actionSheet)
     }
     
     required init?(coder: NSCoder) {

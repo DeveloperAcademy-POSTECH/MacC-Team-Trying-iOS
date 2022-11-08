@@ -10,7 +10,8 @@ import UIKit
 import CoreLocation
 
 protocol ActionSheetDelegate: AnyObject {
-    func showActionSheet(alert: UIAlertController)
+    func showPathActionSheet(alert: UIAlertController)
+    func showSettingActionSheet(alert: UIAlertController)
 }
 
 enum PathType {
@@ -34,12 +35,12 @@ enum NavigationError: String, Error {
     case encodeError = "인코딩 오류입니다"
     case urlError = "url변환 오류입니다"
     
-    var printErrorMessage: Void {
+    var printErrorMessage: String {
         switch self {
         case .encodeError:
-            print(NavigationError.encodeError.rawValue)
+            return NavigationError.encodeError.rawValue
         case .urlError:
-            print(NavigationError.urlError.rawValue)
+            return NavigationError.urlError.rawValue
         }
     }
 }
@@ -165,7 +166,7 @@ class PathTableViewCell: UITableViewCell {
     
     func showActionSheet() {
         guard let data = self.data else { return }
-        let actionSheet = UIAlertController(title: "", message: "이동수단을 선택해주세요!", preferredStyle: .actionSheet)
+        let actionSheet = UIAlertController(title: nil, message: "이동수단을 선택해주세요!", preferredStyle: .actionSheet)
         let drivePath = UIAlertAction(title: "차량으로 이동", style: .default) { _ in
             self.moveToNaverMap(pathType: .Car, data: data)
         }
@@ -180,7 +181,7 @@ class PathTableViewCell: UITableViewCell {
         actionSheet.addAction(publicPath)
         actionSheet.addAction(drivePath)
         actionSheet.addAction(cancel)
-        self.delegate?.showActionSheet(alert: actionSheet)
+        self.delegate?.showPathActionSheet(alert: actionSheet)
     }
     
     /// 버튼을 누르면 naverMap으로 이동시켜주는(URL Scheme)함수
@@ -188,15 +189,16 @@ class PathTableViewCell: UITableViewCell {
     ///   - pathType: 도보이동 정보를 보여줄지, 자가이동 정보를 보여줄지, 대중교통이동 정보를 보여줄지를 선택
     ///   - data: 내가 가고자하는 곳의 장소데이터
     func moveToNaverMap(pathType: PathType, data: DatePath) {
-        let encodeUrl = data.title.encodeUrl()
-        guard let encodeUrl = encodeUrl else {
-            NavigationError.encodeError.printErrorMessage
+        let id = "appname=com.example.myapp"
+        let encoder = data.title.encodeUrl()
+        guard let encoder = encoder else {
+            print(NavigationError.encodeError.printErrorMessage)
             return
         }
         
-        let url = URL(string: "nmap://\(pathType.parameter)?dlat=\(data.location.latitude)&dlng=\(data.location.longitude)&dname=\(encodeUrl)&appname=com.example.myapp")
+        let url = URL(string: "nmap://\(pathType.parameter)?dlat=\(data.location.latitude)&dlng=\(data.location.longitude)&dname=\(encoder)&\(id)")
         guard let url = url else {
-            NavigationError.urlError.printErrorMessage
+            print(NavigationError.urlError.printErrorMessage)
             return
         }
         
