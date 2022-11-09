@@ -14,7 +14,7 @@ import SnapKit
 
 final class ProfileViewController: BaseViewController {
     private let sections = ["활동내역", "회원설정", "고객센터"]
-    private let userSetting = ["닉네임 수정", "비밀번호 변경", "푸쉬 설정"]
+    private let userSetting = ["닉네임 수정", "디데이 수정", "푸쉬 설정"]
     private let services = ["공지사항", "서비스 약관", "자주 묻는 질문"]
     
     var viewModel: ProfileViewModel
@@ -187,11 +187,6 @@ extension ProfileViewController {
         
         let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { action in
             // TODO: logic 추가
-            // FIXME: 임시로 화면전환 구현. 삭제하기
-            self.viewModel.pushToEditDayView()
-        }
-        let editDayAction = UIAlertAction(title: "디데이 수정", style: .default) { action in
-            // TODO: logic 추가
         }
         let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { action in
             // TODO: logic 추가
@@ -199,7 +194,6 @@ extension ProfileViewController {
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         
         alertController.addAction(editPlanetNameAction)
-        alertController.addAction(editDayAction)
         alertController.addAction(exitPlanetAction)
         alertController.addAction(cancelAction)
         
@@ -272,6 +266,47 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             return 56
         default:
             return -1
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case 0:
+            break
+            
+        case 1:
+            switch indexPath.row {
+            case 0:
+                // TODO: 닉네임 수정
+                break
+            case 1:
+                viewModel.pushToEditDayView()
+            case 2:
+                // TODO: 푸쉬 설정
+                break
+            default:
+                break
+                
+            }
+            
+        case 2:
+            switch indexPath.row {
+            case 0:
+                // TODO: 공지사항
+                break
+            case 1:
+                // TODO: 서비스 약관
+                break
+            case 2:
+                // TODO: 자주 묻는 질문
+                break
+            default:
+                break
+                
+            }
+            
+        default:
+            break
         }
     }
 }
