@@ -14,6 +14,11 @@ import CancelBag
 import SnapKit
 
 final class LogMapViewController: BaseViewController {
+    private enum DismissButtonType {
+        case dismiss
+        case pop
+    }
+    
     private let viewModel: LogMapViewModel
     
     private lazy var locationManager: CLLocationManager = {
@@ -29,19 +34,13 @@ final class LogMapViewController: BaseViewController {
     
     var currentLocation: CLLocation!
     
-    private lazy var dismissButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: Constants.Image.navBarDeleteButton), for: .normal)
-        button.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
-        return button
-    }()
+    private lazy var dismissButton = UIButton()
     
     private lazy var mapView: MKMapView = {
         let map = MKMapView()
         map.register(StarAnnotationView.self, forAnnotationViewWithReuseIdentifier: StarAnnotationView.identifier)
         map.register(ConstellationAnnotationView.self, forAnnotationViewWithReuseIdentifier: ConstellationAnnotationView.identifier)
         map.delegate = self
-        map.addAnnotations(viewModel.fetchAnnotations())
         map.setRegion(
             MKCoordinateRegion(
                 center: CLLocationCoordinate2D(
@@ -149,13 +148,9 @@ final class LogMapViewController: BaseViewController {
 // MARK: - UI
 extension LogMapViewController {
     private func setUI() {
-        setAttributes()
+        presentConstellationAnnotations()
+        setDismissButton(type: .dismiss)
         setLayout()
-    }
-    
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -190,38 +185,110 @@ extension LogMapViewController {
         
         recordButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(-80)
             make.width.equalTo(110)
             make.height.equalTo(34)
         }
+    }
+    
+    private func presentConstellationAnnotations() {
+        mapView.removeAnnotations(mapView.annotations)
+        mapView.addAnnotations(viewModel.fetchConstellationAnnotations())
+    }
+    
+    private func presentStarAnnotations(selectedCourseTitle: String) {
+        mapView.removeAnnotations(mapView.annotations)
+        let starAnnotations = viewModel.fetchStarAnnotations(with: selectedCourseTitle)
+        mapView.addAnnotations(starAnnotations)
+        mapView.showAnnotations(starAnnotations, animated: true)
+    }
+    
+    private func presentRecordButton() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.recordButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(20)
+            }
+            
+            UIView.animate(
+                withDuration: 0.4,
+                delay: 0,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+    }
+    
+    private func dismissRecordButton() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.recordButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(-80)
+            }
+            
+            UIView.animate(
+                withDuration: 0.4,
+                delay: 0,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+    }
+    
+    private func setDismissButton(type: DismissButtonType) {
+        switch type {
+        case .dismiss:
+            dismissButton.setImage(UIImage(named: Constants.Image.navBarDeleteButton), for: .normal)
+            dismissButton.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
+            
+        case .pop:
+            dismissButton.setImage(UIImage(named: Constants.Image.navBarPopButton), for: .normal)
+            dismissButton.addTarget(self, action: #selector(popButtonPressed(_:)), for: .touchUpInside)
+        }
+    }
+    
+    private func presentLocation(latitude: CLLocationDegrees, longitude: CLLocationDegrees, span: Double) {
+        let spanValue = MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
+        mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: spanValue), animated: true)
     }
 }
 
 // MARK: - MKMapViewDelegate
 extension LogMapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        if let annotation = annotation as? StarAnnotation {
+        if let starAnnotation = annotation as? StarAnnotation {
             
             guard let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: StarAnnotationView.identifier) else { return nil }
             
-            annotationView.clusteringIdentifier = annotation.courseTitle
-            annotationView.annotation = annotation
+            annotationView.annotation = starAnnotation
             annotationView.image = UIImage(named: Constants.Image.starAnnotation)
             
             return annotationView
             
-        } else if let cluster = annotation as? MKClusterAnnotation {
+        } else if let constellationAnnotation = annotation as? ConstellationAnnotation {
             
-            guard let clusterView = mapView.dequeueReusableAnnotationView(withIdentifier: ConstellationAnnotationView.identifier) else { return nil }
+            guard let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: ConstellationAnnotationView.identifier) else { return nil }
             
-            clusterView.annotation = cluster
-            clusterView.image = UIImage(named: "mock_cluster")
+            annotationView.annotation = constellationAnnotation
+            annotationView.image = UIImage(named: "mock_cluster")
             
-            return clusterView
-            
+            return annotationView
         } else {
             return nil
         }
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        guard let view = view as? ConstellationAnnotationView,
+              let title = view.annotation?.title! else { return }
+        
+        setDismissButton(type: .pop)
+        presentStarAnnotations(selectedCourseTitle: title)
+        presentRecordButton()
     }
 }
 
@@ -255,6 +322,14 @@ extension LogMapViewController {
     @objc
     private func dismissButtonPressed(_ sender: UIButton) {
         // TODO: dismiss
+    }
+    
+    @objc
+    private func popButtonPressed(_ sender: UIButton) {
+        setDismissButton(type: .dismiss)
+        dismissRecordButton()
+        presentConstellationAnnotations()
+        presentLocation(latitude: mapView.region.center.latitude, longitude: mapView.region.center.longitude, span: 0.05)
     }
     
     @objc

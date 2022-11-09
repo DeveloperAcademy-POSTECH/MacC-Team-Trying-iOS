@@ -15,8 +15,7 @@ final class ConstellationAnnotationView: MKAnnotationView {
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         
-        displayPriority = .defaultHigh
-        collisionMode = .circle
+        displayPriority = .required
         centerOffset = CGPoint(x: 0, y: -18)
     }
     
@@ -26,6 +25,7 @@ final class ConstellationAnnotationView: MKAnnotationView {
 }
 
 final class ConstellationAnnotation: NSObject, MKAnnotation {
+    var title: String?
     let coordinate: CLLocationCoordinate2D
     
     init(coordinate: CLLocationCoordinate2D) {

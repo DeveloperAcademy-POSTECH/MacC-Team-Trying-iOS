@@ -16,6 +16,8 @@ final class StarAnnotationView: MKAnnotationView {
     
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        
+        displayPriority = .required
         centerOffset = CGPoint(x: 0, y: -18)
     }
     
@@ -25,11 +27,9 @@ final class StarAnnotationView: MKAnnotationView {
 }
 
 final class StarAnnotation: NSObject, MKAnnotation {
-    let courseTitle: String
     let coordinate: CLLocationCoordinate2D
     
-    init(courseTitle: String, coordinate: CLLocationCoordinate2D) {
-        self.courseTitle = courseTitle
+    init(coordinate: CLLocationCoordinate2D) {
         self.coordinate = coordinate
     }
 }

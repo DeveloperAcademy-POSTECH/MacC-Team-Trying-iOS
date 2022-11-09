@@ -342,8 +342,6 @@ extension AddCourseMapViewController {
             if error == nil, let marks = placeMarks {
                 marks.forEach { placeMark in
                     let starAnnotation = StarAnnotation(
-                        // FIXME: 바꿔야함
-                        courseTitle: "임시 타이틀",
                         coordinate: CLLocationCoordinate2D(
                             latitude: point.latitude,
                             longitude: point.longitude

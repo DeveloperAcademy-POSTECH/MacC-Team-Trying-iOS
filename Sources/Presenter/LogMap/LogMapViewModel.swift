@@ -15,6 +15,9 @@ import CancelBag
 
 final class LogMapViewModel: BaseViewModel {
     private let coordinator: Coordinator
+    
+    @Published var selectedPlaces = [Place]()
+    
     private let mockCourseData: [Course] = [
         Course(
             belongedPlanet: Planet(
@@ -169,24 +172,41 @@ final class LogMapViewModel: BaseViewModel {
 
 // MARK: - Business Logic
 extension LogMapViewModel {
-    func fetchCourses() -> [Course] {
-        self.mockCourseData
+    func fetchStarAnnotations(with selectedCourseTitle: String) -> [MKAnnotation] {
+        var annotations = [MKAnnotation]()
+        guard let selectedCourse = mockCourseData.first(where: { $0.title == selectedCourseTitle }) else { return [] }
+        
+        selectedCourse.places.forEach { place in
+            annotations.append(convertToStarAnnotation(place: place))
+        }
+        
+        return annotations
     }
     
-    func fetchAnnotations() -> [MKAnnotation] {
+    func fetchConstellationAnnotations() -> [MKAnnotation] {
         var annotations = [MKAnnotation]()
+        
         mockCourseData.forEach { course in
-            course.places.forEach { place in
-                annotations.append(convertToAnnotation(courseTitle: course.title, place: place))
-            }
+            annotations.append(convertToConstellationAnnotation(course: course))
         }
+        
         return annotations
     }
 }
 
 // MARK: - Helper
 extension LogMapViewModel {
-    private func convertToAnnotation(courseTitle: String, place: Place) -> MKAnnotation {
-        StarAnnotation(courseTitle: courseTitle, coordinate: place.location)
+    private func convertToStarAnnotation(place: Place) -> MKAnnotation {
+        return StarAnnotation(coordinate: place.location)
+    }
+    
+    private func convertToConstellationAnnotation(course: Course) -> MKAnnotation {
+        let places = course.places
+        let averageLatitude = places.reduce(into: 0.0) { $0 += $1.location.latitude } / Double(places.count)
+        let averageLongitude = places.reduce(into: 0.0) { $0 += $1.location.longitude } / Double(places.count)
+        
+        let annotation = ConstellationAnnotation(coordinate: CLLocationCoordinate2D(latitude: averageLatitude, longitude: averageLongitude))
+        annotation.title = course.title
+        return annotation
     }
 }
