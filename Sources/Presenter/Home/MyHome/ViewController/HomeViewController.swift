@@ -15,7 +15,7 @@ import Lottie
 
 final class HomeViewController: BaseViewController {
     
-    lazy var backgroundView = BackgroundView(frame: view.bounds)
+//    lazy var backgroundView = BackgroundView(frame: view.bounds)
     private lazy var carouselView = CarouselCollectionView(pages: 0, delegate: self)
     let homeDetailView = HomeDetailView()
     let viewModel: HomeViewModel

@@ -40,7 +40,7 @@ final class HomeTestViewController: BaseViewController {
 // MARK: - UI
 extension HomeTestViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(pushButtonPressed(_:)))
+        configureRecordMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(pushButtonPressed(_:)))
         setAttributes()
         setLayout()
     }

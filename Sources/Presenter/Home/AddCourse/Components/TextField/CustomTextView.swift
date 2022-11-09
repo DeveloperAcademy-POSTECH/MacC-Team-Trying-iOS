@@ -28,7 +28,7 @@ final class CustomTextView: UITextView {
         self.textColor = .designSystem(.white)
         self.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.1)
         self.tintColor = .designSystem(.white)
-        self.text = "내용을 입력해 주세요."
+        self.text = "데이트 후기를 입력해 주세요."
         self.font = .designSystem(weight: .regular, size: ._15)
     }
 }

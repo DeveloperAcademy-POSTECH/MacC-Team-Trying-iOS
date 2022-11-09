@@ -15,11 +15,13 @@ import CancelBag
 import SnapKit
 
 final class AddCourseMapViewController: BaseViewController {
+    var type: AddCourseFlowType
     var viewModel: AddCourseMapViewModel
     
     private var placeListViewHeight: CGFloat {
         // 기본으로 줘야하는 높이 : 45
         // indicator 영역 높이 : 15
+        // headerView로 사용되는 label의 높이 : 40
         // main button 높이 : 58
         // 위 3개는 최소 높이. (45 + 15 + 58 = 118)
         // 이후 셀 하나가 추가되는 만큼 셀 높이 추가해주기
@@ -28,11 +30,11 @@ final class AddCourseMapViewController: BaseViewController {
         case 0:
             return 0
         case 1:
-            return 185
+            return 225
         case 2:
-            return 252
+            return 292
         default:
-            return 319
+            return 359
         }
     }
     
@@ -75,13 +77,13 @@ final class AddCourseMapViewController: BaseViewController {
         return view
     }()
     private lazy var placeListView: PlaceListView = {
-        let view = PlaceListView(parentView: self.view, numberOfItems: viewModel.places.count)
+        let view = PlaceListView(parentView: self.view)
         view.mapPlaceTableView.dataSource = self
         view.mapPlaceTableView.delegate = self
         return view
     }()
     private lazy var nextButton: MainButton = {
-        let button = MainButton(type: .next)
+        let button = MainButton(type: .empty)
         button.addTarget(self, action: #selector(didTapNextButton(_:)), for: .touchUpInside)
         return button
     }()
@@ -89,19 +91,32 @@ final class AddCourseMapViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
+        self.placeDetailView.memoTextField.optionalTextPublisher()
+            .assign(to: &viewModel.$memo)
         
         // output
+        self.viewModel.$memo
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] memo in
+                guard let self = self else { return }
+                self.placeDetailView.memoTextField.text = memo
+            }
+            .cancel(with: cancelBag)
+        
         self.viewModel.$places
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] places in
                 guard let self = self else { return }
                 self.placeListView.numberOfItems = places.count
+                self.placeListView.numberLabel.text = "\(places.count)개"
                 self.placeListView.mapPlaceTableView.reloadData()
+                self.nextButton.setTitle("\(places.count)개 선택 완료", for: .normal)
             })
             .cancel(with: cancelBag)
     }
     
-    init(viewModel: AddCourseMapViewModel) {
+    init(type: AddCourseFlowType, viewModel: AddCourseMapViewModel) {
+        self.type = type
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -120,6 +135,8 @@ final class AddCourseMapViewController: BaseViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        setNofifications()
         
         if CLLocationManager.locationServicesEnabled() {
             if CLLocationManager.authorizationStatus() == .denied || CLLocationManager.authorizationStatus() == .restricted {
@@ -140,12 +157,18 @@ final class AddCourseMapViewController: BaseViewController {
             self.present(alert, animated: true, completion: nil)
         }
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        removeNotifications()
+    }
 }
 
 // MARK: - UI
 extension AddCourseMapViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(placeSearchButtonPressed(_:)))
+        configureRecordMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(placeSearchButtonPressed(_:)))
         setLayout()
     }
     
@@ -199,7 +222,7 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
         cell.numberLabel.text = String(indexPath.row + 1)
         cell.titleLabel.text = place.title
         cell.categoryLabel.text = place.category
-        cell.addressLabel.text = place.address
+        cell.memoLabel.text = place.memo ?? "메모 없음"
         cell.deleteButton.tag = indexPath.row
         
         cell.deleteButton.addTarget(self, action: #selector(didTapDeleteButton(_:)), for: .touchUpInside)
@@ -214,6 +237,75 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
 
 // MARK: - User Interactions
 extension AddCourseMapViewController {
+    private func setNofifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc
+    func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                UIView.animate(
+                    withDuration: 0.3,
+                    delay: 0,
+                    options: .curveEaseOut,
+                    animations: {
+                        self.placeDetailView.snp.updateConstraints { make in
+                            make.bottom.equalToSuperview().inset(keyboardHeight - 8)
+                        }
+                        self.view.layoutIfNeeded()
+                    }
+                )
+            }
+        }
+    }
+
+    @objc
+    func keyboardWillHide(notification: NSNotification) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            UIView.animate(
+                withDuration: 0.27,
+                delay: 0,
+                options: .curveEaseOut,
+                animations: {
+                    self.placeDetailView.snp.updateConstraints { make in
+                        make.bottom.equalToSuperview()
+                    }
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+    }
+
+    private func removeNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
     @objc
     private func backButtonPressed(_ sender: UIButton) {
         viewModel.pop()
@@ -221,11 +313,13 @@ extension AddCourseMapViewController {
     
     @objc
     private func placeSearchButtonPressed(_ sender: UIButton) {
+        placeDetailView.memoTextField.resignFirstResponder()
         viewModel.pushToPlaceSearchView()
     }
     
     @objc
     private func didTapAddCourseButton(_ sender: UIButton) {
+        placeDetailView.memoTextField.resignFirstResponder()
         presentPlaceListView()
         viewModel.addPlace(self.placeDetailView.selectedPlace!)
         viewModel.addAnnotation(recentAnnotation!)
@@ -235,6 +329,7 @@ extension AddCourseMapViewController {
     @objc
     private func didTapDeleteButton(_ sender: UIButton) {
         let index = sender.tag
+        HapticManager.instance.selection()
         viewModel.deletePlace(index)
         viewModel.deleteAnnotation(map: self.placeMapView, at: index)
         
@@ -245,7 +340,14 @@ extension AddCourseMapViewController {
     
     @objc
     private func didTapNextButton(_ sender: UIButton) {
-        viewModel.pushToRegisterCourseView()
+        if type == .record {
+            viewModel.pushToRecordCourseView()
+        } else {
+            Task {
+                try await viewModel.addCoursePlan()
+            }
+            viewModel.pushToAddCourseCompleteView()
+        }
     }
     
     private func presentPlaceDetailView(with place: CLPlacemark) {
@@ -262,7 +364,7 @@ extension AddCourseMapViewController {
             }
             
             self.placeDetailView.snp.updateConstraints { make in
-                make.height.equalTo(264)
+                make.height.equalTo(190)
             }
             
             UIView.animate(
@@ -319,6 +421,8 @@ extension AddCourseMapViewController {
     
     @objc
     private func didTapMapView(_ sender: UITapGestureRecognizer) {
+        placeDetailView.memoTextField.resignFirstResponder()
+        viewModel.memo = nil
         let location = sender.location(in: placeMapView)
         let mapPoint = placeMapView.convert(location, toCoordinateFrom: placeMapView)
         
@@ -375,6 +479,9 @@ extension AddCourseMapViewController: MKMapViewDelegate {
         }
         
         annotationView?.image = UIImage(named: Constants.Image.starAnnotation)
+        
+        annotationView?.clusteringIdentifier = viewModel.courseTitle
+        annotationView?.displayPriority = .defaultHigh
         
         return annotationView
     }
