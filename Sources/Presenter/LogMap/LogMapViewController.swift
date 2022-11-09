@@ -19,7 +19,7 @@ final class LogMapViewController: BaseViewController {
         case pop
     }
     
-    private let viewModel: LogMapViewModel
+    var viewModel: LogMapViewModel
     
     private lazy var locationManager: CLLocationManager = {
         let manager = CLLocationManager()
@@ -53,6 +53,7 @@ final class LogMapViewController: BaseViewController {
         )
         map.showsUserLocation = true
         map.setUserTrackingMode(.followWithHeading, animated: true)
+        map.showsCompass = false
         return map
     }()
     
@@ -61,7 +62,7 @@ final class LogMapViewController: BaseViewController {
         button.mapView = mapView
         button.backgroundColor = .designSystem(.gray252632)
         button.tintColor = .designSystem(.mainYellow)
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = 5
         return button
     }()
     
