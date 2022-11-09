@@ -1,5 +1,5 @@
 //
-//  FeedViewController.swift
+//  LogTicketViewController.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/12.
@@ -76,19 +76,16 @@ extension LogTicketViewController {
     
     @objc
     func tapDismissButton() {
-        guard let viewModel = viewModel else { return }
-        viewModel.tapDismissButton()
+        viewModel?.tapDismissButton()
     }
     
     @objc
     func tapLikeButton() {
-        guard let viewModel = viewModel else { return }
-        viewModel.tapLikeButton()
+        viewModel?.tapLikeButton()
     }
     
     @objc
     func tapFlopButton() {
-        guard let viewModel = viewModel else { return }
-        viewModel.tapFlopButton()
+        viewModel?.tapFlopButton()
     }
 }

@@ -13,7 +13,7 @@ import CancelBag
 import SnapKit
 
 final class MyConstellationViewController: BaseViewController {
-    var viewModel: MyConstellationViewModel?
+    var viewModel: MyConstellationViewModel
     
     private var testLabel: UILabel = {
        let label = UILabel()

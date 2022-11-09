@@ -13,7 +13,8 @@ import CancelBag
 import SnapKit
 
 final class LogHomeViewController: BaseViewController {
-    var viewModel: LogHomeViewModel?
+    
+    var viewModel: LogHomeViewModel
     
     private var testLabel: UILabel = {
        let label = UILabel()
@@ -47,7 +48,6 @@ final class LogHomeViewController: BaseViewController {
     init(viewModel: LogHomeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.navigationController?.isNavigationBarHidden = true
     }
     
     required init?(coder: NSCoder) {
@@ -69,7 +69,23 @@ final class LogHomeViewController: BaseViewController {
         super.viewDidLoad()
         setUI()
         bind()
+    }
+}
+
+// MARK: - UI
+extension LogHomeViewController {
+    private func setUI() {
+        setAttributes()
+        setConstraints()
+    }
+    
+    /// Attributes를 설정합니다.
+    private func setAttributes() {
         
+    }
+    
+    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
+    private func setConstraints() {
         // TODO: 삭제해야함
         self.view.backgroundColor = .systemCyan
         view.addSubviews(testLabel, mapButton, testButton)
@@ -89,28 +105,10 @@ final class LogHomeViewController: BaseViewController {
             make.top.equalTo(mapButton.snp.bottom).offset(30)
         }
     }
-}
-
-// MARK: - UI
-extension LogHomeViewController {
-    private func setUI() {
-        setAttributes()
-        setConstraints()
-    }
-    
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
-    }
-    
-    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setConstraints() {
-        
-    }
     
     @objc
     func tapMapButton() {
-        viewModel?.pushMyConstellationView()
+        viewModel.pushMyConstellationView()
     }
     
     @objc
