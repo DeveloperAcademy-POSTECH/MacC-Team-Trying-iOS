@@ -238,16 +238,9 @@ extension AddCourseCompleteViewController {
                 path.close()
                 
                 let shapeLayer = CAShapeLayer()
-                /*
-                shapeLayer.shadowOffset = .zero
-                shapeLayer.shadowRadius = 10
-                shapeLayer.shadowColor = UIColor.red.cgColor
-                shapeLayer.shadowOpacity = 2.0
-                */
 
                 shapeLayer.path = path.cgPath
                 shapeLayer.lineWidth = path.lineWidth
-                // shapeLayer.fillColor = .designSystem(.whiteFFFBD9)
 
                 shapeLayer.strokeColor = .designSystem(.whiteFFFBD9)
                 constellationView.layer.addSublayer(shapeLayer)
