@@ -21,14 +21,12 @@ final class LogCoordinator: Coordinator, TicketViewCoodinating, Popable{
         let viewModel = LogHomeViewModel(coordinator: self)
         let viewController = LogHomeViewController(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
-        navigationController.isNavigationBarHidden = true
     }
     
     func pushMyConstellationViewController() {
         let viewModel = MyConstellationViewModel(coordinator: self)
         let viewController = MyConstellationViewController(viewModel: viewModel)
         self.navigationController?.pushViewController(viewController, animated: true)
-        navigationController?.isNavigationBarHidden = false
     }
     
     func popViewController() {

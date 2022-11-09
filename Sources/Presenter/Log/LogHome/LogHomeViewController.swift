@@ -54,6 +54,17 @@ final class LogHomeViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: Life - Cycle
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
@@ -70,18 +81,13 @@ final class LogHomeViewController: BaseViewController {
         mapButton.snp.makeConstraints { make in
             make.width.height.equalTo(50)
             make.right.equalToSuperview().offset(-40)
-            make.top.equalToSuperview().offset(80)
+            make.top.equalToSuperview().offset(60)
         }
         testButton.snp.makeConstraints { make in
             make.width.height.equalTo(50)
             make.centerX.equalTo(mapButton.snp.centerX)
             make.top.equalTo(mapButton.snp.bottom).offset(30)
         }
-        
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
     }
 }
 
@@ -112,7 +118,7 @@ extension LogHomeViewController {
         let viewModel = LogTicketViewModel.shared
         let viewController = LogTicketViewController(viewModel: viewModel)
         viewController.view.backgroundColor = .clear
-        viewController.modalPresentationStyle = .fullScreen
+        viewController.modalPresentationStyle = .pageSheet
         self.present(viewController, animated: true)
     }
 }
