@@ -14,7 +14,7 @@ class PathTableFooter: UITableViewHeaderFooterView {
     
     weak var delegate: ActionSheetDelegate?
     
-    let registerReviewButton: UIButton = {
+    private let registerReviewButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .clear
         button.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
@@ -31,7 +31,7 @@ class PathTableFooter: UITableViewHeaderFooterView {
         return button
     }()
     
-    lazy var settingButton: UIButton = {
+    private lazy var settingButton: UIButton = {
         let buttonImage = UIImage(named: "PathSettingButton")
         let button = UIButton(type: .custom)
         button.setImage(buttonImage, for: .normal)
