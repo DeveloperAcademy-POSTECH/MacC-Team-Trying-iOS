@@ -19,8 +19,6 @@ final class ProfileViewController: BaseViewController {
     
     var viewModel: ProfileViewModel
     
-    private lazy var backgroundView = BackgroundView(frame: view.frame)
-    
     private lazy var placeLabel = UILabel()
     
     private lazy var cityLabel = UILabel()
@@ -145,7 +143,6 @@ extension ProfileViewController: NavigationBarConfigurable {
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         
         view.addSubviews(
-            backgroundView,
             placeLabel,
             cityLabel,
             planetImageView,
