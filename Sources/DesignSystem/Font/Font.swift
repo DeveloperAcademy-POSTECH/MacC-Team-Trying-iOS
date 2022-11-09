@@ -21,6 +21,7 @@ enum Font {
         case _15 = 15
         case _17 = 17
         case _20 = 20
+        case _25 = 25
         case _30 = 30
     }
 

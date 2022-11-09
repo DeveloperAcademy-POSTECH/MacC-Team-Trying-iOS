@@ -40,7 +40,7 @@ final class ProfileTestViewController: BaseViewController {
 // MARK: - UI
 extension ProfileTestViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureCourseDetailNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), selectDateAction: #selector(selectDateButtonPressed(_:)))
+        configureCourseDetailNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
         setAttributes()
         setLayout()
     }

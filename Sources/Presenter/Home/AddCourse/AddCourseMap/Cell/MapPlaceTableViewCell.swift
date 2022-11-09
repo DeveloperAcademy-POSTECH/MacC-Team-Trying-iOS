@@ -32,7 +32,7 @@ final class MapPlaceTableViewCell: UITableViewCell {
         label.font = .designSystem(weight: .regular, size: ._11)
         return label
     }()
-    lazy var addressLabel: UILabel = {
+    lazy var memoLabel: UILabel = {
         let label = UILabel()
         label.textColor = .designSystem(.grayC5C5C5)
         label.font = .designSystem(weight: .regular, size: ._13)
@@ -58,8 +58,16 @@ final class MapPlaceTableViewCell: UITableViewCell {
     private func setUI() {
         contentView.backgroundColor = .designSystem(.black)
         
-        placeContainerView.addSubviews(titleLabel, categoryLabel, addressLabel)
-        contentView.addSubviews(numberLabel, placeContainerView, deleteButton)
+        placeContainerView.addSubviews(
+            titleLabel,
+            categoryLabel,
+            memoLabel
+        )
+        contentView.addSubviews(
+            numberLabel,
+            placeContainerView,
+            deleteButton
+        )
         
         numberLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
@@ -80,7 +88,7 @@ final class MapPlaceTableViewCell: UITableViewCell {
             make.bottom.equalTo(titleLabel)
         }
         
-        addressLabel.snp.makeConstraints { make in
+        memoLabel.snp.makeConstraints { make in
             make.leading.bottom.equalToSuperview()
         }
         

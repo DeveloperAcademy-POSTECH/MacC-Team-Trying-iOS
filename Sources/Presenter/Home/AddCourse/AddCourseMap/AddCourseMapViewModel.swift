@@ -20,17 +20,27 @@ protocol PlaceSearchCoordinating {
     func pushToPlaceSearchViewController()
 }
 
-protocol RegisterCourseCoordinating {
-    func pushToRegisterCourseViewController(places: [Place])
+protocol RecordCourseCoordinating {
+    func pushToRecordCourseViewController(courseTitle: String, places: [Place])
 }
 
 final class AddCourseMapViewModel: BaseViewModel {
+    private let addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl()
     var coordinator: Coordinator
+    
+    let courseTitle: String
     @Published var places: [Place]
+    @Published var memo: String?
     var annotations: [MKAnnotation]
     
-    init(coordinator: Coordinator, places: [Place] = [], annotations: [MKAnnotation] = []) {
+    init(
+        coordinator: Coordinator,
+        courseTitle: String,
+        places: [Place] = [],
+        annotations: [MKAnnotation] = []
+    ) {
         self.coordinator = coordinator
+        self.courseTitle = courseTitle
         self.places = places
         self.annotations = annotations
     }
@@ -48,16 +58,31 @@ extension AddCourseMapViewModel {
         coordinator.pushToPlaceSearchViewController()
     }
     
-    func pushToRegisterCourseView() {
-        guard let coordinator = coordinator as? RegisterCourseCoordinating else { return }
-        coordinator.pushToRegisterCourseViewController(places: places)
+    func pushToRecordCourseView() {
+        guard let coordinator = coordinator as? RecordCourseCoordinating else { return }
+        coordinator.pushToRecordCourseViewController(
+            courseTitle: courseTitle,
+            places: places
+        )
+    }
+    
+    func pushToAddCourseCompleteView() {
+        guard let coordinator = coordinator as? AddCourseCompleteCoordinating else { return }
+        coordinator.pushToAddCourseCompleteViewController(
+            courseTitle: courseTitle,
+            courseContent: "",
+            places: places,
+            images: [],
+            isPublic: false
+        )
     }
 }
 
 // MARK: - Methods
 extension AddCourseMapViewModel {
     func addPlace(_ place: CLPlacemark) {
-        places.append(convertToPlace(place: place))
+        places.append(convertToPlace(place: place, memo: memo))
+        self.memo = nil
     }
     
     func deletePlace(_ index: Int) {
@@ -76,7 +101,7 @@ extension AddCourseMapViewModel {
 
 // MARK: - Helper
 extension AddCourseMapViewModel {
-    private func convertToPlace(place: CLPlacemark) -> Place {
+    private func convertToPlace(place: CLPlacemark, memo: String?) -> Place {
         let title = place.name ?? ""
         // TODO: 카테고리로 변경하기
         let category = place.country ?? ""
@@ -93,7 +118,46 @@ extension AddCourseMapViewModel {
             location: CLLocationCoordinate2D(
                 latitude: place.location?.coordinate.latitude ?? 0,
                 longitude: place.location?.coordinate.longitude ?? 0
-            )
+            ),
+            memo: memo
+        )
+    }
+}
+
+// MARK: - API
+extension AddCourseMapViewModel {
+    func addCoursePlan() async throws {
+        let dto = self.convertToDTO(
+            planetId: "27",
+            courseTitle: courseTitle,
+            courseContent: "",
+            isPublic: false,
+            places: places
+        )
+        try await addCourseUseCase.addCourse(addCourseDTO: dto, images: [])
+    }
+    
+    private func convertToDTO(
+        planetId: String,
+        courseTitle: String,
+        courseContent: String,
+        isPublic: Bool,
+        places: [Place]
+    ) -> AddCourseDTO {
+        var tags: [AddCourseDTO.Tag] = []
+        places.forEach { place in
+            let place = AddCourseDTO.Place(name: place.title, latitude: place.location.latitude, longitude: place.location.longitude)
+            // TODO: place 이름과 tag 이름 다르게 하기
+            let tag = AddCourseDTO.Tag(place: place, name: place.name)
+            tags.append(tag)
+        }
+        
+        return AddCourseDTO(
+            planetId: planetId,
+            title: courseTitle,
+            body: courseContent,
+            access: isPublic ? "PUBLIC" : "PRIVATE",
+            tags: tags
         )
     }
 }

@@ -36,7 +36,8 @@ extension HomeCoordinator: AlarmViewCoordinating, CourseDetailCoordinating {
     }
     
     func startAddCourseFlow() {
-        let addCourseCoordinator = AddCourseCoordinator(navigationController: navigationController)
+        // FIXME: Child Coordinator start 메소드 구분하기
+        let addCourseCoordinator = AddCourseCoordinator(type: .record, navigationController: navigationController)
         addCourseCoordinator.start()
     }
 }
