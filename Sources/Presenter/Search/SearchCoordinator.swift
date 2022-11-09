@@ -17,9 +17,9 @@ final class SearchCoordinator: Coordinator {
     
     func start() {
         guard let navigationController = navigationController else { return }
-        let viewController = SearchViewController()
-        let viewModel = SearchViewModel()
-        viewController.viewModel = viewModel
+        let viewController = AlarmNViewConroller()
+//        let viewModel = SearchViewModel()
+//        viewController.viewModel = viewModel
         
         navigationController.pushViewController(viewController, animated: true)
     }
