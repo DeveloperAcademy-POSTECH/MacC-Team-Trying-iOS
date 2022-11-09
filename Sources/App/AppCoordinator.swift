@@ -11,7 +11,8 @@ import UIKit
 final class AppCoordinator: Coordinator, IntroCoordinatorDelegate {
     let window: UIWindow
     weak var navigationController: UINavigationController?
-
+    var mainCoordinator: Coordinator?
+    
     init(window: UIWindow) {
         self.window = window
         
@@ -32,8 +33,10 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate {
         }
 
 //        let coordinator = IntroCoordinator(navigationController: navigationController)
+//        mainCoordinator = MainCoordinator(navigationController: navigationController)
         let coordinator = MainCoordinator(navigationController: navigationController)
         coordinator.start()
+//        mainCoordinator?.start()
 //        coordinator.delegate = self
         window.makeKeyAndVisible()
         return

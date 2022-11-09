@@ -22,7 +22,13 @@ final class HomeViewController: BaseViewController {
     let changeMyPlanetScale: Double = 0.5
     let screenHeight = DeviceInfo.screenHeight - 20
     var planetImages: [RandomPlanetView] = []
-    
+    private let button: UIButton = {
+        let b = UIButton()
+        b.setTitle("qweqwe", for: .normal)
+        b.backgroundColor = .red
+        return b
+        
+    }()
     let courseEmptyView: UILabel = {
         let label = UILabel()
         label.text = "아직 생성된 행성이 없습니다"
@@ -78,6 +84,16 @@ final class HomeViewController: BaseViewController {
         }
         bind()
         setAttributes()
+        view.addSubview(button)
+        button.addTarget(self, action: #selector(test), for: .touchUpInside)
+        button.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+    }
+    
+    @objc func test() {
+        viewModel.pushToAlarmView()
     }
     
     override func viewWillAppear(_ animated: Bool) {

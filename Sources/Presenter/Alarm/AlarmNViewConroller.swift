@@ -12,6 +12,17 @@ import SnapKit
 
 class AlarmNViewConroller: UIViewController {
 
+    let alarmViewModel: AlarmViewModel
+    
+    init(alarmViewModel: AlarmViewModel) {
+        self.alarmViewModel = alarmViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let tableView: UITableView = {
         let tv = UITableView()
         tv.separatorColor = .designSystem(.gray818181)
@@ -45,12 +56,19 @@ class AlarmNViewConroller: UIViewController {
 
     private func setConfiguration() {
         tableView.dataSource = self
+        tableView.delegate = self
     }
     private func setAttribute() {
         view.addSubview(tableView)
     }
 }
 
+extension AlarmNViewConroller: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        alarmViewModel.pushToLogViewController()
+//        alarmViewModel.popToRootViewController()
+    }
+}
 extension AlarmNViewConroller: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -59,7 +77,7 @@ extension AlarmNViewConroller: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: AlarmTableViewcell.cellID, for: indexPath) as? AlarmTableViewcell else { return UITableViewCell() }
-        cell.info = .init(iconImageString: "MyPlanetImage", title: "아령아령아령하세요", description: "아령아령아령하세요아령아령\n아령하세요아령아령아령하세요", time: "217시간전")
+        cell.info = .init(iconImageString: "MyPlanetImage", title: "아령아령아령하세요", description: "아령아령아령하세요아령아령\n아령하세요아령아령아령하세요", time: "217시간전", alreadyRead: .random())
         return cell
     }
 

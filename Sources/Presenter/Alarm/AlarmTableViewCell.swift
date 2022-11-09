@@ -12,13 +12,15 @@ struct Info {
     let title: String
     let description: String
     let time: String
+    let alreadyRead: Bool
 }
 
 class AlarmTableViewcell: UITableViewCell {
 
     static let cellID = "AlarmTableViewcell"
     
-    private let alarmIconView = AlarmIconView()
+//    private let alarmIconView = AlarmIconView()
+    private let alarmIconView = UIImageView()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -44,11 +46,13 @@ class AlarmTableViewcell: UITableViewCell {
     
     var info: Info? {
         didSet {
-            alarmIconView.iconImageString = info?.iconImageString
+//            alarmIconView.iconImageString = info?.iconImageString
+            alarmIconView.image = UIImage(named: info?.iconImageString ?? "")
             titleLabel.text = info?.title
             descriptionLabel.text = info?.description
             descriptionLabel.setLineSpacing(spacing: 2)
             timeLabel.text = info?.time
+            backgroundColor = (info?.alreadyRead ?? false) ? .yellow.withAlphaComponent(0.1) : .black
         }
     }
     
@@ -60,6 +64,8 @@ class AlarmTableViewcell: UITableViewCell {
     
     private func setAttributes() {
         addSubviews(alarmIconView, titleLabel, descriptionLabel, timeLabel)
+        
+        separatorInset = .zero
     }
     
     private func setLayout() {
@@ -67,6 +73,8 @@ class AlarmTableViewcell: UITableViewCell {
         alarmIconView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
             make.leading.equalToSuperview().inset(20)
+            make.width.equalTo(40)
+            make.height.equalTo(40)
         }
 
         titleLabel.snp.makeConstraints { make in

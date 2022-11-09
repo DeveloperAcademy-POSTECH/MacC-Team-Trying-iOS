@@ -9,6 +9,7 @@
 import UIKit
 
 final class MainCoordinator: Coordinator {
+
     enum TabBarItem: CaseIterable {
         case home
         case search
@@ -90,6 +91,14 @@ extension MainCoordinator {
         navigationController.tabBarItem = tabItem
         
         let coordinator = item.getCoordinator(navigationController: navigationController)
+        
+        if item == .home {
+            if let coordinator = coordinator as? HomeCoordinator {
+                coordinator.parentCoordinator = self
+                print(coordinator, coordinator.parentCoordinator)
+            }
+        }
+        
         coordinator.start()
         
         return navigationController
@@ -104,5 +113,17 @@ extension MainCoordinator {
         tabBarController.setViewControllers(tabControllers, animated: false)
         navigationController.setNavigationBarHidden(true, animated: true)
         navigationController.setViewControllers([tabBarController], animated: true) 
+    }
+}
+
+protocol MoveToAnotherTab: AnyObject {
+    func moveToLogTab()
+}
+
+extension MainCoordinator: MoveToAnotherTab {
+    func moveToLogTab() {
+        print("23")
+        tabBarController.selectedIndex = 1
+        
     }
 }
