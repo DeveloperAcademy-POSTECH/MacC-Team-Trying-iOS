@@ -8,6 +8,27 @@
 
 import Combine
 
-final class LogHomeViewModel: BaseViewModel {
+protocol TicketViewCoodinating {
+    func pushMyConstellationViewController()
+}
 
+final class LogHomeViewModel: BaseViewModel {
+    var coordinator: Coordinator
+    
+    init(coordinator: Coordinator) {
+        self.coordinator = coordinator
+        super.init()
+    }
+}
+
+extension LogHomeViewModel {
+    func pop() {
+        guard let coordinator = coordinator as? Popable else { return }
+        coordinator.popViewController()
+    }
+    func pushMyConstellationView() {
+        guard let coordinator = coordinator as? TicketViewCoodinating else { return }
+        coordinator.pushMyConstellationViewController()
+    }
+    
 }

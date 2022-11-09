@@ -1,5 +1,5 @@
 //
-//  FeedViewController.swift
+//  LogTicketViewController.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/12.
@@ -25,6 +25,16 @@ final class LogTicketViewController: BaseViewController {
         // output
     }
     // MARK: Life-Cycle
+    init(viewModel: LogTicketViewModel) {
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel = viewModel
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
@@ -66,19 +76,16 @@ extension LogTicketViewController {
     
     @objc
     func tapDismissButton() {
-        guard let viewModel = viewModel else { return }
-        viewModel.tapDismissButton()
+        viewModel?.tapDismissButton()
     }
     
     @objc
     func tapLikeButton() {
-        guard let viewModel = viewModel else { return }
-        viewModel.tapLikeButton()
+        viewModel?.tapLikeButton()
     }
     
     @objc
     func tapFlopButton() {
-        guard let viewModel = viewModel else { return }
-        viewModel.tapFlopButton()
+        viewModel?.tapFlopButton()
     }
 }

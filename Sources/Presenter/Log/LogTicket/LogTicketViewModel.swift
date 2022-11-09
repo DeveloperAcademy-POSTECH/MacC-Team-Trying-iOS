@@ -1,5 +1,5 @@
 //
-//  FeedViewModel.swift
+//  LogTicketViewModel.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/12.
