@@ -274,6 +274,8 @@ extension LogMapViewController: MKMapViewDelegate {
             guard let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: ConstellationAnnotationView.identifier) else { return nil }
             
             annotationView.annotation = constellationAnnotation
+            
+            // FIXME: 별자리 그리는 메소드를 통해 Constellation Annotation마다 각자의 annotation image를 가지게 해야합니다.
             annotationView.image = UIImage(named: "mock_cluster")
             
             return annotationView
