@@ -15,6 +15,7 @@ enum Palette: String {
     case gray333333
     case gray3B3C46
     case gray818181
+    case grayD8D8D8
     case black
     case red
     case white
@@ -40,6 +41,8 @@ enum Palette: String {
             return "#3B3C46FF"
         case .gray818181:
             return "#818181FF"
+        case .grayD8D8D8:
+            return "#D8D8D8FF"
         case .black:
             return "#000000FF"
         case .red:
