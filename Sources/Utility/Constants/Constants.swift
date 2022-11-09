@@ -36,11 +36,15 @@ struct Constants {
         static let appIcon = "app_icon"
         static let starAnnotation = "star_annotation"
         static let purplePlanet = "purple_planet"
+        static let pencil = "pencil"
+        static let map = "map"
         static let setting = "gearshape.fill"
     }
     
     struct Lottie {
-        static let starLottie = "star_lottie"
+        static let starLottie = "star_lottie"   // 코스 등록 마무리에 사용되는 노란색 큰 별
+        static let mainStar = "main_star"       // 별자리에 사용되는 반짝이는 하얀색 작은 별
+        static let middleStar = "middle_star"   // 중간 크기의 배경화면 별
     }
 
     struct Constraints {

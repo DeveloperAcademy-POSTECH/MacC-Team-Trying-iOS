@@ -12,17 +12,25 @@ import SnapKit
 
 final class PlaceListView: UIView {
     weak var parentView: UIView?
-    var numberOfItems: Int
+    @Published var numberOfItems: Int = 0 {
+        didSet {
+            if numberOfItems > 3 {
+                self.mapPlaceTableView.isScrollEnabled = true
+            } else {
+                self.mapPlaceTableView.isScrollEnabled = false
+            }
+        }
+    }
     var isContainerCollapsed = true                 // PlaceListContainerView가 펼쳐져있는지 접혀있는지 저장하는 변수입니다.
     private let minimumChangeValue: CGFloat = 50.0  // 최소로 움직여야 하는 값을 50으로 설정합니다.
     private var minHeight: CGFloat {
         switch numberOfItems {
         case 1:
-            return 185
+            return 225
         case 2:
-            return 252
+            return 292
         default:
-            return 319
+            return 359
         }
     }
     
@@ -32,6 +40,19 @@ final class PlaceListView: UIView {
         view.backgroundColor = .designSystem(.grayC5C5C5)
         return view
     }()
+    private lazy var courseLabel: UILabel = {
+        let label = UILabel()
+        label.text = "지금까지 추가한 코스"
+        label.textColor = .designSystem(.white)
+        label.font = .designSystem(weight: .bold, size: ._15)
+        return label
+    }()
+    lazy var numberLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .designSystem(.mainYellow)
+        label.font = .designSystem(weight: .bold, size: ._15)
+        return label
+    }()
     lazy var mapPlaceTableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MapPlaceTableViewCell.self, forCellReuseIdentifier: MapPlaceTableViewCell.identifier)
@@ -40,15 +61,12 @@ final class PlaceListView: UIView {
         tableView.allowsSelection = false
         tableView.separatorInset = UIEdgeInsets(top: 0, left: -20, bottom: 0, right: 0)
         tableView.separatorColor = .designSystem(.gray818181)
-        if numberOfItems < 4 {
-            tableView.isScrollEnabled = false
-        }
+        tableView.isScrollEnabled = false
         return tableView
     }()
     
-    init(parentView: UIView, numberOfItems: Int) {
+    init(parentView: UIView) {
         self.parentView = parentView
-        self.numberOfItems = numberOfItems
         super.init(frame: .zero)
         setAttributes()
         setLayout()
@@ -69,7 +87,12 @@ extension PlaceListView {
     }
     
     private func setLayout() {
-        addSubviews(scrollIndicatorView, mapPlaceTableView)
+        addSubviews(
+            scrollIndicatorView,
+            courseLabel,
+            numberLabel,
+            mapPlaceTableView
+        )
         
         scrollIndicatorView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(7)
@@ -77,8 +100,19 @@ extension PlaceListView {
             make.height.equalTo(5)
         }
         
+        courseLabel.snp.makeConstraints { make in
+            make.top.equalTo(scrollIndicatorView.snp.bottom).offset(24)
+            make.leading.equalToSuperview().inset(20)
+        }
+        
+        numberLabel.snp.makeConstraints { make in
+            make.top.equalTo(scrollIndicatorView.snp.bottom).offset(24)
+            make.leading.equalTo(courseLabel.snp.trailing).offset(5)
+        }
+        
         mapPlaceTableView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(20)
+            make.top.equalTo(courseLabel.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalToSuperview().inset(98)
         }
     }
