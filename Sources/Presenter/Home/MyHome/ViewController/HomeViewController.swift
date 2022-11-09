@@ -15,7 +15,6 @@ import Lottie
 
 final class HomeViewController: BaseViewController {
     
-    lazy var backgroundView = BackgroundView(frame: view.bounds)
     let viewModel: HomeViewModel
     var dateInfoIsHidden: Bool = false
     
