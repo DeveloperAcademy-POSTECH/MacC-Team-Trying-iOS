@@ -81,7 +81,7 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
         emailTextFieldView.delegate = self
 
         nextButton.title = "계속하기"
-        nextButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
+        nextButton.addTarget(self, action: #selector(emailLoginButtonDidTapped), for: .touchUpInside)
     }
 
     override func setLayout() {
@@ -144,7 +144,7 @@ extension EnterEmailViewController {
 extension EnterEmailViewController {
 
     @objc
-    func loginButtonDidTapped() {
+    func emailLoginButtonDidTapped() {
         viewModel.enterEmailButtonDidTapped()
     }
 }

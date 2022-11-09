@@ -17,10 +17,23 @@ final class ProfileCoordinator: Coordinator {
     
     func start() {
         guard let navigationController = navigationController else { return }
-        let viewController = ProfileTestViewController()
-        let viewModel = ProfileTestViewModel()
-        viewController.viewModel = viewModel
+        let viewModel = ProfileViewModel(coordinator: self)
+        let viewController = ProfileViewController(viewModel: viewModel)
         
         navigationController.pushViewController(viewController, animated: true)
+    }
+}
+
+// MARK: - Coordinating Methods
+extension ProfileCoordinator: EditDayViewCoordinating, Popable {
+    func pushToEditDayView() {
+        let viewModel = EditDayViewModel(coordinator: self)
+        let viewController = EditDayViewController(viewModel: viewModel)
+        
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func popViewController() {
+        navigationController?.popViewController(animated: true)
     }
 }

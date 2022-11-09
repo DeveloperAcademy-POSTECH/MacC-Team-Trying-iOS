@@ -50,6 +50,18 @@ protocol NavigationBarConfigurable: BaseViewController {
     ///   - target: Target
     ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
     func configureCourseDetailNavigationBar(target: Any, popAction: Selector)
+    
+    /// 프로필 화면에서 사용되는 Navigation Bar를 설정합니다.
+    /// - Parameters:
+    ///   - target: Target
+    ///   - settingAction: 설정 버튼이 눌렸을 때 실행할 @objc 메소드
+    func configureProfileNavigationBar(target: Any, settingAction: Selector)
+    
+    /// 디데이 수정을 하는 화면에서 사용되는 Navigation Bar를 설정합니다.
+    /// - Parameters:
+    ///   - target: Target
+    ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
+    func configureEditDayNavigationBar(target: Any, popAction: Selector)
 }
 
 extension NavigationBarConfigurable {
@@ -173,7 +185,7 @@ extension NavigationBarConfigurable {
     func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector, textEditingAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
-            button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
             button.addTarget(target, action: popAction, for: .touchUpInside)
             return button
         }()
@@ -209,12 +221,66 @@ extension NavigationBarConfigurable {
     func configureCourseDetailNavigationBar(target: Any, popAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
-            button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
             button.addTarget(target, action: popAction, for: .touchUpInside)
             return button
         }()
         
         let leftButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem = leftButtonItem
+    }
+    
+    func configureProfileNavigationBar(target: Any, settingAction: Selector) {
+        let titleView: UILabel = {
+            let label = UILabel()
+            label.text = "My"
+            label.textColor = .designSystem(.white)
+            label.font = .gmarksans(weight: .bold, size: ._25)
+            return label
+        }()
+        /*
+        let dayLabel: UILabel = {
+            let label = UILabel()
+            label.text = "D+\(day)"
+            label.font = .gmarksans(weight: .bold, size: ._15)
+            label.textColor = .designSystem(.white)
+            return label
+        }()
+        */
+        let settingButton: UIButton = {
+            let button = UIButton(type: .custom)
+            let configuration = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+            let image = UIImage(systemName: Constants.Image.setting, withConfiguration: configuration)
+            button.setImage(image, for: .normal)
+            button.tintColor = .designSystem(.white)
+            button.addTarget(target, action: settingAction, for: .touchUpInside)
+            return button
+        }()
+
+        let leftTitleItem = UIBarButtonItem(customView: titleView)
+        // let dayLabelButtonItem = UIBarButtonItem(customView: dayLabel)
+        let settingButtonItem = UIBarButtonItem(customView: settingButton)
+        
+        navigationItem.leftBarButtonItem = leftTitleItem
+        navigationItem.rightBarButtonItem = settingButtonItem
+    }
+    
+    func configureEditDayNavigationBar(target: Any, popAction: Selector) {
+        let backButton: UIButton = {
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
+            button.addTarget(target, action: popAction, for: .touchUpInside)
+            return button
+        }()
+        let titleLabel: UILabel = {
+            let label = UILabel()
+            label.attributedText = NSAttributedString(string: "디데이 수정", attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
+            label.textColor = .designSystem(.white)
+            return label
+        }()
+        
+        let leftButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem = leftButtonItem
+        navigationItem.titleView = titleLabel
     }
 }

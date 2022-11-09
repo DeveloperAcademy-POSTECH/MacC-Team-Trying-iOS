@@ -23,7 +23,8 @@ protocol IntroCoordinatorProtocol: Coordinator,
                                    WaitingInvitationCoordinatorLogic,
                                    InvitationCodeCoordinatorLogic,
                                    FindPlanetCoordinatorLogic,
-                                   WaitingInvitationCoordinatorLogic {
+                                   WaitingInvitationCoordinatorLogic,
+                                   ServiceTermCoordinatorLogic {
     var navigationController: UINavigationController? { get }
 }
 
@@ -63,6 +64,26 @@ extension IntroCoordinator {
 
     func coordinateToMainScene() {
         delegate?.coordinateToMainScene()
+    }
+
+    func coordinateToServiceTermScene(type: SignUpEnterNicknameViewModel.SignUpType) {
+        let serviceTerm = ServiceTermViewController(
+            viewModel: .init(
+                type: type,
+                coordinator: self
+            )
+        )
+        self.navigationController?.pushViewController(serviceTerm, animated: true)
+    }
+
+    func coordinateToSignUpEnterNicknameScene(type: SignUpEnterNicknameViewModel.SignUpType) {
+        let signUpEnterNickname = SignUpEnterNicknameViewController(
+            viewModel: .init(
+                type: type,
+                coordinator: self
+            )
+        )
+        navigationController?.pushViewController(signUpEnterNickname, animated: true)
     }
 
     func coordinateToFindPasswordScene(email: String) {
@@ -130,8 +151,13 @@ extension IntroCoordinator {
     func coordinateSignUpEnterNickname(email: String, password: String) {
         let signUpEnterNickname = SignUpEnterNicknameViewController(
             viewModel: .init(
-                email: email,
-                password: password,
+                type: .email(
+                    .init(
+                        email: email,
+                        password: password,
+                        name: ""
+                    )
+                ),
                 coordinator: self
             )
         )

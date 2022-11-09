@@ -8,8 +8,20 @@
 
 import Foundation
 
-struct SignInRequestModel: RequestBody {
-    let email: String
-    let password: String
-    let deviceToken: String = "1"
+enum SignInRequestModel {
+    struct Email: RequestBody {
+        let email: String
+        let password: String
+        let deviceToken: String = "1"
+    }
+
+    struct Kakao: RequestBody {
+        let identifier: String
+        let deviceToken: String
+    }
+
+    struct Apple: RequestBody {
+        let identifier: String
+        let deviceToken: String
+    }
 }
