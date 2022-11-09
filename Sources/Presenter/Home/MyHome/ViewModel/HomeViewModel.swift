@@ -31,7 +31,7 @@ final class HomeViewModel: BaseViewModel {
         DateDday(title: "서울데이트", dday: 40)
     ]
     
-    let datePathList = [
+    let datePathList: [DatePath] = [
         DatePath(
             title: "삐갈레브레드",
             comment: "10시오픈, 소금빵 꼭 먹기",

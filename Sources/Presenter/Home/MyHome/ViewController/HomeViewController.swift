@@ -108,7 +108,7 @@ final class HomeViewController: BaseViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     /// View Model과 bind 합니다.
     private func bind() {
         // input
@@ -133,10 +133,39 @@ final class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         bind()
         setAttributes()
         setUI()
+        if viewModel.datePathList.isEmpty {
+           setEmptyButton()
+        }
+    }
+    
+    func setEmptyButton() {
+        let dateCoureRegisterButton: UIButton = {
+            let button = UIButton(type: .custom)
+            button.setTitle("데이트 코스 기록하기", for: .normal)
+            button.setImage(UIImage(systemName: "plus.circle.fill"), for: .normal)
+            button.tintColor = .designSystem(.mainYellow)
+            button.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.2)
+            button.clipsToBounds = true
+            button.layer.cornerRadius = 15
+            button.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
+            button.layer.borderWidth = 0.3
+            button.setPreferredSymbolConfiguration(.init(pointSize: 11), forImageIn: .normal)
+            button.setTitleColor(.designSystem(.mainYellow), for: .normal)
+            button.titleLabel?.font = .systemFont(ofSize: 11, weight: .bold)
+            return button
+        }()
+        
+        view.addSubview(dateCoureRegisterButton)
+        dateCoureRegisterButton.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.height.equalTo(58)
+        }
+        self.pathTableView.isHidden = true
     }
     
     @objc
@@ -229,6 +258,7 @@ extension HomeViewController: UITableViewDataSource {
             cell.dateData = viewModel.ddayDateList[indexPath.row]
             return cell
         } else if tableView == pathTableView {
+            
             guard let cell = tableView.dequeueReusableCell(withIdentifier: PathTableViewCell.cellId, for: indexPath) as? PathTableViewCell else { return UITableViewCell() }
             cell.delegate = self
             switch indexPath.row {
