@@ -27,7 +27,7 @@ final class ProfileViewController: BaseViewController {
     
     private let contentView = UIView()
     
-    private lazy var profilePlanetView = ProfilePlanetView(type: .couple)
+    private lazy var profilePlanetView = ProfilePlanetView(type: .alone)
     
     private lazy var profileTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -50,14 +50,6 @@ final class ProfileViewController: BaseViewController {
         // input
         
         // output
-        viewModel.$userStatus
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] planetType in
-                guard let self = self else { return }
-                self.profilePlanetView.type = planetType
-            }
-            .cancel(with: cancelBag)
-        
         viewModel.$numberOfPlaces
             .receive(on: DispatchQueue.main)
             .sink { [weak self] number in
@@ -106,6 +98,7 @@ final class ProfileViewController: BaseViewController {
         super.viewDidLoad()
         
         setUI()
+        setButtonTarget()
         bind()
     }
 }
@@ -113,17 +106,6 @@ final class ProfileViewController: BaseViewController {
 // MARK: - UI
 extension ProfileViewController: NavigationBarConfigurable {
     private func setUI() {
-        setAttributes()
-        setLayout()
-    }
-    
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
-    }
-    
-    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setLayout() {
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         
         view.addSubview(scrollView)
@@ -161,8 +143,23 @@ extension ProfileViewController: NavigationBarConfigurable {
 
 // MARK: - User Interactions
 extension ProfileViewController {
+    private func setButtonTarget() {
+        switch self.profilePlanetView.type {
+        case .noPlanet:
+            profilePlanetView.enterPlanetButton.addTarget(self, action: #selector(enterPlanetButtonPressed(_:)), for: .touchUpInside)
+            profilePlanetView.createPlanetButton.addTarget(self, action: #selector(createPlanetButtonPressed(_:)), for: .touchUpInside)
+            
+        case .alone:
+            profilePlanetView.inviteMateButton.addTarget(self, action: #selector(inviteMateButtonPressed(_:)), for: .touchUpInside)
+            
+        case .couple:
+            break
+        }
+    }
+    
     @objc
     private func settingButtonPressed(_ sender: UIButton) {
+        HapticManager.instance.selection()
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { action in
@@ -178,6 +175,24 @@ extension ProfileViewController {
         alertController.addAction(cancelAction)
         
         present(alertController, animated: true)
+    }
+    
+    @objc
+    private func enterPlanetButtonPressed(_ sender: UIButton) {
+        // TODO: Enter Planet
+        HapticManager.instance.selection()
+    }
+    
+    @objc
+    private func createPlanetButtonPressed(_ sender: UIButton) {
+        // TODO: Create Planet
+        HapticManager.instance.selection()
+    }
+    
+    @objc
+    private func inviteMateButtonPressed(_ sender: UIButton) {
+        // TODO: Invite Mate
+        HapticManager.instance.selection()
     }
 }
 
