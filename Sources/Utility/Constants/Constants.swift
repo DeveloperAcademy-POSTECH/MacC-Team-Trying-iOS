@@ -28,6 +28,7 @@ struct Constants {
         static let magnifyingglass = "magnifyingglass"
         static let deleteButton = "delete_button"
         static let navBarDeleteButton = "nav_bar_delete_button"
+        static let navBarPopButton = "nav_bar_pop_button"
         static let photoIcon = "photo.on.rectangle.angled"
         static let closedLockIcon = "lock_closed"
         static let openLockIcon = "lock_open"
