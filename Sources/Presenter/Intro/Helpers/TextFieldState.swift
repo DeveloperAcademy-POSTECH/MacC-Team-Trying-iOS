@@ -23,6 +23,7 @@ enum TextFieldState {
     case emptyNickname
     case duplicatedSignUp
     case isNotSignUp
+    case doubleNickname
 
     var message: String? {
         switch self {
@@ -54,6 +55,8 @@ enum TextFieldState {
             return "이미 가입된 이메일 주소입니다!"
         case .isNotSignUp:
             return "처음 보는 이메일 주소예요!"
+        case .doubleNickname:
+            return "중복된 닉네임이 존재합니다."
         }
     }
 

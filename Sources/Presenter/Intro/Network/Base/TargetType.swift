@@ -42,7 +42,6 @@ extension TargetType {
         guard let token = UserDefaults.standard.string(forKey: "accessToken") else {
             return ""
         }
-        print(token)
         return token
     }
     var query: QueryItems? { nil }
@@ -56,5 +55,5 @@ extension TargetType {
 
 extension TargetType {
 
-    var baseURL: String { "http://15.165.72.196:3059" }
+    var baseURL: String { "https://comeit.site" }
 }

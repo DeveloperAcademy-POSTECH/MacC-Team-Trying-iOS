@@ -44,7 +44,6 @@ class PlanetAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<V
         shootingStarView.stop()
     }
 
-    
     override func setAttribute() {
         super.setAttribute()
 
@@ -69,11 +68,11 @@ class PlanetAnimatedViewController<VM: BusinessLogic>: IntroBaseViewController<V
             make.centerX.centerY.equalToSuperview()
         }
         leftPlanetImageView.frame = CGRect(
-            origin: .init(x: -57, y: DeviceInfo.screenHeight - view.safeAreaInsets.bottom - 352),
+            origin: .init(x: -57, y: DeviceInfo.screenHeight - view.safeAreaInsets.bottom - 380),
             size: .init(width: 57, height: 56)
         )
         rightPlanetImageView.frame = CGRect(
-            origin: .init(x: DeviceInfo.screenWidth, y: DeviceInfo.screenHeight - view.safeAreaInsets.bottom - 400),
+            origin: .init(x: DeviceInfo.screenWidth, y: DeviceInfo.screenHeight - view.safeAreaInsets.bottom - 450),
             size: .init(width: 82, height: 42)
         )
     }

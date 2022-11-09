@@ -71,7 +71,7 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
         passwordTextFieldView.delegate = self
 
         loginButton.title = "들어가기"
-        loginButton.addTarget(self, action: #selector(loginButtonDidTapped), for: .touchUpInside)
+        loginButton.addTarget(self, action: #selector(emailLoginButtonDidTapped), for: .touchUpInside)
         
         findPasswordButton.addTarget(self, action: #selector(findPasswordButtonDidTapped), for: .touchUpInside)
     }
@@ -111,7 +111,6 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         self.view.endEditing(true)
-//        self.passwordTextFieldView.resignFirstResponder()
     }
 }
 
@@ -133,7 +132,7 @@ extension EnterPasswordViewController {
 extension EnterPasswordViewController {
 
     @objc
-    func loginButtonDidTapped() {
+    func emailLoginButtonDidTapped() {
         viewModel.loginButtonDidTapped()
     }
 
