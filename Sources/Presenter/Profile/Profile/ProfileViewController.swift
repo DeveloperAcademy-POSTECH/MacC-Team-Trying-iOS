@@ -19,22 +19,7 @@ final class ProfileViewController: BaseViewController {
     
     var viewModel: ProfileViewModel
     
-    private lazy var placeLabel = UILabel()
-    
-    private lazy var cityLabel = UILabel()
-    
-    private lazy var planetImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-    
-    private lazy var planetNameLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .designSystem(.white)
-        label.font = .designSystem(weight: .bold, size: ._15)
-        return label
-    }()
+    private lazy var profilePlanetView = ProfilePlanetView(type: .couple)
     
     private lazy var profileTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -56,6 +41,14 @@ final class ProfileViewController: BaseViewController {
         // input
         
         // output
+        viewModel.$userStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] planetType in
+                guard let self = self else { return }
+                self.profilePlanetView.type = planetType
+            }
+            .cancel(with: cancelBag)
+        
         viewModel.$numberOfPlaces
             .receive(on: DispatchQueue.main)
             .sink { [weak self] number in
@@ -70,25 +63,7 @@ final class ProfileViewController: BaseViewController {
                 string.append(secondString)
                 string.append(thirdString)
                 
-                self.placeLabel.attributedText = string
-            }
-            .cancel(with: cancelBag)
-        
-        viewModel.$numberOfCities
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] number in
-                guard let self = self else { return }
-                
-                let firstString = NSAttributedString(string: "총", attributes: [.font: UIFont.gmarksans(weight: .light, size: ._15)])
-                let secondString = NSAttributedString(string: " \(number)곳의", attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
-                let thirdString = NSAttributedString(string: " 도시에 방문했어요!", attributes: [.font: UIFont.gmarksans(weight: .light, size: ._15)])
-                let string = NSMutableAttributedString()
-                
-                string.append(firstString)
-                string.append(secondString)
-                string.append(thirdString)
-                
-                self.cityLabel.attributedText = string
+                self.profilePlanetView.placeLabel.attributedText = string
             }
             .cancel(with: cancelBag)
         
@@ -96,7 +71,7 @@ final class ProfileViewController: BaseViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] imageName in
                 guard let self = self else { return }
-                self.planetImageView.image = UIImage(named: imageName)
+                self.profilePlanetView.planetImageView.image = UIImage(named: imageName)
             }
             .cancel(with: cancelBag)
         
@@ -104,7 +79,7 @@ final class ProfileViewController: BaseViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] name in
                 guard let self = self else { return }
-                self.planetNameLabel.text = name
+                self.profilePlanetView.planetNameLabel.text = name
             }
             .cancel(with: cancelBag)
     }
@@ -143,36 +118,18 @@ extension ProfileViewController: NavigationBarConfigurable {
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         
         view.addSubviews(
-            placeLabel,
-            cityLabel,
-            planetImageView,
-            planetNameLabel,
+            profilePlanetView,
             profileTableView
         )
         
-        placeLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(30)
-            make.leading.equalToSuperview().inset(20)
-        }
-        
-        cityLabel.snp.makeConstraints { make in
-            make.top.equalTo(placeLabel.snp.bottom).offset(10)
-            make.leading.equalToSuperview().inset(20)
-        }
-        
-        planetImageView.snp.makeConstraints { make in
-            make.top.equalTo(cityLabel.snp.bottom).offset(40)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(100)
-        }
-        
-        planetNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(planetImageView.snp.bottom).offset(20)
-            make.centerX.equalToSuperview()
+        profilePlanetView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(290)
         }
         
         profileTableView.snp.makeConstraints { make in
-            make.top.equalTo(planetNameLabel.snp.bottom).offset(40)
+            make.top.equalTo(profilePlanetView.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
