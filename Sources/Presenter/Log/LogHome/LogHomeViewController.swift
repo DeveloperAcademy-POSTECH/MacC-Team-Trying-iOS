@@ -26,15 +26,13 @@ final class LogHomeViewController: BaseViewController {
     
     private var mapButton: UIButton = {
        let button = UIButton()
-        button.tintColor = .white
-        button.setImage(UIImage(systemName: "map.fill"), for: .normal)
+        button.setImage(UIImage(named: "ic_map"), for: .normal)
         return button
     }()
     
-    private var testButton: UIButton = {
+    private var listButton: UIButton = {
        let button = UIButton()
-        button.tintColor = .white
-        button.setImage(UIImage(systemName: "pencil.tip"), for: .normal)
+        button.setImage(UIImage(named: "ic_list"), for: .normal)
         return button
     }()
     
@@ -86,23 +84,26 @@ extension LogHomeViewController {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
-        // TODO: 삭제해야함
-        self.view.backgroundColor = .systemCyan
-        view.addSubviews(testLabel, mapButton, testButton)
+        view.addSubviews(
+            testLabel,
+            mapButton,
+            listButton
+        )
         mapButton.addTarget(self, action: #selector(tapMapButton), for: .touchUpInside)
-        testButton.addTarget(self, action: #selector(TapTestButton), for: .touchUpInside)
+        listButton.addTarget(self, action: #selector(TapTestButton), for: .touchUpInside)
         testLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
         mapButton.snp.makeConstraints { make in
-            make.width.height.equalTo(50)
-            make.right.equalToSuperview().offset(-40)
-            make.top.equalToSuperview().offset(60)
+            make.width.equalTo(DeviceInfo.screenWidth * 0.1102564103)
+            make.height.equalTo(DeviceInfo.screenHeight * 0.0509478673)
+            make.right.equalToSuperview().inset(DeviceInfo.screenWidth * 0.05128205128)
+            make.top.equalToSuperview().inset(DeviceInfo.screenHeight * 0.0663507109)
         }
-        testButton.snp.makeConstraints { make in
-            make.width.height.equalTo(50)
+        listButton.snp.makeConstraints { make in
+            make.width.height.equalTo(mapButton.snp.width)
             make.centerX.equalTo(mapButton.snp.centerX)
-            make.top.equalTo(mapButton.snp.bottom).offset(30)
+            make.top.equalTo(mapButton.snp.bottom).offset(DeviceInfo.screenWidth * 0.05128205128)
         }
     }
     
