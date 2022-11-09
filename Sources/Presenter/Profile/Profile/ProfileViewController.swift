@@ -19,6 +19,14 @@ final class ProfileViewController: BaseViewController {
     
     var viewModel: ProfileViewModel
     
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        return scrollView
+    }()
+    
+    private let contentView = UIView()
+    
     private lazy var profilePlanetView = ProfilePlanetView(type: .couple)
     
     private lazy var profileTableView: UITableView = {
@@ -29,6 +37,7 @@ final class ProfileViewController: BaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = .clear
+        tableView.isScrollEnabled = false
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .singleLine
         tableView.separatorColor = .designSystem(.gray818181)?.withAlphaComponent(0.8)
@@ -117,13 +126,26 @@ extension ProfileViewController: NavigationBarConfigurable {
     private func setLayout() {
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         
-        view.addSubviews(
+        view.addSubview(scrollView)
+        scrollView.snp.makeConstraints { make in
+//            make.edges.equalToSuperview()
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+        }
+        
+        scrollView.addSubview(contentView)
+        contentView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.centerX.top.bottom.equalToSuperview()
+        }
+        
+        contentView.addSubviews(
             profilePlanetView,
             profileTableView
         )
-        
+
         profilePlanetView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(290)
         }
@@ -131,6 +153,7 @@ extension ProfileViewController: NavigationBarConfigurable {
         profileTableView.snp.makeConstraints { make in
             make.top.equalTo(profilePlanetView.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview()
+            make.height.equalTo(600)
             make.bottom.equalToSuperview()
         }
     }
