@@ -13,17 +13,9 @@ import UIKit
 import CancelBag
 import SnapKit
 
-protocol LogTicketViewDelegate: AnyObject {
-    func tapDismissButton(viewModel: LogTicketViewModel)
-    func tapLikeButton(viewModel: LogTicketViewModel)
-    func tapFlopButton(viewModel: LogTicketViewModel)
-}
-
 final class LogTicketViewController: BaseViewController {
 
     var viewModel: LogTicketViewModel?
-    
-    weak var delegate: LogTicketViewDelegate?
     
     private var logTicketView = LogTicketView()
     /// View Model과 bind 합니다.
@@ -85,21 +77,18 @@ extension LogTicketViewController {
     @objc
     func tapDismissButton() {
         guard let viewModel = viewModel else { return }
-        delegate?.tapDismissButton(viewModel: viewModel)
         viewModel.tapDismissButton()
     }
     
     @objc
     func tapLikeButton() {
         guard let viewModel = viewModel else { return }
-        delegate?.tapLikeButton(viewModel: viewModel)
         viewModel.tapLikeButton()
     }
     
     @objc
     func tapFlopButton() {
         guard let viewModel = viewModel else { return }
-        delegate?.tapFlopButton(viewModel: viewModel)
         viewModel.tapFlopButton()
     }
 }

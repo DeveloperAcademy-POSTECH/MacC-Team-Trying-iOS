@@ -55,6 +55,7 @@ final class CustomToggleButton: UIButton {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        HapticManager.instance.selection()
         isOn.toggle()
     }
     

@@ -20,11 +20,12 @@ final class PlaceSearchViewController: BaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(PlaceSearchTableViewCell.self, forCellReuseIdentifier: PlaceSearchTableViewCell.identifier)
-        tableView.backgroundColor = .designSystem(.black)
-        tableView.sectionHeaderHeight = 1
+        tableView.backgroundColor = .clear
         tableView.allowsSelection = false
-        tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
-        tableView.separatorStyle = .none
+        tableView.separatorStyle = .singleLine
+        tableView.separatorInset = .init(top: 0, left: -15, bottom: 0, right: 0)
+        tableView.separatorInsetReference = .fromAutomaticInsets
+        tableView.separatorColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
         return tableView
     }()
     private lazy var emptyResultView = EmptyResultView()
@@ -70,7 +71,8 @@ final class PlaceSearchViewController: BaseViewController {
 // MARK: - UI
 extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), doneAction: #selector(doneButtonPressed(_:)), textEditingAction: #selector(textFieldEditing(_:)))
+        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), mapAction: #selector(mapButtonPressed(_:)), textEditingAction: #selector(textFieldEditing(_:)))
+        setBackgroundGyroMotion()
         setAttributes()
         setLayout()
     }
@@ -123,9 +125,9 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
         cell.titleLabel.text = place.title
         cell.addressLabel.text = place.address
         cell.categoryLabel.text = place.category
-        cell.addCourseButton.tag = indexPath.row
+        cell.detailButton.tag = indexPath.row
         
-        cell.addCourseButton.addTarget(self, action: #selector(addCourseButtonPressed(_:)), for: .touchUpInside)
+        cell.detailButton.addTarget(self, action: #selector(detailButtonPressed(_:)), for: .touchUpInside)
         return cell
     }
     
@@ -133,11 +135,13 @@ extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate 
         67
     }
     
+    /*
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
         headerView.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
         return headerView
     }
+    */
 }
 
 // MARK: - User Interaction
@@ -148,8 +152,7 @@ extension PlaceSearchViewController {
     }
     
     @objc
-    private func doneButtonPressed(_ sender: UIButton) {
-        // TODO: 완료 처리하기
+    private func mapButtonPressed(_ sender: UIButton) {
         viewModel.pop()
     }
     
@@ -159,8 +162,7 @@ extension PlaceSearchViewController {
     }
     
     @objc
-    private func addCourseButtonPressed(_ sender: UIButton) {
+    private func detailButtonPressed(_ sender: UIButton) {
         navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
-        viewModel.addCourse(sender.tag)
     }
 }

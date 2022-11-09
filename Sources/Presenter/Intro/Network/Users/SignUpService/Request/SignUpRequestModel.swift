@@ -8,9 +8,25 @@
 
 import Foundation
 
-struct SignUpRequestModel: RequestBody {
-    let email: String
-    let password: String
-    let name: String
-    let deviceToken: String = "1"
+enum SignUpRequestModel {
+    struct Email: RequestBody {
+        var email: String
+        var password: String
+        var name: String
+        var deviceToken: String = "1"
+    }
+
+    struct Kakao: RequestBody {
+        let identifier: String
+        let email: String
+        let name: String
+        let deviceToken: String
+    }
+
+    struct Apple: RequestBody {
+        let identifier: String
+        let email: String
+        let name: String
+        let deviceToken: String
+    }
 }
