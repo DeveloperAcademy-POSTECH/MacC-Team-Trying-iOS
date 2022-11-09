@@ -12,7 +12,7 @@ import SnapKit
 
 enum CustomTextFieldType {
     /// 코스 등록 과정의 장소 검색 화면에서 사용되는 TextField
-    /// - Width : 디바이스 가로 길이 * 0.7743
+    /// - Width : 디바이스 가로 길이 * 0.8051
     /// - Height : 50
     /// - Placeholder : 장소를 입력해 주세요.
     case placeSearch
@@ -27,10 +27,15 @@ enum CustomTextFieldType {
     /// - Placeholder : 방문하신 가게 위치를 입력해 주세요.
     case location
     
-    /// 코스 기록 화면에서 사용되는 TextField
+    /// 코스 등록 과정에서 Course Title을 입력하는 화면에서 사용되는 TextField
     /// - Height : 50
-    /// - Placeholder : 코스 이름을 입력해 주세요.
+    /// - Placeholder : ex) 부산여행
     case courseTitle
+    
+    /// 한줄 메모에 사용되는 TextField
+    /// - Height : 50
+    /// - Placeholder : 􀈊 한줄 메모 (선택)
+    case memo
     
     /// 검색 탭에서 사용되는 TextField
     /// - Width : 디바이스 가로 길이 - 20 * 2
@@ -82,10 +87,22 @@ final class CustomTextField: UITextField {
         case .courseTitle:
             let imageView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
             self.leftView = imageView
-            self.attributedPlaceholder = .init(string: "코스 이름을 입력해 주세요.", attributes: [.foregroundColor: UIColor.designSystem(.white) as Any])
+            self.attributedPlaceholder = .init(string: "ex) 부산여행", attributes: [.foregroundColor: UIColor.designSystem(.grayC5C5C5) as Any])
             self.textColor = .designSystem(.white)
-            self.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.1)
+            self.backgroundColor = .designSystem(.white)?.withAlphaComponent(0.2)
             self.layer.cornerRadius = 15
+            
+        case .memo:
+            let imageView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: 0))
+            self.leftView = imageView
+            let image = UIImage(systemName: Constants.Image.pencil)
+            let attributedPlaceholder = NSMutableAttributedString(attachment: NSTextAttachment(image: image!))
+            let attributedString = NSAttributedString(string: " 한줄 메모 (선택)", attributes: [.font: UIFont.designSystem(weight: .bold, size: ._11), .foregroundColor: UIColor.designSystem(.grayC5C5C5) as Any])
+            attributedPlaceholder.append(attributedString)
+            self.attributedPlaceholder = attributedPlaceholder
+            self.textColor = .designSystem(.white)
+            self.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
+            self.layer.cornerRadius = 10
             
         case .searchCourseAndPlanet:
             self.leftImage(UIImage(systemName: Constants.Image.magnifyingglass), imageWidth: 10, padding: 10)
@@ -103,11 +120,11 @@ final class CustomTextField: UITextField {
         switch type {
         case .placeSearch:
             self.snp.makeConstraints { make in
-                make.width.equalTo(DeviceInfo.screenWidth * 0.7743)
+                make.width.equalTo(DeviceInfo.screenWidth * 0.8051)
                 make.height.equalTo(44)
             }
             
-        case .shopTitle, .location, .courseTitle:
+        case .shopTitle, .location, .courseTitle, .memo:
             self.snp.makeConstraints { make in
                 make.height.equalTo(50)
             }

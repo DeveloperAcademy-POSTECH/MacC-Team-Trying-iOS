@@ -8,18 +8,46 @@
 
 import UIKit
 
-final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, RegisterCourseCoordinating, AddCourseCompleteCoordinating, HomeCoordinating, Popable {
+enum AddCourseFlowType {
+    case plan
+    case record
+}
+
+final class AddCourseCoordinator: Coordinator,
+                                  AddCourseMapCoordinating,
+                                  PlaceSearchCoordinating,
+                                  RecordCourseCoordinating,
+                                  AddCourseCompleteCoordinating,
+                                  HomeCoordinating,
+                                  Popable {
+    var type: AddCourseFlowType
     weak var navigationController: UINavigationController?
     
-    init(navigationController: UINavigationController?) {
+    init(type: AddCourseFlowType, navigationController: UINavigationController?) {
+        self.type = type
         self.navigationController = navigationController
     }
     
     func start() {
+        let viewModel = AddCourseTitleViewModel(coordinator: self)
+        let viewController = AddCourseTitleViewController(type: type, viewModel: viewModel)
+        
+//        self.navigationController?.tabBarController?.tabBar.isHidden = true
+        self.navigationController?.pushViewController(viewController, animated: true)
+        
+        /*
         let viewModel = AddCourseMapViewModel(coordinator: self)
-        let viewController = AddCourseMapViewController(viewModel: viewModel)
+        let viewController = AddCourseMapViewController(flow: flow, viewModel: viewModel)
         
         self.navigationController?.isNavigationBarHidden = false
+        self.navigationController?.pushViewController(viewController, animated: true)
+        */
+    }
+    
+    func pushToAddCourseMapViewController(courseTitle: String) {
+        let viewModel = AddCourseMapViewModel(coordinator: self, courseTitle: courseTitle)
+        let viewController = AddCourseMapViewController(type: type, viewModel: viewModel)
+        
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
@@ -30,14 +58,14 @@ final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, Register
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToRegisterCourseViewController(places: [Place]) {
-        let viewModel = RegisterCourseViewModel(coordinator: self, places: places)
-        let viewController = RegisterCourseViewController(viewModel: viewModel)
+    func pushToRecordCourseViewController(courseTitle: String, places: [Place]) {
+        let viewModel = RecordCourseViewModel(coordinator: self, courseTitle: courseTitle, places: places)
+        let viewController = RecordCourseViewController(viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToAddCourseCompleteViewController(courseTitle: String, courseContent: String, isPublic: Bool, places: [Place], images: [UIImage]) {
+    func pushToAddCourseCompleteViewController(courseTitle: String, courseContent: String, places: [Place], images: [UIImage], isPublic: Bool) {
         let viewModel = AddCourseCompleteViewModel(
             coordinator: self,
             courseTitle: courseTitle,
@@ -46,7 +74,7 @@ final class AddCourseCoordinator: Coordinator, PlaceSearchCoordinating, Register
             places: places,
             images: images
         )
-        let viewController = AddCourseCompleteViewController(viewModel: viewModel)
+        let viewController = AddCourseCompleteViewController(type: type, viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }

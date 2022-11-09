@@ -13,7 +13,10 @@ excluded:
 
 # Default Rules 가운데 제외시키는 Rules
 disabled_rules:
+    - comment_spacing
+    - file_length
     - force_cast
+    - function_line_length
     - identifier_name
     - line_length
     - todo                            # TODOs, FIXMEs 에 대하여 warning을 띄우지 않습니다.
@@ -26,7 +29,6 @@ opt_in_rules:
     - anyobject_protocol                            # Class-only protocol에서는 class보다 AnyObject를 사용해야합니다.
     - array_init                                    # 배열 초기화 시 .map() 사용보다는 Array(seq)을 권장합니다.
     - attributes                                    # 함수, 타입에서는 다른 줄에, 변수, import에서는 같은 줄에 attribute를 작성합니다.
-    - closure_body_length                           # closure가 20줄 이상이면 warning, 100줄 이상이면 error
     - closure_end_indentation                       # closure를 닫을 때 처음과 같은 indent여야 합니다.
     - closure_spacing                               # closure를 열고 닫을 때 한 칸씩 띄웁니다.
     - collection_alignment                          # collection의 요소들은 vertically 정렬되어야 합니다.
@@ -47,8 +49,6 @@ opt_in_rules:
     - first_where                                   # Collection에서 .filter { }.first 말고 .first(where: )를 사용합니다.
     - flatmap_over_map_reduce                       # map과 reduce를 같이 사용할 때에는 flatMap을 사용합니다.
     - identical_operands                            # 같은 것을 비교할 필요 없습니다.
-    - implicit_return                               # closure, functions, getter에서 암묵적 return을 지향합니다.
-    - implicitly_unwrapped_optional                 # 암시적 언래핑을 지양합니다. (IBOutlet은 예외)
     - last_where                                    # Collection에서 .filter { }.last 말고 .last(where: )를 사용합니다.
     - let_var_whitespace                            # let, var 프로퍼티들은 다른 statement들과 한 줄을 띄워서 작성합니다.
     - literal_expression_end_indentation            # 배열, Dictionary의 마지막 indentation은 처음과 같아야합니다.

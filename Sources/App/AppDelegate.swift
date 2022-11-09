@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import KakaoSDKAuth
+import KakaoSDKCommon
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var coordinator: AppCoordinator?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+        KakaoSDK.initSDK(appKey: "041c741d45744f54da6ed10e0f946672")
         self.window = UIWindow(frame: UIScreen.main.bounds)
         
         coordinator = AppCoordinator(window: window!)
@@ -22,4 +24,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return true
     }
+
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if (AuthApi.isKakaoTalkLoginUrl(url)) {
+            return AuthController.handleOpenUrl(url: url)
+        }
+
+        return false
+    }
+
 }

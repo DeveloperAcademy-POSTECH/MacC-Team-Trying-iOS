@@ -11,7 +11,15 @@ import Foundation
 struct SignUpService {
     private let provider = NetworkProviderImpl<SignUpAPI>()
 
-    func signup(_ body: SignUpRequestModel) async throws -> SignUpResponseModel {
+    func signup(_ body: SignUpRequestModel.Email) async throws -> SignUpResponseModel {
         try await provider.send(.signUp(body))
+    }
+
+    func signupWitHKakao(_ body: SignUpRequestModel.Kakao) async throws -> SignUpResponseModel {
+        try await provider.send(.kakao(body))
+    }
+
+    func signupWithApple(_ body: SignUpRequestModel.Apple) async throws -> SignUpResponseModel {
+        try await provider.send(.apple(body))
     }
 }

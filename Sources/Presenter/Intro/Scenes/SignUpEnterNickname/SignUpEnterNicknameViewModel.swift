@@ -28,17 +28,22 @@ final class SignUpEnterNicknameViewModel: BaseViewModel, SignUpEnterNicknameBusi
 
     @Published var nicknameTextFieldState: TextFieldState
     @Published var isLoading: Bool
-    let email: String
-    let password: String
+
+    var type: SignUpType
+
     var nickname: String
 
+    enum SignUpType {
+        case email(SignUpRequestModel.Email)
+        case apple(String)
+        case kakao(String)
+    }
+
     init(
-        email: String,
-        password: String,
+        type: SignUpType,
         coordinator: SignUpEnterNicknameCoordinatorLogic
     ) {
-        self.email = email
-        self.password = password
+        self.type = type
         self.nickname = ""
         self.nicknameTextFieldState = .emptyNickname
         self.isLoading = false
@@ -50,8 +55,23 @@ final class SignUpEnterNicknameViewModel: BaseViewModel, SignUpEnterNicknameBusi
             do {
                 self.isLoading = true
 
-                let accessToken = try await signUpService.signup(.init(email: email, password: password, name: nickname))
-                UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
+                switch type {
+                case .email(let model):
+                    let accessToken = try await signUpService.signup(
+                        .init(email: model.email, password: model.password, name: nickname)
+                    )
+                    UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
+                case .apple(let identifier):
+                    let accessToken = try await signUpService.signupWithApple(
+                        .init(identifier: identifier, email: "aaa@bbs.com", name: nickname, deviceToken: "1")
+                    )
+                    UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
+                case .kakao(let identifier):
+                    let accessToken = try await signUpService.signupWitHKakao(
+                        .init(identifier: identifier, email: "aaa@b.com", name: nickname, deviceToken: "1")
+                    )
+                    UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
+                }
 
                 self.isLoading = false
 
@@ -59,19 +79,14 @@ final class SignUpEnterNicknameViewModel: BaseViewModel, SignUpEnterNicknameBusi
                     self.coordinator.coordinateToCreatePlanetScene()
                 }
             } catch {
+                nicknameTextFieldState = .doubleNickname
                 self.isLoading = false
             }
         }
-
-    }
-
-    private func createSignUpRequestModel() -> SignUpRequestModel {
-        .init(email: email, password: password, name: nickname)
     }
 
     func textFieldDidChange(_ text: String) {
         nickname = text
-
         let nicknamePattern = #"^[가-힣A-Za-z0-9].{1,8}"#
         let result = nickname.range(of: nicknamePattern, options: .regularExpression)
         nicknameTextFieldState = result != nil ? .validNickname : .invalidNickname

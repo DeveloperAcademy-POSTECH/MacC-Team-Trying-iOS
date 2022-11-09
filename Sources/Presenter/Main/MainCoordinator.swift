@@ -56,7 +56,7 @@ final class MainCoordinator: Coordinator {
                 return SearchCoordinator(navigationController: navigationController)
                 
             case .feed:
-                return FeedCoordinator(navigationController: navigationController)
+                return LogCoordinator(navigationController: navigationController)
                 
             case .profile:
                 return ProfileCoordinator(navigationController: navigationController)

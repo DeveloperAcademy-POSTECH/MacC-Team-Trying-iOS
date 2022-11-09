@@ -23,4 +23,18 @@ extension NSMutableAttributedString {
         self.append(NSAttributedString(string: string, attributes: attributes))
         return self
     }
+
+    func gmarketSansBold(string: String, fontSize: Font.Size) -> NSMutableAttributedString {
+        let font = UIFont.gmarksans(weight: .bold, size: fontSize)
+        let attributes: [NSAttributedString.Key: Any] = [.font: font]
+        self.append(NSAttributedString(string: string, attributes: attributes))
+        return self
+    }
+
+    func gmarketSansLight(string: String, fontSize: Font.Size) -> NSMutableAttributedString {
+        let font = UIFont.gmarksans(weight: .light, size: fontSize)
+        let attributes: [NSAttributedString.Key: Any] = [.font: font]
+        self.append(NSAttributedString(string: string, attributes: attributes))
+        return self
+    }
 }
