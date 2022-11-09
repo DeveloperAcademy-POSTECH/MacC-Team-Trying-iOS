@@ -22,6 +22,8 @@ enum SmallRoundButtonType {
     /// - Width : 90
     /// - Height : 30
     case selectDate
+    
+    case 
 }
 
 final class SmallRoundButton: UIButton {
