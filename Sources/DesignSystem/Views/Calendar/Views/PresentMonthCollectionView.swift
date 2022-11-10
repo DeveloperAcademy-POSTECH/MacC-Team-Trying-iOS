@@ -23,6 +23,6 @@ final class PresentMonthCollectionView: UICollectionView {
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
         self.allowsMultipleSelection = false
-        self.register(DateCell.self)
+        self.register(DateCollectionViewCell.self)
     }
 }

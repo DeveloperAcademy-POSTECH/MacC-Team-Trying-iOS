@@ -26,6 +26,7 @@ final class CalendarView: BaseView {
 
     private var selectedDate: YearMonthDayDate {
         didSet {
+            monthView.updateYearAndMonth(to: selectedDate.asDate())
             delegate?.selectDate(selectedDate.asDate())
         }
     }
@@ -64,8 +65,23 @@ final class CalendarView: BaseView {
         case following
     }
 
+    typealias Section = CalendarSection
+    typealias PresentCalendarDataSource = PresentCalendarDiffableDataSource
+    typealias FollowingCalendarDataSource = FollowingCalendarDiffableDataSource
+    typealias PrevioustCalendarDataSource = PreviousCalendarDiffableDataSource
+    typealias DateSnapshot = NSDiffableDataSourceSnapshot<Section, Section.Item>
+
+    private lazy var previousDataSource = PresentCalendarDataSource(collectionView: previousMonthCollectionView)
+    private lazy var presentDataSource = PresentCalendarDataSource(collectionView: presentMonthCollectionView)
+    private lazy var followingDataSource = PresentCalendarDataSource(collectionView: followingMonthCollectionView)
+
     private var numberOfDaysInMonth: [Int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    private var sections: [CalendarSection] = []
     private var today: Date
+
+    private var previousFirstDayOfWeek: Date
+    private var presentFirstDayOfWeek: Date
+    private var followingFirstDayOfWeek: Date
     private var presentMonthDate: Date
     private var previousMonthDate: Date
     private var followingMonthDate: Date
@@ -102,13 +118,19 @@ final class CalendarView: BaseView {
     init(today: Date, frame: CGRect) {
         self.today = today
         self.presentMonthDate = today
-        self.previousMonthDate = today.monthBefore ?? .init()
-        self.followingMonthDate = today.monthAfter ?? .init()
+        self.previousMonthDate = today.monthBefore
+        self.followingMonthDate = today.monthAfter
         self.selectedDate = .init(year: today.year, month: today.month, day: today.day)
-
+        self.presentFirstDayOfWeek = today.startDateOfWeek
+        self.previousFirstDayOfWeek = presentFirstDayOfWeek.day(before: 7)
+        self.followingFirstDayOfWeek = presentFirstDayOfWeek.day(after: 7)
         super.init(frame: frame)
-        let resetCellCount = minimumCellNumberOfPresentMonth % 7
-        numberOfMonthRow = resetCellCount == 0 ? minimumCellNumberOfPresentMonth / 7 : minimumCellNumberOfPresentMonth / 7 + 1
+
+        self.sections = calculateSections()
+        applySnapshot(section: sections)
+        numberOfMonthRow = presentFrontCellNumber == 0 ?
+        minimumCellNumberOfPresentMonth / 7 :
+        minimumCellNumberOfPresentMonth / 7 + 1
     }
     
     required init?(coder: NSCoder) {
@@ -125,10 +147,11 @@ final class CalendarView: BaseView {
         scrollView.delegate = self
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
-        previousMonthCollectionView.dataSource = self
-        presentMonthCollectionView.dataSource = self
+
         presentMonthCollectionView.delegate = self
-        followingMonthCollectionView.dataSource = self
+        previousMonthCollectionView.dataSource = previousDataSource
+        presentMonthCollectionView.dataSource = presentDataSource
+        followingMonthCollectionView.dataSource = followingDataSource
     }
 
     override func setLayout() {
@@ -157,15 +180,23 @@ final class CalendarView: BaseView {
         }
 
         let scrollViewWidth = self.frame.width - 20
-        previousMonthCollectionView.frame = .init(x: 0, y: 0, width: scrollViewWidth, height: calendarHeight)
-        presentMonthCollectionView.frame = .init(x: scrollViewWidth, y: 0, width: scrollViewWidth, height: calendarHeight)
-        followingMonthCollectionView.frame = .init(x: scrollViewWidth * 2, y: 0, width: scrollViewWidth, height: calendarHeight)
+        previousMonthCollectionView.frame = .init(
+            x: 0, y: 0, width: scrollViewWidth, height: calendarHeight
+        )
+        presentMonthCollectionView.frame = .init(
+            x: scrollViewWidth, y: 0, width: scrollViewWidth, height: calendarHeight
+        )
+        followingMonthCollectionView.frame = .init(
+            x: scrollViewWidth * 2, y: 0, width: scrollViewWidth, height: calendarHeight
+        )
 
         scrollView.contentSize = .init(width: scrollViewWidth * 3, height: calendarHeight)
         scrollView.setContentOffset(CGPoint(x: scrollViewWidth, y: 0), animated: false)
 
         let restCellCount = minimumCellNumberOfPresentMonth % 7
-        self.numberOfMonthRow = restCellCount == 0 ? minimumCellNumberOfPresentMonth / 7 : minimumCellNumberOfPresentMonth / 7 + 1
+        self.numberOfMonthRow = restCellCount == 0 ?
+        minimumCellNumberOfPresentMonth / 7 :
+        minimumCellNumberOfPresentMonth / 7 + 1
     }
 }
 
@@ -179,22 +210,25 @@ extension CalendarView: MonthViewDelegate {
     }
 
     func switchCalendarButtonDidTapped(shape calendarShape: MonthView.CalendarShape) {
+
         self.calendarShape = calendarShape
-        monthView.updateYearAndMonth(to: today)
+
+        // 오늘로 수정
         presentMonthDate = today
+        monthView.updateYearAndMonth(to: presentMonthDate)
         selectedDate = .init(year: today.year, month: today.month, day: today.day)
-        previousMonthDate = presentMonthDate.monthBefore ?? .init()
-        followingMonthDate = presentMonthDate.monthAfter ?? .init()
 
-        scrollView.isScrollEnabled = calendarShape == .month
-        scrollView.setContentOffset(.init(x: scrollViewWidth, y: 0), animated: false)
-
-        presentMonthCollectionView.performBatchUpdates { [weak self] in
-            self?.presentMonthCollectionView.reloadSections(.init(integer: 0))
+        switch calendarShape {
+        case .week:
+            numberOfMonthRow = 1
+        case .month:
+            previousMonthDate = presentMonthDate.monthBefore
+            followingMonthDate = presentMonthDate.monthAfter
+            numberOfMonthRow = numberOfCalendarRowInMonth
         }
 
-        numberOfMonthRow = calendarShape == .month ? numberOfCalendarRowInMonth : 1
-
+        sections = calculateSections()
+        applySnapshot(section: sections)
         delegate?.switchCalendarButtonDidTapped()
     }
 }
@@ -216,23 +250,32 @@ extension CalendarView: UIScrollViewDelegate {
         }
     }
 
+    // 스크롤이 된 후,
+    // 1. 선택된 날짜를 변경
+    // 2. 높이 조절
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         switch scrollDirection {
         case .left:
-            let restCellCount = minimumCellNumberOfPreviousMonth % 7
-            self.numberOfMonthRow = restCellCount == 0 ? minimumCellNumberOfPreviousMonth / 7 : minimumCellNumberOfPreviousMonth / 7 + 1
-            if today.year == previousYear, today.month == previousMonth {
-                self.selectedDate = .init(year: previousYear, month: previousMonth, day: today.day)
-            } else {
-                self.selectedDate = .init(year: previousYear, month: previousMonth, day: 1)
+            switch calendarShape {
+            case .month:
+                self.numberOfMonthRow = previousFrontCellNumber == 0 ?
+                minimumCellNumberOfPreviousMonth / 7 :
+                minimumCellNumberOfPreviousMonth / 7 + 1
+                let day = (today.year == previousYear && today.month == previousMonth) ? today.day : 1
+                self.selectedDate = .init(year: previousYear, month: previousMonth, day: day)
+            case .week:
+                self.selectedDate = .init(year: previousFirstDayOfWeek.year, month: previousFirstDayOfWeek.month, day: previousFirstDayOfWeek.day)
             }
         case .right:
-            let restCellCount = minimumCellNumberOfFollowingMonth % 7
-            self.numberOfMonthRow = restCellCount == 0 ?  minimumCellNumberOfFollowingMonth / 7 : minimumCellNumberOfFollowingMonth / 7 + 1
-            if today.year == followingYear, today.month == followingMonth {
-                self.selectedDate = .init(year: followingYear, month: followingMonth, day: today.day)
-            } else {
-                self.selectedDate = .init(year: followingYear, month: followingMonth, day: 1)
+            switch calendarShape {
+            case .month:
+                self.numberOfMonthRow = followingFrontCellNumber == 0 ?
+                minimumCellNumberOfFollowingMonth / 7 :
+                minimumCellNumberOfFollowingMonth / 7 + 1
+                let day = (today.year == followingYear && today.month == followingMonth) ? today.day : 1
+                self.selectedDate = .init(year: followingYear, month: followingMonth, day: day)
+            case .week:
+                self.selectedDate = .init(year: followingFirstDayOfWeek.year, month: followingFirstDayOfWeek.month, day: followingFirstDayOfWeek.day)
             }
         case .no:
             break
@@ -242,28 +285,244 @@ extension CalendarView: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         switch scrollDirection {
         case .left:
-            updateCalendar(present: previousMonthDate)
+            switch calendarShape {
+            case .week:
+                updateCalendar(present: previousFirstDayOfWeek)
+            case .month:
+                updateCalendar(present: previousMonthDate)
+            }
         case .right:
-            updateCalendar(present: followingMonthDate)
+            switch calendarShape {
+            case .week:
+                updateCalendar(present: followingFirstDayOfWeek)
+            case .month:
+                updateCalendar(present: followingMonthDate)
+            }
         case .no:
             break
         }
     }
 
     private func updateCalendar(present: Date) {
-
         checkLeapYear(date: present)
-        
         monthView.updateYearAndMonth(to: present)
-        presentMonthDate = present
-        previousMonthDate = present.monthBefore ?? .init()
-        followingMonthDate = present.monthAfter ?? .init()
+        switch calendarShape {
+        case .month:
+            presentMonthDate = present
+            previousMonthDate = present.monthBefore
+            followingMonthDate = present.monthAfter
 
-        previousMonthCollectionView.reloadData()
-        presentMonthCollectionView.reloadData()
-        followingMonthCollectionView.reloadData()
+        case .week:
+            presentFirstDayOfWeek = present
+            previousFirstDayOfWeek = present.day(before: 7)
+            followingFirstDayOfWeek = present.day(after: 7)
 
+        }
+
+        sections = calculateSections()
+        applySnapshot(section: sections)
         scrollView.setContentOffset(.init(x: scrollViewWidth, y: 0), animated: false)
+    }
+
+    private func calculateSections() -> [CalendarSection] {
+        switch calendarShape {
+        case .month:
+            return monthCalendarSections()
+        case .week:
+            return weekCalendarSections()
+        }
+    }
+
+    private func monthCalendarSections() -> [CalendarSection] {
+        var sections: [CalendarSection] = []
+        var dateCellModels: [DateCellModel] = []
+
+        // 이전 달력
+        for index in 0..<totalCellNumberOfPreviousCalendar {
+            // 이전 달력의 달
+            if index < startWeekdayOfPreviousMonthIndex {
+                let previousMonth = previousMonth == 1 ? 12 : previousMonth - 1
+                let previousMonthDate = numberOfDaysInMonth[previousMonth - 1]
+                let day = previousMonthDate - (startWeekdayOfPreviousMonthIndex - 1) + index
+                let isChecked = scheduleList.contains(
+                    .init(year: previous2Year, month: previous2Month, day: day)
+                )
+                dateCellModels.append(.init(
+                    date: .init(year: previous2Year, month: previous2Month, day: day),
+                    isScheduled: isChecked,
+                    isColored: false
+                ))
+            } else if index < minimumCellNumberOfPreviousMonth {
+                let day = index - startWeekdayOfPreviousMonthIndex + 1
+                let isChecked = scheduleList.contains(
+                    .init(year: previousYear, month: previousMonth, day: day)
+                )
+                dateCellModels.append(.init(
+                    date: .init(year: previousYear, month: previousMonth, day: day),
+                    isScheduled: isChecked,
+                    isColored: true
+                ))
+            } else {
+                let day = index - minimumCellNumberOfPreviousMonth + 1
+                let isChecked = scheduleList.contains(
+                    .init(year: presentYear, month: presentMonth, day: day)
+                )
+                dateCellModels.append(.init(
+                    date: .init(year: presentYear, month: presentMonth, day: day),
+                    isScheduled: isChecked,
+                    isColored: false
+                ))
+            }
+        }
+        sections.append(.month(dateCellModels.map { .day($0) }))
+        // 현재 달력
+        dateCellModels = []
+        for index in 0..<totalCellNumberOfPresentCalendar {
+            // 이전 달력의 달
+            if index < startWeekdayOfPresentMonthIndex {
+                let previousMonthDate = numberOfDaysInMonth[previousMonth - 1]
+                let day = previousMonthDate - (startWeekdayOfPresentMonthIndex - 1) + index
+                let isChecked = scheduleList.contains(
+                    .init(year: previousYear, month: previousMonth, day: day)
+                )
+                dateCellModels.append(.init(
+                    date: .init(year: previousYear, month: previousMonth, day: day),
+                    isScheduled: isChecked,
+                    isColored: false
+                ))
+            } else if index < minimumCellNumberOfPresentMonth {
+                let day = index - startWeekdayOfPresentMonthIndex + 1
+                let isChecked = scheduleList.contains(
+                    .init(year: presentYear, month: presentMonth, day: day)
+                )
+                dateCellModels.append(.init(
+                    date: .init(year: presentYear, month: presentMonth, day: day),
+                    isScheduled: isChecked,
+                    isColored: true
+                ))
+            } else {
+                let day = index - minimumCellNumberOfPresentMonth + 1
+                let isChecked = scheduleList.contains(
+                    .init(year: followingYear, month: followingMonth, day: day)
+                )
+                dateCellModels.append(.init(
+                    date: .init(year: followingYear, month: followingMonth, day: day),
+                    isScheduled: isChecked,
+                    isColored: false
+                ))
+            }
+        }
+        sections.append(.month(dateCellModels.map { .day($0) }))
+
+        // 다음 달력
+        dateCellModels = []
+        for index in 0..<totalCellNumberOfFollowingCalendar {
+            // 이전 달력의 달
+            if index < startWeekdayOfFollowingMonthIndex {
+                let previousMonthDate = numberOfDaysInMonth[presentMonth - 1]
+                let day = previousMonthDate - (startWeekdayOfFollowingMonthIndex - 1) + index
+                let isChecked = scheduleList.contains(
+                    .init(year: presentYear, month: presentMonth, day: day)
+                )
+                dateCellModels.append(.init(
+                    date: .init(year: presentYear, month: presentMonth, day: day),
+                    isScheduled: isChecked,
+                    isColored: false
+                ))
+            } else if index < minimumCellNumberOfFollowingMonth {
+                let day = index - startWeekdayOfFollowingMonthIndex + 1
+                let isChecked = scheduleList.contains(
+                    .init(year: followingYear, month: followingMonth, day: day)
+                )
+                dateCellModels.append(.init(
+                    date: .init(year: followingYear, month: followingMonth, day: day),
+                    isScheduled: isChecked,
+                    isColored: true
+                ))
+            } else {
+                let day = index - minimumCellNumberOfFollowingMonth + 1
+                let isChecked = scheduleList.contains(
+                    .init(year: following2Year, month: following2Year, day: day)
+                )
+                dateCellModels.append(.init(
+                    date: .init(year: following2Year, month: following2Year, day: day),
+                    isScheduled: isChecked,
+                    isColored: false
+                ))
+            }
+        }
+        sections.append(.month(dateCellModels.map { .day($0) }))
+
+        return sections
+    }
+
+    private func weekCalendarSections() -> [CalendarSection] {
+        var sections: [CalendarSection] = []
+        var dateCellModels: [DateCellModel] = []
+
+        for index in 0..<7 {
+            let date = previousFirstDayOfWeek.day(after: index)
+            let day = date.day
+            let isChecked = scheduleList.contains(
+                .init(year: date.year, month: date.month, day: date.day)
+            )
+            dateCellModels.append(.init(
+                date: .init(year: date.year, month: date.month, day: date.day),
+                isScheduled: isChecked,
+                isColored: true
+            ))
+        }
+        sections.append(.week(dateCellModels.map { .day($0) }))
+
+        dateCellModels = []
+        for index in 0..<7 {
+            let date = presentFirstDayOfWeek.day(after: index)
+            let day = date.day
+            let isChecked = scheduleList.contains(
+                .init(year: date.year, month: date.month, day: date.day)
+            )
+            dateCellModels.append(.init(
+                date: .init(year: date.year, month: date.month, day: date.day),
+                isScheduled: isChecked,
+                isColored: true
+            ))
+        }
+        sections.append(.week(dateCellModels.map { .day($0) }))
+
+        dateCellModels = []
+        for index in 0..<7 {
+            let date = followingFirstDayOfWeek.day(after: index)
+            let day = date.day
+            let isChecked = scheduleList.contains(
+                .init(year: date.year, month: date.month, day: date.day)
+            )
+            dateCellModels.append(.init(
+                date: .init(year: date.year, month: date.month, day: date.day),
+                isScheduled: isChecked,
+                isColored: true
+            ))
+        }
+        sections.append(.week(dateCellModels.map { .day($0) }))
+
+        return sections
+    }
+
+    private func applySnapshot(section: [CalendarSection]) {
+
+        [previousDataSource, presentDataSource, followingDataSource].enumerated().forEach { index, dataSource in
+            var snapshot = DateSnapshot()
+            let section = [section[index]]
+            snapshot.appendSections(section)
+            section.forEach { section in
+                switch section {
+                case .month(let models):
+                    snapshot.appendItems(models)
+                case .week(let models):
+                    snapshot.appendItems(models)
+                }
+            }
+            dataSource.apply(snapshot, animatingDifferences: false)
+        }
     }
 
     private func checkLeapYear(date: Date) {
@@ -279,13 +538,15 @@ extension CalendarView: UIScrollViewDelegate {
 extension CalendarView: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? DateCell else { return }
-        self.selectedDate = .init(year: presentYear, month: presentMonth, day: cell.day)
+        guard let cell = presentDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case .day(let model) = cell else { return }
+        self.selectedDate = model.date
     }
 }
 
-extension CalendarView: UICollectionViewDataSource {
+extension CalendarView {
 
+    // 현재 달
     private var presentYear: Int {
         presentMonthDate.year
     }
@@ -295,7 +556,7 @@ extension CalendarView: UICollectionViewDataSource {
     }
 
     private var firstWeekdayOfPresentMonth: Int {
-        presentMonthDate.firstDayOfTheMonth?.weekday ?? 0
+        presentMonthDate.firstDayOfTheMonth.weekday
     }
 
     private var startWeekdayOfPresentMonthIndex: Int {
@@ -304,6 +565,28 @@ extension CalendarView: UICollectionViewDataSource {
 
     private var minimumCellNumberOfPresentMonth: Int {
         numberOfDaysInMonth[presentMonth - 1] + startWeekdayOfPresentMonthIndex
+    }
+
+    private var presentFrontCellNumber: Int {
+        minimumCellNumberOfPresentMonth % 7
+    }
+
+    private var totalCellNumberOfPresentCalendar: Int {
+        presentFrontCellNumber == 0 ?
+        minimumCellNumberOfPresentMonth :
+        minimumCellNumberOfPresentMonth + (7 - presentFrontCellNumber)
+    }
+
+    // 이전 달
+
+    /// 현재에서 두 달 이전 year
+    private var previous2Year: Int {
+        previousMonthDate.monthBefore.year
+    }
+
+    /// 현재에서 두 달 이전 year
+    private var previous2Month: Int {
+        previousMonthDate.monthBefore.month
     }
 
     private var previousYear: Int {
@@ -315,7 +598,7 @@ extension CalendarView: UICollectionViewDataSource {
     }
 
     private var firstWeekdayOfPreviousMonth: Int {
-        previousMonthDate.firstDayOfTheMonth?.weekday ?? 0
+        previousMonthDate.firstDayOfTheMonth.weekday
     }
 
     private var startWeekdayOfPreviousMonthIndex: Int {
@@ -324,6 +607,27 @@ extension CalendarView: UICollectionViewDataSource {
 
     private var minimumCellNumberOfPreviousMonth: Int {
         numberOfDaysInMonth[previousMonth - 1] + startWeekdayOfPreviousMonthIndex
+    }
+
+    private var previousFrontCellNumber: Int {
+        minimumCellNumberOfPreviousMonth % 7
+    }
+
+    private var totalCellNumberOfPreviousCalendar: Int {
+        previousFrontCellNumber == 0 ?
+        minimumCellNumberOfPreviousMonth :
+        minimumCellNumberOfPreviousMonth + (7 - previousFrontCellNumber)
+    }
+    // 다음 달
+
+    /// 현재에서 두 달 이후 year
+    private var following2Year: Int {
+        previousMonthDate.monthAfter.year
+    }
+
+    /// 현재에서 두 달 이후 month
+    private var following2Month: Int {
+        previousMonthDate.monthAfter.month
     }
 
     private var followingYear: Int {
@@ -335,7 +639,7 @@ extension CalendarView: UICollectionViewDataSource {
     }
 
     private var firstWeekdayOfFollowingMonth: Int {
-        followingMonthDate.firstDayOfTheMonth?.weekday ?? 0
+        followingMonthDate.firstDayOfTheMonth.weekday
     }
 
     private var startWeekdayOfFollowingMonthIndex: Int {
@@ -346,188 +650,13 @@ extension CalendarView: UICollectionViewDataSource {
         numberOfDaysInMonth[followingMonth - 1] + startWeekdayOfFollowingMonthIndex
     }
 
-    private var firstDayOfWeekDay: Int {
-        let date = today.day - today.weekday + 1
-        return date <= 0 ? numberOfDaysInMonth[today.month - 1] - date : date
+    private var followingFrontCellNumber: Int {
+        minimumCellNumberOfFollowingMonth % 7
     }
 
-    private var lastDayOfWeekDay: Int {
-        let date = today.day + (7 - today.weekday)
-
-        return date > numberOfDaysInMonth[today.month] ? date - numberOfDaysInMonth[today.month] : date
-    }
-
-    struct WeekDistinguishedByColorModel {
-        let thisWeekday: Bool
-        let day: Int
-    }
-
-    private var thisWeekday: [WeekDistinguishedByColorModel] {
-
-        let firstDayOfWeekday = today.day - today.weekday + 1
-        let lastDayOfWeekday = today.day + (7 - today.weekday)
-
-        var result: [WeekDistinguishedByColorModel] = []
-        for day in firstDayOfWeekday...lastDayOfWeekday {
-            if day < 0 {
-                result.append(.init(thisWeekday: false, day: numberOfDaysInMonth[today.month - 1] - day))
-            } else if day > numberOfDaysInMonth[today.month] {
-                result.append(.init(thisWeekday: false, day: day - numberOfDaysInMonth[today.month]))
-            } else {
-                result.append(.init(thisWeekday: true, day: day))
-            }
-        }
-        return result
-    }
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == previousMonthCollectionView {
-            let resetCellCount = minimumCellNumberOfPreviousMonth % 7
-            return resetCellCount == 0 ? minimumCellNumberOfPreviousMonth : minimumCellNumberOfPreviousMonth + (7 - resetCellCount)
-        } else if collectionView == presentMonthCollectionView {
-            switch calendarShape {
-            case .month:
-                let resetCellCount = minimumCellNumberOfPresentMonth % 7
-                return resetCellCount == 0 ? minimumCellNumberOfPresentMonth : minimumCellNumberOfPresentMonth + (7 - resetCellCount)
-            case .week:
-                return 7
-            }
-
-        } else {
-            let resetCellCount = minimumCellNumberOfFollowingMonth % 7
-            return resetCellCount == 0 ? minimumCellNumberOfFollowingMonth : minimumCellNumberOfFollowingMonth + (7 - resetCellCount)
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == previousMonthCollectionView {
-            return previousCollectionViewCell(for: indexPath, collectionView: collectionView)
-        } else if collectionView == presentMonthCollectionView {
-            switch calendarShape {
-            case .month:
-                return presentCollectionViewCell(for: indexPath, collectionView: collectionView)
-            case .week:
-                return weekdayCollectionViewCell(for: indexPath)
-            }
-        } else {
-            return followingCollectionViewCell(for: indexPath, collectionView: collectionView)
-        }
-    }
-
-    private func weekdayCollectionViewCell(for indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = presentMonthCollectionView.dequeueReusableCell(DateCell.self, for: indexPath)
-        let day = thisWeekday[indexPath.item].day
-        let thisMonth: MonthType = thisWeekday[indexPath.item].thisWeekday ? .present : .following
-        cell.configure(with: day, isSchedule: checkSchedule(day: day, type: thisMonth))
-
-        // 오늘인지 체크
-        if findToday(day: day, type: thisMonth) {
-            cell.isToday()
-        } else {
-            cell.isPresentMonthCell()
-        }
-
-        if selectedDate == .init(year: presentYear, month: presentMonth, day: day) {
-            presentMonthCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .top)
-        }
-
-        return cell
-    }
-    private func previousCollectionViewCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
-        if indexPath.item < startWeekdayOfPreviousMonthIndex {
-            return previousMonthCell(month: previousMonth, startWeekday: startWeekdayOfPreviousMonthIndex, for: indexPath, collectionView: collectionView)
-        } else if indexPath.item < minimumCellNumberOfPreviousMonth {
-            return presentMonthCell(startWeekday: startWeekdayOfPreviousMonthIndex, for: indexPath, collectionView: collectionView, type: .previous)
-        } else {
-            return followingMonthCell(minimumCellNumber: minimumCellNumberOfPreviousMonth, for: indexPath, collectionView: collectionView)
-        }
-    }
-
-    private func presentCollectionViewCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
-        if indexPath.item < startWeekdayOfPresentMonthIndex {
-            return previousMonthCell(month: presentMonth, startWeekday: startWeekdayOfPresentMonthIndex, for: indexPath, collectionView: collectionView)
-        } else if indexPath.item < minimumCellNumberOfPresentMonth {
-            return presentMonthCell(startWeekday: startWeekdayOfPresentMonthIndex, for: indexPath, collectionView: collectionView, type: .present)
-        } else {
-            return followingMonthCell(minimumCellNumber: minimumCellNumberOfPresentMonth, for: indexPath, collectionView: collectionView)
-        }
-    }
-
-    private func followingCollectionViewCell(for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
-        if indexPath.item < startWeekdayOfFollowingMonthIndex {
-            return previousMonthCell(month: followingMonth, startWeekday: startWeekdayOfFollowingMonthIndex, for: indexPath, collectionView: collectionView)
-        } else if indexPath.item < minimumCellNumberOfFollowingMonth {
-            return presentMonthCell(startWeekday: startWeekdayOfFollowingMonthIndex, for: indexPath, collectionView: collectionView, type: .following)
-        } else {
-            return followingMonthCell(minimumCellNumber: minimumCellNumberOfFollowingMonth, for: indexPath, collectionView: collectionView)
-        }
-    }
-
-    private func previousMonthCell(month: Int, startWeekday: Int, for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(DateCell.self, for: indexPath)
-
-        let previousMonth = month == 1 ? 12 : month - 1
-        let previousMonthDate = numberOfDaysInMonth[previousMonth - 1]
-        let day = previousMonthDate - (startWeekday - 1) + indexPath.item
-        cell.configure(with: day, isSchedule: checkSchedule(day: day, type: .previous))
-        cell.isPreviousMonthCell()
-
-        return  cell
-    }
-
-    private func presentMonthCell(startWeekday: Int, for indexPath: IndexPath, collectionView: UICollectionView, type: MonthType) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(DateCell.self, for: indexPath)
-
-        let day = indexPath.item - startWeekday + 1
-        cell.configure(with: day, isSchedule: checkSchedule(day: day, type: type))
-
-        // 오늘인지 체크
-        if findToday(day: day, type: type) {
-            cell.isToday()
-        } else {
-            cell.isPresentMonthCell()
-        }
-
-        if selectedDate == .init(year: presentYear, month: presentMonth, day: day) {
-            collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .top)
-        }
-
-        return cell
-    }
-
-    private func followingMonthCell(minimumCellNumber: Int, for indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(DateCell.self, for: indexPath)
-
-        let day = indexPath.item - minimumCellNumber + 1
-        cell.configure(with: day, isSchedule: checkSchedule(day: day, type: .following))
-        cell.isFollowingMonthCell()
-
-        return cell
-    }
-
-    // 스케쥴이 있다는 것을 체크하는 함수입니다.
-    private func checkSchedule(day: Int, type: MonthType) -> Bool {
-        switch type {
-        case .previous:
-            let date = YearMonthDayDate(year: previousYear, month: previousMonth, day: day)
-            return scheduleList.contains(date)
-        case .present:
-            let date = YearMonthDayDate(year: presentYear, month: presentMonth, day: day)
-            return scheduleList.contains(date)
-        case .following:
-            let date = YearMonthDayDate(year: followingYear, month: followingMonth, day: day)
-            return scheduleList.contains(date)
-        }
-    }
-
-    private func findToday(day: Int, type: MonthType) -> Bool {
-        switch type {
-        case .previous:
-            return (day == today.day && previousMonth == today.month && previousYear == today.year)
-        case .present:
-            return (day == today.day && presentMonth == today.month && presentYear == today.year)
-        case .following:
-            return (day == today.day && followingMonth == today.month && followingYear == today.year)
-        }
+    private var totalCellNumberOfFollowingCalendar: Int {
+        followingFrontCellNumber == 0 ?
+        minimumCellNumberOfFollowingMonth :
+        minimumCellNumberOfFollowingMonth + (7 - followingFrontCellNumber)
     }
 }

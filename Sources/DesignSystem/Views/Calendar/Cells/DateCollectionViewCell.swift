@@ -8,12 +8,16 @@
 
 import UIKit
 
-final class DateCell: UICollectionViewCell {
+struct DateCellModel: Hashable {
+    let date: YearMonthDayDate
+    let isScheduled: Bool
+    let isColored: Bool
+}
+
+final class DateCollectionViewCell: UICollectionViewCell {
 
     lazy var dateLabel = UILabel()
     lazy var scheduleDotView = UIView()
-
-    var day: Int = 0
 
     override var isSelected: Bool {
         didSet {
@@ -51,32 +55,17 @@ final class DateCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with day: Int, isSchedule: Bool) {
-        self.day = day
-        dateLabel.text = String(day)
-        scheduleDotView.isHidden = isSchedule == false
-        scheduleDotView.backgroundColor = .designSystem(.mainYellow)
+    func configure(with model: DateCellModel) {
+        let dotColor: UIColor? = model.isColored ? .designSystem(.mainYellow) : .designSystem(.mainYellow)?.withAlphaComponent(0.3)
+        let dateLabelColor: UIColor? = model.isColored ? .white : .white.withAlphaComponent(0.3)
+        dateLabel.text = String(model.date.day)
+        scheduleDotView.isHidden = model.isScheduled == false
+        scheduleDotView.backgroundColor = dotColor
+        dateLabel.textColor = dateLabelColor
     }
 
     func isToday() {
         dateLabel.textColor = .yellow
-    }
-
-    func isPreviousMonthCell() {
-        scheduleDotView.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.3)
-        dateLabel.textColor = .white.withAlphaComponent(0.3)
-        contentView.backgroundColor = .clear
-    }
-
-    func isPresentMonthCell() {
-        dateLabel.textColor = .white
-        contentView.backgroundColor = .clear
-    }
-
-    func isFollowingMonthCell() {
-        scheduleDotView.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.3)
-        dateLabel.textColor = .white.withAlphaComponent(0.3)
-        contentView.backgroundColor = .clear
     }
 
     override func prepareForReuse() {

@@ -26,15 +26,27 @@ extension Date {
         Calendar.current.component(.day, from: self)
     }
     
-    var firstDayOfTheMonth: Date? {
-        Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: self))
+    var firstDayOfTheMonth: Date {
+        Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: self))!
     }
 
-    var monthBefore: Date? {
-        Calendar.current.date(byAdding: .month, value: -1, to: self)
+    var monthBefore: Date {
+        Calendar.current.date(byAdding: .month, value: -1, to: self)!
     }
 
-    var monthAfter: Date? {
-        Calendar.current.date(byAdding: .month, value: 1, to: self)
+    var monthAfter: Date {
+        Calendar.current.date(byAdding: .month, value: 1, to: self)!
+    }
+
+    var startDateOfWeek: Date {
+        Calendar.current.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: self).date!
+    }
+
+    func day(after: Int) -> Date {
+        Calendar.current.date(byAdding: .day, value: after, to: self)!
+    }
+
+    func day(before: Int) -> Date {
+        Calendar.current.date(byAdding: .day, value: -before, to: self)!
     }
 }

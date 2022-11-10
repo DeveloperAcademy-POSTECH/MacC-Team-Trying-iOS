@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct YearMonthDayDate: Equatable {
+struct YearMonthDayDate: Hashable {
     let year: Int
     let month: Int
     let day: Int
@@ -19,11 +19,11 @@ extension YearMonthDayDate {
         date.year == self.year && date.month == self.month && date.day == self.day
     }
 
-    func asDate() -> Date? {
+    func asDate() -> Date {
         var dateComponents = DateComponents()
         dateComponents.day = self.day
         dateComponents.month = self.month
         dateComponents.year = self.year
-        return Calendar.autoupdatingCurrent.date(from: dateComponents)
+        return Calendar.autoupdatingCurrent.date(from: dateComponents)!
     }
 }
