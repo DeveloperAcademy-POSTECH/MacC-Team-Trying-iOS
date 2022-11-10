@@ -12,8 +12,13 @@ import UIKit
 import CancelBag
 import SnapKit
 
+protocol PlacePresenting: AnyObject {
+    func presentSelectedPlace(place: Place)
+}
+
 final class PlaceSearchViewController: BaseViewController {
     var viewModel: PlaceSearchViewModel
+    weak var delegate: PlacePresenting?
     
     private var dataSource: UITableViewDiffableDataSource<Int, Place>!
     private lazy var placeSearchTableView: UITableView = {
@@ -180,6 +185,10 @@ extension PlaceSearchViewController {
     @objc
     private func detailButtonPressed(_ sender: UIButton) {
         navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
+        
+        let place = viewModel.getPlace(index: sender.tag)
+        viewModel.pop()
+        delegate?.presentSelectedPlace(place: place)
     }
     
     @objc

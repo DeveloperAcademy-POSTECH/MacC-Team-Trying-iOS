@@ -46,9 +46,10 @@ final class AddCourseCoordinator: Coordinator,
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToPlaceSearchViewController() {
+    func pushToPlaceSearchViewController(delegate: PlacePresenting) {
         let viewModel = PlaceSearchViewModel(coordinator: self)
         let viewController = PlaceSearchViewController(viewModel: viewModel)
+        viewController.delegate = delegate
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }

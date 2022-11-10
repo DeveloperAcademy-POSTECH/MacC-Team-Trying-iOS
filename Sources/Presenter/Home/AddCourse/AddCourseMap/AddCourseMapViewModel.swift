@@ -17,7 +17,7 @@ protocol Popable {
 }
 
 protocol PlaceSearchCoordinating {
-    func pushToPlaceSearchViewController()
+    func pushToPlaceSearchViewController(delegate: PlacePresenting)
 }
 
 protocol RecordCourseCoordinating {
@@ -53,9 +53,9 @@ extension AddCourseMapViewModel {
         coordinator.popViewController()
     }
     
-    func pushToPlaceSearchView() {
+    func pushToPlaceSearchView(delegate: PlacePresenting) {
         guard let coordinator = coordinator as? PlaceSearchCoordinating else { return }
-        coordinator.pushToPlaceSearchViewController()
+        coordinator.pushToPlaceSearchViewController(delegate: delegate)
     }
     
     func pushToRecordCourseView() {

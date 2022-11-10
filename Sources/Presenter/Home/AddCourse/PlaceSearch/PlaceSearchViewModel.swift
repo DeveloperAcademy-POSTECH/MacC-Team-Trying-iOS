@@ -52,6 +52,10 @@ extension PlaceSearchViewModel {
             self.places = tempPlaces
         }
     }
+    
+    func getPlace(index: Int) -> Place {
+        return places[index]
+    }
 }
 
 // MARK: - Helper

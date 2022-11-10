@@ -327,7 +327,7 @@ extension AddCourseMapViewController {
     @objc
     private func placeSearchButtonPressed(_ sender: UIButton) {
         placeDetailView.memoTextField.resignFirstResponder()
-        viewModel.pushToPlaceSearchView()
+        viewModel.pushToPlaceSearchView(delegate: self)
     }
     
     @objc
@@ -488,5 +488,20 @@ extension AddCourseMapViewController: CLLocationManagerDelegate {
         default:
             break
         }
+    }
+}
+
+// MARK: - PlacePresenting
+extension AddCourseMapViewController: PlacePresenting {
+    func presentSelectedPlace(place: Place) {
+        searchLocation(place.location)
+        presentLocation(latitude: place.location.latitude, longitude: place.location.longitude, span: 0.01)
+    }
+    
+    // TODO: 다른 브랜치에 있는거. 컨플릭 날거임
+    private func presentLocation(latitude: CLLocationDegrees, longitude: CLLocationDegrees, span: Double) {
+        let spanValue = MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
+        
+        placeMapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: spanValue), animated: true)
     }
 }
