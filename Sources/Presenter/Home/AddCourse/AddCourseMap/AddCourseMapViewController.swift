@@ -148,6 +148,7 @@ final class AddCourseMapViewController: BaseViewController {
                 locationManager.desiredAccuracy = kCLLocationAccuracyBest
                 locationManager.delegate = self
                 locationManager.requestWhenInUseAuthorization()
+                currentLocation = locationManager.location
             }
         } else {
             let alert = UIAlertController(title: "Error", message: "위치 서비스 제공을 할 수 없습니다.", preferredStyle: .alert)
@@ -173,7 +174,12 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        view.addSubviews(placeMapView, placeDetailView, placeListView, nextButton)
+        view.addSubviews(
+            placeMapView,
+            placeDetailView,
+            placeListView,
+            nextButton
+        )
         
         placeMapView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
@@ -439,7 +445,12 @@ extension AddCourseMapViewController {
         geocoder.reverseGeocodeLocation(location) { placeMarks, error in
             if error == nil, let marks = placeMarks {
                 marks.forEach { placeMark in
-                    let starAnnotation = StarAnnotation(coordinate: CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude))
+                    let starAnnotation = StarAnnotation(
+                        coordinate: CLLocationCoordinate2D(
+                            latitude: point.latitude,
+                            longitude: point.longitude
+                        )
+                    )
                     
                     self.presentPlaceDetailView(with: placeMark)
                     self.placeMapView.addAnnotation(starAnnotation)
@@ -451,7 +462,7 @@ extension AddCourseMapViewController {
     }
 }
 
-// MARK: - MKMapViewDelegate, CLLocationManagerDelegate
+// MARK: - MKMapViewDelegate
 extension AddCourseMapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? StarAnnotation else { return nil }
@@ -476,6 +487,7 @@ extension AddCourseMapViewController: MKMapViewDelegate {
     }
 }
 
+// MARK: - CLLocationManagerDelegate
 extension AddCourseMapViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         locationManager = manager

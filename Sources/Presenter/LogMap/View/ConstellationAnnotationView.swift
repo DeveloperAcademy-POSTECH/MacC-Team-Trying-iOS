@@ -1,18 +1,16 @@
 //
-//  StarAnnotationView.swift
-//  MatStar
+//  ConstellationAnnotationView.swift
+//  ComeIt
 //
-//  Created by 김승창 on 2022/10/24.
+//  Created by 김승창 on 2022/11/08.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
+import Foundation
 import MapKit
-import UIKit
 
-import SnapKit
-
-final class StarAnnotationView: MKAnnotationView {
-    static let identifier = "StarAnnotationViewIdentifier"
+final class ConstellationAnnotationView: MKAnnotationView {
+    static let identifier = "ConstellationAnnotationViewIdentifier"
     
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
@@ -26,7 +24,8 @@ final class StarAnnotationView: MKAnnotationView {
     }
 }
 
-final class StarAnnotation: NSObject, MKAnnotation {
+final class ConstellationAnnotation: NSObject, MKAnnotation {
+    var title: String?
     let coordinate: CLLocationCoordinate2D
     
     init(coordinate: CLLocationCoordinate2D) {
