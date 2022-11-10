@@ -39,7 +39,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.03549980068982,
                         longitude: 129.3612419706613
-                    )
+                    ),
+                    memo: nil
                 ),
                 Place(
                     title: "모모 커피",
@@ -48,7 +49,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.03624624575639,
                         longitude: 129.36739581681525
-                    )
+                    ),
+                    memo: nil
                 ),
                 Place(
                     title: "롯데백화점",
@@ -57,7 +59,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.03800865742448,
                         longitude: 129.36472060287912
-                    )
+                    ),
+                    memo: nil
                 ),
                 Place(
                     title: "원조국밥",
@@ -66,7 +69,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.04359973388279,
                         longitude: 129.36772915014853
-                    )
+                    ),
+                    memo: nil
                 )
             ]
         ),
@@ -90,7 +94,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.03536405838777,
                         longitude: 129.36736639219797
-                    )
+                    ),
+                    memo: nil
                 ),
                 Place(
                     title: "요신의 하루",
@@ -99,7 +104,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.040404133657894,
                         longitude: 129.36863804148666
-                    )
+                    ),
+                    memo: nil
                 ),
                 Place(
                     title: "킹신의 하루",
@@ -108,7 +114,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.03962955018123,
                         longitude: 129.36428042810493
-                    )
+                    ),
+                    memo: nil
                 )
             ]
         ),
@@ -132,7 +139,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.03065601764658,
                         longitude: 129.3649814772948
-                    )
+                    ),
+                    memo: nil
                 ),
                 Place(
                     title: "테일러",
@@ -141,7 +149,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.02769615590364,
                         longitude: 129.36180334822487
-                    )
+                    ),
+                    memo: nil
                 ),
                 Place(
                     title: "아리아나",
@@ -150,7 +159,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.0289843866854,
                         longitude: 129.35603590445635
-                    )
+                    ),
+                    memo: nil
                 ),
                 Place(
                     title: "위켄드",
@@ -159,7 +169,8 @@ final class LogMapViewModel: BaseViewModel {
                     location: CLLocationCoordinate2D(
                         latitude: 36.02310697203816,
                         longitude: 129.35551636549832
-                    )
+                    ),
+                    memo: nil
                 )
             ]
         )
