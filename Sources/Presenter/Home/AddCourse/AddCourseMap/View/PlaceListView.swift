@@ -40,17 +40,16 @@ final class PlaceListView: UIView {
         view.backgroundColor = .designSystem(.grayC5C5C5)
         return view
     }()
-    private lazy var courseLabel: UILabel = {
+    private lazy var viewLabel: UILabel = {
         let label = UILabel()
-        label.text = "지금까지 추가한 코스"
-        label.textColor = .designSystem(.white)
-        label.font = .designSystem(weight: .bold, size: ._15)
-        return label
-    }()
-    lazy var numberLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .designSystem(.mainYellow)
-        label.font = .designSystem(weight: .bold, size: ._15)
+        let attributedString = NSMutableAttributedString(string: "")
+        let firstString = NSAttributedString(string: "방문 장소를", attributes: [.font: UIFont.designSystem(weight: .bold, size: ._15), .foregroundColor: UIColor.designSystem(.white)!])
+        let secondString = NSAttributedString(string: " 순서대로", attributes: [.font: UIFont.designSystem(weight: .bold, size: ._15), .foregroundColor: UIColor.designSystem(.mainYellow)!])
+        let thirdString = NSAttributedString(string: " 추가해주세요", attributes: [.font: UIFont.designSystem(weight: .bold, size: ._15), .foregroundColor: UIColor.designSystem(.white)!])
+        attributedString.append(firstString)
+        attributedString.append(secondString)
+        attributedString.append(thirdString)
+        label.attributedText = attributedString
         return label
     }()
     lazy var mapPlaceTableView: UITableView = {
@@ -89,8 +88,7 @@ extension PlaceListView {
     private func setLayout() {
         addSubviews(
             scrollIndicatorView,
-            courseLabel,
-            numberLabel,
+            viewLabel,
             mapPlaceTableView
         )
         
@@ -100,18 +98,13 @@ extension PlaceListView {
             make.height.equalTo(5)
         }
         
-        courseLabel.snp.makeConstraints { make in
+        viewLabel.snp.makeConstraints { make in
             make.top.equalTo(scrollIndicatorView.snp.bottom).offset(24)
             make.leading.equalToSuperview().inset(20)
         }
         
-        numberLabel.snp.makeConstraints { make in
-            make.top.equalTo(scrollIndicatorView.snp.bottom).offset(24)
-            make.leading.equalTo(courseLabel.snp.trailing).offset(5)
-        }
-        
         mapPlaceTableView.snp.makeConstraints { make in
-            make.top.equalTo(courseLabel.snp.bottom).offset(10)
+            make.top.equalTo(viewLabel.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalToSuperview().inset(98)
         }

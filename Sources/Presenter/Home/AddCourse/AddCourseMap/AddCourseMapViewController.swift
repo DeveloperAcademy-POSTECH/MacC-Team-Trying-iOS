@@ -108,7 +108,6 @@ final class AddCourseMapViewController: BaseViewController {
             .sink(receiveValue: { [weak self] places in
                 guard let self = self else { return }
                 self.placeListView.numberOfItems = places.count
-                self.placeListView.numberLabel.text = "\(places.count)개"
                 self.placeListView.mapPlaceTableView.reloadData()
                 self.nextButton.setTitle("\(places.count)개 선택 완료", for: .normal)
             })
