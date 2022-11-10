@@ -1,11 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "YouthPlanet.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "SettingButton.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
