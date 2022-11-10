@@ -19,11 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         KakaoSDK.initSDK(appKey: "041c741d45744f54da6ed10e0f946672")
         self.window = UIWindow(frame: UIScreen.main.bounds)
 
-        window?.rootViewController = TestViewController()
-        window?.makeKeyAndVisible()
 
-//        coordinator = AppCoordinator(window: window!)
-//        coordinator?.start()
+        coordinator = AppCoordinator(window: window!)
+        coordinator?.start()
 
         return true
     }
