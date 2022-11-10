@@ -79,11 +79,11 @@ final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
                 guard let token = try await kakaoLoginManager.kakaoLogin() else { return }
                 let accessToken = try await signinServcee.signInWithKakao(.init(identifier: token, deviceToken: "1"))
                 UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
-
                 self.doneLogin = .main
-
             } catch SignInError.nouser(let identifier) {
                 self.doneLogin = .serviceTerm(.kakao(identifier))
+            } catch {
+                await LoadingView.shared.hide()
             }
         }
     }
@@ -127,6 +127,8 @@ extension LoginViewModel: AppleLoginManagerDelegate {
             } catch SignInError.nouser(let identifier) {
 
                 self.doneLogin = .serviceTerm(.apple(identifier))
+            } catch {
+                await LoadingView.shared.hide()
             }
         }
     }
