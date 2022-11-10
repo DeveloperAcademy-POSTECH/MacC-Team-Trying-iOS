@@ -9,11 +9,16 @@
 import Combine
 
 protocol TicketViewCoodinating {
+    func presentTicketViewController()
+}
+protocol MyConstellationViewCoordinating {
     func pushMyConstellationViewController()
 }
 
 final class LogHomeViewModel: BaseViewModel {
     var coordinator: Coordinator
+    
+    var place = [Place]()
     
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
@@ -27,8 +32,12 @@ extension LogHomeViewModel {
         coordinator.popViewController()
     }
     func pushMyConstellationView() {
-        guard let coordinator = coordinator as? TicketViewCoodinating else { return }
+        guard let coordinator = coordinator as? MyConstellationViewCoordinating else { return }
         coordinator.pushMyConstellationViewController()
+    }
+    func presentTicketView() {
+        guard let coordinator = coordinator as? TicketViewCoodinating else { return }
+        coordinator.presentTicketViewController()
     }
     
 }

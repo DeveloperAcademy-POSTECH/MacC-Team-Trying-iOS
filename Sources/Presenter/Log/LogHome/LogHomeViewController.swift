@@ -16,33 +16,42 @@ final class LogHomeViewController: BaseViewController {
     
     var viewModel: LogHomeViewModel
     
-    private var testLabel: UILabel = {
-       let label = UILabel()
-        label.text = "로그-홈뷰입니다만?"
-        label.tintColor = .white
-        label.font = UIFont.designSystem(weight: .bold, size: ._30)
-        return label
+    private let flowLayout: UICollectionViewFlowLayout = {
+        let width = DeviceInfo.screenWidth
+        let height = DeviceInfo.screenHeight * 0.5450236967
+        
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        
+        layout.minimumLineSpacing = 0
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.itemSize = CGSize(width: width, height: height)
+        return layout
+    }()
+    
+    private lazy var logCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        collectionView.dataSource = self
+        collectionView.register(LogCollectionViewCell.self, forCellWithReuseIdentifier: LogCollectionViewCell.identifier)
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isPagingEnabled = true
+        collectionView.backgroundColor = .clear
+        return collectionView
     }()
     
     private var mapButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         button.setImage(UIImage(named: "ic_map"), for: .normal)
         return button
     }()
     
     private var listButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         button.setImage(UIImage(named: "ic_list"), for: .normal)
         return button
     }()
     
-    /// View Model과 bind 합니다.
-    private func bind() {
-        // input
-        
-        // output
-    }
-    
+    // MARK: Initializer
     init(viewModel: LogHomeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -52,15 +61,10 @@ final class LogHomeViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: Life - Cycle
+    // MARK: Life Cycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.isNavigationBarHidden = false
     }
     
     override func viewDidLoad() {
@@ -68,42 +72,59 @@ final class LogHomeViewController: BaseViewController {
         setUI()
         bind()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false
+    }
+    
 }
-
 // MARK: - UI
 extension LogHomeViewController {
+    /// View Model과 bind 합니다.
+    private func bind() {
+        // input
+        
+        // output
+    }
+    
     private func setUI() {
         setAttributes()
         setConstraints()
     }
-    
     /// Attributes를 설정합니다.
     private func setAttributes() {
         
     }
-    
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
         view.addSubviews(
-            testLabel,
             mapButton,
-            listButton
+            listButton,
+            logCollectionView
         )
+        
         mapButton.addTarget(self, action: #selector(tapMapButton), for: .touchUpInside)
         listButton.addTarget(self, action: #selector(TapTestButton), for: .touchUpInside)
-        testLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
+        
         mapButton.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.1102564103)
             make.height.equalTo(DeviceInfo.screenHeight * 0.0509478673)
             make.right.equalToSuperview().inset(DeviceInfo.screenWidth * 0.05128205128)
             make.top.equalToSuperview().inset(DeviceInfo.screenHeight * 0.0663507109)
         }
+        
         listButton.snp.makeConstraints { make in
             make.width.height.equalTo(mapButton.snp.width)
             make.centerX.equalTo(mapButton.snp.centerX)
             make.top.equalTo(mapButton.snp.bottom).offset(DeviceInfo.screenWidth * 0.05128205128)
+        }
+        
+        logCollectionView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.height.equalTo(DeviceInfo.screenHeight * 0.5450236967)
+            make.centerX.equalToSuperview()
+            make.top.equalTo(listButton.snp.bottom)
         }
     }
     
@@ -119,5 +140,17 @@ extension LogHomeViewController {
         viewController.view.backgroundColor = .clear
         viewController.modalPresentationStyle = .pageSheet
         self.present(viewController, animated: true)
+    }
+}
+
+extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 5
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogCollectionViewCell.identifier, for: indexPath) as? LogCollectionViewCell else { return UICollectionViewCell() }
+        
+        return cell
     }
 }

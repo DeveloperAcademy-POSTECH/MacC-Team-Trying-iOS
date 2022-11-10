@@ -8,19 +8,21 @@
 
 import UIKit
 
-final class LogCoordinator: Coordinator, TicketViewCoodinating, Popable{
+final class LogCoordinator: Coordinator, MyConstellationViewCoordinating, TicketViewCoodinating, Popable {
     
     weak var navigationController: UINavigationController?
     
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
-    }
+    init(navigationController: UINavigationController) { self.navigationController = navigationController }
     
     func start() {
         guard let navigationController = navigationController else { return }
         let viewModel = LogHomeViewModel(coordinator: self)
         let viewController = LogHomeViewController(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    func presentTicketViewController() {
+        
     }
     
     func pushMyConstellationViewController() {
@@ -33,4 +35,3 @@ final class LogCoordinator: Coordinator, TicketViewCoodinating, Popable{
         self.navigationController?.popViewController(animated: true)
     }
 }
-
