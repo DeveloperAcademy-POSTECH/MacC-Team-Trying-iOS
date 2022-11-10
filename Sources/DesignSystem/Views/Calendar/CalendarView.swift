@@ -35,9 +35,8 @@ final class CalendarView: BaseView {
 
     var scheduleList: [YearMonthDayDate] = [] {
         didSet {
-            previousMonthCollectionView.reloadData()
-            presentMonthCollectionView.reloadData()
-            followingMonthCollectionView.reloadData()
+            sections = calculateSections()
+            applySnapshot(section: sections)
         }
     }
 
@@ -228,7 +227,7 @@ extension CalendarView: MonthViewDelegate {
         }
 
         sections = calculateSections()
-        applySnapshot(section: sections)
+        applySnapshot(section: sections, isAnimating: true)
         delegate?.switchCalendarButtonDidTapped()
     }
 }
@@ -252,6 +251,7 @@ extension CalendarView: UIScrollViewDelegate {
 
     // 스크롤이 된 후,
     // 1. 선택된 날짜를 변경
+    //  - 오늘이 없다면, 1일(월간) / 일요일(주간) 날짜 선택
     // 2. 높이 조절
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         switch scrollDirection {
@@ -264,7 +264,8 @@ extension CalendarView: UIScrollViewDelegate {
                 let day = (today.year == previousYear && today.month == previousMonth) ? today.day : 1
                 self.selectedDate = .init(year: previousYear, month: previousMonth, day: day)
             case .week:
-                self.selectedDate = .init(year: previousFirstDayOfWeek.year, month: previousFirstDayOfWeek.month, day: previousFirstDayOfWeek.day)
+                let day = previousFirstDayOfWeek.isDateInThisWeek() ? today.day : previousFirstDayOfWeek.day
+                self.selectedDate = .init(year: previousFirstDayOfWeek.year, month: previousFirstDayOfWeek.month, day: day)
             }
         case .right:
             switch calendarShape {
@@ -275,7 +276,9 @@ extension CalendarView: UIScrollViewDelegate {
                 let day = (today.year == followingYear && today.month == followingMonth) ? today.day : 1
                 self.selectedDate = .init(year: followingYear, month: followingMonth, day: day)
             case .week:
-                self.selectedDate = .init(year: followingFirstDayOfWeek.year, month: followingFirstDayOfWeek.month, day: followingFirstDayOfWeek.day)
+                print("이것이 포함되있나?", followingFirstDayOfWeek)
+                let day = followingFirstDayOfWeek.isDateInThisWeek() ? today.day : followingFirstDayOfWeek.day
+                self.selectedDate = .init(year: followingFirstDayOfWeek.year, month: followingFirstDayOfWeek.month, day: day)
             }
         case .no:
             break
@@ -312,16 +315,45 @@ extension CalendarView: UIScrollViewDelegate {
             previousMonthDate = present.monthBefore
             followingMonthDate = present.monthAfter
 
+            self.presentMonthCollectionView.selectItem(
+                at: .init(item: startWeekdayOfPresentMonthIndex - 1, section: 0),
+                animated: true,
+                scrollPosition: .top
+            )
         case .week:
             presentFirstDayOfWeek = present
             previousFirstDayOfWeek = present.day(before: 7)
             followingFirstDayOfWeek = present.day(after: 7)
-
+            self.presentMonthCollectionView.selectItem(
+                at: .init(item: 0, section: 0),
+                animated: true,
+                scrollPosition: .top
+            )
         }
 
         sections = calculateSections()
         applySnapshot(section: sections)
         scrollView.setContentOffset(.init(x: scrollViewWidth, y: 0), animated: false)
+
+        // 눌림 처리
+        switch calendarShape {
+        case .month:
+            if presentMonthCollectionView.indexPathsForSelectedItems?.isEmpty ?? true {
+                self.presentMonthCollectionView.selectItem(
+                    at: IndexPath(item: startWeekdayOfPresentMonthIndex, section: 0),
+                    animated: true,
+                    scrollPosition: .top
+                )
+            }
+        case .week:
+            if presentMonthCollectionView.indexPathsForSelectedItems?.isEmpty ?? true {
+                self.presentMonthCollectionView.selectItem(
+                    at: IndexPath(item: 0, section: 0),
+                    animated: true,
+                    scrollPosition: .top
+                )
+            }
+        }
     }
 
     private func calculateSections() -> [CalendarSection] {
@@ -462,7 +494,6 @@ extension CalendarView: UIScrollViewDelegate {
 
         for index in 0..<7 {
             let date = previousFirstDayOfWeek.day(after: index)
-            let day = date.day
             let isChecked = scheduleList.contains(
                 .init(year: date.year, month: date.month, day: date.day)
             )
@@ -477,7 +508,6 @@ extension CalendarView: UIScrollViewDelegate {
         dateCellModels = []
         for index in 0..<7 {
             let date = presentFirstDayOfWeek.day(after: index)
-            let day = date.day
             let isChecked = scheduleList.contains(
                 .init(year: date.year, month: date.month, day: date.day)
             )
@@ -492,7 +522,6 @@ extension CalendarView: UIScrollViewDelegate {
         dateCellModels = []
         for index in 0..<7 {
             let date = followingFirstDayOfWeek.day(after: index)
-            let day = date.day
             let isChecked = scheduleList.contains(
                 .init(year: date.year, month: date.month, day: date.day)
             )
@@ -507,7 +536,7 @@ extension CalendarView: UIScrollViewDelegate {
         return sections
     }
 
-    private func applySnapshot(section: [CalendarSection]) {
+    private func applySnapshot(section: [CalendarSection], isAnimating: Bool = false) {
 
         [previousDataSource, presentDataSource, followingDataSource].enumerated().forEach { index, dataSource in
             var snapshot = DateSnapshot()
@@ -521,7 +550,7 @@ extension CalendarView: UIScrollViewDelegate {
                     snapshot.appendItems(models)
                 }
             }
-            dataSource.apply(snapshot, animatingDifferences: false)
+            dataSource.apply(snapshot, animatingDifferences: isAnimating)
         }
     }
 

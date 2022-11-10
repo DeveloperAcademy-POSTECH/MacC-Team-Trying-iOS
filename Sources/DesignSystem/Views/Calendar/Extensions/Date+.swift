@@ -49,4 +49,8 @@ extension Date {
     func day(before: Int) -> Date {
         Calendar.current.date(byAdding: .day, value: -before, to: self)!
     }
+
+    func isDateInThisWeek() -> Bool {
+        return Calendar.current.isDate(self, equalTo: Date(), toGranularity: .weekOfYear)
+    }
 }

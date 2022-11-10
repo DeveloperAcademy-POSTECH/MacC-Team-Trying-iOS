@@ -26,4 +26,11 @@ extension YearMonthDayDate {
         dateComponents.year = self.year
         return Calendar.autoupdatingCurrent.date(from: dateComponents)!
     }
+
+    static var today: YearMonthDayDate {
+        let date = Date()
+        return .init(year: date.year, month: date.month, day: date.day)
+    }
+
+    
 }

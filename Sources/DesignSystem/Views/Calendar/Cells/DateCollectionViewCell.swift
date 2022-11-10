@@ -56,7 +56,7 @@ final class DateCollectionViewCell: UICollectionViewCell {
     }
 
     func configure(with model: DateCellModel) {
-        let dotColor: UIColor? = model.isColored ? .designSystem(.mainYellow) : .designSystem(.mainYellow)?.withAlphaComponent(0.3)
+        let dotColor: UIColor? = model.isScheduled ? .designSystem(.mainYellow) : .designSystem(.mainYellow)?.withAlphaComponent(0.3)
         let dateLabelColor: UIColor? = model.isColored ? .white : .white.withAlphaComponent(0.3)
         dateLabel.text = String(model.date.day)
         scheduleDotView.isHidden = model.isScheduled == false
