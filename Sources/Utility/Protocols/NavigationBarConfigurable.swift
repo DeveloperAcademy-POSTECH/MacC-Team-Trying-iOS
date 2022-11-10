@@ -68,7 +68,7 @@ extension NavigationBarConfigurable {
     func configureRecordTitleNavigationBar(target: Any, popAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
-            button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
             button.addTarget(target, action: popAction, for: .touchUpInside)
             return button
         }()
@@ -87,7 +87,7 @@ extension NavigationBarConfigurable {
     func configurePlanTitleNavigationBar(target: Any, popAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
-            button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
             button.addTarget(target, action: popAction, for: .touchUpInside)
             return button
         }()

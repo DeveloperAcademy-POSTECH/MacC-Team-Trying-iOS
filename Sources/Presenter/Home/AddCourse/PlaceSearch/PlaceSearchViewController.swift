@@ -70,6 +70,12 @@ final class PlaceSearchViewController: BaseViewController {
         setUI()
         bind()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        presentKeyboard()
+    }
 }
 
 // MARK: - UI
@@ -100,6 +106,10 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
             
             return cell
         })
+        
+        if let textField = navigationItem.leftBarButtonItem?.customView as? CustomTextField {
+            textField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
+        }
     }
     
     @objc
@@ -136,6 +146,11 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
     private func hideEmptyResultView() {
         emptyResultView.removeFromSuperview()
     }
+    
+    private func presentKeyboard() {
+        guard let textField = navigationItem.leftBarButtonItem?.customView as? CustomTextField else { return }
+        textField.becomeFirstResponder()
+    }
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
@@ -165,5 +180,10 @@ extension PlaceSearchViewController {
     @objc
     private func detailButtonPressed(_ sender: UIButton) {
         navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
+    }
+    
+    @objc
+    private func dismissKeyboard(_ sender: UITextField) {
+        sender.resignFirstResponder()
     }
 }

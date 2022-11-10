@@ -53,6 +53,7 @@ final class AddCourseMapViewController: BaseViewController {
     }()
     private lazy var placeDetailView: PlaceDetailView = {
         let view = PlaceDetailView()
+        view.memoTextField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
         view.addCourseButton.addTarget(self, action: #selector(didTapAddCourseButton(_:)), for: .touchUpInside)
         return view
     }()
@@ -327,6 +328,11 @@ extension AddCourseMapViewController {
     private func placeSearchButtonPressed(_ sender: UIButton) {
         placeDetailView.memoTextField.resignFirstResponder()
         viewModel.pushToPlaceSearchView()
+    }
+    
+    @objc
+    private func dismissKeyboard(_ sender: UITextField) {
+        sender.resignFirstResponder()
     }
     
     @objc

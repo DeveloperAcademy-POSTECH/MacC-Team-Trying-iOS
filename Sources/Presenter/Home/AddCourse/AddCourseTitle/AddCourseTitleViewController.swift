@@ -30,7 +30,11 @@ final class AddCourseTitleViewController: BaseViewController {
         label.font = .gmarksans(weight: .light, size: ._15)
         return label
     }()
-    private lazy var titleTextField = CustomTextField(type: .courseTitle)
+    private lazy var titleTextField: CustomTextField = {
+        let textField = CustomTextField(type: .courseTitle)
+        textField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
+        return textField
+    }()
     private lazy var nextButton: MainButton = {
         let button = MainButton(type: .addCourse)
         button.addTarget(self, action: #selector(nextButtonPressed(_:)), for: .touchUpInside)
@@ -79,6 +83,7 @@ final class AddCourseTitleViewController: BaseViewController {
         super.viewDidAppear(animated)
         
         setNofifications()
+        presentKeyboard()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -91,6 +96,7 @@ final class AddCourseTitleViewController: BaseViewController {
 // MARK: - UI
 extension AddCourseTitleViewController: NavigationBarConfigurable {
     private func setUI() {
+        configureRecordTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
         setBackgroundGyroMotion()
         setAttributes()
         setLayout()
@@ -135,6 +141,10 @@ extension AddCourseTitleViewController: NavigationBarConfigurable {
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
+    }
+    
+    private func presentKeyboard() {
+        titleTextField.becomeFirstResponder()
     }
 }
 
@@ -210,6 +220,11 @@ extension AddCourseTitleViewController {
                 }
             )
         }
+    }
+    
+    @objc
+    private func dismissKeyboard(_ sender: UITextField) {
+        sender.resignFirstResponder()
     }
     
     @objc
