@@ -17,7 +17,7 @@ protocol CalendarViewDelegate: AnyObject {
 
 final class CalendarView: BaseView {
 
-    static let inset: CGFloat = 18
+    static let inset: CGFloat = 0
     static let cellHeight: CGFloat = (DeviceInfo.screenWidth - 80 - 1 - CalendarView.inset * 6) / 7
 
     // MARK: - Properties
@@ -53,7 +53,7 @@ final class CalendarView: BaseView {
     }
 
     private var calendarHeight: CGFloat {
-        CGFloat(numberOfMonthRow) * (CalendarView.cellHeight + CalendarView.inset)
+        CGFloat(numberOfMonthRow) * (CalendarView.cellHeight + CalendarView.inset) + 10
     }
 
     // 달력과 관련된 프로퍼티
@@ -172,7 +172,7 @@ final class CalendarView: BaseView {
             make.leading.trailing.equalToSuperview().inset(10)
         }
         scrollView.snp.makeConstraints { make in
-            make.top.equalTo(weekdayView.snp.bottom).offset(20)
+            make.top.equalTo(weekdayView.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview().inset(scrollViewInset / 2)
             make.height.equalTo(calendarHeight)
             make.bottom.equalToSuperview()
@@ -209,26 +209,40 @@ extension CalendarView: MonthViewDelegate {
     }
 
     func switchCalendarButtonDidTapped(shape calendarShape: MonthView.CalendarShape) {
+        deSelectAll()
 
         self.calendarShape = calendarShape
 
-        // 오늘로 수정
-        presentMonthDate = today
-        monthView.updateYearAndMonth(to: presentMonthDate)
-        selectedDate = .init(year: today.year, month: today.month, day: today.day)
-
         switch calendarShape {
         case .week:
+            // 오늘 주로 수정
+            presentFirstDayOfWeek = today.startDateOfWeek
+            previousFirstDayOfWeek = presentFirstDayOfWeek.day(before: 7)
+            followingFirstDayOfWeek = presentFirstDayOfWeek.day(after: 7)
+
             numberOfMonthRow = 1
         case .month:
+            // 오늘로 수정
+            presentMonthDate = today
             previousMonthDate = presentMonthDate.monthBefore
             followingMonthDate = presentMonthDate.monthAfter
+
             numberOfMonthRow = numberOfCalendarRowInMonth
         }
 
+        selectedDate = .init(year: today.year, month: today.month, day: today.day)
+        monthView.updateYearAndMonth(to: today)
         sections = calculateSections()
         applySnapshot(section: sections, isAnimating: true)
         delegate?.switchCalendarButtonDidTapped()
+    }
+
+    private func deSelectAll() {
+        if let indexPaths = presentMonthCollectionView.indexPathsForSelectedItems {
+            indexPaths.forEach { indexPath in
+                presentMonthCollectionView.deselectItem(at: indexPath, animated: false)
+            }
+        }
     }
 }
 
@@ -276,7 +290,6 @@ extension CalendarView: UIScrollViewDelegate {
                 let day = (today.year == followingYear && today.month == followingMonth) ? today.day : 1
                 self.selectedDate = .init(year: followingYear, month: followingMonth, day: day)
             case .week:
-                print("이것이 포함되있나?", followingFirstDayOfWeek)
                 let day = followingFirstDayOfWeek.isDateInThisWeek() ? today.day : followingFirstDayOfWeek.day
                 self.selectedDate = .init(year: followingFirstDayOfWeek.year, month: followingFirstDayOfWeek.month, day: day)
             }

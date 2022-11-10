@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 struct DateCellModel: Hashable {
     let date: YearMonthDayDate
@@ -16,13 +17,14 @@ struct DateCellModel: Hashable {
 
 final class DateCollectionViewCell: UICollectionViewCell {
 
+    lazy var circleView = UIView()
     lazy var dateLabel = UILabel()
     lazy var scheduleDotView = UIView()
 
     override var isSelected: Bool {
         didSet {
             let backgroundColor: UIColor = isSelected ? .black : .clear
-            self.contentView.backgroundColor = backgroundColor
+            self.circleView.backgroundColor = backgroundColor
         }
     }
 
@@ -34,8 +36,13 @@ final class DateCollectionViewCell: UICollectionViewCell {
         dateLabel.textAlignment = .center
         scheduleDotView.backgroundColor = .designSystem(.mainYellow)
         contentView.backgroundColor = .clear
-        contentView.addSubview(dateLabel)
-        contentView.addSubview(scheduleDotView)
+        circleView.backgroundColor = .clear
+        contentView.addSubview(circleView)
+        circleView.addSubview(dateLabel)
+        circleView.addSubview(scheduleDotView)
+        circleView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(7)
+        }
         dateLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(8)
             make.bottom.equalToSuperview().inset(7)
@@ -47,7 +54,10 @@ final class DateCollectionViewCell: UICollectionViewCell {
             make.width.height.equalTo(3)
         }
 
-        contentView.layer.cornerRadius = contentView.bounds.width / 2
+        // 18은 Inset이었음.
+        let width = (DeviceInfo.screenWidth - 80 - 16 * 6 - 1) / 7
+        circleView.layer.cornerRadius = width / 2
+        circleView.layer.masksToBounds = true
         scheduleDotView.layer.cornerRadius = 1.5
     }
 
@@ -71,7 +81,7 @@ final class DateCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
 
-        contentView.backgroundColor = .clear
+        circleView.backgroundColor = .clear
         scheduleDotView.isHidden = true
         dateLabel.textColor = .white
         scheduleDotView.backgroundColor = .designSystem(.mainYellow)

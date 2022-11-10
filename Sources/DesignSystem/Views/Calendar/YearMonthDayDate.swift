@@ -31,6 +31,4 @@ extension YearMonthDayDate {
         let date = Date()
         return .init(year: date.year, month: date.month, day: date.day)
     }
-
-    
 }

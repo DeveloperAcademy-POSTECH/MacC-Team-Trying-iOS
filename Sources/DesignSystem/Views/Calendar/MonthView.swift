@@ -70,7 +70,7 @@ final class MonthView: UIView {
         addSubview(changeButton)
         changeButton.snp.makeConstraints { make in
             make.centerY.equalTo(monthLabel)
-            make.leading.equalTo(monthLabel.snp.trailing).offset(6)
+            make.trailing.equalToSuperview().inset(20)
             make.width.equalTo(32)
             make.height.equalTo(17)
         }
