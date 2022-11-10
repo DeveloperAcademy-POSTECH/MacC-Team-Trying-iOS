@@ -37,7 +37,7 @@ class DateTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setUI() {
+    private func setUI() {
         self.backgroundColor = .clear
         addSubview(title)
         title.snp.makeConstraints { make in
