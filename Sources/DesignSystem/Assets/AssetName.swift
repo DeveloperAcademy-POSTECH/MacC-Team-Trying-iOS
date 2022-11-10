@@ -26,4 +26,6 @@ enum AssetName: String {
     case btn_email
     case btn_check
     case btn_uncheck
+    case btn_week_calendar
+    case btn_month_calendar
 }
