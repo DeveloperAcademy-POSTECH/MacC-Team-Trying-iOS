@@ -9,12 +9,26 @@
 import CoreLocation
 import MapKit
 
-struct Place {
+struct Place: Hashable {
     let title: String
     let category: String
     let address: String
     let location: CLLocationCoordinate2D
     let memo: String?
+    
+    static func == (lhs: Place, rhs: Place) -> Bool {
+        // FIXME: Fix me
+        (lhs.location.latitude == rhs.location.latitude) && (lhs.location.longitude == rhs.location.longitude)
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+        hasher.combine(category)
+        hasher.combine(address)
+        hasher.combine(location.latitude)
+        hasher.combine(location.longitude)
+        hasher.combine(memo)
+    }
 }
 
 extension Place {
