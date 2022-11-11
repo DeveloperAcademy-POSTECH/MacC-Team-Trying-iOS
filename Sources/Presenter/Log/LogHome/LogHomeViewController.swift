@@ -9,6 +9,7 @@
 import Combine
 import UIKit
 
+import Lottie
 import CancelBag
 import SnapKit
 
@@ -18,11 +19,10 @@ final class LogHomeViewController: BaseViewController {
     
     private let flowLayout: UICollectionViewFlowLayout = {
         let width = DeviceInfo.screenWidth
-        let height = DeviceInfo.screenHeight * 0.5450236967
+        let height = DeviceInfo.screenHeight * 0.5350
         
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        
         layout.minimumLineSpacing = 0
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: width, height: height)
@@ -77,8 +77,22 @@ final class LogHomeViewController: BaseViewController {
         super.viewWillDisappear(animated)
         self.navigationController?.isNavigationBarHidden = false
     }
-    
 }
+
+extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.courses.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogCollectionViewCell.identifier, for: indexPath) as? LogCollectionViewCell else { return UICollectionViewCell() }
+        cell.courseNameLabel.text = viewModel.courses[indexPath.row].courseName
+        cell.places = viewModel.courses[indexPath.row].places
+        cell.configure(with: viewModel.courses[indexPath.row].places)
+        return cell
+    }
+}
+
 // MARK: - UI
 extension LogHomeViewController {
     /// View Model과 bind 합니다.
@@ -127,7 +141,6 @@ extension LogHomeViewController {
             make.top.equalTo(listButton.snp.bottom)
         }
     }
-    
     @objc
     func tapMapButton() {
         viewModel.pushMyConstellationView()
@@ -140,17 +153,5 @@ extension LogHomeViewController {
         viewController.view.backgroundColor = .clear
         viewController.modalPresentationStyle = .pageSheet
         self.present(viewController, animated: true)
-    }
-}
-
-extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogCollectionViewCell.identifier, for: indexPath) as? LogCollectionViewCell else { return UICollectionViewCell() }
-        
-        return cell
     }
 }

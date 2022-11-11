@@ -7,15 +7,18 @@
 //
 
 import UIKit
+import CoreLocation
 
 import SnapKit
 import Lottie
 
 class LogCollectionViewCell: UICollectionViewCell {
-
+    
     static let identifier = "LogCollectionViewCell"
     
-    private let courseNameLabel: UILabel = {
+    var places = [Place]()
+    
+    let courseNameLabel: UILabel = {
         let label = UILabel()
         label.text = "창원 풀코스"
         label.font = UIFont.gmarksans(weight: .bold, size: ._15)
@@ -23,7 +26,7 @@ class LogCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let dateLabel: UILabel = {
+    let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "2022-10-22 (토)"
         label.font = UIFont.designSystem(weight: .regular, size: ._13)
@@ -34,10 +37,8 @@ class LogCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.contentView.backgroundColor = .clear
-        
         contentView.layer.borderWidth = 5
         contentView.layer.borderColor = UIColor.white.cgColor
-        
         setConstraints()
     }
     
@@ -47,6 +48,21 @@ class LogCollectionViewCell: UICollectionViewCell {
 }
 
 extension LogCollectionViewCell {
+    
+    func configure(with places: [Place]) {
+        self.places = places
+        self.contentView.subviews
+            .filter { view in
+                return !(view == dateLabel || view == courseNameLabel)
+            }.forEach { $0.removeFromSuperview() }
+        
+        let courseView = makeConstellation(places: places)
+        contentView.addSubview(courseView)
+        courseView.snp.makeConstraints { make in
+            make.width.height.equalTo(200)
+            make.center.equalToSuperview()
+        }
+    }
     
     private func setConstraints() {
         
@@ -88,7 +104,7 @@ extension LogCollectionViewCell {
         
         let xOffset = (200 - abs(adjustedLatitude.max()!)) / 2 - 12.5
         let yOffset = (200 - abs(adjustedLongitude.max()!)) / 2 - 12.5
-
+        
         for index in places.indices {
             let randomStarLottieSize = CGFloat.random(in: (30.0...60.0))
             let starLottie = LottieAnimationView(name: Constants.Lottie.mainStar)
@@ -98,17 +114,17 @@ extension LogCollectionViewCell {
             starLottie.animationSpeed = 0.6
             starLottie.loopMode = .loop
             starLottie.play(fromProgress: 0.0, toProgress: 0.9935)
-
+            
             constellationView.addSubview(starLottie)
-
+            
             if index < places.count - 1 {
                 let xPan = (adjustedLatitude[index + 1] - adjustedLatitude[index])
                 let yPan = (adjustedLongitude[index + 1] - adjustedLongitude[index])
-
+                
                 let distance = ((xPan * xPan) + (yPan * yPan)).squareRoot()
                 let editX = 13 / distance * xPan
                 let editY = 13 / distance * yPan
-
+                
                 let path = UIBezierPath()
                 path.move(to: CGPoint(x: adjustedLatitude[index] + starLottie.frame.size.width / 2 + editX + xOffset, y: adjustedLongitude[index] + starLottie.frame.size.height / 2 + editY + yOffset))
                 path.addLine(to: CGPoint(x: adjustedLatitude[index + 1] + starLottie.frame.size.width / 2 - editX + xOffset, y: adjustedLongitude[index + 1] + starLottie.frame.size.height / 2 - editY + yOffset))
@@ -116,10 +132,10 @@ extension LogCollectionViewCell {
                 path.close()
                 
                 let shapeLayer = CAShapeLayer()
-
+                
                 shapeLayer.path = path.cgPath
                 shapeLayer.lineWidth = path.lineWidth
-
+                
                 shapeLayer.strokeColor = .designSystem(.whiteFFFBD9)
                 constellationView.layer.addSublayer(shapeLayer)
             }
