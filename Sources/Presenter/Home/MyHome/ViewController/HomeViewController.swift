@@ -34,7 +34,7 @@ final class HomeViewController: BaseViewController {
     
     lazy var alarmButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(UIImage(named: "AlarmButton"), for: .normal)
+        button.setImage(UIImage(named: viewModel.testUser.hasNewAlarm ? "AlarmButton_notEmpty" : "AlarmButton_empty"), for: .normal)
         button.addTarget(self, action: #selector(alarmButtonTapped), for: .touchUpInside)
         return button
     }()
