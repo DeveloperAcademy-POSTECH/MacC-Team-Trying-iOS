@@ -47,6 +47,19 @@ final class HomeViewController: BaseViewController {
         return label
     }()
     
+    lazy var inviteMateButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("메이트 초대하기", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 10, weight: .bold)
+        button.layer.borderWidth = 1
+        button.layer.borderColor = .designSystem(.mainYellow)
+        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
+        button.clipsToBounds = true
+        button.layer.cornerRadius = 10
+        button.addTarget(self, action: #selector(inviteButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
     let nextDateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .light, size: ._13)
@@ -138,15 +151,14 @@ final class HomeViewController: BaseViewController {
         bind()
         setAttributes()
         setUI()
-        setEmptyButton()
-        
     }
     
-    func setEmptyButton() {
+    /// Path가 없을 때 나올 button 뷰
+    func setPathEmptyButton() {
         if viewModel.datePathList.isEmpty {
             let dateCoureRegisterButton: UIButton = {
-                let button = UIButton(type: .custom)
-                button.setTitle("데이트 코스 기록하기", for: .normal)
+                let button = UIButton(type: .system)
+                button.setTitle(" 데이트 코스 기록하기", for: .normal)
                 button.setImage(UIImage(systemName: "plus.circle.fill"), for: .normal)
                 button.tintColor = .designSystem(.mainYellow)
                 button.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.2)
@@ -154,9 +166,9 @@ final class HomeViewController: BaseViewController {
                 button.layer.cornerRadius = 15
                 button.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
                 button.layer.borderWidth = 0.3
-                button.setPreferredSymbolConfiguration(.init(pointSize: 11), forImageIn: .normal)
+                button.setPreferredSymbolConfiguration(.init(pointSize: 16), forImageIn: .normal)
                 button.setTitleColor(.designSystem(.mainYellow), for: .normal)
-                button.titleLabel?.font = .systemFont(ofSize: 11, weight: .bold)
+                button.titleLabel?.font = .systemFont(ofSize: 13, weight: .bold)
                 return button
             }()
             
@@ -170,6 +182,22 @@ final class HomeViewController: BaseViewController {
         }
     }
     
+    /// mate가 없을때 "메이트 초대하기"버튼이 나오는 분기처리
+    func setDdayEmptyButton() {
+        if viewModel.testUser.hasMate {
+            ddayLabel.text = "D+\(viewModel.testUser.dday)"
+        } else {
+            view.addSubviews(inviteMateButton)
+            inviteMateButton.snp.makeConstraints { make in
+                make.leading.equalTo(homeTitle.snp.leading)
+                make.top.equalTo(homeTitle.snp.bottom).offset(5)
+                make.width.equalTo(90)
+                make.height.equalTo(25)
+            }
+            ddayLabel.isHidden = true
+        }
+    }
+    
     @objc
     func alarmButtonTapped() {
         print("알람버튼이눌렸습니다")
@@ -180,6 +208,11 @@ final class HomeViewController: BaseViewController {
         dateInfoIsHidden.toggle()
         dateTableView.isHidden.toggle()
         moreButton.setImage(dateInfoIsHidden ? UIImage(named: "MoreButtonForClose") : UIImage(named: "MoreButtonForOpen"), for: .normal)
+    }
+    
+    @objc
+    func inviteButtonTapped() {
+        print("초대하기 버튼이 눌렸습니다")
     }
 }
 
@@ -202,6 +235,8 @@ extension HomeViewController {
     }
     
     func setUI() {
+        setPathEmptyButton()
+        setDdayEmptyButton()
         homeTitle.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(70)
             make.leading.equalToSuperview().inset(20)
@@ -216,7 +251,7 @@ extension HomeViewController {
         }
         
         ddayLabel.snp.makeConstraints { make in
-            make.top.equalTo(homeTitle.snp.bottom)
+            make.top.equalTo(homeTitle.snp.bottom).offset(5)
             make.leading.equalTo(homeTitle.snp.leading)
         }
         
@@ -231,6 +266,7 @@ extension HomeViewController {
             make.leading.equalTo(nextDateLabel.snp.trailing).offset(5)
             make.size.equalTo(16)
         }
+        
         dateTableView.snp.makeConstraints { make in
             make.leading.equalTo(homeTitle.snp.leading)
             make.top.equalTo(nextDateLabel.snp.bottom).offset(5)

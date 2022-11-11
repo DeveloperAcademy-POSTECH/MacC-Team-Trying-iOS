@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class LogCoordinator: Coordinator, TicketViewCoodinating, Popable{
+final class LogCoordinator: Coordinator, TicketViewCoodinating, Popable {
     
     weak var navigationController: UINavigationController?
     

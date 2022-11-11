@@ -163,7 +163,6 @@ final class CalendarView: BaseView {
         scrollView.addSubview(presentMonthCollectionView)
         scrollView.addSubview(followingMonthCollectionView)
         
-
         monthView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.height.equalTo(60)
@@ -186,19 +185,14 @@ final class CalendarView: BaseView {
             x: 0, y: 0, width: scrollViewWidth, height: calendarHeight
         )
         
-        
         presentMonthCollectionView.frame = .init(
             x: scrollViewWidth, y: 0, width: scrollViewWidth, height: calendarHeight
         )
-        
-        
         
         followingMonthCollectionView.frame = .init(
             x: scrollViewWidth * 2, y: 0, width: scrollViewWidth, height: calendarHeight
         )
     
-        
-
         scrollView.contentSize = .init(width: scrollViewWidth * 3, height: calendarHeight)
         scrollView.setContentOffset(CGPoint(x: scrollViewWidth, y: 0), animated: false)
 

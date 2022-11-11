@@ -22,7 +22,15 @@ struct DatePath {
     let location: CLLocationCoordinate2D
 }
 
+struct TestUser {
+    let hasMate: Bool
+    // MARK: - 무조건 생성날짜기준으로는 defalt값이 존재하므로 optional아님
+    let dday: Int
+}
+
 final class HomeViewModel: BaseViewModel {
+
+    let testUser = TestUser(hasMate: false, dday: 123)
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),
