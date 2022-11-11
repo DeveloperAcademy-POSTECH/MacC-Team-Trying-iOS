@@ -82,6 +82,8 @@ final class HomeViewController: BaseViewController {
         return tableView
     }()
     
+    lazy var calendarView = CalendarView(today: .init(), frame: .init(origin: .zero, size: .init(width: DeviceInfo.screenWidth - 40, height: 0)))
+    
     let pathTableView: UITableView = {
         let tableView = UITableView()
         tableView.register(PathTableViewCell.self, forCellReuseIdentifier: PathTableViewCell.cellId)
@@ -118,7 +120,7 @@ final class HomeViewController: BaseViewController {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        if let touch = touches.first, touch.view == self.view {
+        if let touch = touches.first, touch.view == self.backgroundView {
             self.dateInfoIsHidden = false
             self.moreButton.setImage(UIImage(named: "MoreButtonForOpen"), for: .normal)
             self.dateTableView.isHidden = true
@@ -136,35 +138,36 @@ final class HomeViewController: BaseViewController {
         bind()
         setAttributes()
         setUI()
-        if viewModel.datePathList.isEmpty {
-           setEmptyButton()
-        }
+        setEmptyButton()
+        
     }
     
     func setEmptyButton() {
-        let dateCoureRegisterButton: UIButton = {
-            let button = UIButton(type: .custom)
-            button.setTitle("데이트 코스 기록하기", for: .normal)
-            button.setImage(UIImage(systemName: "plus.circle.fill"), for: .normal)
-            button.tintColor = .designSystem(.mainYellow)
-            button.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.2)
-            button.clipsToBounds = true
-            button.layer.cornerRadius = 15
-            button.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
-            button.layer.borderWidth = 0.3
-            button.setPreferredSymbolConfiguration(.init(pointSize: 11), forImageIn: .normal)
-            button.setTitleColor(.designSystem(.mainYellow), for: .normal)
-            button.titleLabel?.font = .systemFont(ofSize: 11, weight: .bold)
-            return button
-        }()
-        
-        view.addSubview(dateCoureRegisterButton)
-        dateCoureRegisterButton.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(58)
+        if viewModel.datePathList.isEmpty {
+            let dateCoureRegisterButton: UIButton = {
+                let button = UIButton(type: .custom)
+                button.setTitle("데이트 코스 기록하기", for: .normal)
+                button.setImage(UIImage(systemName: "plus.circle.fill"), for: .normal)
+                button.tintColor = .designSystem(.mainYellow)
+                button.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.2)
+                button.clipsToBounds = true
+                button.layer.cornerRadius = 15
+                button.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
+                button.layer.borderWidth = 0.3
+                button.setPreferredSymbolConfiguration(.init(pointSize: 11), forImageIn: .normal)
+                button.setTitleColor(.designSystem(.mainYellow), for: .normal)
+                button.titleLabel?.font = .systemFont(ofSize: 11, weight: .bold)
+                return button
+            }()
+            
+            view.addSubview(dateCoureRegisterButton)
+            dateCoureRegisterButton.snp.makeConstraints { make in
+                make.top.equalTo(calendarView.snp.bottom).offset(10)
+                make.leading.trailing.equalToSuperview().inset(20)
+                make.height.equalTo(58)
+            }
+            self.pathTableView.isHidden = true
         }
-        self.pathTableView.isHidden = true
     }
     
     @objc
@@ -189,6 +192,8 @@ extension HomeViewController {
         view.addSubview(nextDateLabel)
         view.addSubview(moreButton)
         view.addSubview(pathTableView)
+        view.addSubview(calendarView)
+        // MARK: - DateTableView가 맨위에 있어야 Layer가 가장 위쪽으로 적용이 된다
         view.addSubview(dateTableView)
         dateTableView.dataSource = self
         pathTableView.delegate = self
@@ -233,8 +238,13 @@ extension HomeViewController {
             make.height.equalTo(viewModel.ddayDateList.count * 20 + 30)
         }
         
+        calendarView.snp.makeConstraints { make in
+            make.top.equalTo(nextDateLabel.snp.bottom).offset(20)
+            make.leading.trailing.equalToSuperview().inset(20)
+        }
+        
         pathTableView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(200)
+            make.top.equalTo(calendarView.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(20)
             // MARK: - 하나의 cell높이(59), Header의 높이 43, Footer의 높이(60)에서 자연스럽게 10추가
