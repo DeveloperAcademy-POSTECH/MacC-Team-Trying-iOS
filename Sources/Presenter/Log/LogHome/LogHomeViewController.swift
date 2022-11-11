@@ -19,7 +19,7 @@ final class LogHomeViewController: BaseViewController {
     
     private let flowLayout: UICollectionViewFlowLayout = {
         let width = DeviceInfo.screenWidth
-        let height = DeviceInfo.screenHeight * 0.5350
+        let height = DeviceInfo.screenHeight * 0.68
         
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -136,7 +136,7 @@ extension LogHomeViewController {
         
         logCollectionView.snp.makeConstraints { make in
             make.width.equalToSuperview()
-            make.height.equalTo(DeviceInfo.screenHeight * 0.5450236967)
+            make.height.equalTo(DeviceInfo.screenHeight * 0.7)
             make.centerX.equalToSuperview()
             make.top.equalTo(listButton.snp.bottom)
         }

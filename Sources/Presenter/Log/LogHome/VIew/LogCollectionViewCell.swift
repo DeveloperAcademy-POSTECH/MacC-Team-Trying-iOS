@@ -18,6 +18,23 @@ class LogCollectionViewCell: UICollectionViewCell {
     
     var places = [Place]()
     
+    private let constellationDetailButton: UIButton = {
+        var button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
+        button.setImage(UIImage(named: "ic_ticket")?.resizeImageTo(size: CGSize(width: 20, height: 20)), for: .normal)
+        button.titleLabel?.font = UIFont.designSystem(weight: .bold, size: ._11)
+        button.setTitle("별자리 후기", for: .normal)
+        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
+        button.semanticContentAttribute = .forceLeftToRight
+        button.contentVerticalAlignment = .center
+        button.contentHorizontalAlignment = .center
+        button.layer.cornerRadius = 13
+        button.layer.borderWidth = 2
+        button.layer.borderColor = .designSystem(.mainYellow)
+        return button
+    }()
+    
     let courseNameLabel: UILabel = {
         let label = UILabel()
         label.text = "창원 풀코스"
@@ -53,14 +70,16 @@ extension LogCollectionViewCell {
         self.places = places
         self.contentView.subviews
             .filter { view in
-                return !(view == dateLabel || view == courseNameLabel)
-            }.forEach { $0.removeFromSuperview() }
+                return !(view == dateLabel || view == courseNameLabel || view == constellationDetailButton)
+            }
+            .forEach { $0.removeFromSuperview() }
         
         let courseView = makeConstellation(places: places)
         contentView.addSubview(courseView)
         courseView.snp.makeConstraints { make in
             make.width.height.equalTo(200)
-            make.center.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().multipliedBy(0.6)
         }
     }
     
@@ -68,22 +87,29 @@ extension LogCollectionViewCell {
         
         contentView.addSubviews(
             courseNameLabel,
-            dateLabel
+            dateLabel,
+            constellationDetailButton
         )
         
         dateLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().inset(5)
+            make.centerY.equalToSuperview().multipliedBy(1.5)
         }
-        
+
         courseNameLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(dateLabel.snp.top).offset(-5)
         }
+        
+        constellationDetailButton.snp.makeConstraints { make in
+            make.width.equalTo(90)
+            make.height.equalTo(26)
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(10)
+        }
     }
     
     func makeConstellation(places: [Place]) -> UIView {
-        
         let constellationView = UIView()
         constellationView.backgroundColor = .clear
         constellationView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
