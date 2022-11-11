@@ -12,6 +12,8 @@ import UIKit
 import SnapKit
 
 final class PlaceDetailView: UIView {
+    let height: CGFloat = 190
+    
     var selectedPlace: CLPlacemark? {
         didSet {
             guard let selectedPlace = selectedPlace else { return }
@@ -110,6 +112,21 @@ final class PlaceDetailView: UIView {
         memoTextField.snp.makeConstraints { make in
             make.top.equalTo(placeInfoView.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview().inset(20)
+        }
+    }
+}
+
+// MARK: - BottomHidable
+extension PlaceDetailView: BottomHidable {
+    func hide() {
+        self.snp.updateConstraints { make in
+            make.bottom.equalToSuperview().inset(-height)
+        }
+    }
+    
+    func present() {
+        self.snp.updateConstraints { make in
+            make.bottom.equalToSuperview()
         }
     }
 }
