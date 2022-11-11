@@ -300,6 +300,7 @@ extension CalendarView: UIScrollViewDelegate {
         case .no:
             break
         }
+        // MARK: - 여기서 3월 달력을 보여주면 2월1일, 5월1일을 서버에 request로 보내준다
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {

@@ -147,7 +147,11 @@ final class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        calendarView.scheduleList = [
+            .init(year: 2022, month: 11, day: 10),
+            .init(year: 2022, month: 11, day: 8),
+            .init(year: 2022, month: 11, day: 14)
+        ]
         bind()
         setAttributes()
         setUI()
@@ -231,6 +235,7 @@ extension HomeViewController {
         dateTableView.dataSource = self
         pathTableView.delegate = self
         pathTableView.dataSource = self
+        calendarView.delegate = self
         
     }
     
@@ -366,5 +371,22 @@ extension HomeViewController: ActionSheetDelegate {
     
     func showSettingActionSheet(alert: UIAlertController) {
         self.present(alert, animated: true)
+    }
+}
+
+extension HomeViewController: CalendarViewDelegate {
+    func switchCalendarButtonDidTapped() {
+        UIView.animate(withDuration: 0.2, delay: 0) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    func selectDate(_ date: Date?) {
+    }
+
+    func scrollViewDidEndDecelerating() {
+        UIView.animate(withDuration: 0.2, delay: 0) {
+            self.view.layoutIfNeeded()
+        }
     }
 }
