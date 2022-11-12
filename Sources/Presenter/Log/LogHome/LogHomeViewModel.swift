@@ -43,7 +43,6 @@ extension LogHomeViewModel {
     }
 }
 
-
 // TODO 삭제할 코드
 struct TestCourse {
     let places: [Place]
@@ -53,7 +52,7 @@ struct TestCourse {
 
 extension LogHomeViewModel {
     func fetchData() {
-        for index in 0...7 {
+        for _ in 0...7 {
             let mockCourse = TestCourse(
                 places: [
                     Place(

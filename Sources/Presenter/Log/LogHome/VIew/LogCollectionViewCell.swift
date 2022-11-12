@@ -16,9 +16,7 @@ class LogCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "LogCollectionViewCell"
     
-    var places = [Place]()
-    
-    private let constellationDetailButton: UIButton = {
+    let constellationDetailButton: UIButton = {
         var button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.titleLabel?.adjustsFontForContentSizeCategory = true
@@ -54,8 +52,7 @@ class LogCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.contentView.backgroundColor = .clear
-        contentView.layer.borderWidth = 5
-        contentView.layer.borderColor = UIColor.white.cgColor
+        constellationDetailButton.addTarget(self, action: #selector(tapConstellationDetailButton), for: .touchUpInside)
         setConstraints()
     }
     
@@ -65,9 +62,12 @@ class LogCollectionViewCell: UICollectionViewCell {
 }
 
 extension LogCollectionViewCell {
+    @objc
+    func tapConstellationDetailButton() {
+        print("tapConstellationDetailButton tapped")
+    }
     
     func configure(with places: [Place]) {
-        self.places = places
         self.contentView.subviews
             .filter { view in
                 return !(view == dateLabel || view == courseNameLabel || view == constellationDetailButton)
@@ -84,18 +84,16 @@ extension LogCollectionViewCell {
     }
     
     private func setConstraints() {
-        
         contentView.addSubviews(
             courseNameLabel,
             dateLabel,
             constellationDetailButton
         )
-        
         dateLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().multipliedBy(1.5)
         }
-
+        
         courseNameLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(dateLabel.snp.top).offset(-5)
@@ -158,10 +156,8 @@ extension LogCollectionViewCell {
                 path.close()
                 
                 let shapeLayer = CAShapeLayer()
-                
                 shapeLayer.path = path.cgPath
                 shapeLayer.lineWidth = path.lineWidth
-                
                 shapeLayer.strokeColor = .designSystem(.whiteFFFBD9)
                 constellationView.layer.addSublayer(shapeLayer)
             }
