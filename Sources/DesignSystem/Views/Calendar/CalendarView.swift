@@ -13,6 +13,7 @@ protocol CalendarViewDelegate: AnyObject {
     func scrollViewDidEndDecelerating()
     func switchCalendarButtonDidTapped()
     func selectDate(_ date: Date?)
+    func changeCalendarPage(_ presentMonth: String)
 }
 
 final class CalendarView: BaseView {
@@ -301,6 +302,8 @@ extension CalendarView: UIScrollViewDelegate {
             break
         }
         // MARK: - 여기서 3월 달력을 보여주면 2월1일, 5월1일을 서버에 request로 보내준다
+        let requestString: String = "\(selectedDate.asDate().monthBefore.year)년 \(selectedDate.asDate().monthBefore.month)월 01일 부터 \(selectedDate.asDate().month2After.year)년 \(selectedDate.asDate().month2After.month)월 01일 까지"
+        self.delegate?.changeCalendarPage(requestString)
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -674,7 +677,7 @@ extension CalendarView {
 
     /// 현재에서 두 달 이후 month
     private var following2Month: Int {
-        previousMonthDate.monthAfter.month
+        followingMonthDate.monthAfter.month
     }
 
     private var followingYear: Int {

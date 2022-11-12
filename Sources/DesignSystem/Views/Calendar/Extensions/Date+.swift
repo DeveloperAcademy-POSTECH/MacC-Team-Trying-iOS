@@ -37,6 +37,10 @@ extension Date {
     var monthAfter: Date {
         Calendar.current.date(byAdding: .month, value: 1, to: self)!
     }
+    
+    var month2After: Date {
+        Calendar.current.date(byAdding: .month, value: 2, to: self)!
+    }
 
     var startDateOfWeek: Date {
         Calendar.current.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: self).date!

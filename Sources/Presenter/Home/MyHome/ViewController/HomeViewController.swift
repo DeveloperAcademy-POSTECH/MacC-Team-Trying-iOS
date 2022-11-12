@@ -375,6 +375,10 @@ extension HomeViewController: ActionSheetDelegate {
 }
 
 extension HomeViewController: CalendarViewDelegate {
+    func changeCalendarPage(_ presentMonth: String) {
+        print(presentMonth)
+    }
+    
     func switchCalendarButtonDidTapped() {
         UIView.animate(withDuration: 0.2, delay: 0) {
             self.view.layoutIfNeeded()
