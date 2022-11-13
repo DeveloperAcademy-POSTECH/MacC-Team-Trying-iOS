@@ -132,6 +132,15 @@ final class HomeViewController: BaseViewController {
                 }
             }
             .store(in: &myCancelBag)
+        
+        viewModel.$dateCalendarList
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] receivedValue in
+                guard let self = self else { return }
+                guard let receivedValue = receivedValue else { return }
+                self.calendarView.scheduleList = receivedValue
+            }
+            .store(in: &myCancelBag)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -152,12 +161,13 @@ final class HomeViewController: BaseViewController {
         super.viewDidLoad()
         Task {
             try await viewModel.fetchAsync()
+            try await viewModel.fetchDateRangeAsync()
         }
-        calendarView.scheduleList = [
-            .init(year: 2022, month: 11, day: 10),
-            .init(year: 2022, month: 11, day: 8),
-            .init(year: 2022, month: 11, day: 14)
-        ]
+//        calendarView.scheduleList = [
+//            .init(year: 2022, month: 11, day: 10),
+//            .init(year: 2022, month: 11, day: 8),
+//            .init(year: 2022, month: 11, day: 14)
+//        ]
         bind()
         setAttributes()
         setUI()

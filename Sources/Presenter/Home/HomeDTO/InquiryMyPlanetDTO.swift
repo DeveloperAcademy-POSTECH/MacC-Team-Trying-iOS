@@ -25,3 +25,7 @@ struct UserInfo: Codable {
     }
 
 }
+
+struct DateList: Codable {
+    let dates: [String]
+}

@@ -32,6 +32,7 @@ struct DatePath {
 final class HomeViewModel: BaseViewModel {
 
     @Published var testUser: UserInfo?
+    @Published var dateCalendarList: [YearMonthDayDate]?
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),
@@ -40,7 +41,7 @@ final class HomeViewModel: BaseViewModel {
         DateDday(title: "서울데이트", dday: 40)
     ]
     
-    let datePathList: [DatePath] = [
+    var datePathList: [DatePath] = [
         DatePath(
             title: "삐갈레브레드",
             comment: "10시오픈, 소금빵 꼭 먹기",
@@ -87,5 +88,34 @@ final class HomeViewModel: BaseViewModel {
              return
          }
         self.testUser = myPlanineInfoDTO
+    }
+    
+    func getDate(date: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        guard let date = dateFormatter.date(from: date) else { return Date() }
+        return date
+    }
+    
+    func fetchDateRangeAsync() async throws {
+
+        let data = try await HomeAPIService.fetchDateList()
+        guard let myDateListDTO = try? JSONDecoder().decode(DateList.self, from: data) else {
+            print("데이트날짜 범위 조회 Decoder오류")
+            return
+        }
+
+        let changeString = myDateListDTO.dates.map { stringDate in
+            getDate(date: stringDate)
+        }
+        let changeStruct = changeString.map { aa in
+            YearMonthDayDate(year: aa.year, month: aa.month, day: aa.day)
+        }
+        
+        dateCalendarList = changeStruct
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
+        dump(changeStruct)
+        print("✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅")
+        
     }
 }

@@ -19,10 +19,13 @@ enum TokenType {
 }
 
 private let fetchUserUrl = "https://comeit.site/users"
+private let dateRangeFetchUrl = "https://comeit.site/courses/dates?start=2022-10-01&end=2022-12-10"
 
 private let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MmZlMTkyYS0yYWEzLTQ0ZGQtOWZhNS00MzhkY2FjZWU5YTAiLCJhdXRoIjoiVVNFUiJ9.XanwnrThXnsf5J-PzdbmDpDrTJ_dr3upvz6eL4OP4yUUZlYHY0-XJne5v03mGBx24ylGJAO9aa1i8LNVn0F5Ig"
 
 private let mateToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1MDNhOTBhNC02NTk4LTQxOGMtOTBkZC0zZDM2NTQyZjQzZmIiLCJhdXRoIjoiVVNFUiJ9.DDBTdn3QFf_vQM_FPz_gqyEBuaBaOwfyAR48vlOTaULdgD8rAa7fkNytMzEPkdZDiaPkYkzZVq95ERqq7fpnAw"
+
+private let rangeToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1MDNhOTBhNC02NTk4LTQxOGMtOTBkZC0zZDM2NTQyZjQzZmIiLCJhdXRoIjoiVVNFUiJ9.DDBTdn3QFf_vQM_FPz_gqyEBuaBaOwfyAR48vlOTaULdgD8rAa7fkNytMzEPkdZDiaPkYkzZVq95ERqq7fpnAw"
 
 class HomeAPIService {
     
@@ -45,6 +48,20 @@ class HomeAPIService {
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
             throw HomeApiError.response
         }
+        return data
+    }
+    
+    static func fetchDateList() async throws -> Data {
+        guard let url = URL(string: dateRangeFetchUrl) else {
+            throw HomeApiError.urlResponse
+        }
+        var request = URLRequest(url: url)
+        request.setValue(rangeToken, forHTTPHeaderField: "accessToken")
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw HomeApiError.response
+        }
+        
         return data
     }
 }
