@@ -15,12 +15,12 @@ import SnapKit
 
 final class LogHomeViewController: BaseViewController {
     
-    
     var viewModel: LogHomeViewModel
     
     private var currentIndex: Int = 0 {
         didSet {
-            
+            print(currentIndex)
+            setConstellationButtonOption()
         }
     }
     
@@ -123,6 +123,7 @@ extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataS
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogCollectionViewCell.identifier, for: indexPath) as? LogCollectionViewCell else { return UICollectionViewCell() }
         cell.courseNameLabel.text = viewModel.courses[indexPath.row].courseName
         cell.configure(with: viewModel.courses[indexPath.row].places)
+        currentIndex = indexPath.row
         return cell
     }
 }
@@ -142,6 +143,7 @@ extension LogHomeViewController {
     }
     /// Attributes를 설정합니다.
     private func setAttributes() {
+        setConstellationButtonOption()
         
     }
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -228,7 +230,15 @@ extension LogHomeViewController {
         logCollectionView.scrollToItem(at: IndexPath(row: currentIndex, section: 0), at: .left, animated: true)
     }
     
-    func makeConstellation(places: [Place]) -> UIView {
+    func setConstellationButtonOption() {
+        previousConstellationButton.isHidden = (currentIndex == 0) ? true : false
+        nextConstellationButton.isHidden = (currentIndex == viewModel.courses.count - 1) ? true : false
+        currentConstellationButton.setImage(makeConstellation(places: viewModel.courses[currentIndex].places), for: .normal)
+        previousConstellationButton.setImage(makeConstellation(places: viewModel.courses[max(currentIndex - 1, 0)].places), for: .normal)
+        nextConstellationButton.setImage(makeConstellation(places: viewModel.courses[min(currentIndex + 1, viewModel.courses.count - 1)].places), for: .normal)
+    }
+    
+    func makeConstellation(places: [Place]) -> UIImage {
         let constellationView = UIView()
         constellationView.backgroundColor = .clear
         constellationView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
@@ -239,7 +249,7 @@ extension LogHomeViewController {
         guard let minX = latitudeArray.min(),
               let maxX = latitudeArray.max(),
               let minY = longitudeArray.min(),
-              let maxY = longitudeArray.max() else { return UIView() }
+              let maxY = longitudeArray.max() else { return UIView().asImage() }
         
         let deltaX: CGFloat = maxX == minX ? 1 : maxX - minX
         let deltaY: CGFloat = maxY == minY ? 1 : maxY - minY
@@ -283,7 +293,6 @@ extension LogHomeViewController {
                 constellationView.layer.addSublayer(shapeLayer)
             }
         }
-        return constellationView
+        return constellationView.asImage()
     }
-
 }
