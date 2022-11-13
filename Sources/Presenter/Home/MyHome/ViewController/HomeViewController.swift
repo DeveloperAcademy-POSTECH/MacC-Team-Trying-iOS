@@ -15,26 +15,20 @@ import Lottie
 
 final class HomeViewController: BaseViewController {
     
+    var myCancelBag = Set<AnyCancellable>()
     let viewModel: HomeViewModel
     var dateInfoIsHidden: Bool = false
     
     let homeTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .bold, size: ._20)
-        label.attributedText = String.makeAtrributedString(
-            name: "카리나",
-            appendString: " 님과 함께",
-            changeAppendStringSize: ._15,
-            changeAppendStringWieght: .light,
-            changeAppendStringColor: .white
-        )
         label.textColor = .white
         return label
     }()
     
     lazy var alarmButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(UIImage(named: viewModel.testUser.hasNewAlarm ? "AlarmButton_notEmpty" : "AlarmButton_empty"), for: .normal)
+        button.setImage(UIImage(named: "AlarmButton_notEmpty"), for: .normal)
         button.addTarget(self, action: #selector(alarmButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -42,7 +36,6 @@ final class HomeViewController: BaseViewController {
     let ddayLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .bold, size: ._25)
-        label.text = "D+254"
         label.textColor = .white
         return label
     }()
@@ -126,9 +119,19 @@ final class HomeViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
-        
+
         // output
-        
+        viewModel.$testUser
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] receivedValue in
+                guard let self = self else { return }
+                if receivedValue?.mate != nil {
+                    self.setHasMateUI()
+                } else {
+                    self.setNoMateUI()
+                }
+            }
+            .store(in: &myCancelBag)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -147,6 +150,9 @@ final class HomeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Task {
+            try await viewModel.fetchAsync()
+        }
         calendarView.scheduleList = [
             .init(year: 2022, month: 11, day: 10),
             .init(year: 2022, month: 11, day: 8),
@@ -186,20 +192,48 @@ final class HomeViewController: BaseViewController {
         }
     }
     
-    /// mate가 없을때 "메이트 초대하기"버튼이 나오는 분기처리
-    func setDdayEmptyButton() {
-        if viewModel.testUser.hasMate {
-            ddayLabel.text = "D+\(viewModel.testUser.dday)"
-        } else {
-            view.addSubviews(inviteMateButton)
-            inviteMateButton.snp.makeConstraints { make in
-                make.leading.equalTo(homeTitle.snp.leading)
-                make.top.equalTo(homeTitle.snp.bottom).offset(5)
-                make.width.equalTo(90)
-                make.height.equalTo(25)
-            }
-            ddayLabel.isHidden = true
+    private func setNoMateUI() {
+        guard let testUser = self.viewModel.testUser else { return }
+        self.homeTitle.attributedText = String.makeAtrributedString(
+            name: testUser.me.name,
+            appendString: " 님 반갑습니다",
+            changeAppendStringSize: ._15,
+            changeAppendStringWieght: .light,
+            changeAppendStringColor: .white
+        )
+        
+        self.view.addSubviews(self.inviteMateButton)
+        self.inviteMateButton.snp.makeConstraints { make in
+            make.leading.equalTo(self.homeTitle.snp.leading)
+            make.top.equalTo(self.homeTitle.snp.bottom).offset(5)
+            make.width.equalTo(90)
+            make.height.equalTo(25)
         }
+        
+        self.nextDateLabel.snp.remakeConstraints { make in
+            make.top.equalTo(self.inviteMateButton.snp.bottom).offset(10)
+            make.leading.equalTo(self.homeTitle.snp.leading)
+            make.height.equalTo(15)
+        }
+        
+        self.ddayLabel.isHidden = true
+        self.inviteMateButton.isHidden = false
+    }
+    
+    private func setHasMateUI() {
+        guard let testUserMate = self.viewModel.testUser?.mate else { return }
+        guard let dday = self.viewModel.testUser?.planet?.dday else { return }
+        self.homeTitle.attributedText = String.makeAtrributedString(
+            name: testUserMate.name,
+            appendString: " 님과 함께",
+            changeAppendStringSize: ._15,
+            changeAppendStringWieght: .light,
+            changeAppendStringColor: .white
+        )
+        
+        self.ddayLabel.isHidden = false
+        self.inviteMateButton.isHidden = true
+        self.ddayLabel.text = "D+\(dday)"
     }
     
     @objc
@@ -241,7 +275,7 @@ extension HomeViewController {
     
     func setUI() {
         setPathEmptyButton()
-        setDdayEmptyButton()
+        
         homeTitle.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(70)
             make.leading.equalToSuperview().inset(20)

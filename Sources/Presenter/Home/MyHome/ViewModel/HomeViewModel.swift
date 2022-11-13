@@ -22,16 +22,16 @@ struct DatePath {
     let location: CLLocationCoordinate2D
 }
 
-struct TestUser {
-    let hasMate: Bool
-    // MARK: - 무조건 생성날짜기준으로는 defalt값이 존재하므로 optional아님
-    let dday: Int
-    let hasNewAlarm: Bool
-}
+//struct TestUser {
+//    let hasMate: Bool
+//    // MARK: - 무조건 생성날짜기준으로는 defalt값이 존재하므로 optional아님
+//    let dday: Int
+//    let hasNewAlarm: Bool
+//}
 
 final class HomeViewModel: BaseViewModel {
 
-    let testUser = TestUser(hasMate: false, dday: 123, hasNewAlarm: false)
+    @Published var testUser: UserInfo?
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),
@@ -78,5 +78,14 @@ final class HomeViewModel: BaseViewModel {
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
         super.init()
+    }
+    
+    func fetchAsync() async throws {
+        let data = try await HomeAPIService.fetchUserAsync(tokenType: .hasMate)
+        guard let myPlanineInfoDTO = try? JSONDecoder().decode(UserInfo.self, from: data) else {
+             print("Decoder오류")
+             return
+         }
+        self.testUser = myPlanineInfoDTO
     }
 }

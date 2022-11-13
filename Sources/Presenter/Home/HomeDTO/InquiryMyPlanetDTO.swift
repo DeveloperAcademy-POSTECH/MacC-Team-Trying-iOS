@@ -9,18 +9,19 @@
 import Foundation
 
 struct UserInfo: Codable {
-    let me: User
-    var mate: User?
-    var planet: Planet?
+    let me: Mate
+    let mate: Mate?
     
-    struct User: Codable {
+    let planet: Planet?
+    
+    struct Mate: Codable {
         let name: String
     }
     
     struct Planet: Codable {
-        let planetId: Int
         let name: String
         let dday: Int
         let image: String
     }
+
 }
