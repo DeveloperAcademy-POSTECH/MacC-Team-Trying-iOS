@@ -137,7 +137,7 @@ final class HomeViewController: BaseViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] receivedValue in
                 guard let self = self else { return }
-                guard let receivedValue = receivedValue else { return }
+//                guard let receivedValue = receivedValue else { return }
                 self.calendarView.scheduleList = receivedValue
             }
             .store(in: &myCancelBag)
@@ -161,7 +161,12 @@ final class HomeViewController: BaseViewController {
         super.viewDidLoad()
         Task {
             try await viewModel.fetchAsync()
-            try await viewModel.fetchDateRangeAsync()
+            let currentDate = Date()
+            let nextDate = currentDate.month2After
+            
+            print(currentDate)
+            print(nextDate)
+//            try await viewModel.fetchDateRangeAsync(startDate: , endDate: <#T##String#>)
         }
 //        calendarView.scheduleList = [
 //            .init(year: 2022, month: 11, day: 10),
@@ -419,8 +424,11 @@ extension HomeViewController: ActionSheetDelegate {
 }
 
 extension HomeViewController: CalendarViewDelegate {
-    func changeCalendarPage(_ presentMonth: String) {
-        print(presentMonth)
+    func changeCalendarPage(startDate: String, endDate: String) {
+        Task {
+            try await viewModel.fetchDateRangeAsync(startDate: startDate, endDate: endDate)
+        }
+
     }
     
     func switchCalendarButtonDidTapped() {

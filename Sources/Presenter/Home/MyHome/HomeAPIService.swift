@@ -19,7 +19,6 @@ enum TokenType {
 }
 
 private let fetchUserUrl = "https://comeit.site/users"
-private let dateRangeFetchUrl = "https://comeit.site/courses/dates?start=2022-10-01&end=2022-12-10"
 
 private let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MmZlMTkyYS0yYWEzLTQ0ZGQtOWZhNS00MzhkY2FjZWU5YTAiLCJhdXRoIjoiVVNFUiJ9.XanwnrThXnsf5J-PzdbmDpDrTJ_dr3upvz6eL4OP4yUUZlYHY0-XJne5v03mGBx24ylGJAO9aa1i8LNVn0F5Ig"
 
@@ -51,7 +50,8 @@ class HomeAPIService {
         return data
     }
     
-    static func fetchDateList() async throws -> Data {
+    static func fetchDateList(startDate: String, endDate: String) async throws -> Data {
+        let dateRangeFetchUrl = "https://comeit.site/courses/dates?start=\(startDate)&end=\(endDate)"
         guard let url = URL(string: dateRangeFetchUrl) else {
             throw HomeApiError.urlResponse
         }
@@ -61,7 +61,6 @@ class HomeAPIService {
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
             throw HomeApiError.response
         }
-        
         return data
     }
 }
