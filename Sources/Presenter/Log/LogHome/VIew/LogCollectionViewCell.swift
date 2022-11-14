@@ -16,26 +16,8 @@ class LogCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "LogCollectionViewCell"
     
-    let constellationDetailButton: UIButton = {
-        var button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.titleLabel?.adjustsFontForContentSizeCategory = true
-        button.setImage(UIImage(named: "ic_ticket")?.resizeImageTo(size: CGSize(width: 20, height: 20)), for: .normal)
-        button.titleLabel?.font = UIFont.designSystem(weight: .bold, size: ._11)
-        button.setTitle("별자리 후기", for: .normal)
-        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
-        button.semanticContentAttribute = .forceLeftToRight
-        button.contentVerticalAlignment = .center
-        button.contentHorizontalAlignment = .center
-        button.layer.cornerRadius = 13
-        button.layer.borderWidth = 2
-        button.layer.borderColor = .designSystem(.mainYellow)
-        return button
-    }()
-    
     let courseNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "창원 풀코스"
         label.font = UIFont.gmarksans(weight: .bold, size: ._15)
         label.tintColor = .white
         return label
@@ -43,7 +25,6 @@ class LogCollectionViewCell: UICollectionViewCell {
     
     let dateLabel: UILabel = {
         let label = UILabel()
-        label.text = "2022-10-22 (토)"
         label.font = UIFont.designSystem(weight: .regular, size: ._13)
         label.tintColor = UIColor.designSystem(.grayC5C5C5)
         return label
@@ -52,7 +33,6 @@ class LogCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.contentView.backgroundColor = .clear
-        constellationDetailButton.addTarget(self, action: #selector(tapConstellationDetailButton), for: .touchUpInside)
         setConstraints()
     }
     
@@ -62,15 +42,11 @@ class LogCollectionViewCell: UICollectionViewCell {
 }
 
 extension LogCollectionViewCell {
-    @objc
-    func tapConstellationDetailButton() {
-        
-    }
     
     func configure(with places: [Place]) {
         self.contentView.subviews
             .filter { view in
-                return !(view == dateLabel || view == courseNameLabel || view == constellationDetailButton)
+                return !(view == dateLabel || view == courseNameLabel)
             }
             .forEach { $0.removeFromSuperview() }
         
@@ -86,8 +62,7 @@ extension LogCollectionViewCell {
     private func setConstraints() {
         contentView.addSubviews(
             courseNameLabel,
-            dateLabel,
-            constellationDetailButton
+            dateLabel
         )
         dateLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -97,13 +72,6 @@ extension LogCollectionViewCell {
         courseNameLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(dateLabel.snp.top).offset(-5)
-        }
-        
-        constellationDetailButton.snp.makeConstraints { make in
-            make.width.equalTo(90)
-            make.height.equalTo(26)
-            make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().inset(10)
         }
     }
     

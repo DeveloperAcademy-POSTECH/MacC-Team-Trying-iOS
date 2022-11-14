@@ -17,6 +17,7 @@ protocol MyConstellationViewCoordinating {
 }
 
 final class LogHomeViewModel: BaseViewModel {
+    
     var coordinator: Coordinator
     
     var courses = [TestCourse]()
@@ -85,7 +86,7 @@ extension LogHomeViewModel {
                     )
                 ],
                 courseName: "루미네 집 구경",
-                date: "hello"
+                date: "2022년 11월 10일"
             )
             self.courses.append(mockCourse)
         }

@@ -26,7 +26,7 @@ final class LogHomeViewController: BaseViewController {
         }
     }
     
-    let previousConstellationButton: UIButton = {
+    lazy var previousConstellationButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
         button.layer.cornerRadius = 9
@@ -35,7 +35,7 @@ final class LogHomeViewController: BaseViewController {
         return button
     }()
     
-    let currentConstellationButton: UIButton = {
+    lazy var currentConstellationButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
         button.layer.cornerRadius = 15
@@ -44,12 +44,41 @@ final class LogHomeViewController: BaseViewController {
         return button
     }()
     
-    let nextConstellationButton: UIButton = {
+    lazy var nextConstellationButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
         button.layer.cornerRadius = 9
         button.layer.borderWidth = 1
         button.layer.borderColor = .designSystem(.mainYellow)
+        return button
+    }()
+    
+    let constellationDetailButton: UIButton = {
+        var button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
+        button.setImage(UIImage(named: "ic_ticket")?.resizeImageTo(size: CGSize(width: 20, height: 20)), for: .normal)
+        button.titleLabel?.font = UIFont.designSystem(weight: .bold, size: ._11)
+        button.setTitle("별자리 후기", for: .normal)
+        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
+        button.semanticContentAttribute = .forceLeftToRight
+        button.contentVerticalAlignment = .center
+        button.contentHorizontalAlignment = .center
+        button.layer.cornerRadius = 13
+        button.layer.borderWidth = 2
+        button.layer.borderColor = .designSystem(.mainYellow)
+        return button
+    }()
+    
+    private var mapButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "ic_map"), for: .normal)
+        return button
+    }()
+    
+    private var listButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "ic_list"), for: .normal)
         return button
     }()
     
@@ -72,18 +101,6 @@ final class LogHomeViewController: BaseViewController {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isPagingEnabled = true
         return collectionView
-    }()
-    
-    private var mapButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "ic_map"), for: .normal)
-        return button
-    }()
-    
-    private var listButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "ic_list"), for: .normal)
-        return button
     }()
     
     // MARK: Initializer
@@ -122,6 +139,7 @@ extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataS
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogCollectionViewCell.identifier, for: indexPath) as? LogCollectionViewCell else { return UICollectionViewCell() }
         cell.courseNameLabel.text = viewModel.courses[indexPath.row].courseName
+        cell.dateLabel.text = viewModel.courses[indexPath.row].date
         cell.configure(with: viewModel.courses[indexPath.row].places)
         return cell
     }
@@ -142,7 +160,6 @@ extension LogHomeViewController: UIScrollViewDelegate {
         } else {
             currentIndex = Int(ceil(index))
         }
-        
         offset = CGPoint(x: CGFloat(currentIndex) * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
         targetContentOffset.pointee = offset
     }
@@ -174,13 +191,16 @@ extension LogHomeViewController {
             logCollectionView,
             previousConstellationButton,
             currentConstellationButton,
-            nextConstellationButton
+            nextConstellationButton,
+            constellationDetailButton
         )
         
         mapButton.addTarget(self, action: #selector(tapMapButton), for: .touchUpInside)
         listButton.addTarget(self, action: #selector(TapTestButton), for: .touchUpInside)
         previousConstellationButton.addTarget(self, action: #selector(tapPreviousConstellationButton), for: .touchUpInside)
         nextConstellationButton.addTarget(self, action: #selector(tapNextConstellationButton), for: .touchUpInside)
+        constellationDetailButton.addTarget(self, action: #selector(tapConstellationDetailButton), for: .touchUpInside)
+        
         mapButton.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.1102)
             make.height.equalTo(DeviceInfo.screenHeight * 0.0509)
@@ -200,7 +220,7 @@ extension LogHomeViewController {
         }
         currentConstellationButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 169 / 844)
+            make.bottom.equalTo(constellationDetailButton.snp.top).offset(-DeviceInfo.screenHeight * 30 / 844)
             make.width.height.equalTo(DeviceInfo.screenWidth * 50 / 390)
         }
         previousConstellationButton.snp.makeConstraints { make in
@@ -213,11 +233,24 @@ extension LogHomeViewController {
             make.centerY.equalTo(currentConstellationButton.snp.centerY)
             make.left.equalTo(currentConstellationButton.snp.right).offset(DeviceInfo.screenWidth * 20 / 390)
         }
+        constellationDetailButton.snp.makeConstraints { make in
+            make.width.equalTo(100)
+            make.height.equalTo(30)
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 105 / 844)
+        }
     }
+    
     @objc
     func tapMapButton() {
         viewModel.pushMyConstellationView()
     }
+    
+    @objc
+    func tapConstellationDetailButton() {
+        
+    }
+    
     @objc
     func TapTestButton() {
         let viewModel = LogTicketViewModel.shared
@@ -248,9 +281,20 @@ extension LogHomeViewController {
     func setConstellationButtonOption() {
         previousConstellationButton.isHidden = (currentIndex == 0) ? true : false
         nextConstellationButton.isHidden = (currentIndex == viewModel.courses.count - 1) ? true : false
-        currentConstellationButton.setImage(makeConstellation(places: viewModel.courses[currentIndex].places), for: .normal)
-        previousConstellationButton.setImage(makeConstellation(places: viewModel.courses[max(currentIndex - 1, 0)].places), for: .normal)
-        nextConstellationButton.setImage(makeConstellation(places: viewModel.courses[min(currentIndex + 1, viewModel.courses.count - 1)].places), for: .normal)
+        
+        let courses = viewModel.courses
+        let currentConstellationImage = StarMaker.makeStars(places: courses[currentIndex].places)?.resizeImageTo(size: CGSize(width: 35, height: 35))
+        
+        let previousConstellationImage = StarMaker.makeStars(places: courses[max(currentIndex - 1, 0)].places)?.resizeImageTo(size: CGSize(width: 20, height: 20))
+        
+        let nextConstellationImage = StarMaker.makeStars(places: courses[min(currentIndex + 1, courses.count - 1)].places)?.resizeImageTo(size: CGSize(width: 20, height: 20))
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.currentConstellationButton.setImage(currentConstellationImage, for: .normal)
+            self.previousConstellationButton.setImage(previousConstellationImage, for: .normal)
+            self.nextConstellationButton.setImage(nextConstellationImage, for: .normal)
+        }
     }
     
     func makeConstellation(places: [Place]) -> UIImage {

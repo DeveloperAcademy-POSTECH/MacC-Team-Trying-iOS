@@ -99,8 +99,8 @@ extension CarouselCollectionView: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CarouselCollectionViewCell.cellId, for: indexPath) as? CarouselCollectionViewCell else { return UICollectionViewCell() }
         guard let carouselData = carouselData[indexPath.row] else  { return UICollectionViewCell() }
         let text = carouselData.title
-        let image = StarMaker.makeStars(places: carouselData.coordinates)
-        cell.configure(image: image, text: text)
+//        let image = StarMaker.makeStars(places: carouselData.coordinates)
+//        cell.configure(image: image, text: text)
         return cell
     }
 }

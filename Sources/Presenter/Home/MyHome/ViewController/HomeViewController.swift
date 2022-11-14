@@ -338,7 +338,7 @@ extension HomeViewController: CarouselViewDelegate {
             
             self.homeDetailView.courseNameButton.setTitle(self.viewModel.user?.myCourses[page]?.title, for: .normal)
             self.homeDetailView.dateLabel.text = self.viewModel.user?.myCourses[page]?.createdDate
-            self.homeDetailView.currentImage.image = StarMaker.makeStars(places: currentImage.coordinates)
+//            self.homeDetailView.currentImage.image = StarMaker.makeStars(places: currentImage.coordinates)
             
             // MARK: String에 따라 값이 달라져서 ViewController에서 autoLayout잡아줌
             self.homeDetailView.courseNameButton.snp.remakeConstraints { make in
@@ -355,7 +355,7 @@ extension HomeViewController: CarouselViewDelegate {
             self.homeDetailView.afterImageButton.isHidden = (page == user.myCourses.count - 1) ? true : false
             
             // MARK: 이전 별자리와 다음별자리가 보여야하는데, range를 벗어나지 않게 min과 max함수로 제약조건 추가
-            self.homeDetailView.beforeImageButton.setImage(StarMaker.makeStars(places: beforeButtonImage.coordinates), for: .normal)
-            self.homeDetailView.afterImageButton.setImage(StarMaker.makeStars(places: afterButtonImage.coordinates), for: .normal)
+//            self.homeDetailView.beforeImageButton.setImage(StarMaker.makeStars(places: beforeButtonImage.coordinates), for: .normal)
+//            self.homeDetailView.afterImageButton.setImage(StarMaker.makeStars(places: afterButtonImage.coordinates), for: .normal)
         }
     }
