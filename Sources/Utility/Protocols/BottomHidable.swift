@@ -10,6 +10,8 @@ import Foundation
 import UIKit
 
 protocol BottomHidable: UIView {
+    var height: CGFloat { get set }
+    
     func hide()
     func present()
 }

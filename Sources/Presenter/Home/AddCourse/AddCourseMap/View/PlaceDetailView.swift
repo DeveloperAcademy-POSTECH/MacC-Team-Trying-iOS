@@ -12,7 +12,7 @@ import UIKit
 import SnapKit
 
 final class PlaceDetailView: UIView {
-    let height: CGFloat = 190
+    var height: CGFloat = 190
     
     var selectedPlace: CLPlacemark? {
         didSet {

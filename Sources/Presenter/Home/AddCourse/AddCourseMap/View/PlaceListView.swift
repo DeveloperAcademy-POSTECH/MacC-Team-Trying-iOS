@@ -24,6 +24,13 @@ final class PlaceListView: UIView {
         case moreThanThree
         
         var height: CGFloat {
+            // 기본으로 줘야하는 높이 : 45
+            // indicator 영역 높이 : 15
+            // headerView로 사용되는 label의 높이 : 40
+            // main button 높이 : 58
+            // 위 3개는 최소 높이. (45 + 15 + 58 = 118)
+            // 이후 셀 하나가 추가되는 만큼 셀 높이 추가해주기
+            // 셀 하나의 높이 : 67
             switch self {
             case .zero:
                 return 0
@@ -44,21 +51,21 @@ final class PlaceListView: UIView {
             switch numberOfItems {
             case 0:
                 self.mediumHeight = .zero
-                self.currentHeight = 0
+                self.height = 0
             case 1:
                 self.mediumHeight = .one
                 if placeListViewStatus == .medium {
-                    self.currentHeight = 225
+                    self.height = 225
                 }
             case 2:
                 self.mediumHeight = .two
                 if placeListViewStatus == .medium {
-                    self.currentHeight = 292
+                    self.height = 292
                 }
             default:
                 self.mediumHeight = .moreThanThree
                 if placeListViewStatus == .medium {
-                    self.currentHeight = 359
+                    self.height = 359
                 }
             }
             
@@ -73,7 +80,7 @@ final class PlaceListView: UIView {
     private let collapsedHeight: CGFloat = 225
     private var mediumHeight: PlaceListMediumHeight = .zero
     private let fullHeight: CGFloat = DeviceInfo.screenHeight * 0.8767
-    var currentHeight: CGFloat = 0
+    var height: CGFloat = 0
     
     private lazy var scrollIndicatorView: UIView = {
         let view = UIView()
@@ -151,7 +158,7 @@ extension PlaceListView {
         }
     }
     
-    /// placeListViewStatus와 currentHeight를 설정하고 해당 높이로 애니메이션을 보여줍니다.
+    /// placeListViewStatus와 height를 설정하고 해당 높이로 애니메이션을 보여줍니다.
     /// - Parameter viewStatus: 보여줄 PlaceListViewStatus (.collapsed, .medium, .full)
     private func display(mode viewStatus: PlaceListViewStatus) {
         if self.placeListViewStatus != viewStatus {
@@ -160,18 +167,18 @@ extension PlaceListView {
         
         switch viewStatus {
         case .collapsed:
-            self.currentHeight = collapsedHeight
+            self.height = collapsedHeight
         case .medium:
-            self.currentHeight = mediumHeight.height
+            self.height = mediumHeight.height
         case .full:
-            self.currentHeight = fullHeight
+            self.height = fullHeight
         }
         
         guard let parentView = self.parentView else { return }
         
         DispatchQueue.main.async {
             self.snp.updateConstraints { make in
-                make.height.equalTo(self.currentHeight)
+                make.height.equalTo(self.height)
             }
             
             UIView.animate(
@@ -192,13 +199,14 @@ extension PlaceListView {
 extension PlaceListView: BottomHidable {
     func hide() {
         self.snp.updateConstraints { make in
-            make.height.equalTo(0)
+            make.bottom.equalToSuperview().inset(-height)
         }
     }
     
     func present() {
         self.snp.updateConstraints { make in
-            make.height.equalTo(currentHeight)
+            make.height.equalTo(height)
+            make.bottom.equalToSuperview()
         }
     }
 }
@@ -265,7 +273,7 @@ extension PlaceListView {
         
         DispatchQueue.main.async {
             self.snp.updateConstraints { make in
-                make.height.equalTo(self.currentHeight - verticalTranslation)
+                make.height.equalTo(self.height - verticalTranslation)
             }
         }
     }
