@@ -160,22 +160,28 @@ final class HomeViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         Task {
+            let currentDateRange = getCurrentDateRange()
             try await viewModel.fetchAsync()
-            let currentDate = Date()
-            let nextDate = currentDate.month2After
-            
-            print(currentDate)
-            print(nextDate)
-//            try await viewModel.fetchDateRangeAsync(startDate: , endDate: <#T##String#>)
+            try await viewModel.fetchDateRangeAsync(startDate: currentDateRange[0], endDate: currentDateRange[1])
+            dump(currentDateRange)
         }
-//        calendarView.scheduleList = [
-//            .init(year: 2022, month: 11, day: 10),
-//            .init(year: 2022, month: 11, day: 8),
-//            .init(year: 2022, month: 11, day: 14)
-//        ]
+
         bind()
         setAttributes()
         setUI()
+    }
+    
+    private func getCurrentDateRange() -> [String] {
+        var dateRange: [String] = []
+        let currentDate = Date().monthBefore
+        let nextDate = currentDate.month2After
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let beforeDateString = formatter.string(from: currentDate)
+        dateRange.append(beforeDateString)
+        let afterDateString = formatter.string(from: nextDate)
+        dateRange.append(afterDateString)
+        return dateRange
     }
     
     /// Path가 없을 때 나올 button 뷰
