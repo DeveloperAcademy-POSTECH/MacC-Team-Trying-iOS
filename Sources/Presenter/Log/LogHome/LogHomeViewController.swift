@@ -19,8 +19,10 @@ final class LogHomeViewController: BaseViewController {
     
     private var currentIndex: Int = 0 {
         didSet {
-            print(currentIndex)
-            setConstellationButtonOption()
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.setConstellationButtonOption()
+            }
         }
     }
     
@@ -28,7 +30,7 @@ final class LogHomeViewController: BaseViewController {
         let button = UIButton()
         button.backgroundColor = .clear
         button.layer.cornerRadius = 9
-        button.layer.borderWidth = 2
+        button.layer.borderWidth = 1
         button.layer.borderColor = .designSystem(.mainYellow)
         return button
     }()
@@ -37,7 +39,7 @@ final class LogHomeViewController: BaseViewController {
         let button = UIButton()
         button.backgroundColor = .clear
         button.layer.cornerRadius = 15
-        button.layer.borderWidth = 2
+        button.layer.borderWidth = 1
         button.layer.borderColor = .designSystem(.mainYellow)
         return button
     }()
@@ -46,15 +48,14 @@ final class LogHomeViewController: BaseViewController {
         let button = UIButton()
         button.backgroundColor = .clear
         button.layer.cornerRadius = 9
-        button.layer.borderWidth = 2
+        button.layer.borderWidth = 1
         button.layer.borderColor = .designSystem(.mainYellow)
         return button
     }()
-
+    
     private let flowLayout: UICollectionViewFlowLayout = {
         let width = DeviceInfo.screenWidth
         let height = DeviceInfo.screenHeight * 0.68
-        
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 0
@@ -65,11 +66,11 @@ final class LogHomeViewController: BaseViewController {
     
     private lazy var logCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-        collectionView.dataSource = self
+        collectionView.backgroundColor = .clear
         collectionView.register(LogCollectionViewCell.self, forCellWithReuseIdentifier: LogCollectionViewCell.identifier)
+        collectionView.dataSource = self
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isPagingEnabled = true
-        collectionView.backgroundColor = .clear
         return collectionView
     }()
     
@@ -102,7 +103,6 @@ final class LogHomeViewController: BaseViewController {
     }
     
     override func viewDidLoad() {
-        print("current index: \(currentIndex)")
         super.viewDidLoad()
         setUI()
         bind()
@@ -123,8 +123,28 @@ extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataS
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogCollectionViewCell.identifier, for: indexPath) as? LogCollectionViewCell else { return UICollectionViewCell() }
         cell.courseNameLabel.text = viewModel.courses[indexPath.row].courseName
         cell.configure(with: viewModel.courses[indexPath.row].places)
-        currentIndex = indexPath.row
         return cell
+    }
+}
+
+extension LogHomeViewController: UIScrollViewDelegate {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        
+        let layout = self.logCollectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        let cellWidthIncludingSpacing = layout.itemSize.width + layout.minimumLineSpacing
+        
+        var offset = targetContentOffset.pointee
+        let index = (offset.x + scrollView.contentInset.left) / cellWidthIncludingSpacing
+        currentIndex = Int(round(index))
+        
+        if scrollView.contentOffset.x > targetContentOffset.pointee.x {
+            currentIndex = Int(floor(index))
+        } else {
+            currentIndex = Int(ceil(index))
+        }
+        
+        offset = CGPoint(x: CGFloat(currentIndex) * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
+        targetContentOffset.pointee = offset
     }
 }
 
@@ -143,8 +163,8 @@ extension LogHomeViewController {
     }
     /// Attributes를 설정합니다.
     private func setAttributes() {
+        logCollectionView.delegate = self
         setConstellationButtonOption()
-        
     }
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
@@ -161,22 +181,19 @@ extension LogHomeViewController {
         listButton.addTarget(self, action: #selector(TapTestButton), for: .touchUpInside)
         previousConstellationButton.addTarget(self, action: #selector(tapPreviousConstellationButton), for: .touchUpInside)
         nextConstellationButton.addTarget(self, action: #selector(tapNextConstellationButton), for: .touchUpInside)
-        
         mapButton.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.1102)
             make.height.equalTo(DeviceInfo.screenHeight * 0.0509)
             make.right.equalToSuperview().inset(DeviceInfo.screenWidth * 0.0512)
             make.top.equalToSuperview().inset(DeviceInfo.screenHeight * 0.0663)
         }
-        
         listButton.snp.makeConstraints { make in
             make.width.height.equalTo(mapButton.snp.width)
             make.centerX.equalTo(mapButton.snp.centerX)
             make.top.equalTo(mapButton.snp.bottom).offset(DeviceInfo.screenWidth * 0.0512)
         }
-        
         logCollectionView.snp.makeConstraints { make in
-            make.width.equalToSuperview()
+            make.width.equalTo(DeviceInfo.screenWidth)
             make.height.equalTo(DeviceInfo.screenHeight * 0.7)
             make.centerX.equalToSuperview()
             make.top.equalTo(listButton.snp.bottom)
@@ -200,7 +217,6 @@ extension LogHomeViewController {
     @objc
     func tapMapButton() {
         viewModel.pushMyConstellationView()
-//        logCollectionView.scrollToItem(at: IndexPath(row: 3, section: 0), at: .centeredHorizontally, animated: true)
     }
     @objc
     func TapTestButton() {
@@ -213,21 +229,20 @@ extension LogHomeViewController {
     
     @objc
     func tapPreviousConstellationButton() {
-        print("tapPreviousConstellationButton tappped")
         currentIndex -= 1
-        logCollectionView.scrollToItem(at: IndexPath(row: currentIndex, section: 0), at: .bottom, animated: true)
-    }
-    
-    @objc
-    func tapCurrentConstellationButton() {
-        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.logCollectionView.scrollToItem(at: IndexPath(row: max(0, self.currentIndex), section: 0), at: .left, animated: true)
+        }
     }
     
     @objc
     func tapNextConstellationButton() {
-        print("tapNextConstellationButton tappped")
         currentIndex += 1
-        logCollectionView.scrollToItem(at: IndexPath(row: currentIndex, section: 0), at: .left, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.logCollectionView.scrollToItem(at: IndexPath(row: min(self.currentIndex, self.viewModel.courses.count - 1), section: 0), at: .left, animated: true)
+        }
     }
     
     func setConstellationButtonOption() {

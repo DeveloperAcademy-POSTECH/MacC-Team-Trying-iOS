@@ -64,7 +64,7 @@ class LogCollectionViewCell: UICollectionViewCell {
 extension LogCollectionViewCell {
     @objc
     func tapConstellationDetailButton() {
-        print("tapConstellationDetailButton tapped")
+        
     }
     
     func configure(with places: [Place]) {

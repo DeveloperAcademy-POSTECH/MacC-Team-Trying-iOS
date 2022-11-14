@@ -11,5 +11,4 @@ import UIKit
 
 import CancelBag
 
-
 final class SearchViewModel: BaseViewModel { }
