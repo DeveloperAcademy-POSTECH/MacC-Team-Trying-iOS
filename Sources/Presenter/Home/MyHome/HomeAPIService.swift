@@ -65,4 +65,18 @@ class HomeAPIService {
         }
         return data
     }
+    
+    static func fetchCourseList(selectedDate: String) async throws -> Data {
+        let selectedDateCourseFetchUrl = "https://comeit.site/courses/dates/\(selectedDate)"
+        guard let url = URL(string: selectedDateCourseFetchUrl) else {
+            throw HomeApiError.urlResponse
+        }
+        var request = URLRequest(url: url)
+        request.setValue(rangeToken, forHTTPHeaderField: "accessToken")
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw HomeApiError.response
+        }
+        return data
+    }
 }

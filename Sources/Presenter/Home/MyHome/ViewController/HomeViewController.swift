@@ -135,10 +135,25 @@ final class HomeViewController: BaseViewController {
         
         viewModel.$dateCalendarList
             .receive(on: DispatchQueue.main)
-            .print()
             .sink { [weak self] receivedValue in
                 guard let self = self else { return }
                 self.calendarView.scheduleList = receivedValue
+            }
+            .store(in: &myCancelBag)
+        
+        viewModel.$dateCourse
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] receivedValue in
+                guard let self = self else { return }
+                guard let receivedValue = receivedValue else { return }
+                self.pathTableView.snp.makeConstraints { make in
+                    make.top.equalTo(self.calendarView.snp.bottom).offset(10)
+                    make.centerX.equalToSuperview()
+                    make.leading.trailing.equalToSuperview().inset(20)
+                    // MARK: - 하나의 cell높이(59), Header의 높이 43, Footer의 높이(60)에서 자연스럽게 10추가
+                    make.height.equalTo(receivedValue.courseList.count * 59 + 43 + 70)
+                }
+                self.pathTableView.reloadData()
             }
             .store(in: &myCancelBag)
     }
@@ -159,6 +174,7 @@ final class HomeViewController: BaseViewController {
             let currentDateRange = getCurrentDateRange()
             try await viewModel.fetchAsync()
             try await viewModel.fetchDateRangeAsync(startDate: currentDateRange[0], endDate: currentDateRange[1])
+            try await viewModel.fetchSelectedDateCourse(selectedDate: "2022-11-15")
         }
     }
     
@@ -337,19 +353,14 @@ extension HomeViewController {
             make.leading.trailing.equalToSuperview().inset(20)
         }
         
-        pathTableView.snp.makeConstraints { make in
-            make.top.equalTo(calendarView.snp.bottom).offset(10)
-            make.centerX.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(20)
-            // MARK: - 하나의 cell높이(59), Header의 높이 43, Footer의 높이(60)에서 자연스럽게 10추가
-            make.height.equalTo(viewModel.datePathList.count * 59 + 43 + 70)
-        }
+
     }
 }
 
 extension HomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionCount = (tableView == dateTableView ? viewModel.ddayDateList.count : viewModel.datePathList.count)
+        let sectionCount = (tableView == dateTableView ? viewModel.ddayDateList.count : viewModel.dateCourse?.courseList.count)
+        guard let sectionCount = sectionCount else { return 0 }
         return sectionCount
     }
     
@@ -364,21 +375,25 @@ extension HomeViewController: UITableViewDataSource {
             
             guard let cell = tableView.dequeueReusableCell(withIdentifier: PathTableViewCell.cellId, for: indexPath) as? PathTableViewCell else { return UITableViewCell() }
             cell.delegate = self
+            guard let course = viewModel.dateCourse else { return UITableViewCell() }
             switch indexPath.row {
             case 0:
                 cell.lineUpper.isHidden = true
                 // MARK: - 코스가 하나일때 분기처리
-                if viewModel.datePathList.count == 1 {
+                if course.courseList.count == 1 {
+                    print("1")
                     cell.lineLower.isHidden = true
                 }
-            case viewModel.datePathList.index(before: viewModel.datePathList.endIndex):
+            case course.courseList.index(before: course.courseList.endIndex):
+                print("2")
                 cell.lineLower.isHidden = true
             default:
+                print("3")
                 cell.lineLower.isHidden = false
                 cell.lineUpper.isHidden = false
             }
             
-            cell.data = viewModel.datePathList[indexPath.row]
+            cell.data = viewModel.dateCourse?.courseList[indexPath.row]
             cell.backgroundColor = .clear
             cell.selectionStyle = .none
             return cell

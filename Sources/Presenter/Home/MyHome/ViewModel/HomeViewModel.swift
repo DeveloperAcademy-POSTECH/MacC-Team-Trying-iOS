@@ -15,10 +15,15 @@ struct DateDday {
     let dday: Int
 }
 
+struct HomeCourse {
+    let courseTitle: String
+    let courseList: [DatePath]
+}
+
 struct DatePath {
     let title: String
     let comment: String
-    let distance: Int?
+    let distance: Double?
     let location: CLLocationCoordinate2D
 }
 
@@ -33,6 +38,7 @@ final class HomeViewModel: BaseViewModel {
 
     @Published var testUser: UserInfo?
     @Published var dateCalendarList: [YearMonthDayDate] = []
+    @Published var dateCourse: HomeCourse?
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),
@@ -105,6 +111,19 @@ final class HomeViewModel: BaseViewModel {
             YearMonthDayDate(year: aa.year, month: aa.month, day: aa.day)
         }
         dateCalendarList = changeStruct
+    }
+    
+    func fetchSelectedDateCourse(selectedDate: String) async throws {
+        let data = try await HomeAPIService.fetchCourseList(selectedDate: selectedDate)
+        guard let selectedDateCourseDTO = try? JSONDecoder().decode(SelectedDateCourse.self, from: data) else {
+            print("선택한 날짜 데이트 코스 조회 Decoder오류")
+            return
+        }
+        let placeList: [DatePath] = selectedDateCourseDTO.places.map { placeElement in
+            DatePath(title: placeElement.place.name, comment: placeElement.memo, distance: placeElement.distanceFromNext, location: .init(latitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.latitude), longitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.longitude)))
+        }
+        dateCourse = HomeCourse(courseTitle: selectedDateCourseDTO.title, courseList: placeList)
+        dump(dateCourse)
     }
 }
 
