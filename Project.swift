@@ -10,6 +10,14 @@ let project = Project(
         disableBundleAccessors: true,
         disableSynthesizedResourceAccessors: true
     ),
+    settings: .settings(
+        base: ["OTHER_LDFLAGS" : "$(OTHER_LDFLAGS) -ObjC"],
+        configurations: [
+            .debug(name: .debug),
+            .release(name: .release)
+        ],
+        defaultSettings: .recommended
+    ),
     targets: [
         Target(
             name: projectName,
