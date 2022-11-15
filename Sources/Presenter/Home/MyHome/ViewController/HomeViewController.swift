@@ -135,9 +135,9 @@ final class HomeViewController: BaseViewController {
         
         viewModel.$dateCalendarList
             .receive(on: DispatchQueue.main)
+            .print()
             .sink { [weak self] receivedValue in
                 guard let self = self else { return }
-//                guard let receivedValue = receivedValue else { return }
                 self.calendarView.scheduleList = receivedValue
             }
             .store(in: &myCancelBag)
@@ -155,17 +155,15 @@ final class HomeViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isHidden = true
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
         Task {
             let currentDateRange = getCurrentDateRange()
             try await viewModel.fetchAsync()
             try await viewModel.fetchDateRangeAsync(startDate: currentDateRange[0], endDate: currentDateRange[1])
-            dump(currentDateRange)
         }
-
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         bind()
         setAttributes()
         setUI()
