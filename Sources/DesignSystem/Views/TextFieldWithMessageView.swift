@@ -8,7 +8,6 @@
 
 import UIKit
 
-import PinLayout
 import SnapKit
 
 protocol TextFieldWithMessageViewComponentDelegate: AnyObject {
