@@ -7,6 +7,8 @@
 //
 
 import UIKit
+
+import Firebase
 import KakaoSDKAuth
 import KakaoSDKCommon
 
@@ -40,6 +42,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 // MARK: - Push Notifications
 extension AppDelegate: UNUserNotificationCenterDelegate {
     private func registerForRemoteNotifications() {
+        FirebaseApp.configure()
+        Messaging.messaging().delegate = self
+        
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.delegate = self
         let options: UNAuthorizationOptions = [.alert, .sound, .badge]
@@ -63,7 +68,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         // 디바이스 토큰 등록 성공 시
         let deviceTokenString = deviceToken.map { String(format: "%02x", $0) }.joined()
-        print(deviceTokenString)
+        Messaging.messaging().apnsToken = deviceToken
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -72,3 +77,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
 }
 
+// MARK: - MessagingDelegate
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        // TODO: 로그인 시 FCM Token을 서버에 넘겨주세요. (FCM 토큰은 앱이 지웠다가 다시 설치하면 토큰값이 바뀝니다.)
+        print("✨FCM Token : \(fcmToken)")
+    }
+}

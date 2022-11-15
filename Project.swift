@@ -20,9 +20,11 @@ let project = Project(
             infoPlist: .file(path: "SupportingFiles/\(projectName)-Info.plist"),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
+            entitlements: "SupportingFiles/\(projectName).entitlements",
             scripts: [.SwiftLintShell],
             dependencies: [
                 .external(name: "CancelBag"),
+                .external(name: "FirebaseMessaging"),
                 .external(name: "FlexLayout"),
                 .external(name: "Lottie"),
                 .external(name: "PinLayout"),
