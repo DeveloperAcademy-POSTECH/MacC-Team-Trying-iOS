@@ -103,6 +103,7 @@ final class AddCourseMapViewController: BaseViewController {
                 }
 
                 DispatchQueue.main.async {
+                    // MARK: reload가 조금 느리게 되는 이슈가 있습니다.
                     self.placeListView.mapPlaceTableView.reloadData()
                     self.nextButton.setTitle("\(numberOfPlaces)개 선택 완료", for: .normal)
                 }
