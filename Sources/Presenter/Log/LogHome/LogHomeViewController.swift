@@ -27,29 +27,34 @@ final class LogHomeViewController: BaseViewController {
     }
     
     lazy var previousConstellationButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
+        let button = UIButton(type: .custom)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.white.withAlphaComponent(0.1)
+        button.alpha = 0.7
+        button.clipsToBounds = true
         button.layer.cornerRadius = 9
-        button.layer.borderWidth = 1
-        button.layer.borderColor = .designSystem(.mainYellow)
+        button.isHidden = true
         return button
     }()
     
     lazy var currentConstellationButton: UIButton = {
         let button = UIButton()
+        button.imageView?.contentMode = .scaleAspectFit
         button.backgroundColor = .clear
         button.layer.cornerRadius = 15
-        button.layer.borderWidth = 1
+        button.layer.borderWidth = 0.5
         button.layer.borderColor = .designSystem(.mainYellow)
         return button
     }()
     
     lazy var nextConstellationButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
+        let button = UIButton(type: .custom)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.backgroundColor = UIColor.white.withAlphaComponent(0.1)
+        button.alpha = 0.7
+        button.clipsToBounds = true
         button.layer.cornerRadius = 9
-        button.layer.borderWidth = 1
-        button.layer.borderColor = .designSystem(.mainYellow)
+        button.isHidden = true
         return button
     }()
     
@@ -187,7 +192,7 @@ extension LogHomeViewController {
     
     private func setButtonTarget() {
         mapButton.addTarget(self, action: #selector(tapMapButton), for: .touchUpInside)
-        listButton.addTarget(self, action: #selector(TapTestButton), for: .touchUpInside)
+        listButton.addTarget(self, action: #selector(tapListButton), for: .touchUpInside)
         previousConstellationButton.addTarget(self, action: #selector(tapPreviousConstellationButton), for: .touchUpInside)
         nextConstellationButton.addTarget(self, action: #selector(tapNextConstellationButton), for: .touchUpInside)
         constellationDetailButton.addTarget(self, action: #selector(tapConstellationDetailButton), for: .touchUpInside)
@@ -251,16 +256,17 @@ extension LogHomeViewController {
     
     @objc
     func tapConstellationDetailButton() {
-        viewModel.pushMyConstellationView()
-    }
-    
-    @objc
-    func TapTestButton() {
         let viewModel = LogTicketViewModel.shared
         let viewController = LogTicketViewController(viewModel: viewModel)
         viewController.view.backgroundColor = .clear
         viewController.modalPresentationStyle = .pageSheet
         self.present(viewController, animated: true)
+        
+    }
+    
+    @objc
+    func tapListButton() {
+        viewModel.pushMyConstellationView()
     }
     
     @objc
@@ -281,18 +287,17 @@ extension LogHomeViewController {
         }
     }
     
-    
     /// 이전, 이후, 현재 별자리의 제약조건을 추가합니다.
     func setConstellationButtonOption() {
         previousConstellationButton.isHidden = (currentIndex == 0) ? true : false
         nextConstellationButton.isHidden = (currentIndex == viewModel.courses.count - 1) ? true : false
         
         let courses = viewModel.courses
-        let currentConstellationImage = StarMaker.makeStars(places: courses[currentIndex].places)?.resizeImageTo(size: CGSize(width: 35, height: 35))
+        let currentConstellationImage = StarMaker.makeStars(places: courses[currentIndex].places)?.resizeImageTo(size: CGSize(width: 22, height: 22))
         
-        let previousConstellationImage = StarMaker.makeStars(places: courses[max(currentIndex - 1, 0)].places)?.resizeImageTo(size: CGSize(width: 20, height: 20))
+        let previousConstellationImage = StarMaker.makeStars(places: courses[max(currentIndex - 1, 0)].places)?.resizeImageTo(size: CGSize(width: 13, height: 13))
         
-        let nextConstellationImage = StarMaker.makeStars(places: courses[min(currentIndex + 1, courses.count - 1)].places)?.resizeImageTo(size: CGSize(width: 20, height: 20))
+        let nextConstellationImage = StarMaker.makeStars(places: courses[min(currentIndex + 1, courses.count - 1)].places)?.resizeImageTo(size: CGSize(width: 13, height: 13))
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
