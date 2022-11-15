@@ -19,7 +19,6 @@ final class ProfileViewModel: BaseViewModel {
     
     // FIXME: Data binding
     @Published var numberOfPlaces: Int = 249
-    @Published var numberOfCities: Int = 60
     @Published var planetImageName: String = "planet_purple"
     @Published var planetName: String = "찰리"
     
