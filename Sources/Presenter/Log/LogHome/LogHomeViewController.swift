@@ -9,9 +9,9 @@
 import Combine
 import UIKit
 
-import Lottie
 import CancelBag
 import SnapKit
+import Lottie
 
 final class LogHomeViewController: BaseViewController {
     
@@ -181,7 +181,16 @@ extension LogHomeViewController {
     /// Attributes를 설정합니다.
     private func setAttributes() {
         logCollectionView.delegate = self
+        setButtonTarget()
         setConstellationButtonOption()
+    }
+    
+    private func setButtonTarget() {
+        mapButton.addTarget(self, action: #selector(tapMapButton), for: .touchUpInside)
+        listButton.addTarget(self, action: #selector(TapTestButton), for: .touchUpInside)
+        previousConstellationButton.addTarget(self, action: #selector(tapPreviousConstellationButton), for: .touchUpInside)
+        nextConstellationButton.addTarget(self, action: #selector(tapNextConstellationButton), for: .touchUpInside)
+        constellationDetailButton.addTarget(self, action: #selector(tapConstellationDetailButton), for: .touchUpInside)
     }
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
@@ -194,12 +203,6 @@ extension LogHomeViewController {
             nextConstellationButton,
             constellationDetailButton
         )
-        
-        mapButton.addTarget(self, action: #selector(tapMapButton), for: .touchUpInside)
-        listButton.addTarget(self, action: #selector(TapTestButton), for: .touchUpInside)
-        previousConstellationButton.addTarget(self, action: #selector(tapPreviousConstellationButton), for: .touchUpInside)
-        nextConstellationButton.addTarget(self, action: #selector(tapNextConstellationButton), for: .touchUpInside)
-        constellationDetailButton.addTarget(self, action: #selector(tapConstellationDetailButton), for: .touchUpInside)
         
         mapButton.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.1102)
@@ -243,12 +246,12 @@ extension LogHomeViewController {
     
     @objc
     func tapMapButton() {
-        viewModel.pushMyConstellationView()
+        
     }
     
     @objc
     func tapConstellationDetailButton() {
-        
+        viewModel.pushMyConstellationView()
     }
     
     @objc
@@ -278,6 +281,8 @@ extension LogHomeViewController {
         }
     }
     
+    
+    /// 이전, 이후, 현재 별자리의 제약조건을 추가합니다.
     func setConstellationButtonOption() {
         previousConstellationButton.isHidden = (currentIndex == 0) ? true : false
         nextConstellationButton.isHidden = (currentIndex == viewModel.courses.count - 1) ? true : false
@@ -295,63 +300,5 @@ extension LogHomeViewController {
             self.previousConstellationButton.setImage(previousConstellationImage, for: .normal)
             self.nextConstellationButton.setImage(nextConstellationImage, for: .normal)
         }
-    }
-    
-    func makeConstellation(places: [Place]) -> UIImage {
-        let constellationView = UIView()
-        constellationView.backgroundColor = .clear
-        constellationView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
-        
-        let latitudeArray = places.map { CGFloat($0.location.latitude) }
-        let longitudeArray = places.map { CGFloat($0.location.longitude) }
-        
-        guard let minX = latitudeArray.min(),
-              let maxX = latitudeArray.max(),
-              let minY = longitudeArray.min(),
-              let maxY = longitudeArray.max() else { return UIView().asImage() }
-        
-        let deltaX: CGFloat = maxX == minX ? 1 : maxX - minX
-        let deltaY: CGFloat = maxY == minY ? 1 : maxY - minY
-        
-        let adjustedLatitude = latitudeArray.map { (CGFloat(($0 - minX) / deltaX ) * 200) * 0.8 }
-        let adjustedLongitude = longitudeArray.map { (CGFloat(($0 - minY) / deltaY) * 200) * 0.8 }
-        
-        let xOffset = (200 - abs(adjustedLatitude.max()!)) / 2 - 12.5
-        let yOffset = (200 - abs(adjustedLongitude.max()!)) / 2 - 12.5
-        
-        for index in places.indices {
-            let randomStarLottieSize = CGFloat.random(in: (30.0...60.0))
-            let starLottie = LottieAnimationView(name: Constants.Lottie.mainStar)
-            starLottie.contentMode = .scaleAspectFit
-            starLottie.frame = CGRect(x: adjustedLatitude[index] + xOffset, y: adjustedLongitude[index] + yOffset, width: randomStarLottieSize, height: randomStarLottieSize)
-            starLottie.animationSpeed = CGFloat.random(in: 0.05...0.3)
-            starLottie.animationSpeed = 0.6
-            starLottie.loopMode = .loop
-            starLottie.play(fromProgress: 0.0, toProgress: 0.9935)
-            
-            constellationView.addSubview(starLottie)
-            
-            if index < places.count - 1 {
-                let xPan = (adjustedLatitude[index + 1] - adjustedLatitude[index])
-                let yPan = (adjustedLongitude[index + 1] - adjustedLongitude[index])
-                
-                let distance = ((xPan * xPan) + (yPan * yPan)).squareRoot()
-                let editX = 13 / distance * xPan
-                let editY = 13 / distance * yPan
-                
-                let path = UIBezierPath()
-                path.move(to: CGPoint(x: adjustedLatitude[index] + starLottie.frame.size.width / 2 + editX + xOffset, y: adjustedLongitude[index] + starLottie.frame.size.height / 2 + editY + yOffset))
-                path.addLine(to: CGPoint(x: adjustedLatitude[index + 1] + starLottie.frame.size.width / 2 - editX + xOffset, y: adjustedLongitude[index + 1] + starLottie.frame.size.height / 2 - editY + yOffset))
-                path.lineWidth = 0.15
-                path.close()
-                
-                let shapeLayer = CAShapeLayer()
-                shapeLayer.path = path.cgPath
-                shapeLayer.lineWidth = path.lineWidth
-                shapeLayer.strokeColor = .designSystem(.whiteFFFBD9)
-                constellationView.layer.addSublayer(shapeLayer)
-            }
-        }
-        return constellationView.asImage()
     }
 }
