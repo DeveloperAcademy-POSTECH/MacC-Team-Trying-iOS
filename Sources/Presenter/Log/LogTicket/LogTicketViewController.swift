@@ -29,6 +29,7 @@ final class LogTicketViewController: BaseViewController {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
         self.navigationController?.isNavigationBarHidden = true
+        view.backgroundColor = .clear
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
