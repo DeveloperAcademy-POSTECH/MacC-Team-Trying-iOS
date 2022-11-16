@@ -14,27 +14,20 @@ import SnapKit
 
 final class ProfileViewController: BaseViewController {
     private let sections = ["활동내역", "회원설정", "고객센터"]
-    private let userSetting = ["닉네임 수정", "비밀번호 변경", "푸쉬 설정"]
+    private let userSetting = ["닉네임 수정", "디데이 수정", "푸쉬 설정"]
     private let services = ["공지사항", "서비스 약관", "자주 묻는 질문"]
     
     var viewModel: ProfileViewModel
     
-    private lazy var placeLabel = UILabel()
-    
-    private lazy var cityLabel = UILabel()
-    
-    private lazy var planetImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        return scrollView
     }()
     
-    private lazy var planetNameLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .designSystem(.white)
-        label.font = .designSystem(weight: .bold, size: ._15)
-        return label
-    }()
+    private let contentView = UIView()
+    
+    private lazy var profilePlanetView = ProfilePlanetView(type: .alone)
     
     private lazy var profileTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -44,6 +37,7 @@ final class ProfileViewController: BaseViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.backgroundColor = .clear
+        tableView.isScrollEnabled = false
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .singleLine
         tableView.separatorColor = .designSystem(.gray818181)?.withAlphaComponent(0.8)
@@ -70,25 +64,7 @@ final class ProfileViewController: BaseViewController {
                 string.append(secondString)
                 string.append(thirdString)
                 
-                self.placeLabel.attributedText = string
-            }
-            .cancel(with: cancelBag)
-        
-        viewModel.$numberOfCities
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] number in
-                guard let self = self else { return }
-                
-                let firstString = NSAttributedString(string: "총", attributes: [.font: UIFont.gmarksans(weight: .light, size: ._15)])
-                let secondString = NSAttributedString(string: " \(number)곳의", attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
-                let thirdString = NSAttributedString(string: " 도시에 방문했어요!", attributes: [.font: UIFont.gmarksans(weight: .light, size: ._15)])
-                let string = NSMutableAttributedString()
-                
-                string.append(firstString)
-                string.append(secondString)
-                string.append(thirdString)
-                
-                self.cityLabel.attributedText = string
+                self.profilePlanetView.placeLabel.attributedText = string
             }
             .cancel(with: cancelBag)
         
@@ -96,7 +72,7 @@ final class ProfileViewController: BaseViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] imageName in
                 guard let self = self else { return }
-                self.planetImageView.image = UIImage(named: imageName)
+                self.profilePlanetView.planetImageView.image = UIImage(named: imageName)
             }
             .cancel(with: cancelBag)
         
@@ -104,7 +80,7 @@ final class ProfileViewController: BaseViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] name in
                 guard let self = self else { return }
-                self.planetNameLabel.text = name
+                self.profilePlanetView.planetNameLabel.text = name
             }
             .cancel(with: cancelBag)
     }
@@ -122,6 +98,7 @@ final class ProfileViewController: BaseViewController {
         super.viewDidLoad()
         
         setUI()
+        setButtonTarget()
         bind()
     }
 }
@@ -129,51 +106,36 @@ final class ProfileViewController: BaseViewController {
 // MARK: - UI
 extension ProfileViewController: NavigationBarConfigurable {
     private func setUI() {
-        setAttributes()
-        setLayout()
-    }
-    
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
-    }
-    
-    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setLayout() {
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         
-        view.addSubviews(
-            placeLabel,
-            cityLabel,
-            planetImageView,
-            planetNameLabel,
+        view.addSubview(scrollView)
+        scrollView.snp.makeConstraints { make in
+//            make.edges.equalToSuperview()
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+        }
+        
+        scrollView.addSubview(contentView)
+        contentView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+            make.centerX.top.bottom.equalToSuperview()
+        }
+        
+        contentView.addSubviews(
+            profilePlanetView,
             profileTableView
         )
-        
-        placeLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(30)
-            make.leading.equalToSuperview().inset(20)
-        }
-        
-        cityLabel.snp.makeConstraints { make in
-            make.top.equalTo(placeLabel.snp.bottom).offset(10)
-            make.leading.equalToSuperview().inset(20)
-        }
-        
-        planetImageView.snp.makeConstraints { make in
-            make.top.equalTo(cityLabel.snp.bottom).offset(40)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(100)
-        }
-        
-        planetNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(planetImageView.snp.bottom).offset(20)
-            make.centerX.equalToSuperview()
+
+        profilePlanetView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(290)
         }
         
         profileTableView.snp.makeConstraints { make in
-            make.top.equalTo(planetNameLabel.snp.bottom).offset(40)
+            make.top.equalTo(profilePlanetView.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview()
+            make.height.equalTo(600)
             make.bottom.equalToSuperview()
         }
     }
@@ -181,16 +143,26 @@ extension ProfileViewController: NavigationBarConfigurable {
 
 // MARK: - User Interactions
 extension ProfileViewController {
+    private func setButtonTarget() {
+        switch self.profilePlanetView.type {
+        case .noPlanet:
+            profilePlanetView.enterPlanetButton.addTarget(self, action: #selector(enterPlanetButtonPressed(_:)), for: .touchUpInside)
+            profilePlanetView.createPlanetButton.addTarget(self, action: #selector(createPlanetButtonPressed(_:)), for: .touchUpInside)
+            
+        case .alone:
+            profilePlanetView.inviteMateButton.addTarget(self, action: #selector(inviteMateButtonPressed(_:)), for: .touchUpInside)
+            
+        case .couple:
+            break
+        }
+    }
+    
     @objc
     private func settingButtonPressed(_ sender: UIButton) {
+        HapticManager.instance.selection()
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { action in
-            // TODO: logic 추가
-            // FIXME: 임시로 화면전환 구현. 삭제하기
-            self.viewModel.pushToEditDayView()
-        }
-        let editDayAction = UIAlertAction(title: "디데이 수정", style: .default) { action in
             // TODO: logic 추가
         }
         let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { action in
@@ -199,11 +171,28 @@ extension ProfileViewController {
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         
         alertController.addAction(editPlanetNameAction)
-        alertController.addAction(editDayAction)
         alertController.addAction(exitPlanetAction)
         alertController.addAction(cancelAction)
         
         present(alertController, animated: true)
+    }
+    
+    @objc
+    private func enterPlanetButtonPressed(_ sender: UIButton) {
+        // TODO: Enter Planet
+        HapticManager.instance.selection()
+    }
+    
+    @objc
+    private func createPlanetButtonPressed(_ sender: UIButton) {
+        // TODO: Create Planet
+        HapticManager.instance.selection()
+    }
+    
+    @objc
+    private func inviteMateButtonPressed(_ sender: UIButton) {
+        // TODO: Invite Mate
+        HapticManager.instance.selection()
     }
 }
 
@@ -272,6 +261,47 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             return 56
         default:
             return -1
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case 0:
+            break
+            
+        case 1:
+            switch indexPath.row {
+            case 0:
+                // TODO: 닉네임 수정
+                break
+            case 1:
+                viewModel.pushToEditDayView()
+            case 2:
+                // TODO: 푸쉬 설정
+                break
+            default:
+                break
+                
+            }
+            
+        case 2:
+            switch indexPath.row {
+            case 0:
+                // TODO: 공지사항
+                break
+            case 1:
+                // TODO: 서비스 약관
+                break
+            case 2:
+                // TODO: 자주 묻는 질문
+                break
+            default:
+                break
+                
+            }
+            
+        default:
+            break
         }
     }
 }
