@@ -33,9 +33,7 @@ let project = Project(
             dependencies: [
                 .external(name: "CancelBag"),
                 .external(name: "FirebaseMessaging"),
-                .external(name: "FlexLayout"),
                 .external(name: "Lottie"),
-                .external(name: "PinLayout"),
                 .external(name: "SnapKit"),
                 .external(name: "KakaoSDKUser")
             ]
