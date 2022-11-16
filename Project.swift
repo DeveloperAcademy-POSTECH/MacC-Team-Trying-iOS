@@ -23,9 +23,7 @@ let project = Project(
             scripts: [.SwiftLintShell],
             dependencies: [
                 .external(name: "CancelBag"),
-                .external(name: "FlexLayout"),
                 .external(name: "Lottie"),
-                .external(name: "PinLayout"),
                 .external(name: "SnapKit"),
                 .external(name: "KakaoSDKUser")
             ]
