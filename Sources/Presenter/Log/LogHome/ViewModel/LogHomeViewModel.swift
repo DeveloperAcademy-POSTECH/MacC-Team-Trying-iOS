@@ -19,14 +19,21 @@ protocol LogMapViewCoordinating {
     func pushLogMapViewController()
 }
 
+// MARK: ViewModel
 final class LogHomeViewModel: BaseViewModel {
     
     var coordinator: Coordinator
     
+    private let fetchConstellationsUseCase: FetchConstellationsUseCase
+    
     var courses = [TestCourse]()
     
-    init(coordinator: Coordinator) {
+    init(
+        coordinator: Coordinator,
+        fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()
+    ) {
         self.coordinator = coordinator
+        self.fetchConstellationsUseCase = fetchConstellationUseCase
         super.init()
         fetchData()
     }
