@@ -89,9 +89,7 @@ final class LogMapViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
-        
         // output
-        
     }
     
     init(viewModel: LogMapViewModel) {
@@ -103,21 +101,23 @@ final class LogMapViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: Life-Cycle
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         // FIXME: 탭바 코드 삭제하기
         navigationController?.tabBarController?.tabBar.isHidden = true
         currentLocation = locationManager.location
-        
         setUI()
         bind()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        navigationController?.navigationBar.isHidden = true
         
         if CLLocationManager.locationServicesEnabled() {
             if CLLocationManager.authorizationStatus() == .denied || CLLocationManager.authorizationStatus() == .restricted {
@@ -304,15 +304,15 @@ extension LogMapViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
-        case .notDetermined :
+        case .notDetermined:
             manager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse:
             self.currentLocation = locationManager.location
         case .authorizedAlways:
             self.currentLocation = locationManager.location
-        case .restricted :
+        case .restricted:
             break
-        case .denied :
+        case .denied:
             break
         default:
             break
@@ -325,6 +325,7 @@ extension LogMapViewController {
     @objc
     private func dismissButtonPressed(_ sender: UIButton) {
         // TODO: dismiss
+        viewModel.tapDismissButton()
     }
     
     @objc
