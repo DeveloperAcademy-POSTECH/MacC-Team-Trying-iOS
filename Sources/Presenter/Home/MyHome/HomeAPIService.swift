@@ -58,8 +58,8 @@ class HomeAPIService {
         return data
     }
     
-    static func fetchDateList(startDate: String, endDate: String) async throws -> Data {
-        let dateRangeFetchUrl = "https://comeit.site/courses/dates?start=\(startDate)&end=\(endDate)"
+    static func fetchDateList(dateRange: [String]) async throws -> Data {
+        let dateRangeFetchUrl = "https://comeit.site/courses/dates?start=\(dateRange[0])&end=\(dateRange[1])"
         guard let url = URL(string: dateRangeFetchUrl) else {
             throw HomeApiError.urlResponse
         }

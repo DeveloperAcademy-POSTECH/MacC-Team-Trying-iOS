@@ -208,15 +208,6 @@ final class HomeViewController: BaseViewController {
         setUI()
     }
     
-    private func getCurrentDateRange() -> [String] {
-        let currentDate = Date()
-        let beforeDate = Date().monthBefore
-        let nextDate = currentDate.month2After
-        let beforeDateString = beforeDate.dateToString()
-        let afterDateString = nextDate.dateToString()
-        return [beforeDateString, afterDateString]
-    }
-    
     private func setNoMateUI() {
         guard let user = self.viewModel.user else { return }
         self.homeTitle.attributedText = String.makeAtrributedString(
@@ -444,10 +435,14 @@ extension HomeViewController: CalendarViewDelegate {
         }
     }
     
+    /// 캘린더에서 특정날짜를 누르면 그 날짜를 input으로 넣어주는 delegate함수
+    /// - Parameter date: 내가 누른 날짜
     func selectDate(_ date: Date?) {
         guard let date = date else { return }
         let selectedDate = date.dateToString()
         Task {
+            // MARK: - 내가 누른 날짜가 처음에 조회한 데이트가 존재하는 날짜에 포함되어있는지를 판단
+            // 데이트가 존재하지 않는날짜를 누르면 api자체를 호출하지 않게끔 하기 위한 분기처리 - 서버에서 데이터를 안주게 처리
             if viewModel.hasCourse(selectedDate: selectedDate) {
                 try await viewModel.fetchSelectedDateCourse(selectedDate: selectedDate)
                 self.dateCoureRegisterButton.isHidden = true
@@ -463,8 +458,18 @@ extension HomeViewController: CalendarViewDelegate {
         }
     }
     
+    /// 데이트가 없다면 데이트추가하기 버튼을 보여주는 분기처리 함수
     private func setRegisterButton() {
         self.dateCoureRegisterButton.isHidden = false
         self.pathTableView.isHidden = true
+    }
+
+    private func getCurrentDateRange() -> [String] {
+        let currentDate = Date()
+        let beforeDate = Date().monthBefore
+        let nextDate = currentDate.month2After
+        let beforeDateString = beforeDate.dateToString()
+        let afterDateString = nextDate.dateToString()
+        return [beforeDateString, afterDateString]
     }
 }

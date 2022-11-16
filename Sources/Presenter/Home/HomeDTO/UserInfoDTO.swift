@@ -1,5 +1,5 @@
 //
-//  InquiryMyPlanetDTO.swift
+//  UserInfoDTO.swift
 //  MatStar
 //
 //  Created by uiskim on 2022/10/25.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct UserInfo: Codable {
+struct UserInfoDTO: Codable {
     let me: Mate
     let mate: Mate?
     

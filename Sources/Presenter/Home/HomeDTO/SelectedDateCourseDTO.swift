@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SelectedDateCourse: Codable {
+struct SelectedDateCourseDTO: Codable {
     let courseId: Int
     let title, date: String
     let liked: Bool
@@ -33,5 +33,3 @@ struct SelectedDateCourse: Codable {
         let latitude, longitude: Double
     }
 }
-
-

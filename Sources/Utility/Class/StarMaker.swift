@@ -11,7 +11,7 @@ import UIKit
 
 struct StarMaker {
     
-    static func makeStars(places: [UserCourseInfo.Coordinates]) -> UIImage? {
+    static func makeStars(places: [UserCourseInfoDTO.Coordinates]) -> UIImage? {
         let starView = UIView()
         starView.backgroundColor = .clear
         starView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
