@@ -19,7 +19,7 @@ class TestViewController: UIViewController {
         super.viewDidLoad()
         
         view.addSubview(calendarView)
-        calendarView.delegate = self
+//        calendarView.delegate = self
         calendarView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(140)
             make.leading.trailing.equalToSuperview().inset(20)
@@ -58,10 +58,10 @@ class TestViewController: UIViewController {
 
 }
 
-extension TestViewController: CalendarViewDelegate {
-    func scrollViewDidEndDecelerating() {
-        UIView.animate(withDuration: 0.3, delay: 0) {
-            self.view.layoutIfNeeded()
-        }
-    }
-}
+//extension TestViewController: CalendarViewDelegate {
+//    func scrollViewDidEndDecelerating() {
+//        UIView.animate(withDuration: 0.3, delay: 0) {
+//            self.view.layoutIfNeeded()
+//        }
+//    }
+//}

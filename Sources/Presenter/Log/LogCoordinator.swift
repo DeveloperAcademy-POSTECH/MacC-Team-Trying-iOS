@@ -26,8 +26,9 @@ final class LogCoordinator: Coordinator, MyConstellationViewCoordinating, Ticket
     }
     
     func pushMyConstellationViewController() {
-        let viewModel = MyConstellationViewModel(coordinator: self)
-        let viewController = MyConstellationViewController(viewModel: viewModel)
+        let viewModel = LogHomeViewModel(coordinator: self)
+        let viewController = MyConstellationViewController()
+        viewController.courses = viewModel.courses
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     

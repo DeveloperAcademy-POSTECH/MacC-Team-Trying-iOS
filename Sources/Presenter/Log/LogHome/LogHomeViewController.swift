@@ -259,7 +259,7 @@ extension LogHomeViewController {
         let viewModel = LogTicketViewModel.shared
         let viewController = LogTicketViewController(viewModel: viewModel)
         viewController.view.backgroundColor = .clear
-        viewController.modalPresentationStyle = .pageSheet
+        viewController.modalPresentationStyle = .popover
         self.present(viewController, animated: true)
         
     }

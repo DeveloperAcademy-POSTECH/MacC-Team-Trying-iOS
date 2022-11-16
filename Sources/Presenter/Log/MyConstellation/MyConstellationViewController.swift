@@ -13,59 +13,77 @@ import CancelBag
 import SnapKit
 
 final class MyConstellationViewController: BaseViewController {
-    var viewModel: MyConstellationViewModel
+
+    var courses = [TestCourse]()
     
-    private var testLabel: UILabel = {
-       let label = UILabel()
-        label.text = "내 별자리 확인 뷰입니다만?"
-        label.tintColor = .white
-        label.font = UIFont.designSystem(weight: .bold, size: ._30)
-        return label
+    lazy var myConstellationCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: (DeviceInfo.screenWidth - 40 - 10) / 2, height: 225)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.backgroundColor = .clear
+        return collectionView
     }()
-    
-    /// View Model과 bind 합니다.
-    private func bind() {
-        // input
-        // output
-    }
-    
-    init(viewModel: MyConstellationViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        bind()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+        setNavigationBar()
     }
 }
 
 // MARK: - UI
 extension MyConstellationViewController {
     private func setUI() {
-        setAttributes()
-        setConstraints()
-    }
-    
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
-    }
-    
-    /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setConstraints() {
-        view.addSubview(testLabel)
-        testLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        view.addSubview(myConstellationCollectionView)
+        myConstellationCollectionView.register(MyConstellationCollectionViewCell.self, forCellWithReuseIdentifier: MyConstellationCollectionViewCell.cellId)
+        myConstellationCollectionView.dataSource = self
+        myConstellationCollectionView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
         }
+    }
+    
+    func setNavigationBar() {
+        // MARK: 네비게이션 title의 font변경
+        self.title = "내 별자리"
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20)]
+        
+        // MARK: 네비게이션 rightbutton커스텀
+        
+        let configure = UIImage.SymbolConfiguration(pointSize: 23, weight: .light, scale: .default)
+        
+        let mapButton = UIButton(type: .custom)
+        mapButton.setImage(UIImage(systemName: "map", withConfiguration: configure), for: .normal)
+        mapButton.tintColor = .white
+        mapButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        
+        let backButton = UIButton(type: .custom)
+        backButton.setImage( UIImage(systemName: "chevron.backward", withConfiguration: configure), for: .normal)
+        backButton.tintColor = .white
+        backButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        
+        let rightBarButton = UIBarButtonItem(customView: mapButton)
+        let leftBarButton = UIBarButtonItem(customView: backButton)
+        self.navigationItem.rightBarButtonItem = rightBarButton
+        self.navigationItem.leftBarButtonItem = leftBarButton
+        
+        // MARK: 네비게이션이 너무 위에 붙어있어서 height증가
+        self.additionalSafeAreaInsets.top = 20
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+    }
+}
+
+extension MyConstellationViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return courses.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyConstellationCollectionViewCell.cellId, for: indexPath) as? MyConstellationCollectionViewCell else { return UICollectionViewCell() }
+        cell.course = courses[indexPath.row]
+        return cell
     }
 }
