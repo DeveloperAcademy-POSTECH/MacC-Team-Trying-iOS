@@ -47,7 +47,6 @@ final class HomeViewModel: BaseViewModel {
         DateDday(title: "서울데이트", dday: 40)
     ]
 
-    
     var coordinator: Coordinator
     
     init(coordinator: Coordinator) {
@@ -64,29 +63,22 @@ final class HomeViewModel: BaseViewModel {
         self.user = myPlanineInfoDTO
     }
     
-    func fetchDateRangeAsync(dateRange: [String]) async throws {
-
+    func fetchDateRange(dateRange: [String]) async throws {
+        
         let data = try await HomeAPIService.fetchDateList(startDate: dateRange[0], endDate: dateRange[1])
         guard let myDateListDTO = try? JSONDecoder().decode(DateList.self, from: data) else {
             print("데이트날짜 범위 조회 Decoder오류")
             return
         }
-
-        let changeString = myDateListDTO.dates.map { stringDate in
-            stringDate.getDateFromString()
-        }
-        let changeStruct = changeString.map { aa in
-            YearMonthDayDate(year: aa.year, month: aa.month, day: aa.day)
-        }
-        dateCalendarList = changeStruct
+        
+        dateCalendarList = myDateListDTO.dates
+            .map { $0.getDateFromString() }
+            .map { YearMonthDayDate(year: $0.year, month: $0.month, day: $0.day) }
     }
     
     func hasCourse(selectedDate: String) -> Bool {
-        let dateList = dateCalendarList.map { element in
-            element.asDate()
-        }
         guard let selectedDate = selectedDate.toDate() else { return false }
-        return dateList.contains(selectedDate)
+        return dateCalendarList.map { $0.asDate() }.contains(selectedDate)
     }
     
     func fetchSelectedDateCourse(selectedDate: String) async throws {
@@ -100,6 +92,5 @@ final class HomeViewModel: BaseViewModel {
             DatePath(title: placeElement.place.name, comment: placeElement.memo, distance: placeElement.distanceFromNext, location: .init(latitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.latitude), longitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.longitude)))
         }
         dateCourse = HomeCourse(courseTitle: selectedDateCourseDTO.title, courseList: placeList)
-        dump(dateCourse)
     }
 }

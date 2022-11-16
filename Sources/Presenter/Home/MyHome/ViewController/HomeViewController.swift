@@ -190,7 +190,7 @@ final class HomeViewController: BaseViewController {
         Task {
             let currentDateRange = getCurrentDateRange()
             try await viewModel.fetchUserInfo()
-            try await viewModel.fetchDateRangeAsync(dateRange: currentDateRange)
+            try await viewModel.fetchDateRange(dateRange: currentDateRange)
             try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
             if viewModel.hasCourse(selectedDate: Date.currentDateString) {
                 try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
@@ -434,7 +434,7 @@ extension HomeViewController: ActionSheetDelegate {
 extension HomeViewController: CalendarViewDelegate {
     func changeCalendarPage(startDate: String, endDate: String) {
         Task {
-            try await viewModel.fetchDateRangeAsync(dateRange: [startDate, endDate])
+            try await viewModel.fetchDateRange(dateRange: [startDate, endDate])
         }
     }
     
@@ -463,7 +463,7 @@ extension HomeViewController: CalendarViewDelegate {
         }
     }
     
-    func setRegisterButton() {
+    private func setRegisterButton() {
         self.dateCoureRegisterButton.isHidden = false
         self.pathTableView.isHidden = true
     }
