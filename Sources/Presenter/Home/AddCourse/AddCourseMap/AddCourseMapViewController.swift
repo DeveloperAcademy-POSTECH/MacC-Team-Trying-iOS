@@ -19,18 +19,8 @@ final class AddCourseMapViewController: BaseViewController {
     var viewModel: AddCourseMapViewModel
     
     private var recentAnnotation: MKAnnotation?
-    private lazy var locationManager: CLLocationManager = {
-        let manager = CLLocationManager()
-        manager.delegate = self
-        manager.requestWhenInUseAuthorization()
-        manager.desiredAccuracy = .infinity
-        manager.startUpdatingLocation()
-        manager.startUpdatingHeading()
-        manager.startMonitoringSignificantLocationChanges()
-        return manager
-    }()
+    private let locationManager = LocationManager.shared
     
-    var currentLocation: CLLocation!
     private lazy var placeMapView: MKMapView = {
         let map = MKMapView()
         map.register(StarAnnotationView.self, forAnnotationViewWithReuseIdentifier: StarAnnotationView.identifier)
@@ -38,8 +28,8 @@ final class AddCourseMapViewController: BaseViewController {
         map.setRegion(
             MKCoordinateRegion(
                 center: CLLocationCoordinate2D(
-                    latitude: currentLocation.coordinate.latitude,
-                    longitude: currentLocation.coordinate.longitude
+                    latitude: locationManager.latitude,
+                    longitude: locationManager.longitude
                 ),
                 span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
             ),
@@ -125,7 +115,6 @@ final class AddCourseMapViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        currentLocation = locationManager.location
         setUI()
         bind()
     }
@@ -134,25 +123,6 @@ final class AddCourseMapViewController: BaseViewController {
         super.viewDidAppear(animated)
         
         setNofifications()
-        
-        if CLLocationManager.locationServicesEnabled() {
-            if CLLocationManager.authorizationStatus() == .denied || CLLocationManager.authorizationStatus() == .restricted {
-                let alert = UIAlertController(title: "Error", message: "위치 서비스 기능이 꺼져있습니다.", preferredStyle: .alert)
-                let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
-                alert.addAction(confirmAction)
-                self.present(alert, animated: true, completion: nil)
-            } else {
-                locationManager.desiredAccuracy = kCLLocationAccuracyBest
-                locationManager.delegate = self
-                locationManager.requestWhenInUseAuthorization()
-                currentLocation = locationManager.location
-            }
-        } else {
-            let alert = UIAlertController(title: "Error", message: "위치 서비스 제공을 할 수 없습니다.", preferredStyle: .alert)
-            let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
-            alert.addAction(confirmAction)
-            self.present(alert, animated: true, completion: nil)
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -463,31 +433,6 @@ extension AddCourseMapViewController: MKMapViewDelegate {
         annotationView?.displayPriority = .defaultHigh
         
         return annotationView
-    }
-}
-
-// MARK: - CLLocationManagerDelegate
-extension AddCourseMapViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        locationManager = manager
-        currentLocation = locationManager.location
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .notDetermined :
-            manager.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse:
-            self.currentLocation = locationManager.location
-        case .authorizedAlways:
-            self.currentLocation = locationManager.location
-        case .restricted :
-            break
-        case .denied :
-            break
-        default:
-            break
-        }
     }
 }
 
