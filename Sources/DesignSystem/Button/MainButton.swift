@@ -38,6 +38,7 @@ enum MainButtonType {
 
 final class MainButton: UIButton {
     var type: MainButtonType
+    var height: CGFloat = 58
     
     override var isEnabled: Bool {
         didSet {
@@ -83,7 +84,22 @@ final class MainButton: UIButton {
     
     private func setLayout() {
         self.snp.makeConstraints { make in
-            make.height.equalTo(58)
+            make.height.equalTo(height)
+        }
+    }
+}
+
+// MARK: - BottomHidable
+extension MainButton: BottomHidable {
+    func hide() {
+        self.snp.updateConstraints { make in
+            make.bottom.equalToSuperview().inset(-height)
+        }
+    }
+    
+    func present() {
+        self.snp.updateConstraints { make in
+            make.bottom.equalToSuperview().inset(40)
         }
     }
 }

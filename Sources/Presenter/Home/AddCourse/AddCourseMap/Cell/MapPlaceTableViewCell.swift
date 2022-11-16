@@ -97,4 +97,14 @@ final class MapPlaceTableViewCell: UITableViewCell {
             make.width.height.equalTo(20)
         }
     }
+    
+    func configure(number: Int, place: Place) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.numberLabel.text = String(number)
+            self.titleLabel.text = place.title
+            self.categoryLabel.text = place.category
+            self.memoLabel.text = place.memo ?? "메모 없음"
+        }
+    }
 }
