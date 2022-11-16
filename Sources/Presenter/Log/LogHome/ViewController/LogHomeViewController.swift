@@ -251,17 +251,12 @@ extension LogHomeViewController {
     
     @objc
     func tapMapButton() {
-        
+        viewModel.pushLogMapViewController()
     }
     
     @objc
     func tapConstellationDetailButton() {
-        let viewModel = LogTicketViewModel.shared
-        let viewController = LogTicketViewController(viewModel: viewModel)
-        viewController.view.backgroundColor = .clear
-        viewController.modalPresentationStyle = .popover
-        self.present(viewController, animated: true)
-        
+        viewModel.presentTicketView()
     }
     
     @objc

@@ -12,9 +12,10 @@ import Foundation
 
 final class LogTicketViewModel: BaseViewModel {
     
-    static let shared = LogTicketViewModel()
+    var coordinator: Coordinator
     
-    override private init() {
+    init(coordinator: Coordinator) {
+        self.coordinator = coordinator
         super.init()
         fetchData()
     }
@@ -34,11 +35,18 @@ final class LogTicketViewModel: BaseViewModel {
         )
     }
     
-    func tapDismissButton() { }
+    func tapDismissButton() {
+        guard let coordinator = coordinator as? Popable else { return }
+        coordinator.popViewController()
+    }
     
-    func tapLikeButton() { }
+    func tapLikeButton() {
+        // TODO: UI 수정되어야하고 API 호출
+    }
     
-    func tapFlopButton() { }
+    func tapFlopButton() {
+        // TODO: 카드가 뒤집히는 애니매이션
+    }
 }
 
 // MARK: MOCK

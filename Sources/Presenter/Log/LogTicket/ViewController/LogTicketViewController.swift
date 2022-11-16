@@ -25,12 +25,14 @@ final class LogTicketViewController: BaseViewController {
 
         // output
     }
+    
     init(viewModel: LogTicketViewModel) {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
         self.navigationController?.isNavigationBarHidden = true
         view.backgroundColor = .clear
     }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -44,10 +46,12 @@ final class LogTicketViewController: BaseViewController {
 }
 // MARK: - UI
 extension LogTicketViewController {
+    
     private func setUI() {
         configureTicketView()
         setLayout()
     }
+    
     private func configureTicketView() {
         guard let viewModel = viewModel else { return }
         logTicketView.dateLabel.text = viewModel.data?.date
@@ -67,11 +71,13 @@ extension LogTicketViewController {
             make.height.equalTo(DeviceInfo.screenHeight * 0.8163507109)
         }
     }
+    
     private func addButtonTarget() {
         logTicketView.dismissButton.addTarget(self, action: #selector(tapDismissButton), for: .touchUpInside)
         logTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         logTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
     }
+    
     @objc
     func tapDismissButton() {
         viewModel?.tapDismissButton()

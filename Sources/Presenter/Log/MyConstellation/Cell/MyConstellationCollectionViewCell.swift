@@ -44,6 +44,7 @@ class MyConstellationCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
+    // MARK: Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = UIColor.white.withAlphaComponent(0.1)
@@ -55,7 +56,8 @@ class MyConstellationCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
+    // MARK: UI
     func setUI() {
         contentView.addSubview(courseNameLabel)
         contentView.addSubview(constellationImage)
