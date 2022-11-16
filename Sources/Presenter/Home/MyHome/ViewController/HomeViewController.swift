@@ -169,6 +169,7 @@ final class HomeViewController: BaseViewController {
     
     @objc
     func alarmButtonTapped() {
+        viewModel.pushToAlarmView()
         print("알람버튼이눌렸습니다")
     }
     

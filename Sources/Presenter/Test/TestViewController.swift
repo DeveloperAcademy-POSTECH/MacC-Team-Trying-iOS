@@ -59,6 +59,14 @@ class TestViewController: UIViewController {
 }
 
 extension TestViewController: CalendarViewDelegate {
+    func switchCalendarButtonDidTapped() {
+        //
+    }
+    
+    func selectDate(_ date: Date?) {
+        //
+    }
+    
     func scrollViewDidEndDecelerating() {
         UIView.animate(withDuration: 0.3, delay: 0) {
             self.view.layoutIfNeeded()

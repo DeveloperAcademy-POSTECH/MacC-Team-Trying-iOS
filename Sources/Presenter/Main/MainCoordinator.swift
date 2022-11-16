@@ -90,6 +90,14 @@ extension MainCoordinator {
         navigationController.tabBarItem = tabItem
         
         let coordinator = item.getCoordinator(navigationController: navigationController)
+        
+        if item == .home {
+            if let coordinator = coordinator as? HomeCoordinator {
+                coordinator.parentCoordinator = self
+                print(coordinator, coordinator.parentCoordinator)
+            }
+        }
+        
         coordinator.start()
         
         return navigationController

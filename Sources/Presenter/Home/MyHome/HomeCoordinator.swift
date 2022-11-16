@@ -11,6 +11,8 @@ import UIKit
 final class HomeCoordinator: Coordinator {
     weak var navigationController: UINavigationController?
     
+    weak var parentCoordinator: MoveToAnotherTab?
+    
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
