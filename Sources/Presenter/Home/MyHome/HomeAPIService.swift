@@ -8,6 +8,10 @@
 
 import Foundation
 
+protocol FetchNoCourse: AnyObject {
+    func setMakeCoureButton()
+}
+
 enum HomeApiError: Error {
     case urlResponse
     case response
@@ -27,6 +31,8 @@ private let mateToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MjYyMTA0MS01NTI
 private let rangeToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MjYyMTA0MS01NTI2LTRjZjgtOGJiOC0xMzdlODhmMDExYWEiLCJhdXRoIjoiVVNFUiJ9._hKs0Sr0JQDKF_-2XjubIp3OTHwwR6Tme4TgZ6PjGgE23oi_gPj2eglZP9w4IVaT7uyk2eYucbdL4zKXVQ9TuQ"
 
 class HomeAPIService {
+    
+    var delegate: FetchNoCourse?
     
     static func fetchUserAsync(tokenType: TokenType) async throws -> Data {
         let selectedToken: String
