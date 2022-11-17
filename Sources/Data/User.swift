@@ -12,11 +12,11 @@ struct User {
     let email: String
     let password: String
     let nickName: String
-    var myPlanet: UserInfo.Planet?
-    let satellites: [UserInfo.Planet]
-    var myCourses: [UserCourseInfo.Course?]
+    var myPlanet: UserInfoDTO.Planet?
+    let satellites: [UserInfoDTO.Planet]
+    var myCourses: [UserCourseInfoDTO.Course?]
     
-    init(nickName: String, myPlanet: UserInfo.Planet?, myCourses: [UserCourseInfo.Course?]) {
+    init(nickName: String, myPlanet: UserInfoDTO.Planet?, myCourses: [UserCourseInfoDTO.Course?]) {
         self.email = ""
         self.password = ""
         self.nickName = nickName

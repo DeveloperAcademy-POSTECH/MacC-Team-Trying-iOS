@@ -12,6 +12,8 @@ import CoreLocation
 protocol ActionSheetDelegate: AnyObject {
     func showPathActionSheet(alert: UIAlertController)
     func showSettingActionSheet(alert: UIAlertController)
+    func presentModifyViewController()
+    func presentRegisterReviewViewController()
 }
 
 enum PathType {
@@ -57,7 +59,7 @@ class PathTableViewCell: UITableViewCell {
             title.text = data.title
             comment.text = data.comment
             guard let distance = data.distance else { return }
-            self.distance.text = distance.changeDistance()
+            self.distance.text = Int(distance).changeDistance()
         }
     }
     
@@ -124,6 +126,7 @@ class PathTableViewCell: UITableViewCell {
             make.top.equalToSuperview().inset(15)
             make.leading.equalToSuperview().inset(70)
             make.height.equalTo(15)
+            make.width.equalTo(150)
         }
         
         comment.snp.makeConstraints { make in
@@ -202,7 +205,7 @@ class PathTableViewCell: UITableViewCell {
             return
         }
         
-        let appStoreURL = URL(string: "http://itunes.apple.com/app/id311867728?mt=8")
+        let appStoreURL = URL(string: "https://tom7930.tistory.com/54")
         guard let appStoreURL = appStoreURL else { return }
         UIApplication.shared.canOpenURL(url) ? UIApplication.shared.open(url) : UIApplication.shared.open(appStoreURL)
     }

@@ -15,14 +15,23 @@ struct DateDday {
     let dday: Int
 }
 
+struct HomeCourse {
+    let courseTitle: String
+    let courseList: [DatePath]
+}
+
 struct DatePath {
     let title: String
     let comment: String
-    let distance: Int?
+    let distance: Double?
     let location: CLLocationCoordinate2D
 }
 
 final class HomeViewModel: BaseViewModel {
+
+    @Published var user: UserInfoDTO?
+    @Published var dateCalendarList: [YearMonthDayDate] = []
+    @Published var dateCourse: HomeCourse?
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),
@@ -30,44 +39,64 @@ final class HomeViewModel: BaseViewModel {
         DateDday(title: "강릉데이트", dday: 30),
         DateDday(title: "서울데이트", dday: 40)
     ]
-    
-    let datePathList: [DatePath] = [
-        DatePath(
-            title: "삐갈레브레드",
-            comment: "10시오픈, 소금빵 꼭 먹기",
-            distance: 500,
-            location: CLLocationCoordinate2D(latitude: 36.008156565588024, longitude: 129.3302379630373)
-        ),
-        DatePath(
-            title: "효자동쌀국수",
-            comment: "아롱사태 국수추천, 주차할곳 없음",
-            distance: 700,
-            location: CLLocationCoordinate2D(latitude: 36.00807426131621, longitude: 129.3299527646833)
-        ),
-        DatePath(
-            title: "바르벳",
-            comment: "아이스아메리카노 맛집",
-            distance: 1100,
-            location: CLLocationCoordinate2D(latitude: 36.00973547648496, longitude: 129.33325365316696)
-        ),
-        DatePath(
-            title: "철길숲",
-            comment: "불의정원보기",
-            distance: 300,
-            location: CLLocationCoordinate2D(latitude: 36.012325953577815, longitude: 129.34087386842018)
-        ),
-        DatePath(
-            title: "포항공대",
-            comment: "e콜맥",
-            distance: nil,
-            location: CLLocationCoordinate2D(latitude: 36.01574093017324, longitude: 129.32245135107428)
-        )
-    ]
-    
+
     var coordinator: Coordinator
     
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
         super.init()
+    }
+    
+    func fetchUserInfo() async throws {
+        let data = try await HomeAPIService.fetchUserAsync(tokenType: .hasMate)
+        guard let myUserInfo = try? JSONDecoder().decode(UserInfoDTO.self, from: data) else {
+             print("Decoder오류")
+             return
+         }
+        self.user = myUserInfo
+    }
+    
+    /// 현재 11월이라면 10월01일 ~ 12월01일을 범위로 주면 10월 01일부터 11월31일까지의 날짜중에 date가 존재하는 날짜를 반환해주는 함수
+    /// - Parameter dateRange: 월범위가 존재
+    func fetchDateRange(dateRange: [String]) async throws {
+        let data = try await HomeAPIService.fetchDateList(dateRange: dateRange)
+        guard let myDateListDTO = try? JSONDecoder().decode(DateList.self, from: data) else {
+            print("데이트날짜 범위 조회 Decoder오류")
+            return
+        }
+        
+        dateCalendarList = myDateListDTO.dates
+            .map { $0.getDateFromString() }
+            .map { YearMonthDayDate(year: $0.year, month: $0.month, day: $0.day) }
+    }
+    
+    /// 코스가 존재하는지 존재하지 않는지 여부를 판단하는 함수
+    /// - Parameter selectedDate: 캘린더에서 내가 누른 날짜
+    /// - Returns: 내가누른 날짜가 fetchDateRange에서 받아온 리스트에 포함되어있는지 아닌지를 판단하는 함수
+    func hasCourse(selectedDate: String) -> Bool {
+        guard let selectedDate = selectedDate.toDate() else { return false }
+        return dateCalendarList.map { $0.asDate() }.contains(selectedDate)
+    }
+    
+    /// 선택한 날짜의 데이트 코스 정보를 불러오는 함수
+    /// - Parameter selectedDate: 캘린더에서 내가 누른 날짜
+    func fetchSelectedDateCourse(selectedDate: String) async throws {
+        let data = try await HomeAPIService.fetchCourseList(selectedDate: selectedDate)
+        guard let selectedDateCourse = try? JSONDecoder().decode(SelectedDateCourseDTO.self, from: data) else {
+            print("선택한 날짜 데이트 코스 조회 Decoder오류")
+            return
+        }
+        let placeList: [DatePath] = selectedDateCourse.places.map { placeElement in
+            DatePath(title: placeElement.place.name, comment: placeElement.memo, distance: placeElement.distanceFromNext, location: .init(latitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.latitude), longitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.longitude)))
+        }
+        dateCourse = HomeCourse(courseTitle: selectedDateCourse.title, courseList: placeList)
+    }
+}
+
+// MARK: - Coordinating
+extension HomeViewModel {
+    func startAddCourseFlow(type: AddCourseFlowType) {
+        guard let coordinator = coordinator as? HomeCoordinator else { return }
+        coordinator.startAddCourseFlow(type: type)
     }
 }

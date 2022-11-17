@@ -11,13 +11,14 @@ import UIKit
 
 struct StarMaker {
     
-    static func makeStars(places: [UserCourseInfo.Coordinates]) -> UIImage? {
+
+    static func makeStars(places: [Place]) -> UIImage? {
         let starView = UIView()
         starView.backgroundColor = .clear
         starView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
 
-        let latitudeArray = places.map { CGFloat($0.latitude) }
-        let longtitudeArray = places.map { CGFloat($0.longitude) }
+        let latitudeArray = places.map { CGFloat($0.location.latitude) }
+        let longtitudeArray = places.map { CGFloat($0.location.longitude) }
 
         guard let minX = latitudeArray.min() else { return nil }
         guard let maxX = latitudeArray.max() else { return nil }
@@ -51,7 +52,7 @@ struct StarMaker {
             let image = UIImage(named: "star")
             imageView.contentMode = .scaleAspectFit
             imageView.image = image
-            imageView.frame = CGRect(x: adjustedLatitude[index] + xOffset, y: adjustedLongtitude[index] + yOffset, width: 25, height: 25)
+            imageView.frame = CGRect(x: adjustedLatitude[index] + xOffset, y: adjustedLongtitude[index] + yOffset, width: 50, height: 50)
             imageView.layer.shadowOffset = .zero
             imageView.layer.shadowRadius = 10
             imageView.layer.shadowColor = UIColor.red.cgColor
@@ -70,7 +71,7 @@ struct StarMaker {
                 let path = UIBezierPath()
                 path.move(to: CGPoint(x: adjustedLatitude[index] + imageView.frame.size.width / 2 + editX + xOffset, y: adjustedLongtitude[index] + imageView.frame.size.height / 2 + editY + yOffset))
                 path.addLine(to: CGPoint(x: adjustedLatitude[index + 1] + imageView.frame.size.width / 2 - editX + xOffset, y: adjustedLongtitude[index + 1] + imageView.frame.size.height / 2 - editY + yOffset))
-                path.lineWidth = 2
+                path.lineWidth = 5
                 path.lineJoinStyle = .round
                 path.close()
 
