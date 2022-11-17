@@ -42,8 +42,7 @@ protocol NavigationBarConfigurable: BaseViewController {
     ///   - target: Target
     ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
     ///   - mapAction: 지도 버튼이 눌렸을 때 실행할 @objc 메소드
-    ///   - textEditingAction: TextField 편집 시 실행할 @objc 메소드
-    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector, textEditingAction: Selector)
+    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector)
     
     /// 데이트 기록 과정에서 사진, 데이트 후기를 입력하는 화면에서 사용되는 Navigation Bar를 설정합니다.
     /// - Parameters:
@@ -182,18 +181,14 @@ extension NavigationBarConfigurable {
         navigationItem.rightBarButtonItem = rightButtonItem
     }
     
-    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector, textEditingAction: Selector) {
+    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
             button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
             button.addTarget(target, action: popAction, for: .touchUpInside)
             return button
         }()
-        let textFieldView: CustomTextField = {
-            let textField = CustomTextField(type: .placeSearch)
-            textField.addTarget(target, action: textEditingAction, for: .editingChanged)
-            return textField
-        }()
+        let textFieldView = CustomTextField(type: .placeSearch)
         let mapButton: UIButton = {
             let button = UIButton(type: .custom)
             let configuration = UIImage.SymbolConfiguration(pointSize: 20)
@@ -212,9 +207,9 @@ extension NavigationBarConfigurable {
             make.centerY.equalToSuperview()
         }
 
-        let leftButtonItem = UIBarButtonItem(customView: textFieldView)
         let rightButtonItem = UIBarButtonItem(customView: mapButton)
-        navigationItem.leftBarButtonItem = leftButtonItem
+        navigationItem.hidesBackButton = true
+        navigationItem.titleView = textFieldView
         navigationItem.rightBarButtonItem = rightButtonItem
     }
     
