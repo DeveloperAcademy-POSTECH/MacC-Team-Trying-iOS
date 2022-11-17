@@ -451,7 +451,11 @@ extension HomeViewController: UITableViewDelegate {
 }
 
 extension HomeViewController: ActionSheetDelegate {
-    func registerReviewVC() {
+    func presentModifyViewController() {
+        viewModel.startAddCourseFlow(type: self.selectedDate > Date() ? .editPlan : .editCourse)
+    }
+    
+    func presentRegisterReviewViewController() {
         if self.selectedDate > Date() {
             let alert = UIAlertController(title: "안내", message: "미래의 계획은 후기를 등록할 수 없습니다", preferredStyle: UIAlertController.Style.alert)
             let okAction = UIAlertAction(title: "알겠습니다", style: .default)
@@ -460,10 +464,6 @@ extension HomeViewController: ActionSheetDelegate {
         } else {
             viewModel.startAddCourseFlow(type: .registerReview)
         }
-    }
-    
-    func moveModifyVC() {
-        viewModel.startAddCourseFlow(type: self.selectedDate > Date() ? .editPlan : .editCourse)
     }
 
     func showPathActionSheet(alert: UIAlertController) {

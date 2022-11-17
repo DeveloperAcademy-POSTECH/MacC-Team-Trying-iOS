@@ -63,7 +63,7 @@ class PathTableFooter: UITableViewHeaderFooterView {
     func settingButtonTapped() {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let modify = UIAlertAction(title: "별자리 수정하기", style: .default) { _ in
-            self.delegate?.moveModifyVC()
+            self.delegate?.presentModifyViewController()
         }
         let delete = UIAlertAction(title: "별자리 삭제하기", style: .default)
         let cancel = UIAlertAction(title: "취소", style: .cancel)
@@ -75,7 +75,7 @@ class PathTableFooter: UITableViewHeaderFooterView {
     
     @objc
     func registerButtonTapped() {
-        self.delegate?.registerReviewVC()
+        self.delegate?.presentRegisterReviewViewController()
     }
     
     required init?(coder: NSCoder) {
