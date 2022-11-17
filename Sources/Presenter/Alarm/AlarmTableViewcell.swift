@@ -68,8 +68,8 @@ class AlarmTableViewcell: UITableViewCell {
     private func setLayout() {
         
         alarmIconView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(15)
-            make.leading.equalToSuperview().inset(20)
+            make.top.equalToSuperview().offset(15)
+            make.leading.equalToSuperview().offset(20)
             make.width.equalTo(40)
             make.height.equalTo(40)
         }
@@ -82,11 +82,11 @@ class AlarmTableViewcell: UITableViewCell {
         descriptionLabel.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel.snp.leading)
             make.top.equalTo(titleLabel.snp.bottom).offset(5)
-            make.bottom.equalToSuperview().inset(15)
+            make.bottom.equalToSuperview().offset(-15)
         }
 
         timeLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(20)
+            make.trailing.equalToSuperview().offset(-20)
             make.top.equalTo(alarmIconView)
         }
         
