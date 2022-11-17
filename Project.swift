@@ -10,6 +10,14 @@ let project = Project(
         disableBundleAccessors: true,
         disableSynthesizedResourceAccessors: true
     ),
+    settings: .settings(
+        base: ["OTHER_LDFLAGS" : "$(OTHER_LDFLAGS) -ObjC"],
+        configurations: [
+            .debug(name: .debug),
+            .release(name: .release)
+        ],
+        defaultSettings: .recommended
+    ),
     targets: [
         Target(
             name: projectName,
@@ -20,9 +28,11 @@ let project = Project(
             infoPlist: .file(path: "SupportingFiles/\(projectName)-Info.plist"),
             sources: ["Sources/**"],
             resources: ["Resources/**"],
+            entitlements: "SupportingFiles/\(projectName).entitlements",
             scripts: [.SwiftLintShell],
             dependencies: [
                 .external(name: "CancelBag"),
+                .external(name: "FirebaseMessaging"),
                 .external(name: "Lottie"),
                 .external(name: "SnapKit"),
                 .external(name: "KakaoSDKUser")
