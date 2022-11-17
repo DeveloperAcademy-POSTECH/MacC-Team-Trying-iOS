@@ -90,6 +90,14 @@ extension MainCoordinator {
         navigationController.tabBarItem = tabItem
         
         let coordinator = item.getCoordinator(navigationController: navigationController)
+        
+        if item == .home {
+            if let coordinator = coordinator as? HomeCoordinator {
+                coordinator.parentCoordinator = self
+                print(coordinator, coordinator.parentCoordinator)
+            }
+        }
+        
         coordinator.start()
         
         return navigationController
@@ -104,5 +112,15 @@ extension MainCoordinator {
         tabBarController.setViewControllers(tabControllers, animated: false)
         navigationController.setNavigationBarHidden(true, animated: true)
         navigationController.setViewControllers([tabBarController], animated: true) 
+    }
+}
+
+protocol MoveToAnotherTab: AnyObject {
+    func moveToLogTab()
+}
+
+extension MainCoordinator: MoveToAnotherTab {
+    func moveToLogTab() {
+        tabBarController.selectedIndex = 1
     }
 }
