@@ -76,12 +76,12 @@ class AlarmTableViewcell: UITableViewCell {
 
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(alarmIconView)
-            make.leading.equalTo(alarmIconView.snp.trailing).inset(-10)
+            make.leading.equalTo(alarmIconView.snp.trailing).offset(10)
         }
 
         descriptionLabel.snp.makeConstraints { make in
             make.leading.equalTo(titleLabel.snp.leading)
-            make.top.equalTo(titleLabel.snp.bottom).inset(-5)
+            make.top.equalTo(titleLabel.snp.bottom).offset(5)
             make.bottom.equalToSuperview().inset(15)
         }
 
