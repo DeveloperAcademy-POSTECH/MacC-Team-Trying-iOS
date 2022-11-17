@@ -18,12 +18,9 @@ final class FetchConstellationRepositoryImpl {
     let url = "https://comeit.site/courses/log?page=0&size=10"
 
     private let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MjYyMTA0MS01NTI2LTRjZjgtOGJiOC0xMzdlODhmMDExYWEiLCJhdXRoIjoiVVNFUiJ9._hKs0Sr0JQDKF_-2XjubIp3OTHwwR6Tme4TgZ6PjGgE23oi_gPj2eglZP9w4IVaT7uyk2eYucbdL4zKXVQ9TuQ"
-
-    
 }
 
 extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
-    func fetchCourse() { }
     
     func fetchLogAsyc() async throws -> Data {
         
@@ -45,12 +42,13 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
             print(response)
             throw LogRequestError.response
         }
-        print("#####\(response)######")
-        do {
-            print(try JSONDecoder().decode(FetchConstellationDTO.self, from: data))
-        } catch {
-            print("err")
-        }
+//        print("😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊")
+//        print("#####\(response)######")
+//        do {
+//            print(try JSONDecoder().decode(FetchConstellationDTO.self, from: data))
+//        } catch {
+//            print("err")
+//        }
         
         return data
     }

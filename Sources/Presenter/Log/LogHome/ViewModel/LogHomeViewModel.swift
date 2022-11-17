@@ -24,18 +24,13 @@ final class LogHomeViewModel: BaseViewModel {
     
     var coordinator: Coordinator
     
-    private let fetchConstellationsUseCase: FetchConstellationsUseCase
+    private var fetchConstellationsUseCase: FetchConstellationsUseCase
     
     var courses = [TestCourse]()
     
-    init(
-        coordinator: Coordinator,
-        fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()
-    ) {
+    init(coordinator: Coordinator, fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()) {
         self.coordinator = coordinator
         self.fetchConstellationsUseCase = fetchConstellationUseCase
-        super.init()
-        fetchData()
     }
 }
 
@@ -69,6 +64,13 @@ struct TestCourse {
 }
 
 extension LogHomeViewModel {
+    func fetchConstellation() async throws {
+        let data = try await fetchConstellationsUseCase.fetchLogAsyc()
+        guard let myConstellation = try? JSONDecoder().decode(FetchConstellationDTO.self, from: data) else { return }
+        print("😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊😊")
+        print(myConstellation)
+    }
+    
     func fetchData() {
         for _ in 0...7 {
             let mockCourse = TestCourse(

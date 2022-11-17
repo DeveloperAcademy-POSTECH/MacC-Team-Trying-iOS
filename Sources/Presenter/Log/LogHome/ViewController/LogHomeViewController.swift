@@ -122,6 +122,9 @@ final class LogHomeViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = true
+        Task {
+            try await viewModel.fetchConstellation()
+        }
     }
     
     override func viewDidLoad() {
