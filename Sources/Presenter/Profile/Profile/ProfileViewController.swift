@@ -14,7 +14,7 @@ import SnapKit
 
 final class ProfileViewController: BaseViewController {
     private let sections = ["활동내역", "회원설정", "고객센터"]
-    private let userSetting = ["닉네임 수정", "디데이 수정", "푸쉬 설정"]
+    private let userSetting = ["내 정보 수정", "디데이 수정", "푸쉬 설정"]
     private let services = ["공지사항", "서비스 약관", "자주 묻는 질문"]
     
     var viewModel: ProfileViewModel

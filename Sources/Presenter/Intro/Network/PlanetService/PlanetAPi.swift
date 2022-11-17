@@ -11,7 +11,6 @@ import Foundation
 enum PlanetAPI {
     case create(PlanetRequestModel.CreatePlanet)
     case join(PlanetRequestModel.JoinPlanet)
-    case getInvitationCode(PlanetRequestModel.GetInvitationCode)
     case getPlanetByCode(PlanetRequestModel.GetPlanetByCode)
 }
 
@@ -23,8 +22,6 @@ extension PlanetAPI: TargetType {
             return .post
         case .join:
             return .post
-        case .getInvitationCode:
-            return .get
         case .getPlanetByCode:
             return .get
         }
@@ -36,10 +33,8 @@ extension PlanetAPI: TargetType {
             return "/planets"
         case .join:
             return "/planets/join"
-        case .getInvitationCode(let query):
-            return "/planets/\(query.planetID)/code"
         case .getPlanetByCode:
-            return "/planets/join"
+            return "/planets"
         }
     }
 
@@ -49,8 +44,6 @@ extension PlanetAPI: TargetType {
             return body
         case .join(let body):
             return body
-        case .getInvitationCode:
-            return nil
         case .getPlanetByCode:
             return nil
         }
@@ -61,8 +54,6 @@ extension PlanetAPI: TargetType {
         case .create:
             return nil
         case .join:
-            return nil
-        case .getInvitationCode:
             return nil
         case .getPlanetByCode(let query):
             return ["code": query.code]
