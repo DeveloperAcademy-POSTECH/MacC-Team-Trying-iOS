@@ -25,8 +25,9 @@ protocol RecordCourseCoordinating {
 }
 
 final class AddCourseMapViewModel: BaseViewModel {
-    private let addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl()
     var coordinator: Coordinator
+    private let addCourseUseCase: AddCourseUseCase
+    private let placeSearchUseCase: PlaceSearchUseCase
     
     let courseTitle: String
     @Published var places: [Place]
@@ -35,11 +36,15 @@ final class AddCourseMapViewModel: BaseViewModel {
     
     init(
         coordinator: Coordinator,
+        addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(),
+        placeSearchUseCase: PlaceSearchUseCase = PlaceSearchUseCaseImpl(),
         courseTitle: String,
         places: [Place] = [],
         annotations: [MKAnnotation] = []
     ) {
         self.coordinator = coordinator
+        self.addCourseUseCase = addCourseUseCase
+        self.placeSearchUseCase = placeSearchUseCase
         self.courseTitle = courseTitle
         self.places = places
         self.annotations = annotations
@@ -80,8 +85,10 @@ extension AddCourseMapViewModel {
 
 // MARK: - Methods
 extension AddCourseMapViewModel {
-    func addPlace(_ place: CLPlacemark) {
-        places.append(convertToPlace(place: place, memo: memo))
+    func addPlace(_ place: Place) {
+        var selectedPlace = place
+        selectedPlace.memo = self.memo
+        places.append(selectedPlace)
         self.memo = nil
     }
     
@@ -105,8 +112,28 @@ extension AddCourseMapViewModel {
     }
 }
 
+// MARK: - API
+extension AddCourseMapViewModel {
+    func addCoursePlan() async throws {
+        let dto = self.convertToDTO(
+            planetId: "27",
+            courseTitle: courseTitle,
+            courseContent: "",
+            isPublic: false,
+            places: places
+        )
+        try await self.addCourseUseCase.addCourse(addCourseDTO: dto, images: [])
+    }
+    
+    func searchPlace(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> Place? {
+        let places = try await self.placeSearchUseCase.placeSearch(latitude: latitude, longitude: longitude)
+        return places.first
+    }
+}
+
 // MARK: - Helper
 extension AddCourseMapViewModel {
+    /*
     private func convertToPlace(place: CLPlacemark, memo: String?) -> Place {
         let title = place.name ?? ""
         // TODO: 카테고리로 변경하기
@@ -118,6 +145,8 @@ extension AddCourseMapViewModel {
         let address = "\(administrativeArea) \(locality) \(thoroughfare) \(subThoroughfare)"
         
         return Place(
+            // FIXME: id 변경
+            id: 0,
             title: title,
             category: category,
             address: address,
@@ -128,20 +157,7 @@ extension AddCourseMapViewModel {
             memo: memo
         )
     }
-}
-
-// MARK: - API
-extension AddCourseMapViewModel {
-    func addCoursePlan() async throws {
-        let dto = self.convertToDTO(
-            planetId: "27",
-            courseTitle: courseTitle,
-            courseContent: "",
-            isPublic: false,
-            places: places
-        )
-        try await addCourseUseCase.addCourse(addCourseDTO: dto, images: [])
-    }
+     */
     
     private func convertToDTO(
         planetId: String,

@@ -333,7 +333,7 @@ extension AddCourseMapViewController {
         }
     }
     
-    private func presentPlaceDetailView(with place: CLPlacemark) {
+    private func presentPlaceDetailView(with place: Place) {
         placeDetailView.selectedPlace = place
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -376,7 +376,33 @@ extension AddCourseMapViewController {
         let mapPoint = placeMapView.convert(location, toCoordinateFrom: placeMapView)
         
         if sender.state == .ended {
-            searchLocation(mapPoint)
+            // self.getLocationCoordinate(mapPoint)
+            DispatchQueue.global().async {
+                Task {
+                    let place = try await self.viewModel.searchPlace(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
+                    
+                    if let place = place {
+                        self.removeRecentAnnotation()
+                        self.addStarAnnotation(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
+                        self.presentPlaceDetailView(with: place)
+                    } else {
+                        // TODO: PlaceDetailView, PlaceListView 내리기
+                        self.removeRecentAnnotation()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func addStarAnnotation(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        let starAnnotation = StarAnnotation(
+            coordinate: CLLocationCoordinate2D(
+                latitude: latitude,
+                longitude: longitude
+            )
+        )
+        DispatchQueue.main.async {
+            self.placeMapView.addAnnotation(starAnnotation)
         }
     }
     
@@ -385,7 +411,8 @@ extension AddCourseMapViewController {
         placeMapView.removeAnnotation(recentAnnotation)
     }
     
-    private func searchLocation(_ point: CLLocationCoordinate2D) {
+    /*
+    private func getLocationCoordinate(_ point: CLLocationCoordinate2D) {
         let geocoder: CLGeocoder = CLGeocoder()
         let location = CLLocation(latitude: point.latitude, longitude: point.longitude)
         
@@ -409,6 +436,7 @@ extension AddCourseMapViewController {
             }
         }
     }
+     */
 }
 
 // MARK: - MKMapViewDelegate
@@ -439,8 +467,9 @@ extension AddCourseMapViewController: MKMapViewDelegate {
 // MARK: - PlacePresenting
 extension AddCourseMapViewController: PlacePresenting {
     func presentSelectedPlace(place: Place) {
-        searchLocation(place.location)
-        presentLocation(latitude: place.location.latitude, longitude: place.location.longitude, span: 0.01)
+        self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
+        self.presentLocation(latitude: place.location.latitude, longitude: place.location.longitude, span: 0.01)
+        self.presentPlaceDetailView(with: place)
     }
     
     // TODO: 다른 브랜치에 있는거. 컨플릭 날거임

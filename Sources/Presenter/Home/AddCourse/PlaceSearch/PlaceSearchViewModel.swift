@@ -12,10 +12,19 @@ import MapKit
 
 final class PlaceSearchViewModel: BaseViewModel {
     var coordinator: Coordinator
+    private let placeSearchUseCase: PlaceSearchUseCase
+    
+    @Published var name: String = ""
+    
     @Published var places: [Place]
     
-    init(coordinator: Coordinator, places: [Place] = []) {
+    init(
+        coordinator: Coordinator,
+        placeSearchUseCase: PlaceSearchUseCase = PlaceSearchUseCaseImpl(),
+        places: [Place] = []
+    ) {
         self.coordinator = coordinator
+        self.placeSearchUseCase = placeSearchUseCase
         self.places = places
     }
 }
@@ -30,45 +39,17 @@ extension PlaceSearchViewModel {
 
 // MARK: - Business Logic
 extension PlaceSearchViewModel {
-    /// 검색 결과를 가지고 MKLocalSearch를 수행합니다.
-    /// - Parameter text: TextField에 입력된 String
-    func searchPlace(_ text: String) {
-        let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = text
-        let search = MKLocalSearch(request: request)
+    func searchPlace() async throws {
+        let coordinate = LocationManager.shared.getCurrentLocation()
         
-        var tempPlaces: [Place] = []
-        search.start { [weak self] response, _ in
-            guard let response = response,
-                  let self = self else { return }
-            
-            response.mapItems.forEach { [weak self] place in
-                guard let self = self else { return }
-                // MARK: 검색 지역을 대한민국으로 제한합니다.
-                if place.placemark.countryCode == "KR" {
-                    tempPlaces.append(self.convertToPlace(place))
-                }
-            }
-            self.places = tempPlaces
-        }
+        self.places = try await self.placeSearchUseCase.placeSearch(
+            name: self.name,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude
+        )
     }
     
     func getPlace(index: Int) -> Place {
         return places[index]
-    }
-}
-
-// MARK: - Helper
-extension PlaceSearchViewModel {
-    private func convertToPlace(_ place: MKMapItem) -> Place {
-        let address = "\(place.placemark.administrativeArea ?? "") \(place.placemark.locality ?? "") \(place.placemark.thoroughfare ?? "") \(place.placemark.subThoroughfare ?? "")"
-        
-        return Place(
-            title: place.name ?? "",
-            category: place.pointOfInterestCategory?.koreanCategory ?? "",
-            address: address,
-            location: place.placemark.coordinate,
-            memo: nil
-        )
     }
 }

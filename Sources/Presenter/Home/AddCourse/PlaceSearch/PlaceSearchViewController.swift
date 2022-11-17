@@ -17,10 +17,14 @@ protocol PlacePresenting: AnyObject {
 }
 
 final class PlaceSearchViewController: BaseViewController {
+    private enum PlaceSearchTableSection {
+        case main
+    }
+    
     var viewModel: PlaceSearchViewModel
     weak var delegate: PlacePresenting?
     
-    private var dataSource: UITableViewDiffableDataSource<Int, Place>!
+    private var dataSource: UITableViewDiffableDataSource<PlaceSearchTableSection, Place>!
     private lazy var placeSearchTableView: UITableView = {
         let tableView = UITableView()
         tableView.delegate = self
@@ -51,8 +55,8 @@ final class PlaceSearchViewController: BaseViewController {
                     self.hideEmptyResultView()
                 }
                 
-                var snapshot = NSDiffableDataSourceSnapshot<Int, Place>()
-                snapshot.appendSections([0])
+                var snapshot = NSDiffableDataSourceSnapshot<PlaceSearchTableSection, Place>()
+                snapshot.appendSections([.main])
                 snapshot.appendItems(places)
                 self.dataSource.apply(snapshot, animatingDifferences: true)
                 
@@ -99,13 +103,11 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
         
         self.placeSearchTableView.register(PlaceSearchTableViewCell.self, forCellReuseIdentifier: PlaceSearchTableViewCell.identifier)
         
-        self.dataSource = UITableViewDiffableDataSource<Int, Place>(tableView: self.placeSearchTableView, cellProvider: { tableView, indexPath, place -> UITableViewCell? in
+        self.dataSource = UITableViewDiffableDataSource<PlaceSearchTableSection, Place>(tableView: self.placeSearchTableView, cellProvider: { tableView, indexPath, place -> UITableViewCell? in
             
             guard let cell = tableView.dequeueReusableCell(withIdentifier: PlaceSearchTableViewCell.identifier, for: indexPath) as? PlaceSearchTableViewCell else { return nil }
             
-            cell.titleLabel.text = place.title
-            cell.addressLabel.text = place.address
-            cell.categoryLabel.text = place.category
+            cell.configure(place)
             cell.detailButton.tag = indexPath.row
             cell.detailButton.addTarget(self, action: #selector(self.detailButtonPressed(_:)), for: .touchUpInside)
             
@@ -120,10 +122,13 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
     @objc
     private func textFieldEditing(_ sender: UITextField) {
         sender.textPublisher()
-            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .debounce(for: 0.3, scheduler: RunLoop.main)
             .sink { [weak self] text in
                 guard let self = self else { return }
-                self.viewModel.searchPlace(text)
+                Task {
+                    self.viewModel.name = text
+                    try await self.viewModel.searchPlace()
+                }
             }
             .cancel(with: cancelBag)
     }
