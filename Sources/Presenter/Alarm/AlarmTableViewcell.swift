@@ -50,7 +50,7 @@ class AlarmTableViewcell: UITableViewCell {
             descriptionLabel.text = info.description
             descriptionLabel.setLineSpacing(spacing: 2)
             timeLabel.text = info.leftTimeString
-            backgroundColor = info.checked ? .designSystem(.mainYellow)?.withAlphaComponent(0.1) : .black
+            backgroundColor = !info.checked ? .designSystem(.mainYellow)?.withAlphaComponent(0.1) : .black
         }
     }
     
