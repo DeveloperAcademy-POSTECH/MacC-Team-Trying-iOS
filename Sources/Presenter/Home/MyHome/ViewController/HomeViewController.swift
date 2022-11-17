@@ -13,11 +13,37 @@ import CancelBag
 import SnapKit
 import Lottie
 
+enum AddCourseFlowType: Int {
+    // 과거에 계획을 안한경우 -> 계획,후기를 등록합니다0
+    case addCourse = 0
+    
+    // 후기등록건드려야함
+    // 과거인데 계획을 했을경우 -> 후기만 등록합니다
+    // 미래인데 계획을 했을경우 -> 버튼 비활성화되어야함
+    case registerReview
+    
+    // 수정버튼 건드려야함
+    // 과거인데 계획이 되어있고 수정을 하는경우 -> 타이틀과 장소를 수정합니다0
+    case editCourse
+    
+    // 미래인데 계획이 안되어있는 경우 -> 버튼 title을 바꿔야합니다0
+    case addPlan
+    
+    // 수정버튼 건드려야함
+    // 미래인데 계획이 되어있고 수정을 하는 경우 -> 타이틀하고 장소를 수정합니다0
+    case editPlan
+    
+    // 이전에있던 addCourseFlowType Case
+    case plan
+    case record
+}
+
 final class HomeViewController: BaseViewController {
     
     var myCancelBag = Set<AnyCancellable>()
     let viewModel: HomeViewModel
     var dateInfoIsHidden: Bool = false
+    var selectedDate: Date = Date()
     
     let homeTitle: UILabel = {
         let label = UILabel()
@@ -90,12 +116,12 @@ final class HomeViewController: BaseViewController {
     
     lazy var calendarView = CalendarView(today: .init(), frame: .init(origin: .zero, size: .init(width: DeviceInfo.screenWidth - 40, height: 0)))
     
-    let dateCoureRegisterButton: UIButton = {
+    lazy var dateCoureRegisterButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle(" 데이트 코스 기록하기", for: .normal)
         button.setImage(UIImage(systemName: "plus.circle.fill"), for: .normal)
         button.tintColor = .designSystem(.mainYellow)
         button.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.2)
+        button.addTarget(self, action: #selector(registerButtonTapped(_:)), for: .touchUpInside)
         button.clipsToBounds = true
         button.layer.cornerRadius = 15
         button.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
@@ -135,7 +161,7 @@ final class HomeViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
-
+        
         // output
         viewModel.$user
             .receive(on: DispatchQueue.main)
@@ -186,6 +212,7 @@ final class HomeViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.isHidden = true
         Task {
             let currentDateRange = getCurrentDateRange()
@@ -196,9 +223,14 @@ final class HomeViewController: BaseViewController {
                 try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
                 self.dateCoureRegisterButton.isHidden = true
             } else {
-                setRegisterButton()
+                setRegisterButton(.addCourse)
             }
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isHidden = false
     }
     
     override func viewDidLoad() {
@@ -267,6 +299,12 @@ final class HomeViewController: BaseViewController {
     @objc
     func inviteButtonTapped() {
         print("초대하기 버튼이 눌렸습니다")
+    }
+    
+    @objc
+    func registerButtonTapped(_ sender: UIButton) {
+        guard let type = AddCourseFlowType(rawValue: sender.tag) else { return }
+        viewModel.startAddCourseFlow(type: type)
     }
 }
 
@@ -413,6 +451,21 @@ extension HomeViewController: UITableViewDelegate {
 }
 
 extension HomeViewController: ActionSheetDelegate {
+    func registerReviewVC() {
+        if self.selectedDate > Date() {
+            let alert = UIAlertController(title: "안내", message: "미래의 계획은 후기를 등록할 수 없습니다", preferredStyle: UIAlertController.Style.alert)
+            let okAction = UIAlertAction(title: "알겠습니다", style: .default)
+            alert.addAction(okAction)
+            present(alert, animated: false, completion: nil)
+        } else {
+            viewModel.startAddCourseFlow(type: .registerReview)
+        }
+    }
+    
+    func moveModifyVC() {
+        viewModel.startAddCourseFlow(type: self.selectedDate > Date() ? .editPlan : .editCourse)
+    }
+
     func showPathActionSheet(alert: UIAlertController) {
         self.present(alert, animated: true)
     }
@@ -439,6 +492,7 @@ extension HomeViewController: CalendarViewDelegate {
     /// - Parameter date: 내가 누른 날짜
     func selectDate(_ date: Date?) {
         guard let date = date else { return }
+        self.selectedDate = date
         let selectedDate = date.dateToString()
         Task {
             // MARK: - 내가 누른 날짜가 처음에 조회한 데이트가 존재하는 날짜에 포함되어있는지를 판단
@@ -447,7 +501,7 @@ extension HomeViewController: CalendarViewDelegate {
                 try await viewModel.fetchSelectedDateCourse(selectedDate: selectedDate)
                 self.dateCoureRegisterButton.isHidden = true
             } else {
-                setRegisterButton()
+                setRegisterButton(date > Date() ? .addPlan : .addCourse)
             }
         }
     }
@@ -459,7 +513,18 @@ extension HomeViewController: CalendarViewDelegate {
     }
     
     /// 데이트가 없다면 데이트추가하기 버튼을 보여주는 분기처리 함수
-    private func setRegisterButton() {
+    private func setRegisterButton(_ type: AddCourseFlowType) {
+        switch type {
+        case .addCourse:
+            dateCoureRegisterButton.setTitle(" 별자리 등록하기", for: .normal)
+            dateCoureRegisterButton.tag = 0
+        case .addPlan:
+            dateCoureRegisterButton.setTitle(" 데이트코스 계획하기", for: .normal)
+            dateCoureRegisterButton.tag = 3
+        default:
+            break
+        }
+
         self.dateCoureRegisterButton.isHidden = false
         self.pathTableView.isHidden = true
     }

@@ -22,6 +22,11 @@ final class HomeCoordinator: Coordinator {
         
         navigationController.pushViewController(viewController, animated: true)
     }
+    
+    func startAddCourseFlow(type: AddCourseFlowType) {
+        let addCourseCoordinator = AddCourseCoordinator(type: type,navigationController: navigationController)
+        addCourseCoordinator.start()
+    }
 }
 
 //extension HomeCoordinator: AlarmViewCoordinating, CourseDetailCoordinating {

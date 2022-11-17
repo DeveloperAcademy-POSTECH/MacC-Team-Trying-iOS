@@ -12,6 +12,8 @@ import CoreLocation
 protocol ActionSheetDelegate: AnyObject {
     func showPathActionSheet(alert: UIAlertController)
     func showSettingActionSheet(alert: UIAlertController)
+    func moveModifyVC()
+    func registerReviewVC()
 }
 
 enum PathType {
@@ -124,6 +126,7 @@ class PathTableViewCell: UITableViewCell {
             make.top.equalToSuperview().inset(15)
             make.leading.equalToSuperview().inset(70)
             make.height.equalTo(15)
+            make.width.equalTo(150)
         }
         
         comment.snp.makeConstraints { make in
