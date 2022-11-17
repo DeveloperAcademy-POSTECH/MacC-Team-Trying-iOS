@@ -13,6 +13,7 @@ protocol CalendarViewDelegate: AnyObject {
     func scrollViewDidEndDecelerating()
     func switchCalendarButtonDidTapped()
     func selectDate(_ date: Date?)
+    func changeCalendarPage(startDate: String, endDate: String)
 }
 
 final class CalendarView: BaseView {
@@ -155,12 +156,14 @@ final class CalendarView: BaseView {
 
     override func setLayout() {
         addSubview(monthView)
+        
         addSubview(weekdayView)
+        
         addSubview(scrollView)
         scrollView.addSubview(previousMonthCollectionView)
         scrollView.addSubview(presentMonthCollectionView)
         scrollView.addSubview(followingMonthCollectionView)
-
+        
         monthView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.height.equalTo(60)
@@ -182,13 +185,15 @@ final class CalendarView: BaseView {
         previousMonthCollectionView.frame = .init(
             x: 0, y: 0, width: scrollViewWidth, height: calendarHeight
         )
+        
         presentMonthCollectionView.frame = .init(
             x: scrollViewWidth, y: 0, width: scrollViewWidth, height: calendarHeight
         )
+        
         followingMonthCollectionView.frame = .init(
             x: scrollViewWidth * 2, y: 0, width: scrollViewWidth, height: calendarHeight
         )
-
+    
         scrollView.contentSize = .init(width: scrollViewWidth * 3, height: calendarHeight)
         scrollView.setContentOffset(CGPoint(x: scrollViewWidth, y: 0), animated: false)
 
@@ -296,6 +301,12 @@ extension CalendarView: UIScrollViewDelegate {
         case .no:
             break
         }
+        // MARK: - 여기서 3월 달력을 보여주면 2월1일, 5월1일을 서버에 request로 보내준다
+        let startMonth = selectedDate.asDate().month.changeIntToTwoString()
+        let endMonth = selectedDate.asDate().month2After.month.changeIntToTwoString()
+        let startDate = "\(selectedDate.asDate().monthBefore.year)-\(startMonth)-01"
+        let endDate = "\(selectedDate.asDate().month2After.year)-\(endMonth)-01"
+        self.delegate?.changeCalendarPage(startDate: startDate, endDate: endDate)
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -669,7 +680,7 @@ extension CalendarView {
 
     /// 현재에서 두 달 이후 month
     private var following2Month: Int {
-        previousMonthDate.monthAfter.month
+        followingMonthDate.monthAfter.month
     }
 
     private var followingYear: Int {
