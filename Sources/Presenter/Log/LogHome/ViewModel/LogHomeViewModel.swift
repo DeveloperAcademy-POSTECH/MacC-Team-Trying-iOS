@@ -15,6 +15,9 @@ protocol TicketViewCoodinating {
 protocol MyConstellationViewCoordinating {
     func pushMyConstellationViewController()
 }
+protocol LogMapViewCoordinating {
+    func pushLogMapViewController()
+}
 
 final class LogHomeViewModel: BaseViewModel {
     
@@ -34,13 +37,20 @@ extension LogHomeViewModel {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
     }
+    
     func pushMyConstellationView() {
         guard let coordinator = coordinator as? MyConstellationViewCoordinating else { return }
         coordinator.pushMyConstellationViewController()
     }
+    
     func presentTicketView() {
         guard let coordinator = coordinator as? TicketViewCoodinating else { return }
         coordinator.presentTicketViewController()
+    }
+    
+    func pushLogMapViewController() {
+        guard let coordinator = coordinator as? LogMapViewCoordinating else { return }
+        coordinator.pushLogMapViewController()
     }
 }
 

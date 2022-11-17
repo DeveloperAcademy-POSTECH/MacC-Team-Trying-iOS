@@ -221,3 +221,10 @@ extension LogMapViewModel {
         return annotation
     }
 }
+// MARK: - Coordinator
+extension LogMapViewModel {
+    func tapDismissButton() {
+        guard let coordinator = coordinator as? Popable else { return }
+        coordinator.popViewController()
+    }
+}

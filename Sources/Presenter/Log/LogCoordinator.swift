@@ -8,12 +8,17 @@
 
 import UIKit
 
-final class LogCoordinator: Coordinator, MyConstellationViewCoordinating, TicketViewCoodinating, Popable {
+final class LogCoordinator: Coordinator,
+                            MyConstellationViewCoordinating,
+                            TicketViewCoodinating,
+                            LogMapViewCoordinating,
+                            Popable {
     
     weak var navigationController: UINavigationController?
     
     init(navigationController: UINavigationController) { self.navigationController = navigationController }
     
+    // MARK: Coordinating functions
     func start() {
         guard let navigationController = navigationController else { return }
         let viewModel = LogHomeViewModel(coordinator: self)
@@ -22,16 +27,29 @@ final class LogCoordinator: Coordinator, MyConstellationViewCoordinating, Ticket
     }
     
     func presentTicketViewController() {
-        
+        let viewModel = LogTicketViewModel(coordinator: self)
+        let viewController = LogTicketViewController(viewModel: viewModel)
+        viewController.view.backgroundColor = .clear
+        viewController.modalPresentationStyle = .popover
+        navigationController?.present(viewController, animated: true)
     }
     
     func pushMyConstellationViewController() {
-        let viewModel = MyConstellationViewModel(coordinator: self)
-        let viewController = MyConstellationViewController(viewModel: viewModel)
+        // TODO: 수정이요~ 데이터 구조 확정 후 편집예정
+        let viewModel = LogHomeViewModel(coordinator: self)
+        let vm = MyConstellationViewModel(coordinator: self)
+        let viewController = MyConstellationViewController(viewModel: vm)
+        viewController.courses = viewModel.courses
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     func popViewController() {
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    func pushLogMapViewController() {
+        let viewModel = LogMapViewModel(coordinator: self)
+        let viewController = LogMapViewController(viewModel: viewModel)
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }
