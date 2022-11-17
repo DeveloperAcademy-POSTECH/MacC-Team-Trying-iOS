@@ -43,8 +43,10 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
     }
 
     func start() {
-        let startController = LoginViewController(viewModel: LoginViewModel(coordinator: self))
-        navigationController?.setViewControllers([startController], animated: false)
+//        let startController = LoginViewController(viewModel: LoginViewModel(coordinator: self))
+//        navigationController?.setViewControllers([startController], animated: false)
+        let createPlanet = CreatePlanetViewController(viewModel: CreatePlanetViewModel(coordinator: self))
+        navigationController?.setViewControllers([createPlanet], animated: false)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
 }

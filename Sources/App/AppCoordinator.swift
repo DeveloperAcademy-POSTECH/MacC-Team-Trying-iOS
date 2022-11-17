@@ -26,23 +26,18 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate {
     func start() {
         window.rootViewController = navigationController
 
+        let coordinator = IntroCoordinator(navigationController: navigationController)
+        coordinator.delegate = self
+        coordinator.start()
+        window.makeKeyAndVisible()
+        return
+
         if UserDefaults.standard.string(forKey: "accessToken") != nil {
             let coordinator = MainCoordinator(navigationController: navigationController)
             coordinator.start()
             window.makeKeyAndVisible()
             return
         }
-
-        let coordinator = IntroCoordinator(navigationController: navigationController)
-//        let coordinator = MainCoordinator(navigationController: navigationController)
-        coordinator.delegate = self
-        coordinator.start()
-
-        //mainCoordinator = MainCoordinator(navigationController: navigationController)
-        //mainCoordinator?.start()
-
-        window.makeKeyAndVisible()
-        return
     }
 
     func coordinateToMainScene() {

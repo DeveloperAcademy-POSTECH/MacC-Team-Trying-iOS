@@ -60,6 +60,12 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
 
         navigationItem.title = ""
 
+        emailLoginButton.contentMode = .scaleAspectFit
+        kakaoLoginButton.contentMode = .scaleAspectFit
+        appleLoginButton.contentMode = .scaleAspectFit
+        emailLoginButton.imageView?.contentMode = .scaleAspectFit
+        kakaoLoginButton.imageView?.contentMode = .scaleAspectFit
+        appleLoginButton.imageView?.contentMode = .scaleAspectFit
         kakaoLoginButton.setImage(.init(.btn_kakao), for: .normal)
         appleLoginButton.setImage(.init(.btn_apple), for: .normal)
         emailLoginButton.setImage(.init(.btn_email), for: .normal)
@@ -92,19 +98,27 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
 
         appleLoginButton.snp.makeConstraints { make in
             make.bottom.equalTo(kakaoLoginButton.snp.top).offset(-10)
-            make.leading.trailing.equalToSuperview().inset(25)
-            make.height.equalTo(58)
+            make.leading.trailing.equalToSuperview().inset(20)
         }
+        let heightConstraint1 = appleLoginButton.heightAnchor.constraint(equalTo: appleLoginButton.widthAnchor, multiplier: 58 / 350)
+        heightConstraint1.priority = UILayoutPriority(1000)
+        heightConstraint1.isActive = true
+
         kakaoLoginButton.snp.makeConstraints { make in
             make.bottom.equalTo(emailLoginButton.snp.top).offset(-10)
-            make.leading.trailing.equalToSuperview().inset(25)
-            make.height.equalTo(58)
+            make.leading.trailing.equalToSuperview().inset(20)
         }
+        let heightConstraint2 = kakaoLoginButton.heightAnchor.constraint(equalTo: kakaoLoginButton.widthAnchor, multiplier: 58 / 350)
+        heightConstraint2.priority = UILayoutPriority(1000)
+        heightConstraint2.isActive = true
+
         emailLoginButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(25)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(-58)
-            make.height.equalTo(58)
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(100)
         }
+        let heightConstraint3 = emailLoginButton.heightAnchor.constraint(equalTo: emailLoginButton.widthAnchor, multiplier: 58 / 350)
+        heightConstraint3.priority = UILayoutPriority(1000)
+        heightConstraint3.isActive = true
     }
 }
 
@@ -135,12 +149,17 @@ extension LoginViewController {
 
     @objc
     func kakaoLoginButtonDidTapped() {
-        viewModel.kakaoLoginButtonDidTapped()
+        DispatchQueue.main.async { [weak self] in
+            self?.viewModel.kakaoLoginButtonDidTapped()
+        }
+
     }
 
     @objc
     func appleLoginButtonDidTapped() {
-        viewModel.appleLoginButtonDidTapped()
+        DispatchQueue.main.async { [weak self] in
+            self?.viewModel.appleLoginButtonDidTapped()
+        }
     }
 
     @objc

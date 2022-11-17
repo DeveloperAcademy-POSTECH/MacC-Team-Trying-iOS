@@ -40,7 +40,6 @@ final class TermViewController: IntroBaseViewController<NoBusinessLogic> {
             }
         }
     }
-
     override func setAttribute() {
         super.setAttribute()
 
@@ -53,14 +52,26 @@ final class TermViewController: IntroBaseViewController<NoBusinessLogic> {
     override func setLayout() {
         super.setLayout()
 
+        guard let termType = termType else { return }
+
         view.addSubview(scrollView)
         scrollView.addSubview(textImageView)
 
         scrollView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.leading.trailing.equalToSuperview()
         }
         textImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.bottom.equalToSuperview().inset(20)
+            make.width.equalTo(DeviceInfo.screenWidth - 40)
+            make.centerX.equalToSuperview()
+            
+            switch termType {
+            case .service:
+                make.height.equalTo((DeviceInfo.screenWidth - 40) * 7652 / 350)
+            case .privacy:
+                make.height.equalTo((DeviceInfo.screenWidth - 40) * 2957 / 350)
+            }
         }
     }
 }

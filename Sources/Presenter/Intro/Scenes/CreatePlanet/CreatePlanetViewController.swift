@@ -20,6 +20,7 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
     lazy var planetTextField = PlanetTextField(frame: .zero)
     lazy var alreadyHaveInvitationButton = AlreadyHaveInvitationButton(type: .system)
     lazy var nextButton = IntroButton(type: .system)
+    lazy var conditionLabel = UILabel()
 
     // MARK: Properties
 
@@ -86,6 +87,10 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
             page.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
         }
 
+        conditionLabel.textColor = .designSystem(.grayC5C5C5)
+        conditionLabel.font = .designSystem(weight: .regular, size: ._11)
+        conditionLabel.text = "한글 + 영어 + 숫자  포함 8자 이내"
+
         planetTextField.addTarget(self, action: #selector(planetTextDidChanged), for: .editingChanged)
 
         nextButton.title = "다음"
@@ -103,6 +108,7 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
         view.addSubview(alreadyHaveInvitationButton)
         view.addSubview(planetTextField)
         view.addSubview(nextButton)
+        view.addSubview(conditionLabel)
 
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
@@ -118,6 +124,10 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
             make.centerX.equalToSuperview()
             make.height.equalTo(30)
             make.width.equalTo(182)
+        }
+        conditionLabel.snp.makeConstraints { make in
+            make.top.equalTo(planetTextField.snp.bottom).offset(8)
+            make.centerX.equalTo(planetTextField)
         }
         alreadyHaveInvitationButton.snp.makeConstraints { make in
             make.bottom.equalTo(nextButton.snp.top).offset(-20)
