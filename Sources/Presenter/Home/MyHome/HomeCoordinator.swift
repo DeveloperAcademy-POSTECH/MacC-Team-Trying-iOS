@@ -47,3 +47,35 @@ final class HomeCoordinator: Coordinator {
 //        addCourseCoordinator.start()
 //    }
 //}
+
+protocol AlarmViewCoordinatingInAlarmViewCoordinating {
+    func goToLogView()
+}
+
+extension HomeCoordinator: AlarmViewCoordinatingInAlarmViewCoordinating {
+    func goToLogView() {
+        navigationController?.popViewController(animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.parentCoordinator?.moveToLogTab()
+        }
+    }
+}
+
+protocol goToRootViewControllerDelegate: AnyObject {
+    func popToRootViewController()
+}
+
+protocol AlarmViewCoordinating {
+    func pushToAlarmViewController()
+}
+
+extension HomeCoordinator: goToRootViewControllerDelegate, AlarmViewCoordinating {
+    func popToRootViewController() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func pushToAlarmViewController() {
+        let alarmViewController = AlarmViewController(alarmViewModel: AlarmViewModel(coordinator: self))
+        self.navigationController?.pushViewController(alarmViewController, animated: true)
+    }
+}

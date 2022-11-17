@@ -114,3 +114,13 @@ extension MainCoordinator {
         navigationController.setViewControllers([tabBarController], animated: true) 
     }
 }
+
+protocol MoveToAnotherTab: AnyObject {
+    func moveToLogTab()
+}
+
+extension MainCoordinator: MoveToAnotherTab {
+    func moveToLogTab() {
+        tabBarController.selectedIndex = 1
+    }
+}

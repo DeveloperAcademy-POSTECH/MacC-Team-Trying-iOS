@@ -10,10 +10,6 @@ import Foundation
 import Combine
 import CancelBag
 
-protocol AlarmViewCoordinatingInAlarmViewCoordinating {
-    func goToLogView()
-}
-
 class AlarmViewModel: BaseViewModel {
     
     let alarmUseCase: AlarmUseCaseDelegate = AlarmUseCase(alarmInterface: AlarmRepository())
@@ -72,51 +68,4 @@ class AlarmViewModel: BaseViewModel {
         popToBackViewController()
     }
     
-}
-
-protocol MoveToAnotherTab: AnyObject {
-    func moveToLogTab()
-}
-
-extension MainCoordinator: MoveToAnotherTab {
-    func moveToLogTab() {
-        tabBarController.selectedIndex = 1
-        
-    }
-}
-
-extension HomeCoordinator: AlarmViewCoordinatingInAlarmViewCoordinating {
-    
-    func goToLogView() {
-        navigationController?.popViewController(animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.parentCoordinator?.moveToLogTab()
-        }
-    }
-}
-
-protocol goToRootViewControllerDelegate: AnyObject {
-    func popToRootViewController()
-}
-
-extension HomeCoordinator: goToRootViewControllerDelegate, AlarmViewCoordinating {
-    func popToRootViewController() {
-        navigationController?.popViewController(animated: true)
-    }
-    
-    func pushToAlarmViewController() {
-        let alarmViewController = AlarmViewController(alarmViewModel: AlarmViewModel(coordinator: self))
-        self.navigationController?.pushViewController(alarmViewController, animated: true)
-    }
-}
-
-extension HomeViewModel {
-    func pushToAlarmView() {
-        guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
-        coordinator.pushToAlarmViewController()
-    }
-}
-
-protocol AlarmViewCoordinating {
-    func pushToAlarmViewController()
 }
