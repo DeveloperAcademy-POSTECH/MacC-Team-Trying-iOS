@@ -9,6 +9,8 @@
 import Foundation
 
 extension Date {
+    
+    static let currentDateString = Date().dateToString()
 
     var year: Int {
         Calendar.current.component(.year, from: self)
@@ -37,6 +39,10 @@ extension Date {
     var monthAfter: Date {
         Calendar.current.date(byAdding: .month, value: 1, to: self)!
     }
+    
+    var month2After: Date {
+        Calendar.current.date(byAdding: .month, value: 2, to: self)!
+    }
 
     var startDateOfWeek: Date {
         Calendar.current.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: self).date!
@@ -52,5 +58,11 @@ extension Date {
 
     func isDateInThisWeek() -> Bool {
         return Calendar.current.isDate(self, equalTo: Date(), toGranularity: .weekOfYear)
+    }
+    
+    func dateToString() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: self)
     }
 }

@@ -97,6 +97,12 @@ extension AddCourseMapViewModel {
         map.removeAnnotation(annotations[index])
         annotations.remove(at: index)
     }
+    
+    func changePlaceOrder(sourceIndex: Int, to destinationIndex: Int) {
+        let targetPlace = places[sourceIndex]
+        places.remove(at: sourceIndex)
+        places.insert(targetPlace, at: destinationIndex)
+    }
 }
 
 // MARK: - Helper

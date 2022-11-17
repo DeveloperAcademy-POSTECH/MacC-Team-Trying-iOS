@@ -18,26 +18,6 @@ final class AddCourseMapViewController: BaseViewController {
     var type: AddCourseFlowType
     var viewModel: AddCourseMapViewModel
     
-    private var placeListViewHeight: CGFloat {
-        // 기본으로 줘야하는 높이 : 45
-        // indicator 영역 높이 : 15
-        // headerView로 사용되는 label의 높이 : 40
-        // main button 높이 : 58
-        // 위 3개는 최소 높이. (45 + 15 + 58 = 118)
-        // 이후 셀 하나가 추가되는 만큼 셀 높이 추가해주기
-        // 셀 하나의 높이 : 67
-        switch viewModel.places.count {
-        case 0:
-            return 0
-        case 1:
-            return 225
-        case 2:
-            return 292
-        default:
-            return 359
-        }
-    }
-    
     private var recentAnnotation: MKAnnotation?
     private lazy var locationManager: CLLocationManager = {
         let manager = CLLocationManager()
@@ -80,6 +60,9 @@ final class AddCourseMapViewController: BaseViewController {
         let view = PlaceListView(parentView: self.view)
         view.mapPlaceTableView.dataSource = self
         view.mapPlaceTableView.delegate = self
+        view.mapPlaceTableView.dragInteractionEnabled = true
+        view.mapPlaceTableView.dragDelegate = self
+        view.mapPlaceTableView.dropDelegate = self
         return view
     }()
     private lazy var nextButton: MainButton = {
@@ -104,13 +87,26 @@ final class AddCourseMapViewController: BaseViewController {
             .cancel(with: cancelBag)
         
         self.viewModel.$places
-            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] places in
                 guard let self = self else { return }
-                self.placeListView.numberOfItems = places.count
-                self.placeListView.numberLabel.text = "\(places.count)개"
-                self.placeListView.mapPlaceTableView.reloadData()
-                self.nextButton.setTitle("\(places.count)개 선택 완료", for: .normal)
+                let numberOfPlaces = places.count
+                self.placeListView.numberOfItems = numberOfPlaces
+
+                self.presentPlaceListView()
+                if numberOfPlaces == 0 {
+                    if self.placeListView.placeListViewStatus == .full {
+                        self.placeListView.placeListViewStatus = .medium
+                    }
+                    DispatchQueue.main.async {
+                        self.nextButton.hide()
+                    }
+                }
+
+                DispatchQueue.main.async {
+                    // MARK: reload가 조금 느리게 되는 이슈가 있습니다.
+                    self.placeListView.mapPlaceTableView.reloadData()
+                    self.nextButton.setTitle("\(numberOfPlaces)개 선택 완료", for: .normal)
+                }
             })
             .cancel(with: cancelBag)
     }
@@ -186,24 +182,23 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
         }
         
         placeDetailView.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(0)
+            make.leading
+                .trailing.equalToSuperview()
+            make.bottom.equalToSuperview().inset(-placeDetailView.height)
+            make.height.equalTo(placeDetailView.height)
         }
         
         placeListView.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            
-            make.height.equalTo(placeListViewHeight)
+            make.leading
+                .trailing
+                .bottom.equalToSuperview()
+            make.height.equalTo(0)
         }
         
         nextButton.snp.makeConstraints { make in
-            if placeListViewHeight == 0 {
-                make.leading.trailing.equalToSuperview().inset(20)
-                make.top.equalTo(view.snp.bottom)
-            } else {
-                make.leading.trailing.equalToSuperview().inset(20)
-                make.bottom.equalTo(view.safeAreaLayoutGuide)
-            }
+            make.leading
+                .trailing.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview().inset(-58)
         }
     }
 }
@@ -211,7 +206,11 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.places.count
+        return viewModel.places.count
+    }
+    
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        self.viewModel.changePlaceOrder(sourceIndex: sourceIndexPath.row, to: destinationIndexPath.row)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -219,19 +218,32 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
         
         let place = viewModel.places[indexPath.row]
         
-        cell.numberLabel.text = String(indexPath.row + 1)
-        cell.titleLabel.text = place.title
-        cell.categoryLabel.text = place.category
-        cell.memoLabel.text = place.memo ?? "메모 없음"
+        cell.configure(number: indexPath.row + 1, place: place)
         cell.deleteButton.tag = indexPath.row
-        
         cell.deleteButton.addTarget(self, action: #selector(didTapDeleteButton(_:)), for: .touchUpInside)
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        67
+        return 67
+    }
+}
+
+// MARK: - UITableViewDrageDelegate, UITableViewDropDelegate
+extension AddCourseMapViewController: UITableViewDragDelegate, UITableViewDropDelegate {
+    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        return [UIDragItem(itemProvider: NSItemProvider())]
+    }
+    
+    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
+    }
+    
+    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
+        if session.localDragSession != nil {
+            return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+        }
+        return UITableViewDropProposal(operation: .cancel, intent: .unspecified)
     }
 }
 
@@ -320,7 +332,6 @@ extension AddCourseMapViewController {
     @objc
     private func didTapAddCourseButton(_ sender: UIButton) {
         placeDetailView.memoTextField.resignFirstResponder()
-        presentPlaceListView()
         viewModel.addPlace(self.placeDetailView.selectedPlace!)
         viewModel.addAnnotation(recentAnnotation!)
         recentAnnotation = nil
@@ -332,10 +343,6 @@ extension AddCourseMapViewController {
         HapticManager.instance.selection()
         viewModel.deletePlace(index)
         viewModel.deleteAnnotation(map: self.placeMapView, at: index)
-        
-        if viewModel.places.count < 3 {
-            presentPlaceListView()
-        }
     }
     
     @objc
@@ -354,18 +361,9 @@ extension AddCourseMapViewController {
         placeDetailView.selectedPlace = place
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.placeListView.snp.updateConstraints { make in
-                make.height.equalTo(0)
-            }
-            
-            self.nextButton.snp.remakeConstraints { make in
-                make.leading.trailing.equalToSuperview().inset(20)
-                make.top.equalTo(self.view.snp.bottom)
-            }
-            
-            self.placeDetailView.snp.updateConstraints { make in
-                make.height.equalTo(190)
-            }
+            self.placeListView.hide()
+            self.placeDetailView.present()
+            self.nextButton.hide()
             
             UIView.animate(
                 withDuration: 0.3,
@@ -380,34 +378,9 @@ extension AddCourseMapViewController {
     private func presentPlaceListView() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.placeDetailView.snp.updateConstraints { make in
-                make.height.equalTo(0)
-            }
-            
-            self.nextButton.snp.remakeConstraints { make in
-                if self.placeListViewHeight == 0 {
-                    make.leading.trailing.equalToSuperview().inset(20)
-                    make.top.equalTo(self.view.snp.bottom)
-                } else {
-                    make.leading.trailing.equalToSuperview().inset(20)
-                    make.bottom.equalTo(self.view.safeAreaLayoutGuide)
-                    make.height.equalTo(58)
-                }
-            }
-            
-            if self.placeListView.isContainerCollapsed {
-                self.placeListView.snp.updateConstraints { make in
-                    make.height.equalTo(self.placeListViewHeight)
-                }
-            } else {
-                if self.placeListViewHeight == 0 {
-                    self.placeListView.snp.remakeConstraints { make in
-                        make.height.equalTo(0)
-                        make.leading.trailing.bottom.equalToSuperview()
-                    }
-                    self.placeListView.isContainerCollapsed.toggle()
-                }
-            }
+            self.placeDetailView.hide()
+            self.placeListView.present()
+            self.nextButton.present()
             
             UIView.animate(
                 withDuration: 0.3,

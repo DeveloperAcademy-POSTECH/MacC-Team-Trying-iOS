@@ -63,6 +63,7 @@ final class SmallRectButton: UIButton {
         self.layer.borderWidth = 1
         self.setTitleColor(.designSystem(.white), for: .normal)
         self.titleLabel?.font = .designSystem(weight: .bold, size: ._13)
+        self.addTarget(self, action: #selector(executeHaptic(_:)), for: .touchUpInside)
     }
     
     private func setLayout() {
@@ -70,5 +71,10 @@ final class SmallRectButton: UIButton {
             make.width.equalTo(70)
             make.height.equalTo(30)
         }
+    }
+    
+    @objc
+    private func executeHaptic(_ sender: UIButton) {
+        HapticManager.instance.selection()
     }
 }

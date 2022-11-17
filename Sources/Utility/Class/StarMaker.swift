@@ -11,6 +11,7 @@ import UIKit
 
 struct StarMaker {
     
+
     static func makeStars(places: [Place]) -> UIImage? {
         let starView = UIView()
         starView.backgroundColor = .clear
