@@ -41,7 +41,7 @@ final class PlaceSearchViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
-        if let textField = self.navigationItem.titleView as? CustomTextField {
+        if let textField = self.navigationItem.leftBarButtonItem?.customView as? CustomTextField {
             textField.textPublisher()
                 .debounce(for: 0.3, scheduler: RunLoop.main)
                 .sink { [weak self] text in
@@ -125,10 +125,6 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
             
             return cell
         })
-        
-        if let textField = navigationItem.leftBarButtonItem?.customView as? CustomTextField {
-            textField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
-        }
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.

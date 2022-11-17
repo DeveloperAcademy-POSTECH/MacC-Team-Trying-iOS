@@ -207,9 +207,9 @@ extension NavigationBarConfigurable {
             make.centerY.equalToSuperview()
         }
 
+        let leftButtonItem = UIBarButtonItem(customView: textFieldView)
         let rightButtonItem = UIBarButtonItem(customView: mapButton)
-        navigationItem.hidesBackButton = true
-        navigationItem.titleView = textFieldView
+        navigationItem.leftBarButtonItem = leftButtonItem
         navigationItem.rightBarButtonItem = rightButtonItem
     }
     
