@@ -1,16 +1,15 @@
 //
-//  AlarmNViewConroller.swift
-//  MatStar
+//  AlarmViewController.swift
+//  ComeIt
 //
-//  Created by uiskim on 2022/10/17.
+//  Created by Hankyu Lee on 2022/11/17.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
-import SnapKit
-
-class AlarmViewConroller: BaseViewController {
+class AlarmViewController: BaseViewController {
 
     let alarmViewModel: AlarmViewModel
     
@@ -33,8 +32,14 @@ class AlarmViewConroller: BaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = false
         alarmViewModel.fetchAlamrs()
         setNavigation()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isHidden = true
     }
     
     @objc
@@ -63,6 +68,7 @@ class AlarmViewConroller: BaseViewController {
 
     private func bind() {
         alarmViewModel.$alarms
+            .receive(on: DispatchQueue.main)
             .sink { _ in
                 self.tableView.reloadData()
             }
@@ -80,16 +86,16 @@ class AlarmViewConroller: BaseViewController {
     
 }
 
-extension AlarmViewConroller: UITableViewDelegate {
+extension AlarmViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         alarmViewModel.alarmTap(index: indexPath.row)
     }
 }
 
-extension AlarmViewConroller: UITableViewDataSource {
+extension AlarmViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        alarmViewModel.countOfAlarms
+        return alarmViewModel.countOfAlarms
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -100,7 +106,7 @@ extension AlarmViewConroller: UITableViewDataSource {
 
 }
 
-extension AlarmViewConroller {
+extension AlarmViewController {
     private func setNavigation() {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "GmarketSansTTFBold", size: 15)!]
         title = "알림"
@@ -108,14 +114,15 @@ extension AlarmViewConroller {
         guard let chevronImage = UIImage(named: "chevron_left"),
               let trashImage = UIImage(named: "deletetong") else { return }
 
+        let resizedChevronImage = chevronImage.resizeImageTo(size: .init(width: 16, height: 26))?.withTintColor(.white, renderingMode: .alwaysOriginal)
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: chevronImage,
+            image: resizedChevronImage,
             style: .plain,
             target: self,
             action: #selector(backTap)
         )
 
-        let resizedTrashImage = trashImage.resizeImage(size: CGSize(width: 18, height: 18)).withTintColor(.white, renderingMode: .alwaysOriginal)
+        let resizedTrashImage = trashImage.resizeImageTo(size: .init(width: 21, height: 21))?.withTintColor(.white, renderingMode: .alwaysOriginal)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: resizedTrashImage,
             style: .plain,
@@ -123,18 +130,4 @@ extension AlarmViewConroller {
             action: #selector(allDeleteTap)
         )
     }
-}
-extension UIImage {
-  func resizeImage(size: CGSize) -> UIImage {
-    let originalSize = self.size
-    let ratio: CGFloat = {
-        originalSize.width > originalSize.height ? 1 / (size.width / originalSize.width) :
-                                                          1 / (size.height / originalSize.height)
-    }()
-      return UIImage(
-        cgImage: self.cgImage!,
-        scale: self.scale * ratio,
-        orientation: self.imageOrientation
-      )
-  }
 }

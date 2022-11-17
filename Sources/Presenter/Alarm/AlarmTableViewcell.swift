@@ -42,15 +42,15 @@ class AlarmTableViewcell: UITableViewCell {
         return label
     }()
     
-    var info: Alarm? {
+    var info: AlarmEntity? {
         didSet {
             guard let info = info else { return }
             alarmIconView.image = UIImage(named: info.iconImageString)
             titleLabel.text = info.title
             descriptionLabel.text = info.description
             descriptionLabel.setLineSpacing(spacing: 2)
-            timeLabel.text = info.timeLeft
-            backgroundColor = info.alreadyRead ? .designSystem(.mainYellow)?.withAlphaComponent(0.1) : .black
+            timeLabel.text = info.leftTimeString
+            backgroundColor = info.checked ? .designSystem(.mainYellow)?.withAlphaComponent(0.1) : .black
         }
     }
     
@@ -62,7 +62,6 @@ class AlarmTableViewcell: UITableViewCell {
     
     private func setAttributes() {
         addSubviews(alarmIconView, titleLabel, descriptionLabel, timeLabel)
-        
         separatorInset = .zero
     }
     
@@ -96,29 +95,12 @@ class AlarmTableViewcell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-}
-
-extension UILabel {
-    func setLineSpacing(spacing: CGFloat) {
-        guard let text = text else { return }
-        let attributeString = NSMutableAttributedString(string: text)
-        let style = NSMutableParagraphStyle()
-        style.lineSpacing = spacing
-        attributeString.addAttribute(
-            .paragraphStyle,
-            value: style,
-            range: NSRange(location: 0, length: attributeString.length)
-        )
-        attributedText = attributeString
     }
 }

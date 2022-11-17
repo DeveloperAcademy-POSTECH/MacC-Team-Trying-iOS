@@ -39,4 +39,18 @@ extension UILabel {
         // 총 Height에서 한 줄의 Line Height를 나누면 현재 총 Line 수
         return Int(ceil(labelTextSize.height / font.lineHeight))
     }
+    
+    // 자간 간격
+    func setLineSpacing(spacing: CGFloat) {
+        guard let text = text else { return }
+        let attributeString = NSMutableAttributedString(string: text)
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = spacing
+        attributeString.addAttribute(
+            .paragraphStyle,
+            value: style,
+            range: NSRange(location: 0, length: attributeString.length)
+        )
+        attributedText = attributeString
+    }
 }
