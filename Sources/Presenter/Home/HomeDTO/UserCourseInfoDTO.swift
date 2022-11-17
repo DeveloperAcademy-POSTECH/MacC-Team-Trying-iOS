@@ -1,5 +1,5 @@
 //
-//  InquiryMyCouresDTO.swift
+//  UserCourseInfoDTO.swift
 //  MatStar
 //
 //  Created by uiskim on 2022/10/27.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct UserCourseInfo: Codable {
+struct UserCourseInfoDTO: Codable {
     let courses: [Course]
     let size: Int
     let hasNext: Bool

@@ -15,4 +15,3 @@ struct AddCourseResponse: Decodable {
         let y: Double
     }
 }
-    

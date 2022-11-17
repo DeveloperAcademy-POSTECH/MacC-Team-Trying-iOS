@@ -21,7 +21,7 @@ final class EmptyResultView: UIView {
     private lazy var iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: Constants.Image.purplePlanet)
+        imageView.image = UIImage(named: Constants.Image.emptyResultStar)
         return imageView
     }()
     
