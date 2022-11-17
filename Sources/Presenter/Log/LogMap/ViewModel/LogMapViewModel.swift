@@ -33,6 +33,7 @@ final class LogMapViewModel: BaseViewModel {
             images: [],
             places: [
                 Place(
+                    id: 1,
                     title: "광안리 할리스 커피",
                     category: "카페",
                     address: "부산광역시 남구 남천동",
@@ -43,6 +44,7 @@ final class LogMapViewModel: BaseViewModel {
                     memo: nil
                 ),
                 Place(
+                    id: 1,
                     title: "모모 커피",
                     category: "카페",
                     address: "부산광역시 남구 대연동",
@@ -53,6 +55,7 @@ final class LogMapViewModel: BaseViewModel {
                     memo: nil
                 ),
                 Place(
+                    id: 1,
                     title: "롯데백화점",
                     category: "백화점",
                     address: "부산광역시 남포동",
@@ -63,6 +66,7 @@ final class LogMapViewModel: BaseViewModel {
                     memo: nil
                 ),
                 Place(
+                    id: 1,
                     title: "원조국밥",
                     category: "음식점",
                     address: "하단",
@@ -88,6 +92,7 @@ final class LogMapViewModel: BaseViewModel {
             images: [],
             places: [
                 Place(
+                    id: 1,
                     title: "스타벅스",
                     category: "카페",
                     address: "경북 포항시 중앙로",
@@ -98,6 +103,7 @@ final class LogMapViewModel: BaseViewModel {
                     memo: nil
                 ),
                 Place(
+                    id: 1,
                     title: "요신의 하루",
                     category: "카페",
                     address: "경북 포항시 남구",
@@ -108,6 +114,7 @@ final class LogMapViewModel: BaseViewModel {
                     memo: nil
                 ),
                 Place(
+                    id: 1,
                     title: "킹신의 하루",
                     category: "카페",
                     address: "경북 포항시 남구",
@@ -133,6 +140,7 @@ final class LogMapViewModel: BaseViewModel {
             images: [],
             places: [
                 Place(
+                    id: 1,
                     title: "도자캣",
                     category: "카페",
                     address: "서울특별시",
@@ -143,6 +151,7 @@ final class LogMapViewModel: BaseViewModel {
                     memo: nil
                 ),
                 Place(
+                    id: 1,
                     title: "테일러",
                     category: "영화관",
                     address: "서울특별시",
@@ -153,6 +162,7 @@ final class LogMapViewModel: BaseViewModel {
                     memo: nil
                 ),
                 Place(
+                    id: 1,
                     title: "아리아나",
                     category: "음식점",
                     address: "서울특별시",
@@ -163,6 +173,7 @@ final class LogMapViewModel: BaseViewModel {
                     memo: nil
                 ),
                 Place(
+                    id: 1,
                     title: "위켄드",
                     category: "미술관",
                     address: "서울특별시",

@@ -133,32 +133,6 @@ extension AddCourseMapViewModel {
 
 // MARK: - Helper
 extension AddCourseMapViewModel {
-    /*
-    private func convertToPlace(place: CLPlacemark, memo: String?) -> Place {
-        let title = place.name ?? ""
-        // TODO: 카테고리로 변경하기
-        let category = place.country ?? ""
-        let administrativeArea = place.administrativeArea ?? ""
-        let locality = place.locality ?? ""
-        let thoroughfare = place.thoroughfare ?? ""
-        let subThoroughfare = place.subThoroughfare ?? ""
-        let address = "\(administrativeArea) \(locality) \(thoroughfare) \(subThoroughfare)"
-        
-        return Place(
-            // FIXME: id 변경
-            id: 0,
-            title: title,
-            category: category,
-            address: address,
-            location: CLLocationCoordinate2D(
-                latitude: place.location?.coordinate.latitude ?? 0,
-                longitude: place.location?.coordinate.longitude ?? 0
-            ),
-            memo: memo
-        )
-    }
-     */
-    
     private func convertToDTO(
         planetId: String,
         courseTitle: String,

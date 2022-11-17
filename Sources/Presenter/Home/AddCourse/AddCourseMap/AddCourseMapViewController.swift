@@ -376,7 +376,6 @@ extension AddCourseMapViewController {
         let mapPoint = placeMapView.convert(location, toCoordinateFrom: placeMapView)
         
         if sender.state == .ended {
-            // self.getLocationCoordinate(mapPoint)
             DispatchQueue.global().async {
                 Task {
                     let place = try await self.viewModel.searchPlace(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
@@ -386,8 +385,20 @@ extension AddCourseMapViewController {
                         self.addStarAnnotation(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
                         self.presentPlaceDetailView(with: place)
                     } else {
-                        // TODO: PlaceDetailView, PlaceListView 내리기
-                        self.removeRecentAnnotation()
+                        DispatchQueue.main.async {
+                            self.placeDetailView.hide()
+                            self.placeListView.hide()
+                            self.nextButton.hide()
+                            self.removeRecentAnnotation()
+                            
+                            UIView.animate(
+                                withDuration: 0.3,
+                                delay: 0,
+                                animations: {
+                                    self.view.layoutIfNeeded()
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -410,33 +421,6 @@ extension AddCourseMapViewController {
         guard let recentAnnotation = recentAnnotation else { return }
         placeMapView.removeAnnotation(recentAnnotation)
     }
-    
-    /*
-    private func getLocationCoordinate(_ point: CLLocationCoordinate2D) {
-        let geocoder: CLGeocoder = CLGeocoder()
-        let location = CLLocation(latitude: point.latitude, longitude: point.longitude)
-        
-        removeRecentAnnotation()
-        
-        geocoder.reverseGeocodeLocation(location) { placeMarks, error in
-            if error == nil, let marks = placeMarks {
-                marks.forEach { placeMark in
-                    let starAnnotation = StarAnnotation(
-                        coordinate: CLLocationCoordinate2D(
-                            latitude: point.latitude,
-                            longitude: point.longitude
-                        )
-                    )
-                    
-                    self.presentPlaceDetailView(with: placeMark)
-                    self.placeMapView.addAnnotation(starAnnotation)
-                }
-            } else {
-                print("검색 실패")
-            }
-        }
-    }
-     */
 }
 
 // MARK: - MKMapViewDelegate

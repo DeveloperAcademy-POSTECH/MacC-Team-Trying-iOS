@@ -10,8 +10,20 @@ import CoreLocation
 import Foundation
 
 protocol PlaceSearchRepository {
+    /// 이름으로 장소들을 검색하여, 현재 위치로부터 가까운 장소들을 반환합니다.
+    /// - Parameters:
+    ///   - name: 검색할 이름
+    ///   - latitude: 현재 위치의 위도
+    ///   - longitude: 현재 위치의 경도
+    /// - Returns: 현재 위치와 가까운 장소들
     func placeSearch(name: String, latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> PlaceSearchResponse
     
+    /// 위치로 장소들을 검색합니다.
+    /// - Parameters:
+    ///   - distance: 지정한 위치로부터 결과를 나타낼 반경 (km 단위)
+    ///   - latitude: 검색할 위치의 위도
+    ///   - longitude: 검색할 위치의 경도
+    /// - Returns: 검색 결과의 장소들
     func placeSearch(distance: Double, latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> PlaceSearchResponse
 }
 
@@ -41,7 +53,7 @@ final class PlaceSearchUseCaseImpl: PlaceSearchUseCase {
     }
     
     func placeSearch(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> [Place] {
-        let distance = 0.03
+        let distance = 0.05
         let response = try await placeSearchRepository.placeSearch(distance: distance, latitude: latitude, longitude: longitude)
         
         print("✨\(self.convertToModel(response))")
