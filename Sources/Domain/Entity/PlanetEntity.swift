@@ -7,11 +7,10 @@
 //
 
 import Foundation
+import UIKit
 
 struct PlanetEntity {
     let id: Int
-    let me: UserEntity
-    let mate: UserEntity
     let name: String
     let planetImage: UIImage
     let createDate: Date
