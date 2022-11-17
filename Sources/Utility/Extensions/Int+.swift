@@ -17,4 +17,9 @@ extension Int {
             return "\(self)m"
         }
     }
+    
+    func changeIntToTwoString() -> String {
+        return String(format: "%02d", self)
+    }
+
 }
