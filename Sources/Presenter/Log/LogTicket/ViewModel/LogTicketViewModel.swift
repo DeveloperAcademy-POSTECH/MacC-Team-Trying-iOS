@@ -12,9 +12,10 @@ import Foundation
 
 final class LogTicketViewModel: BaseViewModel {
     
-    static let shared = LogTicketViewModel()
+    var coordinator: Coordinator
     
-    override private init() {
+    init(coordinator: Coordinator) {
+        self.coordinator = coordinator
         super.init()
         fetchData()
     }
@@ -30,15 +31,22 @@ final class LogTicketViewModel: BaseViewModel {
             body: "배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.",
             date: "2022년 10월 20일",
             tag: ["삐갈레브레드", "포항공과대학교", "귀여운승창이"],
-            images: ["KyuAndWoody", "lakeImage", "KyuAndWoody", "lakeImage"]
+            images: ["KyuandWoody", "lakeImage", "KyuandWoody", "lakeImage"]
         )
     }
     
-    func tapDismissButton() { }
+    func tapDismissButton() {
+        guard let coordinator = coordinator as? Popable else { return }
+        coordinator.popViewController()
+    }
     
-    func tapLikeButton() { }
+    func tapLikeButton() {
+        // TODO: UI 수정되어야하고 API 호출
+    }
     
-    func tapFlopButton() { }
+    func tapFlopButton() {
+        // TODO: 카드가 뒤집히는 애니매이션
+    }
 }
 
 // MARK: MOCK
