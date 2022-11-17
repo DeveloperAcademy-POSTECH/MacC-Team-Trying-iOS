@@ -141,6 +141,8 @@ final class LogHomeViewController: BaseViewController {
 
 extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        // MARK: 수정
         return viewModel.courses.count
     }
     
@@ -177,9 +179,12 @@ extension LogHomeViewController: UIScrollViewDelegate {
 extension LogHomeViewController {
     /// View Model과 bind 합니다.
     private func bind() {
-        // input
-        
-        // output
+        viewModel.$courses
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.logCollectionView.reloadData()
+            }
     }
     
     private func setUI() {
@@ -264,7 +269,7 @@ extension LogHomeViewController {
     
     @objc
     func tapListButton() {
-        viewModel.pushMyConstellationView()
+        viewModel.pushMyConstellationView(courses: viewModel.courses)
     }
     
     @objc

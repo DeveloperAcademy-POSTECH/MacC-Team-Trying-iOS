@@ -9,5 +9,5 @@
 import Foundation
 
 protocol FetchConstellationRepository {
-    func fetchLogAsyc() async throws -> Data
+    func fetchLogAsyc() async throws -> [TestCourse]
 }

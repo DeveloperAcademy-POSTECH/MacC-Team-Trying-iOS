@@ -9,9 +9,10 @@
 import UIKit
 
 protocol FetchConstellationsUseCase {
-    func fetchLogAsyc() async throws -> Data
+    func fetchLogAsyc() async throws -> [TestCourse]
 }
 
+// MARK: UseCase 구현체 부분입니다.
 final class FetchConstellationsUseCaseImpl: FetchConstellationsUseCase {
     
     private let fetchConstellationRepository: FetchConstellationRepository
@@ -20,7 +21,7 @@ final class FetchConstellationsUseCaseImpl: FetchConstellationsUseCase {
         self.fetchConstellationRepository = fetchConstellationRepository
     }
     
-    func fetchLogAsyc() async throws -> Data {
+    func fetchLogAsyc() async throws -> [TestCourse] {
         try await fetchConstellationRepository.fetchLogAsyc()
     }
 }

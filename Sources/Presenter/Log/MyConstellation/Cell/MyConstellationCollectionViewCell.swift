@@ -79,7 +79,6 @@ class MyConstellationCollectionViewCell: UICollectionViewCell {
         dateLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(15)
             make.bottom.equalToSuperview().inset(15)
-            
             make.height.equalTo(20)
         }
     }

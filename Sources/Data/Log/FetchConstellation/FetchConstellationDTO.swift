@@ -24,12 +24,12 @@ struct FetchConstellationDTO: Codable {
     // MARK: - PlaceElement
     struct PlaceElement: Codable {
         let memo: String?
-        let place: PlacePlace
+        let place: Place
         let distanceFromNext: Double?
     }
     
     // MARK: - PlacePlace
-    struct PlacePlace: Codable {
+    struct Place: Codable {
         let placeId: Int
         let name, address, roadAddress: String
         let coordinate: Coordinate

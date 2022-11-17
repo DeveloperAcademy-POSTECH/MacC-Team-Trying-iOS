@@ -16,8 +16,6 @@ final class MyConstellationViewController: BaseViewController {
 
     var viewModel: MyConstellationViewModel?
     
-    var courses = [TestCourse]()
-    
     lazy var myConstellationCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: (DeviceInfo.screenWidth - 40 - 10) / 2, height: 225)
@@ -115,12 +113,12 @@ extension MyConstellationViewController {
 // MARK: CollectionView - DataSource
 extension MyConstellationViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return courses.count
+        return viewModel?.courses.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyConstellationCollectionViewCell.cellId, for: indexPath) as? MyConstellationCollectionViewCell else { return UICollectionViewCell() }
-        cell.course = courses[indexPath.row]
+        cell.course = viewModel?.courses[indexPath.row]
         return cell
     }
 }
