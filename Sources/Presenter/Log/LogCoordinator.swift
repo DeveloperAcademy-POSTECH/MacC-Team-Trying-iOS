@@ -34,7 +34,7 @@ final class LogCoordinator: Coordinator,
         navigationController?.present(viewController, animated: true)
     }
     
-    func pushMyConstellationViewController(courses: [TestCourse]) {
+    func pushMyConstellationViewController(courses: [CourseEntity]) {
         let viewModel = MyConstellationViewModel(coordinator: self, courses: courses)
         let viewController = MyConstellationViewController(viewModel: viewModel)
         self.navigationController?.pushViewController(viewController, animated: true)

@@ -23,7 +23,7 @@ final class FetchConstellationRepositoryImpl {
 
 extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
     
-    func fetchLogAsync() async throws -> [TestCourse] {
+    func fetchLogAsync() async throws -> [CourseEntity] {
         
         guard let url = URL(string: url) else {
             print("################## LOG URL ERROR #######################")
@@ -48,34 +48,32 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
     }
     
     // MARK: DTO를 Entity로 변환 -> 추후 수정예정
-    private func convertToTestCourse(_ responseData: FetchConstellationDTO) -> [TestCourse] {
+    private func convertToTestCourse(_ responseData: FetchConstellationDTO) -> [CourseEntity] {
         
-        var courses = [TestCourse]()
+        var courses = [CourseEntity]()
+        
         responseData.courses.forEach { course in
-            var places = [Place]()
-            course.places.forEach { place in
-                let place = Place(
-                    title: place.place.name,
+            var places = [PlaceEntity]()
+            course.places.forEach { placeElement in
+                let place = PlaceEntity(
+                    id: placeElement.place.placeId,
+                    title: placeElement.place.name,
                     category: "none",
-                    address: place.place.address,
-                    location: CLLocationCoordinate2D(latitude: place.place.coordinate.latitude, longitude: place.place.coordinate.longitude),
-                    memo: place.memo
+                    address: placeElement.place.address,
+                    coordinate: CLLocationCoordinate2D(latitude: placeElement.place.coordinate.latitude, longitude: placeElement.place.coordinate.longitude),
+                    memo: placeElement.memo
                 )
                 places.append(place)
             }
-            let course = TestCourse(
-                places: places,
-                courseName: course.title,
-                date: course.title
+            
+            let tempCource = CourseEntity(
+                id: course.courseId,
+                courseTitle: course.title,
+                date: course.date,
+                places: places
             )
-            courses.append(course)
+            courses.append(tempCource)
         }
         return courses
     }
-}
-// TODO: 삭제할 코드
-struct TestCourse {
-    let places: [Place]
-    let courseName: String
-    let date: String
 }

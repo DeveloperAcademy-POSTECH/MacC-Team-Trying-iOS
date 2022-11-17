@@ -13,10 +13,10 @@ class MyConstellationCollectionViewCell: UICollectionViewCell {
     
     static let cellId = "MyConstellationCollectionViewCell"
     
-    var course: TestCourse? {
+    var course: CourseEntity? {
         didSet {
             guard let course = course else { return }
-            courseNameLabel.text = course.courseName
+            courseNameLabel.text = course.courseTitle
             constellationImage.image = StarMaker.makeStars(places: course.places)
             dateLabel.text = course.date
         }

@@ -9,7 +9,7 @@
 import UIKit
 
 protocol FetchConstellationsUseCase {
-    func fetchLogAsync() async throws -> [TestCourse]
+    func fetchLogAsync() async throws -> [CourseEntity]
 }
 
 // MARK: UseCase 구현체 부분입니다.
@@ -21,7 +21,7 @@ final class FetchConstellationsUseCaseImpl: FetchConstellationsUseCase {
         self.fetchConstellationRepository = fetchConstellationRepository
     }
     
-    func fetchLogAsync() async throws -> [TestCourse] {
+    func fetchLogAsync() async throws -> [CourseEntity] {
         try await fetchConstellationRepository.fetchLogAsync()
     }
 }

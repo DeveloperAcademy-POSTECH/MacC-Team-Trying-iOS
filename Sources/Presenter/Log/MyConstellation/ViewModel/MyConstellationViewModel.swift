@@ -12,9 +12,9 @@ import Foundation
 final class MyConstellationViewModel: BaseViewModel {
     
     var coordinator: Coordinator
-    let courses: [TestCourse]
+    let courses: [CourseEntity]
     
-    init(coordinator: Coordinator, courses: [TestCourse]) {
+    init(coordinator: Coordinator, courses: [CourseEntity]) {
         self.coordinator = coordinator
         self.courses = courses
         super.init()

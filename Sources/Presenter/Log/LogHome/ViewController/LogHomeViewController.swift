@@ -148,7 +148,7 @@ extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogCollectionViewCell.identifier, for: indexPath) as? LogCollectionViewCell else { return UICollectionViewCell() }
-        cell.courseNameLabel.text = viewModel.courses[indexPath.row].courseName
+        cell.courseNameLabel.text = viewModel.courses[indexPath.row].courseTitle
         cell.dateLabel.text = viewModel.courses[indexPath.row].date
         cell.configure(with: viewModel.courses[indexPath.row].places)
         return cell

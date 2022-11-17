@@ -16,7 +16,7 @@ protocol TicketViewCoodinating {
 }
 
 protocol MyConstellationViewCoordinating {
-    func pushMyConstellationViewController(courses: [TestCourse])
+    func pushMyConstellationViewController(courses: [CourseEntity])
 }
 
 protocol LogMapViewCoordinating {
@@ -30,7 +30,7 @@ final class LogHomeViewModel: BaseViewModel {
     
     private var fetchConstellationsUseCase: FetchConstellationsUseCase
     
-    @Published var courses = [TestCourse]()
+    @Published var courses = [CourseEntity]()
     
     init(coordinator: Coordinator, fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()) {
         self.coordinator = coordinator
@@ -49,7 +49,7 @@ extension LogHomeViewModel {
         coordinator.popViewController()
     }
     // 별자리 콜렉션뷰 2X2로 전환
-    func pushMyConstellationView(courses: [TestCourse]) {
+    func pushMyConstellationView(courses: [CourseEntity]) {
         guard let coordinator = coordinator as? MyConstellationViewCoordinating else { return }
         coordinator.pushMyConstellationViewController(courses: courses)
     }
