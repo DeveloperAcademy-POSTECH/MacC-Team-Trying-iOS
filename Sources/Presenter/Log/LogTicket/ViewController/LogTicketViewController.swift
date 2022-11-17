@@ -10,7 +10,6 @@
 import Combine
 import UIKit
 
-import Lottie
 import CancelBag
 import SnapKit
 
