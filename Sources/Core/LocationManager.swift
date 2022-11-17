@@ -54,7 +54,7 @@ extension LocationManager: CLLocationManagerDelegate {
         self.longitude = location.coordinate.longitude
     }
     
-    func getCurrentLocation() -> CLLocation {
-        return CLLocation(latitude: self.latitude, longitude: self.longitude)
+    func getCurrentLocation() -> CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
     }
 }
