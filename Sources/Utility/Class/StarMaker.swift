@@ -11,14 +11,13 @@ import UIKit
 
 struct StarMaker {
     
-
-    static func makeStars(places: [Place]) -> UIImage? {
+    static func makeStars(places: [PlaceEntity]) -> UIImage? {
         let starView = UIView()
         starView.backgroundColor = .clear
         starView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
 
-        let latitudeArray = places.map { CGFloat($0.location.latitude) }
-        let longtitudeArray = places.map { CGFloat($0.location.longitude) }
+        let latitudeArray = places.map { CGFloat($0.coordinate.latitude) }
+        let longtitudeArray = places.map { CGFloat($0.coordinate.longitude) }
 
         guard let minX = latitudeArray.min() else { return nil }
         guard let maxX = latitudeArray.max() else { return nil }

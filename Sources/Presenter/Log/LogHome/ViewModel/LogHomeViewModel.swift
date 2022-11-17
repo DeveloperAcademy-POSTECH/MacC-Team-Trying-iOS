@@ -9,96 +9,66 @@
 import Combine
 import CoreLocation
 
+import CancelBag
+
 protocol TicketViewCoodinating {
     func presentTicketViewController()
 }
+
 protocol MyConstellationViewCoordinating {
-    func pushMyConstellationViewController()
+    func pushMyConstellationViewController(courses: [CourseEntity])
 }
+
 protocol LogMapViewCoordinating {
     func pushLogMapViewController()
 }
 
+// MARK: ViewModel
 final class LogHomeViewModel: BaseViewModel {
     
     var coordinator: Coordinator
     
-    var courses = [TestCourse]()
+    private var fetchConstellationsUseCase: FetchConstellationsUseCase
     
-    init(coordinator: Coordinator) {
+    @Published var courses = [CourseEntity]()
+    
+    init(coordinator: Coordinator, fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()) {
         self.coordinator = coordinator
+        self.fetchConstellationsUseCase = fetchConstellationUseCase
         super.init()
-        fetchData()
+        Task {
+            try await fetchConstellation()
+        }
     }
 }
 
 extension LogHomeViewModel {
+    // 네이게이션 POP
     func pop() {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
     }
-    
-    func pushMyConstellationView() {
+    // 별자리 콜렉션뷰 2X2로 전환
+    func pushMyConstellationView(courses: [CourseEntity]) {
         guard let coordinator = coordinator as? MyConstellationViewCoordinating else { return }
-        coordinator.pushMyConstellationViewController()
+        coordinator.pushMyConstellationViewController(courses: courses)
     }
-    
+    // 티켓뷰로 전환
     func presentTicketView() {
         guard let coordinator = coordinator as? TicketViewCoodinating else { return }
         coordinator.presentTicketViewController()
     }
-    
+    // 지도화면으로 전환
     func pushLogMapViewController() {
         guard let coordinator = coordinator as? LogMapViewCoordinating else { return }
         coordinator.pushLogMapViewController()
     }
 }
 
-// TODO 삭제할 코드
-struct TestCourse {
-    let places: [Place]
-    let courseName: String
-    let date: String
-}
-
+// MARK: UseCase호출 Method
 extension LogHomeViewModel {
-    func fetchData() {
-        for _ in 0...7 {
-            let mockCourse = TestCourse(
-                places: [
-                    Place(
-                        title: "광안리해수욕장",
-                        category: "해수욕장",
-                        address: "부산 남구 대연동",
-                        location: CLLocationCoordinate2D(latitude: 1, longitude: 1),
-                        memo: "테스트 메모"
-                    ),
-                    Place(
-                        title: "H에비뉴호텔",
-                        category: "호텔",
-                        address: "서울특별시 어딘가",
-                        location: CLLocationCoordinate2D(latitude: 3, longitude: 1),
-                        memo: nil
-                    ),
-                    Place(
-                        title: "널구지공원",
-                        category: "공원",
-                        address: "충북 서산시 어딘가",
-                        location: CLLocationCoordinate2D(latitude: 2, longitude: 3),
-                        memo: "테스트 메모"
-                    ),
-                    Place(
-                        title: "금련산",
-                        category: "산",
-                        address: "경북 포항시 북구 창포동",
-                        location: CLLocationCoordinate2D(latitude: 4, longitude: 2),
-                        memo: nil
-                    )
-                ],
-                courseName: "루미네 집 구경",
-                date: "2022년 11월 10일"
-            )
-            self.courses.append(mockCourse)
-        }
+    // MARK: 별자리 API UseCase 호출
+    func fetchConstellation() async throws {
+        courses = try await fetchConstellationsUseCase.fetchLogAsync()
     }
 }

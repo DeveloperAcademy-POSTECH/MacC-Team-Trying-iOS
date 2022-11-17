@@ -122,6 +122,9 @@ final class LogHomeViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = true
+        Task {
+            try await viewModel.fetchConstellation()
+        }
     }
     
     override func viewDidLoad() {
@@ -138,12 +141,14 @@ final class LogHomeViewController: BaseViewController {
 
 extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        // MARK: 수정
         return viewModel.courses.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogCollectionViewCell.identifier, for: indexPath) as? LogCollectionViewCell else { return UICollectionViewCell() }
-        cell.courseNameLabel.text = viewModel.courses[indexPath.row].courseName
+        cell.courseNameLabel.text = viewModel.courses[indexPath.row].courseTitle
         cell.dateLabel.text = viewModel.courses[indexPath.row].date
         cell.configure(with: viewModel.courses[indexPath.row].places)
         return cell
@@ -174,9 +179,12 @@ extension LogHomeViewController: UIScrollViewDelegate {
 extension LogHomeViewController {
     /// View Model과 bind 합니다.
     private func bind() {
-        // input
-        
-        // output
+        viewModel.$courses
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.logCollectionView.reloadData()
+            }
     }
     
     private func setUI() {
@@ -261,7 +269,7 @@ extension LogHomeViewController {
     
     @objc
     func tapListButton() {
-        viewModel.pushMyConstellationView()
+        viewModel.pushMyConstellationView(courses: viewModel.courses)
     }
     
     @objc
