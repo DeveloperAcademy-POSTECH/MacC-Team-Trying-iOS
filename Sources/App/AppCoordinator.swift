@@ -33,14 +33,14 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate {
             return
         }
 
-//        let coordinator = IntroCoordinator(navigationController: navigationController)
+        let coordinator = IntroCoordinator(navigationController: navigationController)
 //        let coordinator = MainCoordinator(navigationController: navigationController)
-//        coordinator.start()
-        
-        mainCoordinator = MainCoordinator(navigationController: navigationController)
-        mainCoordinator?.start()
-        
-//        coordinator.delegate = self
+        coordinator.delegate = self
+        coordinator.start()
+
+        //mainCoordinator = MainCoordinator(navigationController: navigationController)
+        //mainCoordinator?.start()
+
         window.makeKeyAndVisible()
         return
     }

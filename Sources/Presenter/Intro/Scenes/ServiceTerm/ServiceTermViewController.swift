@@ -185,14 +185,14 @@ extension ServiceTermViewController {
     @objc
     func termButton3DidTapped() {
         let viewController = TermViewController(viewModel: .init())
-        viewController.navigationTitle = "서비스 이용약관"
+        viewController.termType = .service
         navigationController?.pushViewController(viewController, animated: true)
     }
 
     @objc
     func termButton4DidTapped() {
         let viewController = TermViewController(viewModel: .init())
-        viewController.navigationTitle = "개인정보처리방침"
+        viewController.termType = .privacy
         navigationController?.pushViewController(viewController, animated: true)
     }
 }
