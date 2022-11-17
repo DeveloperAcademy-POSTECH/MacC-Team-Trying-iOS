@@ -14,7 +14,7 @@ import SnapKit
 
 final class MyConstellationViewController: BaseViewController {
 
-    var viewModel: MyConstellationViewModel?
+    var viewModel: MyConstellationViewModel
     
     lazy var myConstellationCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -26,9 +26,9 @@ final class MyConstellationViewController: BaseViewController {
     }()
 
     // MARK: Initializer
-    init(viewModel: MyConstellationViewModel? = nil) {
-        super.init(nibName: nil, bundle: nil)
+    init(viewModel: MyConstellationViewModel) {
         self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -101,24 +101,24 @@ extension MyConstellationViewController {
     // MARK: Button Action
     @objc
     func tapDismissButton() {
-        viewModel?.tapDismissButton()
+        viewModel.tapDismissButton()
     }
     
     @objc
     func tapMapButton() {
-        viewModel?.pushLogMapViewController()
+        viewModel.pushLogMapViewController()
     }
 }
 
 // MARK: CollectionView - DataSource
 extension MyConstellationViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel?.courses.count ?? 0
+        return viewModel.courses.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyConstellationCollectionViewCell.cellId, for: indexPath) as? MyConstellationCollectionViewCell else { return UICollectionViewCell() }
-        cell.course = viewModel?.courses[indexPath.row]
+        cell.course = viewModel.courses[indexPath.row]
         return cell
     }
 }

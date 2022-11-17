@@ -23,7 +23,7 @@ final class FetchConstellationRepositoryImpl {
 
 extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
     
-    func fetchLogAsyc() async throws -> [TestCourse] {
+    func fetchLogAsync() async throws -> [TestCourse] {
         
         guard let url = URL(string: url) else {
             print("################## LOG URL ERROR #######################")

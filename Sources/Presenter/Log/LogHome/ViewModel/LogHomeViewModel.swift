@@ -69,6 +69,6 @@ extension LogHomeViewModel {
 extension LogHomeViewModel {
     // MARK: 별자리 API UseCase 호출
     func fetchConstellation() async throws {
-        courses = try await fetchConstellationsUseCase.fetchLogAsyc()
+        courses = try await fetchConstellationsUseCase.fetchLogAsync()
     }
 }
