@@ -18,7 +18,8 @@ final class AddCourseMapViewController: BaseViewController {
     var type: AddCourseFlowType
     var viewModel: AddCourseMapViewModel
     
-    private var recentAnnotation: MKAnnotation?
+    private var recentAnnotations = [MKAnnotation]()
+    private var selectedAnnotations = [MKAnnotation]()
     private let locationManager = LocationManager.shared
     
     private lazy var placeMapView: MKMapView = {
@@ -128,7 +129,14 @@ final class AddCourseMapViewController: BaseViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        removeNotifications()
+        self.removeNotifications()
+        
+        self.removeRecentAnnotations()
+        DispatchQueue.main.async {
+            self.placeDetailView.hide()
+            self.placeListView.hide()
+            self.nextButton.hide()
+        }
     }
 }
 
@@ -309,8 +317,8 @@ extension AddCourseMapViewController {
     private func didTapAddCourseButton(_ sender: UIButton) {
         placeDetailView.memoTextField.resignFirstResponder()
         viewModel.addPlace(self.placeDetailView.selectedPlace!)
-        viewModel.addAnnotation(recentAnnotation!)
-        recentAnnotation = nil
+        self.selectedAnnotations.append(recentAnnotations.first!)
+        recentAnnotations.removeAll()
     }
     
     @objc
@@ -318,7 +326,8 @@ extension AddCourseMapViewController {
         let index = sender.tag
         HapticManager.instance.selection()
         viewModel.deletePlace(index)
-        viewModel.deleteAnnotation(map: self.placeMapView, at: index)
+        let removedAnnotation = self.selectedAnnotations.remove(at: index)
+        self.placeMapView.removeAnnotation(removedAnnotation)
     }
     
     @objc
@@ -376,29 +385,26 @@ extension AddCourseMapViewController {
         let mapPoint = placeMapView.convert(location, toCoordinateFrom: placeMapView)
         
         if sender.state == .ended {
-            DispatchQueue.global().async {
-                Task {
-                    let place = try await self.viewModel.searchPlace(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
-                    
-                    if let place = place {
-                        self.removeRecentAnnotation()
-                        self.addStarAnnotation(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
-                        self.presentPlaceDetailView(with: place)
-                    } else {
-                        DispatchQueue.main.async {
-                            self.placeDetailView.hide()
-                            self.placeListView.hide()
-                            self.nextButton.hide()
-                            self.removeRecentAnnotation()
-                            
-                            UIView.animate(
-                                withDuration: 0.3,
-                                delay: 0,
-                                animations: {
-                                    self.view.layoutIfNeeded()
-                                }
-                            )
-                        }
+            self.removeRecentAnnotations()
+            Task {
+                let place = try await self.viewModel.searchPlace(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
+                
+                if let place = place {
+                    self.addStarAnnotation(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
+                    self.presentPlaceDetailView(with: place)
+                } else {
+                    DispatchQueue.main.async {
+                        self.placeDetailView.hide()
+                        self.placeListView.hide()
+                        self.nextButton.hide()
+                        
+                        UIView.animate(
+                            withDuration: 0.3,
+                            delay: 0,
+                            animations: {
+                                self.view.layoutIfNeeded()
+                            }
+                        )
                     }
                 }
             }
@@ -412,14 +418,15 @@ extension AddCourseMapViewController {
                 longitude: longitude
             )
         )
+        self.recentAnnotations.append(starAnnotation)
         DispatchQueue.main.async {
             self.placeMapView.addAnnotation(starAnnotation)
         }
     }
     
-    private func removeRecentAnnotation() {
-        guard let recentAnnotation = recentAnnotation else { return }
-        placeMapView.removeAnnotation(recentAnnotation)
+    private func removeRecentAnnotations() {
+        self.placeMapView.removeAnnotations(self.recentAnnotations)
+        self.recentAnnotations.removeAll()
     }
 }
 
@@ -428,7 +435,6 @@ extension AddCourseMapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? StarAnnotation else { return nil }
         
-        recentAnnotation = annotation
         var annotationView = self.placeMapView.dequeueReusableAnnotationView(withIdentifier: StarAnnotationView.identifier)
         
         if annotationView == nil {
@@ -440,9 +446,6 @@ extension AddCourseMapViewController: MKMapViewDelegate {
         }
         
         annotationView?.image = UIImage(named: Constants.Image.starAnnotation)
-        
-        annotationView?.clusteringIdentifier = viewModel.courseTitle
-        annotationView?.displayPriority = .defaultHigh
         
         return annotationView
     }
@@ -456,7 +459,26 @@ extension AddCourseMapViewController: PlacePresenting {
         self.presentPlaceDetailView(with: place)
     }
     
-    // TODO: 다른 브랜치에 있는거. 컨플릭 날거임
+    func presentSearchedPlaces(places: [Place]) {
+        let averageLatitude = places.reduce(into: 0.0) { $0 += $1.location.latitude } / Double(places.count)
+        let averageLongitude = places.reduce(into: 0.0) { $0 += $1.location.longitude } / Double(places.count)
+        
+        DispatchQueue.main.async {
+            self.removeRecentAnnotations()
+            DispatchQueue.main.async {
+                self.placeDetailView.hide()
+                self.placeListView.hide()
+                self.nextButton.hide()
+            }
+            
+            places.forEach { place in
+                self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
+            }
+            
+            self.presentLocation(latitude: averageLatitude, longitude: averageLongitude, span: 0.05)
+        }
+    }
+    
     private func presentLocation(latitude: CLLocationDegrees, longitude: CLLocationDegrees, span: Double) {
         let spanValue = MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
         

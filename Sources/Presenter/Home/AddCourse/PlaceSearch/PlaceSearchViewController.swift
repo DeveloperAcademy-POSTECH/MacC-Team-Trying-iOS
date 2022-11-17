@@ -14,6 +14,7 @@ import SnapKit
 
 protocol PlacePresenting: AnyObject {
     func presentSelectedPlace(place: Place)
+    func presentSearchedPlaces(places: [Place])
 }
 
 final class PlaceSearchViewController: BaseViewController {
@@ -173,7 +174,11 @@ extension PlaceSearchViewController {
     
     @objc
     private func mapButtonPressed(_ sender: UIButton) {
+        navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
+        
+        let places = viewModel.getPlaces()
         viewModel.pop()
+        delegate?.presentSearchedPlaces(places: places)
     }
     
     @objc

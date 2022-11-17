@@ -52,4 +52,8 @@ extension PlaceSearchViewModel {
     func getPlace(index: Int) -> Place {
         return places[index]
     }
+    
+    func getPlaces() -> [Place] {
+        return places
+    }
 }

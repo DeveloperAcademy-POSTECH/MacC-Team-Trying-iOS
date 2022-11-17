@@ -32,22 +32,19 @@ final class AddCourseMapViewModel: BaseViewModel {
     let courseTitle: String
     @Published var places: [Place]
     @Published var memo: String?
-    var annotations: [MKAnnotation]
     
     init(
         coordinator: Coordinator,
         addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(),
         placeSearchUseCase: PlaceSearchUseCase = PlaceSearchUseCaseImpl(),
         courseTitle: String,
-        places: [Place] = [],
-        annotations: [MKAnnotation] = []
+        places: [Place] = []
     ) {
         self.coordinator = coordinator
         self.addCourseUseCase = addCourseUseCase
         self.placeSearchUseCase = placeSearchUseCase
         self.courseTitle = courseTitle
         self.places = places
-        self.annotations = annotations
     }
 }
 
@@ -94,15 +91,6 @@ extension AddCourseMapViewModel {
     
     func deletePlace(_ index: Int) {
         places.remove(at: index)
-    }
-    
-    func addAnnotation(_ annotation: MKAnnotation) {
-        annotations.append(annotation)
-    }
-    
-    func deleteAnnotation(map: MKMapView, at index: Int) {
-        map.removeAnnotation(annotations[index])
-        annotations.remove(at: index)
     }
     
     func changePlaceOrder(sourceIndex: Int, to destinationIndex: Int) {
