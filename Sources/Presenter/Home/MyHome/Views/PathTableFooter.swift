@@ -14,7 +14,7 @@ class PathTableFooter: UITableViewHeaderFooterView {
     
     weak var delegate: ActionSheetDelegate?
     
-    private let registerReviewButton: UIButton = {
+    private lazy var registerReviewButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .clear
         button.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
@@ -28,6 +28,7 @@ class PathTableFooter: UITableViewHeaderFooterView {
         button.tintColor = .designSystem(.mainYellow)
         button.setTitleColor(.designSystem(.mainYellow), for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 11, weight: .bold)
+        button.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -61,13 +62,20 @@ class PathTableFooter: UITableViewHeaderFooterView {
     @objc
     func settingButtonTapped() {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let modify = UIAlertAction(title: "별자리 수정하기", style: .default)
+        let modify = UIAlertAction(title: "별자리 수정하기", style: .default) { _ in
+            self.delegate?.presentModifyViewController()
+        }
         let delete = UIAlertAction(title: "별자리 삭제하기", style: .default)
         let cancel = UIAlertAction(title: "취소", style: .cancel)
         actionSheet.addAction(modify)
         actionSheet.addAction(delete)
         actionSheet.addAction(cancel)
         self.delegate?.showSettingActionSheet(alert: actionSheet)
+    }
+    
+    @objc
+    func registerButtonTapped() {
+        self.delegate?.presentRegisterReviewViewController()
     }
     
     required init?(coder: NSCoder) {

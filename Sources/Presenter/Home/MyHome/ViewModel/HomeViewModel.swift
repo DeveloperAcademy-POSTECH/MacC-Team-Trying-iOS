@@ -92,3 +92,11 @@ final class HomeViewModel: BaseViewModel {
         dateCourse = HomeCourse(courseTitle: selectedDateCourse.title, courseList: placeList)
     }
 }
+
+// MARK: - Coordinating
+extension HomeViewModel {
+    func startAddCourseFlow(type: AddCourseFlowType) {
+        guard let coordinator = coordinator as? HomeCoordinator else { return }
+        coordinator.startAddCourseFlow(type: type)
+    }
+}
