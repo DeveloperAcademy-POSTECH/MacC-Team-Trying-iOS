@@ -8,11 +8,6 @@
 
 import UIKit
 
-enum AddCourseFlowType {
-    case plan
-    case record
-}
-
 final class AddCourseCoordinator: Coordinator,
                                   AddCourseMapCoordinating,
                                   PlaceSearchCoordinating,
