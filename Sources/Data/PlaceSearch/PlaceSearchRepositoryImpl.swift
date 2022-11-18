@@ -10,52 +10,71 @@ import CoreLocation
 import Foundation
 
 final class PlaceSearchRepositoryImpl: PlaceSearchRepository {
-    func placeSearch(name: String, latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> PlaceSearchResponse {
-        let page = 0
-        let size = 10
+    /*
+    func getAddressUsingKakao(coordinate: CLLocationCoordinate2D) async throws -> String {
+        var urlComponents = URLComponents(string: "https://dapi.kakao.com/v2/local/geo/coord2address.json")
+        let latitudeQueryItem = URLQueryItem(name: "x", value: String(coordinate.latitude))
+        let longitudeQueryItem = URLQueryItem(name: "y", value: String(coordinate.longitude))
+        let inputCoordinatorQueryItem = URLQueryItem(name: "input_coord", value: "WGS84")
         
-        let urlString = "https://comeit.site/places?name=\(name)&latitude=\(latitude)&longitude=\(longitude)&page=\(page)&size=\(size)"
-        let encodedString = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-        let url = URL(string: encodedString)!
+        urlComponents?.queryItems?.append(latitudeQueryItem)
+        urlComponents?.queryItems?.append(longitudeQueryItem)
+        urlComponents?.queryItems?.append(inputCoordinatorQueryItem)
         
-        let method = "GET"
-        let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2OWY5MzU0Ny01YTk3LTQyZTEtOWE3My0xMzUwOWE5NjA2YTciLCJhdXRoIjoiVVNFUiJ9.znC6SpbwYq_ZEbK9kmj-IFPaQAnP-nHc4d3FgQDxe5DeWZZDWAAG-T-CAUAbBauCXezHRyVmXYL_ssUV8qfHYQ"
+        guard let url = urlComponents?.url else { throw NetworkingError.urlError }
         
         var request = URLRequest(url: url)
-        request.httpMethod = method
+        request.httpMethod = "GET"
         request.setValue("application/json;charset=UTF-8", forHTTPHeaderField: "Content-Type")
-        request.setValue(token, forHTTPHeaderField: "accessToken")
+        request.setValue("KakaoAK fa0c6c8d186949d9d856d225a906fdba", forHTTPHeaderField: "Authorization")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(from: url)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkingError.invalidServerResponse
         }
         
-        let networkResult = try self.judgeStatus(by: httpResponse.statusCode, data, type: PlaceSearchResponse.self)
+        let networkResult = try self.judgeStatus(by: httpResponse.statusCode, data, type: KakaoGetAddressDTO.self)
         
-        return networkResult
+        return try self.convertToAddress(networkResult)
     }
+    */
     
-    func placeSearch(distance: Double, latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> PlaceSearchResponse {
-        let page = 0
-        let size = 10
-        let url = "https://comeit.site/places/position?distance=\(distance)&latitude=\(latitude)&longitude=\(longitude)&page=\(page)&size=\(size)"
+    func searchPlaceUsingKakao(query: String, coordinate: CLLocationCoordinate2D) async throws -> [Place] {
+        var urlComponents = URLComponents(string: "https://dapi.kakao.com/v2/local/search/keyword.json")
         
-        let method = "GET"
-        let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1ZDg5ZDExNS1jMjcxLTRjMTUtODM1Mi0xYjQxOWQ1NzdjNDIiLCJhdXRoIjoiVVNFUiJ9.8E8zx-xx1GhLXNER0Ubo_fxWYW_mclgQoB-xmgYTHcbpciZLKPk4qYD77GqrtropsPqkJeqiEzQqQMvYneLytg"
+        let pageQueryItem = URLQueryItem(name: "page", value: "1")
+        let sizeQueryItem = URLQueryItem(name: "size", value: "15")
+        let queryItem = URLQueryItem(name: "query", value: "\(query)")
+        let latitudeQueryItem = URLQueryItem(name: "x", value: "\(String(coordinate.latitude))")
+        let longitudeQueryItem = URLQueryItem(name: "y", value: "\(String(coordinate.longitude))")
+        let radiusQueryItem = URLQueryItem(name: "radius", value: "5000")
         
-        var request = URLRequest(url: URL(string: url)!)
+        urlComponents?.queryItems = [
+            pageQueryItem,
+            sizeQueryItem,
+            queryItem,
+            latitudeQueryItem,
+            longitudeQueryItem,
+            radiusQueryItem
+        ]
+        
+        guard let urlString = urlComponents?.string,
+              let url = URL(string: urlString) else { throw NetworkingError.urlError }
+            
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.setValue("KakaoAK fa0c6c8d186949d9d856d225a906fdba", forHTTPHeaderField: "Authorization")
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw NetworkingError.invalidServerResponse
         }
+        let dto = try self.judgeStatus(by: httpResponse.statusCode, data, type: KakaoPlaceSearchDTO.self)
         
-        let networkResult = try self.judgeStatus(by: httpResponse.statusCode, data, type: PlaceSearchResponse.self)
-        
-        return networkResult
+        return try self.convertToPlace(dto)
     }
 }
 
@@ -80,5 +99,36 @@ extension PlaceSearchRepositoryImpl {
         }
         
         return decodedData
+    }
+    
+    /*
+    private func convertToAddress(_ dto: KakaoGetAddressDTO) throws -> String {
+        if dto.meta.totalCount == 0 {
+            throw NetworkingError.PlaceSearchError.noAddress
+        } else {
+            return dto.documents[0].roadAddress.addressName
+        }
+    }
+    */
+    
+    private func convertToPlace(_ dto: KakaoPlaceSearchDTO) throws -> [Place] {
+        var places = [Place]()
+        
+        dto.documents.forEach { document in
+            places.append(
+                Place(
+                    id: Int(document.id)!,
+                    title: document.placeName,
+                    category: document.categoryGroupName,
+                    address: document.roadAddressName,
+                    location: CLLocationCoordinate2D(
+                        latitude: Double(document.latitude)!,
+                        longitude: Double(document.longitude)!
+                    )
+                )
+            )
+        }
+        
+        return places
     }
 }
