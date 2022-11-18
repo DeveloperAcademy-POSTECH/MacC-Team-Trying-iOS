@@ -18,7 +18,7 @@ protocol EditNicknamCoordinatorLogic {
 final class EditNicknameViewModel: BaseViewModel {
 
     let coordinator: EditNicknamCoordinatorLogic
-
+    private let userService: UserService
     private let signUpService = SignUpService()
 
     @Published var nicknameTextFieldState: TextFieldState
@@ -28,9 +28,11 @@ final class EditNicknameViewModel: BaseViewModel {
 
     init(
         nickname: String,
+        userService: UserService = UserService(),
         coordinator: EditNicknamCoordinatorLogic
     ) {
         self.nickname = nickname
+        self.userService = userService
         self.nicknameTextFieldState = .emptyNickname
         self.isLoading = false
         self.coordinator = coordinator
@@ -40,7 +42,7 @@ final class EditNicknameViewModel: BaseViewModel {
         Task {
             do {
 
-                
+                _ = try await userService.editNickname(nickname: nickname)
 
                 DispatchQueue.main.async {
                     self.coordinator.back()

@@ -29,6 +29,14 @@ final class EditNicknameViewController: BaseViewController {
     lazy var codeTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .nickname)
     lazy var nextButton = IntroButton(type: .system)
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        bind()
+        setAttribute()
+        setLayout()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -56,13 +64,13 @@ final class EditNicknameViewController: BaseViewController {
     private func setAttribute() {
 
         navigationItem.backButtonTitle = ""
-        navigationItem.title = "회원가입"
+        navigationItem.title = "닉네임 수정"
 
         titleLabels.subTitle = "닉네임을 입력해 주세요!"
 
         codeTextFieldView.delegate = self
 
-        nextButton.title = "다음"
+        nextButton.title = "수정 완료"
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
     }
 
@@ -159,4 +167,6 @@ extension EditNicknameViewController: TextFieldWithMessageViewComponentDelegate 
     func textFieldDidChange(_ text: String) {
         viewModel.textFieldDidChange(text)
     }
+
+    func textFieldDidChange(_ textFieldView: UIView, _ text: String) { }
 }

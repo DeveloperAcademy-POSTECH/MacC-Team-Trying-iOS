@@ -31,7 +31,7 @@ final class ProfileCoordinator: Coordinator {
 }
 
 // MARK: - Coordinating Methods
-extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoordinatorLogic, EditNicknamCoordinatorLogic {
+extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoordinatorLogic, EditNicknamCoordinatorLogic, EditPasswordCoordinatorLogic {
 
     func pushToEditDayView() {
         let viewModel = EditDayViewModel(coordinator: self)
@@ -46,6 +46,7 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
 
     func coordinateToEditProfile() {
         let editProfile = EditProfileViewController(viewModel: .init(coordinator: self))
+        editProfile.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(editProfile, animated: true)
     }
 
@@ -55,12 +56,13 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
 
     func coordinateToEditNicknameScene(nickname: String) {
         let editNickname = EditNicknameViewController(viewModel: .init(nickname: nickname, coordinator: self))
+        editNickname.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(editNickname, animated: true)
     }
 
     func coordinateToEditPasswordScene() {
-        let editPassword = EditPasswordViewController()
-        editPassword.viewModel = EditPasswordViewModel()
+        let editPassword = EditPasswordViewController(viewModel: .init(coordinator: self))
+        editPassword.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(editPassword, animated: true)
     }
      func coordinateToLoginScene() {

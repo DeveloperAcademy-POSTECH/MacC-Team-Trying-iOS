@@ -12,6 +12,9 @@ enum UserAPI {
     case users
     case deregister
     case logout
+    case editNickname(UserRequestModel.EditNickname)
+    case editPlanet(UserRequestModel.EditPlanet)
+    case editPassword(UserRequestModel.EditPassword)
 }
 
 extension UserAPI: TargetType {
@@ -23,6 +26,12 @@ extension UserAPI: TargetType {
             return .delete
         case .logout:
             return .delete
+        case .editNickname:
+            return .put
+        case .editPassword:
+            return .put
+        case .editPlanet:
+            return .put
         }
     }
     
@@ -34,7 +43,29 @@ extension UserAPI: TargetType {
             return "/users"
         case .logout:
             return "/users/logout"
+        case .editNickname:
+            return "/users/name"
+        case .editPassword:
+            return "/users/password"
+        case .editPlanet:
+            return "/planets"
         }
+    }
 
+    var body: RequestBody? {
+        switch self {
+        case .users:
+            return nil
+        case .deregister:
+            return nil
+        case .logout:
+            return nil
+        case .editNickname(let body):
+            return body
+        case .editPassword(let body):
+            return body
+        case .editPlanet(let body):
+            return body
+        }
     }
 }

@@ -19,4 +19,6 @@ protocol TextFieldWithMessageViewComponent: Component {
     func textFieldResignFirstResponder()
     /// 텍스트를 수정합니다.
     func updateText(_ text: String)
+    /// placeholder를 업데이트합니다.
+    func updatePlaceholder(_ text: String)
 }

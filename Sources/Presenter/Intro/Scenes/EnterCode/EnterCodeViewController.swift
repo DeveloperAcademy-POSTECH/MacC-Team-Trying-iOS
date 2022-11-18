@@ -147,6 +147,7 @@ extension EnterCodeViewController {
 }
 
 extension EnterCodeViewController: TextFieldWithMessageViewComponentDelegate {
+
     func textFieldDidChange(_ text: String) {
         viewModel.textFieldDidChange(text)
     }

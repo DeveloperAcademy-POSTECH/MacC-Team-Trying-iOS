@@ -44,8 +44,27 @@ final class EditProfileViewController: BaseViewController {
     lazy var logoutButton = UIButton(type: .system)
     lazy var deregisterButton = UIButton(type: .system)
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        viewModel.fetchUserInformation()
+    }
+
     private func bind() {
-        
+        viewModel.$nickname
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] nickname in
+                self?.nicknameLabel.text = nickname
+            }
+            .cancel(with: cancelBag)
+
+        viewModel.$email
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] email in
+                self?.emailLabel.text = email.isEmpty ? "소셜 로그인" : email
+                self?.passwordChangeButton.isHidden = email.isEmpty
+            }
+            .cancel(with: cancelBag)
     }
 
     override func viewDidLoad() {
@@ -63,6 +82,7 @@ extension EditProfileViewController {
     }
 
     private func setAttributes() {
+        navigationItem.backButtonTitle = ""
         navigationItem.title = "내 정보 수정"
 
         emailSubtitleLabel.text = "이메일 아이디"
@@ -216,12 +236,12 @@ extension EditProfileViewController {
 
     @objc
     func nicknameChangeButtonDidTapped() {
-
+        viewModel.coordinateToEditNicknameScene()
     }
 
     @objc
     func passwordChangeButtonDidTapped() {
-
+        viewModel.passwordChangeButtonDidTapped()
     }
 
     @objc
@@ -231,6 +251,6 @@ extension EditProfileViewController {
 
     @objc
     func deregisterButtonDidTapped() {
-
+        viewModel.deregister()
     }
 }

@@ -22,4 +22,19 @@ struct UserService {
     func deregister() async throws -> EmptyResponseBody {
         try await provider.send(.deregister)
     }
+
+    func editNickname(nickname: String) async throws -> EmptyResponseBody {
+        try await provider.send(.editNickname(.init(name: nickname)))
+    }
+
+    func editPassword(password: String, changePw: String) async throws -> EmptyResponseBody {
+        try await provider.send(
+            .editPassword(
+                .init(
+                    previousPassword: password,
+                    updatePassword: changePw
+                )
+            )
+        )
+    }
 }

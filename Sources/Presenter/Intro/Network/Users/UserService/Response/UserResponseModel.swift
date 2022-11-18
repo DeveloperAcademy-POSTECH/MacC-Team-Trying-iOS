@@ -13,6 +13,7 @@ struct UserResponseModel: Decodable {
     let mate: Mate?
     let planet: Planet?
     let hasNotification: Bool
+    let socialAccount: Bool
 
     struct Mate: Decodable {
         let name: String

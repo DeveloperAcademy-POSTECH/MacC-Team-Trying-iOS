@@ -24,6 +24,8 @@ enum TextFieldState {
     case duplicatedSignUp
     case isNotSignUp
     case doubleNickname
+    case doubleCheckPassword
+    case goodDoubleCheckPassword
 
     var message: String? {
         switch self {
@@ -57,6 +59,10 @@ enum TextFieldState {
             return "처음 보는 이메일 주소예요!"
         case .doubleNickname:
             return "중복된 닉네임이 존재합니다."
+        case .doubleCheckPassword:
+            return "비밀번호를 다시 확인해주세요."
+        case .goodDoubleCheckPassword:
+            return ""
         }
     }
 

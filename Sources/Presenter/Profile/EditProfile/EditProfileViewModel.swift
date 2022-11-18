@@ -35,12 +35,21 @@ final class EditProfileViewModel: BaseViewModel {
         self.userSerivce = userService
     }
 
-    func coordinateToEditNicknameScene(nickname: String) {
+    func coordinateToEditNicknameScene() {
         self.coordinator.coordinateToEditNicknameScene(nickname: nickname)
     }
 
     func passwordChangeButtonDidTapped() {
         self.coordinator.coordinateToEditPasswordScene()
+    }
+
+    func fetchUserInformation() {
+        Task {
+            do {
+                let userInformation = try await userSerivce.getUserInformations()
+                nickname = userInformation.me.name
+            }
+        }
     }
 
     func logout() {
