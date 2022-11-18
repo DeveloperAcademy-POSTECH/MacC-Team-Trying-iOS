@@ -18,7 +18,11 @@ final class FetchConstellationRepositoryImpl {
     
     let url = "https://comeit.site/courses/log?page=0&size=10"
     
-    private let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MjYyMTA0MS01NTI2LTRjZjgtOGJiOC0xMzdlODhmMDExYWEiLCJhdXRoIjoiVVNFUiJ9._hKs0Sr0JQDKF_-2XjubIp3OTHwwR6Tme4TgZ6PjGgE23oi_gPj2eglZP9w4IVaT7uyk2eYucbdL4zKXVQ9TuQ"
+    //     TODO: UserDefaults로 수정해야함
+    
+    //    private let token = UserDefaults.standard.string(forKey: "accessToken")
+    
+    private let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI4NzNmNDhlYy01N2UwLTQ2MDEtYmUxZC1mZDJlYmRmMTk0MzciLCJhdXRoIjoiVVNFUiJ9.Pam458muHWV-CYqnDRdgyZblyri1vbs9U8srXyBIsgH8qRC02h0mwln1rk9OjIBHLs-rDDNX7PJyWzBl9IE-EA"
 }
 
 extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
@@ -26,7 +30,10 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
     func fetchLogAsync() async throws -> [CourseEntity] {
         
         guard let url = URL(string: url) else {
-            print("################## LOG URL ERROR #######################")
+            #if DEBUG
+            print("⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️")
+            print("URL Error occured")
+            #endif
             throw LogRequestError.urlResponse
         }
         
@@ -37,8 +44,11 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-            print("api response error", response)
-            
+            #if DEBUG
+            print("⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️")
+            print("api response error")
+            print(response)
+            #endif
             throw LogRequestError.response
         }
         
