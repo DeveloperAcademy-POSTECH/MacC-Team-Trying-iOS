@@ -12,6 +12,14 @@ struct UserService {
     private let provider = NetworkProviderImpl<UserAPI>()
 
     func getUserInformations() async throws -> UserResponseModel {
-        return try await provider.send(.users)
+        try await provider.send(.users)
+    }
+
+    func logout() async throws -> EmptyResponseBody {
+        try await provider.send(.logout)
+    }
+
+    func deregister() async throws -> EmptyResponseBody {
+        try await provider.send(.deregister)
     }
 }

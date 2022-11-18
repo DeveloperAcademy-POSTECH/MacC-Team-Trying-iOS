@@ -226,7 +226,7 @@ extension EditProfileViewController {
 
     @objc
     func logoutButtonDidTapped() {
-
+        viewModel.logout()
     }
 
     @objc

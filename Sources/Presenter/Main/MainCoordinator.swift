@@ -12,7 +12,7 @@ protocol Popable {
     func popViewController()
 }
 protocol MainCoordinatorDelegate: AnyObject {
-    
+    func coordinateToLoginSceneFromProfile()
 }
 
 final class MainCoordinator: Coordinator {
@@ -73,10 +73,10 @@ final class MainCoordinator: Coordinator {
     
     weak var navigationController: UINavigationController?
     weak var delegate: MainCoordinatorDelegate?
-    
+
     let tabBarController: UITabBarController
     let tabBarItems: [TabBarItem] = [ .home, .search, .feed, .profile]
-    
+
     init(navigationController: UINavigationController?) {
         self.navigationController = navigationController
         self.tabBarController = UITabBarController()
@@ -104,6 +104,11 @@ extension MainCoordinator {
                 coordinator.parentCoordinator = self
                 print(coordinator, coordinator.parentCoordinator)
             }
+        } else if item == .profile {
+            if let coordinator = coordinator as? ProfileCoordinator {
+                coordinator.delegate = self
+                print(coordinator, coordinator.delegate)
+            }
         }
         
         coordinator.start()
@@ -130,5 +135,12 @@ protocol MoveToAnotherTab: AnyObject {
 extension MainCoordinator: MoveToAnotherTab {
     func moveToLogTab() {
         tabBarController.selectedIndex = 1
+    }
+}
+
+extension MainCoordinator: ProfileCoordinatorDelegate {
+    func coordinateToLoginScene() {
+        print("coordinateToLoginScene")
+        delegate?.coordinateToLoginSceneFromProfile()
     }
 }

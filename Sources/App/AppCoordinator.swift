@@ -64,6 +64,13 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
         window.makeKeyAndVisible()
     }
 
+    func coordinateToLogincSceneByDispatchQueue() {
+        let coordinator = IntroCoordinator(navigationController: navigationController)
+        coordinator.start()
+        coordinator.delegate = self
+        window.makeKeyAndVisible()
+    }
+
     @MainActor
     private func coordinateToCreatePlanet() {
         let coordinator = IntroCoordinator(navigationController: navigationController)
@@ -78,5 +85,9 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
         coordinator.startWithWaitingMate(selectedPlanet: selectedPlanet, planetName: planetName, code: code)
         coordinator.delegate = self
         window.makeKeyAndVisible()
+    }
+
+    func coordinateToLoginSceneFromProfile() {
+        self.coordinateToLogincSceneByDispatchQueue()
     }
 }

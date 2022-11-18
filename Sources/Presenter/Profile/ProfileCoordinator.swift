@@ -8,9 +8,15 @@
 
 import UIKit
 
+protocol ProfileCoordinatorDelegate: AnyObject {
+    func coordinateToLoginScene()
+}
+
 final class ProfileCoordinator: Coordinator {
     weak var navigationController: UINavigationController?
-    
+
+    var delegate: ProfileCoordinatorDelegate?
+
     init(navigationController: UINavigationController?) {
         self.navigationController = navigationController
     }
@@ -56,5 +62,12 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
         let editPassword = EditPasswordViewController()
         editPassword.viewModel = EditPasswordViewModel()
         self.navigationController?.pushViewController(editPassword, animated: true)
+    }
+     func coordinateToLoginScene() {
+        delegate?.coordinateToLoginScene()
+    }
+
+    func coordinateToDeRegisterScene() {
+        // MARK: 이동
     }
 }

@@ -119,6 +119,8 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
         let heightConstraint3 = emailLoginButton.heightAnchor.constraint(equalTo: emailLoginButton.widthAnchor, multiplier: 58 / 350)
         heightConstraint3.priority = UILayoutPriority(1000)
         heightConstraint3.isActive = true
+
+        self.view.layoutIfNeeded()
     }
 }
 
