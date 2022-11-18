@@ -141,7 +141,7 @@ final class LogMapViewController: BaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+        navigationController?.tabBarController?.tabBar.isHidden = false
         navigationController?.navigationBar.isHidden = false
     }
 }
