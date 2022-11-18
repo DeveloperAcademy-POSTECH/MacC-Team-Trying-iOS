@@ -106,6 +106,8 @@ final class ProfileViewController: BaseViewController {
 // MARK: - UI
 extension ProfileViewController: NavigationBarConfigurable {
     private func setUI() {
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         
         view.addSubview(scrollView)
@@ -272,8 +274,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         case 1:
             switch indexPath.row {
             case 0:
-                // TODO: 닉네임 수정
-                break
+                viewModel.editProfileButtonDidTapped()
             case 1:
                 viewModel.pushToEditDayView()
             case 2:

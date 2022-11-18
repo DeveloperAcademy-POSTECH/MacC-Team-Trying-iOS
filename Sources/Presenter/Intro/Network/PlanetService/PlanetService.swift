@@ -22,4 +22,8 @@ struct PlanetService {
     func getPlanetByCode(_ query: PlanetRequestModel.GetPlanetByCode) async throws -> PlanetResponseModel.GetPlanetByCode {
         try await provider.send(.getPlanetByCode(query))
     }
+
+    func deletePlanet() async throws -> EmptyResponseBody {
+        try await provider.send(.deletePlanet)
+    }
 }

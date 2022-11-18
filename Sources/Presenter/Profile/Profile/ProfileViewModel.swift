@@ -10,19 +10,20 @@ import Combine
 
 import CancelBag
 
-protocol EditDayViewCoordinating {
+protocol ProfileCoordinatorLogic: Coordinator {
     func pushToEditDayView()
+    func coordinateToEditProfile()
 }
 
 final class ProfileViewModel: BaseViewModel {
-    var coordinator: Coordinator
+    var coordinator: ProfileCoordinatorLogic
     
     // FIXME: Data binding
     @Published var numberOfPlaces: Int = 249
     @Published var planetImageName: String = "planet_purple"
     @Published var planetName: String = "찰리"
     
-    init(coordinator: Coordinator) {
+    init(coordinator: ProfileCoordinatorLogic) {
         self.coordinator = coordinator
     }
 }
@@ -30,7 +31,10 @@ final class ProfileViewModel: BaseViewModel {
 // MARK: - Coordinating
 extension ProfileViewModel {
     func pushToEditDayView() {
-        guard let coordinator = coordinator as? EditDayViewCoordinating else { return }
         coordinator.pushToEditDayView()
+    }
+
+    func editProfileButtonDidTapped() {
+        coordinator.coordinateToEditProfile()
     }
 }

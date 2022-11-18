@@ -68,13 +68,6 @@ final class ConfirmSignUpViewController: PlanetAnimatedViewController<ConfirmSig
             }
             .cancel(with: cancelBag)
 
-        viewModel.$isLoading
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isLoading in
-                self?.signUpButton.loading = isLoading
-            }
-            .cancel(with: cancelBag)
-
         viewModel.$leaveAnimation
             .receive(on: DispatchQueue.main)
             .filter { $0 == true }

@@ -42,10 +42,12 @@ final class NetworkProviderImpl<T: TargetType>: NetworkProvider {
                             continuation.resume(with: .success(empty))
                             return
                         }
-                        
+
+                        print("데이터 읽기 📚 ", String(data: data, encoding: .utf8))
                         let output = try JSONDecoder().decode(M.self, from: data)
                         continuation.resume(with: .success(output))
                     } catch {
+                        print("☠️", error)
                         continuation.resume(with: .failure(error))
                     }
                 }
@@ -65,7 +67,7 @@ final class NetworkProviderImpl<T: TargetType>: NetworkProvider {
                     statusCode: response.statusCode,
                     body: BaseError(message: String(data: data, encoding: .utf8))
                 )
-                print(badResponse)
+                print("☠️☠️☠️", badResponse)
                 throw NetworkError.badServerResponse(badResponse)
             }
             throw NetworkError.invalidResponse

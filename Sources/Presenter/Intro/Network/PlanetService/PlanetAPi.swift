@@ -12,6 +12,7 @@ enum PlanetAPI {
     case create(PlanetRequestModel.CreatePlanet)
     case join(PlanetRequestModel.JoinPlanet)
     case getPlanetByCode(PlanetRequestModel.GetPlanetByCode)
+    case deletePlanet
 }
 
 extension PlanetAPI: TargetType {
@@ -24,6 +25,8 @@ extension PlanetAPI: TargetType {
             return .post
         case .getPlanetByCode:
             return .get
+        case .deletePlanet:
+            return .delete
         }
     }
 
@@ -34,6 +37,8 @@ extension PlanetAPI: TargetType {
         case .join:
             return "/planets/join"
         case .getPlanetByCode:
+            return "/planets"
+        case .deletePlanet:
             return "/planets"
         }
     }
@@ -46,6 +51,8 @@ extension PlanetAPI: TargetType {
             return body
         case .getPlanetByCode:
             return nil
+        case .deletePlanet:
+            return nil
         }
     }
 
@@ -57,6 +64,8 @@ extension PlanetAPI: TargetType {
             return nil
         case .getPlanetByCode(let query):
             return ["code": query.code]
+        case .deletePlanet:
+            return nil
         }
     }
 }

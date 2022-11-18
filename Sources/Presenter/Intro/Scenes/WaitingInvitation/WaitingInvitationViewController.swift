@@ -20,6 +20,7 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
     lazy var planetNameLabel = UILabel()
     lazy var mateLabel = UILabel()
     lazy var invitationCodeButton = InvitationCodeButton(type: .system)
+    lazy var deleteButton = UIButton(type: .system)
 
     override func bind() {
 
@@ -48,6 +49,13 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
     override func setAttribute() {
         super.setAttribute()
 
+        deleteButton.addTarget(self, action: #selector(deleteButtonDidTapped), for: .touchUpInside)
+        deleteButton.titleLabel?.font = .designSystem(weight: .regular, size: ._15)
+        deleteButton.setTitle("행성삭제", for: .normal)
+        deleteButton.setTitleColor(.red, for: .normal)
+
+        setNavigationBar()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: deleteButton)
         navigationItem.hidesBackButton = true
         navigationItem.title = "가입 진행 중"
 
@@ -102,5 +110,29 @@ extension WaitingInvitationViewController {
     @objc
     func invitationCodeButtonDidTapped() {
         UIPasteboard.general.string = viewModel.code
+        ToastFactory.show(message: "코드가 복사되었어요!", type: .success)
+    }
+
+    @objc
+    func deleteButtonDidTapped() {
+        viewModel.deletePlanet()
+    }
+}
+
+extension WaitingInvitationViewController {
+
+    private func setNavigationBar() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .black
+        appearance.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ]
+        appearance.shadowColor = .clear
+        self.navigationController?.navigationBar.standardAppearance = appearance
+        self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
     }
 }

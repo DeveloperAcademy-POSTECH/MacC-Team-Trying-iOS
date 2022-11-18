@@ -1,8 +1,8 @@
 //
-//  SignUpEnterNicknameViewController.swift
-//  MatStar
+//  EditNicknameViewController.swift
+//  ComeIt
 //
-//  Created by Jaeyong Lee on 2022/10/24.
+//  Created by Jaeyong Lee on 2022/11/18.
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 
@@ -12,7 +12,18 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnterNicknameViewModel> {
+final class EditNicknameViewController: BaseViewController {
+
+    let viewModel: EditNicknameViewModel
+
+    init(viewModel: EditNicknameViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     lazy var titleLabels = IntroTitleLabels()
     lazy var codeTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .nickname)
@@ -30,7 +41,7 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
         removeNotifications()
     }
 
-    override func bind() {
+    private func bind() {
 
         viewModel.$nicknameTextFieldState
             .receive(on: DispatchQueue.main)
@@ -39,10 +50,10 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
                 self?.nextButton.isEnabled = currentState == .validNickname
             }
             .cancel(with: cancelBag)
+
     }
 
-    override func setAttribute() {
-        super.setAttribute()
+    private func setAttribute() {
 
         navigationItem.backButtonTitle = ""
         navigationItem.title = "회원가입"
@@ -55,8 +66,7 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
     }
 
-    override func setLayout() {
-        super.setLayout()
+    private func setLayout() {
 
         view.addSubview(titleLabels)
         view.addSubview(codeTextFieldView)
@@ -79,7 +89,6 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         self.view.endEditing(true)
-//        self.codeTextFieldView.resignFirstResponder()
     }
 
     private func setNotifications() {
@@ -138,14 +147,14 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
     }
 }
 
-extension SignUpEnterNicknameViewController {
+extension EditNicknameViewController {
     @objc
     func nextButtonDidTap() {
         viewModel.nextButtonDidTapped()
     }
 }
 
-extension SignUpEnterNicknameViewController: TextFieldWithMessageViewComponentDelegate {
+extension EditNicknameViewController: TextFieldWithMessageViewComponentDelegate {
 
     func textFieldDidChange(_ text: String) {
         viewModel.textFieldDidChange(text)

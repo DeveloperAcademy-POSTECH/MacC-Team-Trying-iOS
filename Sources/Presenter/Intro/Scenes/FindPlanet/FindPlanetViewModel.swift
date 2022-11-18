@@ -43,14 +43,15 @@ final class FindPlanetViewModel: BaseViewModel, FindPlanetBusinessLogic {
     }
 
     func nextButtonDidTapped() {
+        LoadingView.shared.show()
         Task {
             do {
-                isLoading = true
                 _ = try await planetService.joinPlanet(.init(code: code))
                 isLoading = false
 
                 DispatchQueue.main.async {
                     self.coordinator.coordinateToMainScene()
+                    LoadingView.shared.hide()
                 }
             } catch {
 

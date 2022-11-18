@@ -57,6 +57,10 @@ final class ServiceTermViewController: IntroBaseViewController<ServiceTermViewMo
             value: paragraphStyle,
             range: .init(location: 0, length: attributedString.length)
         )
+        attributedString.addAttributes(
+            [NSAttributedString.Key.foregroundColor: UIColor.designSystem(.mainYellow)],
+            range: .init(location: 0, length: 5)
+        )
         titleLabel.attributedText = attributedString
         nextButton.isEnabled = false
         nextButton.title = "다음"

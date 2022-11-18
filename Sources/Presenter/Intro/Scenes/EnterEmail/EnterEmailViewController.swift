@@ -47,13 +47,6 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
             }
             .cancel(with: cancelBag)
 
-        viewModel.$isLoading
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isLoading in
-                self?.nextButton.loading = isLoading
-            }
-            .cancel(with: cancelBag)
-
         viewModel.$leaveAnimation
             .receive(on: DispatchQueue.main)
             .filter { $0 == true }

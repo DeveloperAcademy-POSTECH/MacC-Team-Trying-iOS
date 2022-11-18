@@ -11,6 +11,9 @@ import UIKit
 protocol Popable {
     func popViewController()
 }
+protocol MainCoordinatorDelegate: AnyObject {
+    
+}
 
 final class MainCoordinator: Coordinator {
     enum TabBarItem: CaseIterable {
@@ -69,6 +72,7 @@ final class MainCoordinator: Coordinator {
     }
     
     weak var navigationController: UINavigationController?
+    weak var delegate: MainCoordinatorDelegate?
     
     let tabBarController: UITabBarController
     let tabBarItems: [TabBarItem] = [ .home, .search, .feed, .profile]

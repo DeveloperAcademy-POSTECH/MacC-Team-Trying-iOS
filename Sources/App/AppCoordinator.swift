@@ -8,10 +8,10 @@
 
 import UIKit
 
-final class AppCoordinator: Coordinator, IntroCoordinatorDelegate {
+final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinatorDelegate {
     let window: UIWindow
     weak var navigationController: UINavigationController?
-
+    let userService: UserService = UserService()
     var mainCoordinator: Coordinator?
     
     init(window: UIWindow) {
@@ -26,22 +26,57 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate {
     func start() {
         window.rootViewController = navigationController
 
-        let coordinator = IntroCoordinator(navigationController: navigationController)
-        coordinator.delegate = self
-        coordinator.start()
-        window.makeKeyAndVisible()
-        return
-
-        if UserDefaults.standard.string(forKey: "accessToken") != nil {
-            let coordinator = MainCoordinator(navigationController: navigationController)
-            coordinator.start()
-            window.makeKeyAndVisible()
-            return
+        Task {
+            do {
+                let userInformations = try await userService.getUserInformations()
+                if userInformations.planet == nil {
+                    await coordinateToCreatePlanet()
+                } else if userInformations.mate == nil {
+                    guard let planet = userInformations.planet else { return }
+                    await coordinateToWaitingMate(
+                        selectedPlanet: planet.image,
+                        planetName: planet.name,
+                        code: planet.code ?? ""
+                    )
+                    return
+                } else {
+                    await coordinateToMainScene()
+                }
+            } catch {
+                await coordinateToLogincScene()
+            }
         }
     }
 
+    @MainActor
     func coordinateToMainScene() {
         let coordinator = MainCoordinator(navigationController: navigationController)
         coordinator.start()
+        coordinator.delegate = self
+        window.makeKeyAndVisible()
+    }
+
+    @MainActor
+    func coordinateToLogincScene() {
+        let coordinator = IntroCoordinator(navigationController: navigationController)
+        coordinator.start()
+        coordinator.delegate = self
+        window.makeKeyAndVisible()
+    }
+
+    @MainActor
+    private func coordinateToCreatePlanet() {
+        let coordinator = IntroCoordinator(navigationController: navigationController)
+        coordinator.startWithCreatePlanet()
+        coordinator.delegate = self
+        window.makeKeyAndVisible()
+    }
+
+    @MainActor
+    private func coordinateToWaitingMate(selectedPlanet: String, planetName: String, code: String) {
+        let coordinator = IntroCoordinator(navigationController: navigationController)
+        coordinator.startWithWaitingMate(selectedPlanet: selectedPlanet, planetName: planetName, code: code)
+        coordinator.delegate = self
+        window.makeKeyAndVisible()
     }
 }

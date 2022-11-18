@@ -71,6 +71,7 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
     override func setAttribute() {
         super.setAttribute()
 
+        setNavigationBar()
         navigationItem.hidesBackButton = true
         navigationItem.title = "행성생성"
         navigationItem.backButtonTitle = ""
@@ -92,7 +93,7 @@ final class CreatePlanetViewController: IntroBaseViewController<CreatePlanetView
         conditionLabel.text = "한글 + 영어 + 숫자  포함 8자 이내"
 
         planetTextField.addTarget(self, action: #selector(planetTextDidChanged), for: .editingChanged)
-
+        nextButton.isEnabled = false
         nextButton.title = "다음"
         nextButton.addTarget(self, action: #selector(nextButtonDidTapped), for: .touchUpInside)
 
@@ -288,5 +289,23 @@ extension CreatePlanetViewController: UICollectionViewDelegate {
         if pageControl.currentPage != newPage {
             pageControl.currentPage = newPage
         }
+    }
+}
+
+extension CreatePlanetViewController {
+
+    private func setNavigationBar() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .black
+        appearance.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ]
+        appearance.shadowColor = .clear
+        self.navigationController?.navigationBar.standardAppearance = appearance
+        self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
     }
 }
