@@ -122,8 +122,8 @@ extension PlaceSearchRepositoryImpl {
                     category: document.categoryGroupName,
                     address: document.roadAddressName,
                     location: CLLocationCoordinate2D(
-                        latitude: Double(document.latitude)!,
-                        longitude: Double(document.longitude)!
+                        latitude: Double(document.longitude)!,
+                        longitude: Double(document.latitude)!
                     )
                 )
             )
