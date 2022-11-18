@@ -46,16 +46,16 @@ final class PlaceSearchRepositoryImpl: PlaceSearchRepository {
         let pageQueryItem = URLQueryItem(name: "page", value: "1")
         let sizeQueryItem = URLQueryItem(name: "size", value: "15")
         let queryItem = URLQueryItem(name: "query", value: "\(query)")
-        let latitudeQueryItem = URLQueryItem(name: "x", value: "\(String(coordinate.latitude))")
-        let longitudeQueryItem = URLQueryItem(name: "y", value: "\(String(coordinate.longitude))")
+        let longitudeQueryItem = URLQueryItem(name: "x", value: "\(String(coordinate.longitude))")
+        let latitudeQueryItem = URLQueryItem(name: "y", value: "\(String(coordinate.latitude))")
         let radiusQueryItem = URLQueryItem(name: "radius", value: "5000")
         
         urlComponents?.queryItems = [
             pageQueryItem,
             sizeQueryItem,
             queryItem,
-            latitudeQueryItem,
             longitudeQueryItem,
+            latitudeQueryItem,
             radiusQueryItem
         ]
         
