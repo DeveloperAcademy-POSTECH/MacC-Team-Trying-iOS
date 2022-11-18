@@ -246,6 +246,8 @@ extension NavigationBarConfigurable {
             let view = UIView()
             view.backgroundColor = .designSystem(.black)
             view.layer.cornerRadius = 22
+            let tapGestureRecognizer = UITapGestureRecognizer(target: target, action: popAction)
+            view.addGestureRecognizer(tapGestureRecognizer)
             return view
         }()
         
