@@ -48,8 +48,7 @@ final class PlaceSearchViewController: BaseViewController {
                 .sink { [weak self] text in
                     guard let self = self else { return }
                     Task {
-                        self.viewModel.name = text
-                        try await self.viewModel.searchPlace()
+                        try await self.viewModel.searchPlace(query: text)
                     }
                 }
                 .cancel(with: cancelBag)

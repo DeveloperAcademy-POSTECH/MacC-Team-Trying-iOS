@@ -14,8 +14,6 @@ final class PlaceSearchViewModel: BaseViewModel {
     var coordinator: Coordinator
     private let placeSearchUseCase: PlaceSearchUseCase
     
-    @Published var name: String = ""
-    
     @Published var places: [Place]
     
     init(
@@ -39,13 +37,12 @@ extension PlaceSearchViewModel {
 
 // MARK: - Business Logic
 extension PlaceSearchViewModel {
-    func searchPlace() async throws {
-        let coordinate = LocationManager.shared.getCurrentLocation()
-        
-        self.places = try await self.placeSearchUseCase.placeSearch(
-            name: self.name,
-            latitude: coordinate.latitude,
-            longitude: coordinate.longitude
+    func searchPlace(query: String) async throws {
+        let locationManager = LocationManager.shared
+        self.places = try await self.placeSearchUseCase.searchPlace(
+            query: query,
+            latitude: locationManager.latitude,
+            longitude: locationManager.longitude
         )
     }
     
