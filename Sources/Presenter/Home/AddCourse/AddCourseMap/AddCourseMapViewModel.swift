@@ -17,7 +17,7 @@ protocol Popable {
 }
 
 protocol PlaceSearchCoordinating {
-    func pushToPlaceSearchViewController(delegate: PlacePresenting)
+    func pushToPlaceSearchViewController()
 }
 
 protocol RecordCourseCoordinating {
@@ -31,7 +31,7 @@ final class AddCourseMapViewModel: BaseViewModel {
     
     let courseTitle: String
     @Published var places: [Place]
-    @Published var memo: String?
+    // @Published var memo: String?
     
     init(
         coordinator: Coordinator,
@@ -55,9 +55,9 @@ extension AddCourseMapViewModel {
         coordinator.popViewController()
     }
     
-    func pushToPlaceSearchView(delegate: PlacePresenting) {
+    func pushToPlaceSearchView() {
         guard let coordinator = coordinator as? PlaceSearchCoordinating else { return }
-        coordinator.pushToPlaceSearchViewController(delegate: delegate)
+        coordinator.pushToPlaceSearchViewController()
     }
     
     func pushToRecordCourseView() {
@@ -83,10 +83,13 @@ extension AddCourseMapViewModel {
 // MARK: - Methods
 extension AddCourseMapViewModel {
     func addPlace(_ place: Place) {
+        /*
         var selectedPlace = place
         selectedPlace.memo = self.memo
         places.append(selectedPlace)
         self.memo = nil
+         */
+        self.places.append(place)
     }
     
     func deletePlace(_ index: Int) {
@@ -113,9 +116,9 @@ extension AddCourseMapViewModel {
         try await self.addCourseUseCase.addCourse(addCourseDTO: dto, images: [])
     }
     
-    func searchPlace(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> Place? {
-        let places = try await self.placeSearchUseCase.placeSearch(latitude: latitude, longitude: longitude)
-        return places.first
+    func getAddress(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> String {
+        // return try await self.placeSearchUseCase.getAddress(latitude: latitude, longitude: longitude)
+        return ""
     }
 }
 

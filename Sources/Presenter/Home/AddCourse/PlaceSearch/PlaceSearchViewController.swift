@@ -7,6 +7,7 @@
 //
 
 import Combine
+import CoreLocation
 import UIKit
 
 import CancelBag
@@ -22,8 +23,8 @@ final class PlaceSearchViewController: BaseViewController {
         case main
     }
     
+    var searchText: String = ""
     var viewModel: PlaceSearchViewModel
-    weak var delegate: PlacePresenting?
     
     private var dataSource: UITableViewDiffableDataSource<PlaceSearchTableSection, Place>!
     private lazy var placeSearchTableView: UITableView = {
@@ -47,6 +48,7 @@ final class PlaceSearchViewController: BaseViewController {
                 .debounce(for: 0.3, scheduler: RunLoop.main)
                 .sink { [weak self] text in
                     guard let self = self else { return }
+                    self.searchText = text
                     Task {
                         try await self.viewModel.searchPlace(query: text)
                     }
@@ -174,10 +176,12 @@ extension PlaceSearchViewController {
     @objc
     private func mapButtonPressed(_ sender: UIButton) {
         navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
-        
         let places = viewModel.getPlaces()
-        viewModel.pop()
-        delegate?.presentSearchedPlaces(places: places)
+
+        let averageLatitude = places.reduce(into: 0.0) { $0 += $1.location.latitude } / Double(places.count)
+        let averageLongitude = places.reduce(into: 0.0) { $0 += $1.location.longitude } / Double(places.count)
+        
+        self.viewModel.pushToPlaceSearchResultMapView(searchText: searchText, searchedPlaces: places, presentLocation: CLLocationCoordinate2D(latitude: averageLatitude, longitude: averageLongitude))
     }
     
     @objc
@@ -190,8 +194,7 @@ extension PlaceSearchViewController {
         navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
         
         let place = viewModel.getPlace(index: sender.tag)
-        viewModel.pop()
-        delegate?.presentSelectedPlace(place: place)
+        self.viewModel.pushToPlaceSearchResultMapView(searchText: searchText, searchedPlaces: [place], presentLocation: place.location)
     }
     
     @objc

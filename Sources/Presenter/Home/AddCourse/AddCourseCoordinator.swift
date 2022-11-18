@@ -6,11 +6,14 @@
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
+import CoreLocation
 import UIKit
 
 final class AddCourseCoordinator: Coordinator,
                                   AddCourseMapCoordinating,
                                   PlaceSearchCoordinating,
+                                  PlaceSearchResultMapViewCoordinating,
+                                  PlaceSearchResultMapViewDismissable,
                                   RecordCourseCoordinating,
                                   AddCourseCompleteCoordinating,
                                   HomeCoordinating,
@@ -46,12 +49,26 @@ final class AddCourseCoordinator: Coordinator,
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func pushToPlaceSearchViewController(delegate: PlacePresenting) {
+    func pushToPlaceSearchViewController() {
         let viewModel = PlaceSearchViewModel(coordinator: self)
         let viewController = PlaceSearchViewController(viewModel: viewModel)
-        viewController.delegate = delegate
         
         self.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func pushToPlaceSearchResultMapView(searchText: String, searchedPlaces: [Place], presentLocation: CLLocationCoordinate2D) {
+        let viewModel = PlaceSearchResultMapViewModel(coordinator: self)
+        let viewController = PlaceSearchResultMapViewController(searchText: searchText, searchedPlaces: searchedPlaces, presentLocation: presentLocation, viewModel: viewModel)
+        
+        guard let previousViewController = navigationController?.viewControllers.last(where: { $0 != navigationController?.topViewController }) as? AddPlaceDelegate else { return }
+        viewController.delegate = previousViewController
+        
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func dismissToPlaceSearchMapView() {
+        self.navigationController?.popViewController(animated: false)
+        self.navigationController?.popViewController(animated: false)
     }
     
     func pushToRecordCourseViewController(courseTitle: String, places: [Place]) {

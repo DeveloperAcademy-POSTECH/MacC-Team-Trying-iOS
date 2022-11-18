@@ -364,7 +364,10 @@ extension PlaceSearchResultMapViewController {
     private func addCourseButtonPressed(_ sender: UIButton) {
         self.placeDetailView.memoTextField.resignFirstResponder()
         self.viewModel.dismiss()
-        delegate?.addPlace(place: selectedPlace!)
+        
+        guard var selectedPlace = selectedPlace else { return }
+        selectedPlace.memo = self.viewModel.memo
+        delegate?.addPlace(place: selectedPlace)
     }
     
     @objc
