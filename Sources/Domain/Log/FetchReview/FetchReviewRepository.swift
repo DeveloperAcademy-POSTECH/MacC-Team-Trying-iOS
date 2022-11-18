@@ -9,7 +9,5 @@
 import Foundation
 
 protocol FetchReviewRepository {
- 
-    
-    
+    func fetchReviewAsync(courseId: Int) async throws -> [ReviewEntity]    
 }

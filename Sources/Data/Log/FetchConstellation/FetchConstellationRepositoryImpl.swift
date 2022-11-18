@@ -12,17 +12,15 @@ import CoreLocation
 enum LogRequestError: Error {
     case urlResponse
     case response
+    case decoding
 }
 
 final class FetchConstellationRepositoryImpl {
     
     let url = "https://comeit.site/courses/log?page=0&size=10"
     
-    //     TODO: UserDefaults로 수정해야함
+    private let token = UserDefaults.standard.string(forKey: "accessToken")
     
-    //    private let token = UserDefaults.standard.string(forKey: "accessToken")
-    
-    private let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI4NzNmNDhlYy01N2UwLTQ2MDEtYmUxZC1mZDJlYmRmMTk0MzciLCJhdXRoIjoiVVNFUiJ9.Pam458muHWV-CYqnDRdgyZblyri1vbs9U8srXyBIsgH8qRC02h0mwln1rk9OjIBHLs-rDDNX7PJyWzBl9IE-EA"
 }
 
 extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
@@ -32,7 +30,7 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
         guard let url = URL(string: url) else {
             #if DEBUG
             print("⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️")
-            print("URL Error occured")
+            print("fetchLogAsync: URL Error occured")
             #endif
             throw LogRequestError.urlResponse
         }
@@ -46,19 +44,25 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
             #if DEBUG
             print("⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️")
-            print("api response error")
+            print("fetchLogAsync: API Response Error")
             print(response)
             #endif
             throw LogRequestError.response
         }
         
-        let responseData = try JSONDecoder().decode(FetchConstellationDTO.self, from: data)
+        guard let responseData = try? JSONDecoder().decode(FetchConstellationDTO.self, from: data) else {
+            #if DEBUG
+            print("⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️")
+            print("fetchLogAsync: Decoding Error")
+            #endif
+            throw LogRequestError.decoding
+        }
         
-        return convertToTestCourse(responseData)
+        return convertToCourseEntity(responseData)
     }
     
     // MARK: DTO를 Entity로 변환 -> 추후 수정예정
-    private func convertToTestCourse(_ responseData: FetchConstellationDTO) -> [CourseEntity] {
+    private func convertToCourseEntity(_ responseData: FetchConstellationDTO) -> [CourseEntity] {
         
         var courses = [CourseEntity]()
         
@@ -68,8 +72,8 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
                 let place = PlaceEntity(
                     id: placeElement.place.placeId,
                     title: placeElement.place.name,
-                    category: "none",
-                    address: placeElement.place.address,
+                    category: "",
+                    address: "",
                     coordinate: CLLocationCoordinate2D(latitude: placeElement.place.coordinate.latitude, longitude: placeElement.place.coordinate.longitude),
                     memo: placeElement.memo
                 )

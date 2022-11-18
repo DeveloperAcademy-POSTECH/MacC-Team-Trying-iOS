@@ -32,7 +32,7 @@ struct FetchConstellationDTO: Codable {
     // MARK: - PlacePlace
     struct Place: Codable {
         let placeId: Int
-        let name : String
+        let name: String
         let coordinate: Coordinate
     }
 
