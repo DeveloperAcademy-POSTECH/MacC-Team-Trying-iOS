@@ -287,6 +287,8 @@ final class HomeViewController: BaseViewController {
     @objc
     func alarmButtonTapped() {
         print("알람버튼이눌렸습니다")
+        let nextVC = LogoutViewController(logoutType: .withdraw)
+        navigationController?.pushViewController(nextVC, animated: true)
     }
     
     @objc
