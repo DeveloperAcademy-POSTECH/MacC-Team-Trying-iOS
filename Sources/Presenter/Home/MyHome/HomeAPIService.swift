@@ -24,32 +24,26 @@ enum TokenType {
 
 private let fetchUserUrl = "https://comeit.site/users"
 
-private let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MmZlMTkyYS0yYWEzLTQ0ZGQtOWZhNS00MzhkY2FjZWU5YTAiLCJhdXRoIjoiVVNFUiJ9.XanwnrThXnsf5J-PzdbmDpDrTJ_dr3upvz6eL4OP4yUUZlYHY0-XJne5v03mGBx24ylGJAO9aa1i8LNVn0F5Ig"
-
-private let mateToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MjYyMTA0MS01NTI2LTRjZjgtOGJiOC0xMzdlODhmMDExYWEiLCJhdXRoIjoiVVNFUiJ9._hKs0Sr0JQDKF_-2XjubIp3OTHwwR6Tme4TgZ6PjGgE23oi_gPj2eglZP9w4IVaT7uyk2eYucbdL4zKXVQ9TuQ"
-
-private let rangeToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MjYyMTA0MS01NTI2LTRjZjgtOGJiOC0xMzdlODhmMDExYWEiLCJhdXRoIjoiVVNFUiJ9._hKs0Sr0JQDKF_-2XjubIp3OTHwwR6Tme4TgZ6PjGgE23oi_gPj2eglZP9w4IVaT7uyk2eYucbdL4zKXVQ9TuQ"
+//private let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MmZlMTkyYS0yYWEzLTQ0ZGQtOWZhNS00MzhkY2FjZWU5YTAiLCJhdXRoIjoiVVNFUiJ9.XanwnrThXnsf5J-PzdbmDpDrTJ_dr3upvz6eL4OP4yUUZlYHY0-XJne5v03mGBx24ylGJAO9aa1i8LNVn0F5Ig"
+//
+//private let mateToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MjYyMTA0MS01NTI2LTRjZjgtOGJiOC0xMzdlODhmMDExYWEiLCJhdXRoIjoiVVNFUiJ9._hKs0Sr0JQDKF_-2XjubIp3OTHwwR6Tme4TgZ6PjGgE23oi_gPj2eglZP9w4IVaT7uyk2eYucbdL4zKXVQ9TuQ"
+//
+//private let rangeToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2MjYyMTA0MS01NTI2LTRjZjgtOGJiOC0xMzdlODhmMDExYWEiLCJhdXRoIjoiVVNFUiJ9._hKs0Sr0JQDKF_-2XjubIp3OTHwwR6Tme4TgZ6PjGgE23oi_gPj2eglZP9w4IVaT7uyk2eYucbdL4zKXVQ9TuQ"
+//
+//let testToken = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyNTg4MzkwMC05MzIxLTQ0NDEtOTRjMy1lZDg0ZWMyM2Q5ZjQiLCJhdXRoIjoiVVNFUiJ9.y7Mh3zL4i9UfZ8RmC_03q_sPgGwOiU5t367wtv-Jm1tW4GJRIUNHfZwzeLorx21koP1okhUyTRwrBfimUEnfqQ"
 
 class HomeAPIService {
     
     var delegate: FetchNoCourse?
     
-    static func fetchUserAsync(tokenType: TokenType) async throws -> Data {
-        let selectedToken: String
+    static func fetchUserAsync() async throws -> Data {
+        
         guard let url = URL(string: fetchUserUrl) else {
             print("user url error")
             throw HomeApiError.urlResponse
         }
         var request = URLRequest(url: url)
-        switch tokenType {
-        case .hasMate:
-            selectedToken = mateToken
-
-        case .noMate:
-            selectedToken = token
-        }
-        
-        request.setValue(selectedToken, forHTTPHeaderField: "accessToken")
+        request.setValue(UserDefaults.standard.string(forKey: "accessToken"), forHTTPHeaderField: "accessToken")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
             print("api response error")
@@ -64,7 +58,7 @@ class HomeAPIService {
             throw HomeApiError.urlResponse
         }
         var request = URLRequest(url: url)
-        request.setValue(rangeToken, forHTTPHeaderField: "accessToken")
+        request.setValue(UserDefaults.standard.string(forKey: "accessToken"), forHTTPHeaderField: "accessToken")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
             throw HomeApiError.response
@@ -78,7 +72,7 @@ class HomeAPIService {
             throw HomeApiError.urlResponse
         }
         var request = URLRequest(url: url)
-        request.setValue(rangeToken, forHTTPHeaderField: "accessToken")
+        request.setValue(UserDefaults.standard.string(forKey: "accessToken"), forHTTPHeaderField: "accessToken")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
             throw HomeApiError.response

@@ -19,10 +19,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         self.registerForRemoteNotifications()
-        
+        UserDefaults.standard.set("Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyMmRkN2Q1OC1lYjhhLTRiMzMtYWYzZi1iZjRlZjQwZDI0ZjkiLCJhdXRoIjoiVVNFUiJ9.GAFEG_DrqnT00H7tPdU5VC_xPkErxdBrGlnhSiPF03SOE9btlH4mxy661L3omqasKbgTi6uWVu1Pe3IuSZ4bDg", forKey: "accessToken")
         KakaoSDK.initSDK(appKey: "041c741d45744f54da6ed10e0f946672")
         self.window = UIWindow(frame: UIScreen.main.bounds)
-
+        
 
         coordinator = AppCoordinator(window: window!)
         coordinator?.start()
