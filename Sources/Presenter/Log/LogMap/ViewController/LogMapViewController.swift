@@ -105,11 +105,12 @@ final class LogMapViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = true
-        navigationController?.tabBarController?.tabBar.isHidden = true
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // FIXME: 탭바 코드 삭제하기
+        navigationController?.tabBarController?.tabBar.isHidden = true
         currentLocation = locationManager.location
         setUI()
         bind()
@@ -140,8 +141,8 @@ final class LogMapViewController: BaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.navigationBar.isHidden = false
         navigationController?.tabBarController?.tabBar.isHidden = false
+        navigationController?.navigationBar.isHidden = false
     }
 }
 

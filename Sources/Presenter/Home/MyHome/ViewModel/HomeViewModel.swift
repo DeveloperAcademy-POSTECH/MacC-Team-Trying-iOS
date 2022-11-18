@@ -100,3 +100,10 @@ extension HomeViewModel {
         coordinator.startAddCourseFlow(type: type)
     }
 }
+
+extension HomeViewModel {
+    func pushToAlarmView() {
+        guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
+        coordinator.pushToAlarmViewController()
+    }
+}
