@@ -292,10 +292,19 @@ extension LogHomeViewController {
     
     /// 이전, 이후, 현재 별자리의 제약조건을 추가합니다.
     func setConstellationButtonOption() {
-        previousConstellationButton.isHidden = (currentIndex == 0) ? true : false
-        nextConstellationButton.isHidden = (currentIndex == viewModel.courses.count - 1) ? true : false
         
         let courses = viewModel.courses
+        
+        if courses.isEmpty {
+            previousConstellationButton.isHidden = true
+            currentConstellationButton.isHidden = true
+            nextConstellationButton.isHidden = true
+            return
+        } else {
+            previousConstellationButton.isHidden = (currentIndex == 0) ? true : false
+            nextConstellationButton.isHidden = (currentIndex == viewModel.courses.count - 1) ? true : false
+        }
+        
         let currentConstellationImage = StarMaker.makeStars(places: courses[currentIndex].places)?.resizeImageTo(size: CGSize(width: 22, height: 22))
         
         let previousConstellationImage = StarMaker.makeStars(places: courses[max(currentIndex - 1, 0)].places)?.resizeImageTo(size: CGSize(width: 13, height: 13))
