@@ -7,3 +7,13 @@
 //
 
 import Foundation
+
+struct FetchReviewDTO: Decodable {
+    let myReview: Review
+    let mateReview: Review
+    
+    struct Review: Codable {
+        let writerName, content: String
+        let images: [String]
+    }
+}
