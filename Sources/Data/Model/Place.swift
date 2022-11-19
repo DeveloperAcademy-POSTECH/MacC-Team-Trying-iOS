@@ -9,7 +9,7 @@
 import CoreLocation
 import MapKit
 
-struct Place: Hashable {
+struct Place: Hashable, Encodable {
     let id: Int
     let title: String
     let category: String

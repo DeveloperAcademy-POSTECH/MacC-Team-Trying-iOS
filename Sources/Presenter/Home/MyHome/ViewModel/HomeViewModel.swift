@@ -95,9 +95,28 @@ final class HomeViewModel: BaseViewModel {
 
 // MARK: - Coordinating
 extension HomeViewModel {
-    func startAddCourseFlow(type: AddCourseFlowType) {
+    func startAddCourseFlow(type: CourseFlowType) {
         guard let coordinator = coordinator as? HomeCoordinator else { return }
-        coordinator.startAddCourseFlow(type: type)
+        
+        // FIXME: 임시로 Mock DTO를 전달합니다. 선택된 Course로 전달하도록 수정해야 합니다.
+        coordinator.startAddCourseFlow(
+            courseRequestDTO: CourseRequestDTO(
+                title: "포항 데이트",
+                date: "2022년 11월 19일",
+                places: [
+                    Place(
+                        id: 1,
+                        title: "참뼈",
+                        category: "음식점",
+                        address: "포항",
+                        location: CLLocationCoordinate2D(
+                            latitude: 36,
+                            longitude: 129
+                        )
+                    )
+                ]
+            )
+        )
     }
 }
 

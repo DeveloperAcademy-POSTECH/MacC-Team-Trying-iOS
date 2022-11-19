@@ -1,5 +1,5 @@
 //
-//  AddCourseMapViewController.swift
+//  CourseMapViewController.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/19.
@@ -14,9 +14,8 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class AddCourseMapViewController: BaseViewController {
-    var type: AddCourseFlowType
-    var viewModel: AddCourseMapViewModel
+final class CourseMapViewController: BaseViewController {
+    var viewModel: CourseMapViewModel
     
     // private var recentAnnotations = [MKAnnotation]()
     private var selectedAnnotations = [MKAnnotation]()
@@ -118,8 +117,7 @@ final class AddCourseMapViewController: BaseViewController {
             .cancel(with: cancelBag)
     }
     
-    init(type: AddCourseFlowType, viewModel: AddCourseMapViewModel) {
-        self.type = type
+    init(viewModel: CourseMapViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -158,7 +156,7 @@ final class AddCourseMapViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension AddCourseMapViewController: NavigationBarConfigurable {
+extension CourseMapViewController: NavigationBarConfigurable {
     private func setUI() {
         configureRecordMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(placeSearchButtonPressed(_:)))
         setLayout()
@@ -209,7 +207,7 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
-extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate {
+extension CourseMapViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.places.count
     }
@@ -237,7 +235,7 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
 }
 
 // MARK: - UITableViewDrageDelegate, UITableViewDropDelegate
-extension AddCourseMapViewController: UITableViewDragDelegate, UITableViewDropDelegate {
+extension CourseMapViewController: UITableViewDragDelegate, UITableViewDropDelegate {
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         return [UIDragItem(itemProvider: NSItemProvider())]
     }
@@ -254,7 +252,7 @@ extension AddCourseMapViewController: UITableViewDragDelegate, UITableViewDropDe
 }
 
 // MARK: - User Interactions
-extension AddCourseMapViewController {
+extension CourseMapViewController {
     /*
     private func setNofifications() {
         NotificationCenter.default.addObserver(
@@ -365,14 +363,7 @@ extension AddCourseMapViewController {
     
     @objc
     private func didTapNextButton(_ sender: UIButton) {
-        if type == .record {
-            viewModel.pushToRecordCourseView()
-        } else {
-            Task {
-                try await viewModel.addCoursePlan()
-            }
-            viewModel.pushToAddCourseCompleteView()
-        }
+        self.viewModel.pushToNextView()
     }
 
     private func presentPlaceDetailView(with place: Place) {
@@ -477,7 +468,7 @@ extension AddCourseMapViewController {
 }
 
 // MARK: - MKMapViewDelegate
-extension AddCourseMapViewController: MKMapViewDelegate {
+extension CourseMapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? StarAnnotation else { return nil }
         
@@ -513,7 +504,7 @@ extension AddCourseMapViewController: MKMapViewDelegate {
 }
 
 // MARK: - AddPlaceDelegate
-extension AddCourseMapViewController: AddPlaceDelegate {
+extension CourseMapViewController: AddPlaceDelegate {
     func addPlace(place: Place) {
         self.viewModel.addPlace(place)
         self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
@@ -522,7 +513,7 @@ extension AddCourseMapViewController: AddPlaceDelegate {
 
 /*
 // MARK: - PlacePresenting
-extension AddCourseMapViewController: PlacePresenting {
+extension CourseMapViewController: PlacePresenting {
     func presentSelectedPlace(place: Place) {
         self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
         self.presentLocation(latitude: place.location.latitude, longitude: place.location.longitude, span: 0.01)
