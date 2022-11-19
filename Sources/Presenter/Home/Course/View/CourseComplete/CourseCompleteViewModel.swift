@@ -10,13 +10,13 @@ import Combine
 import UIKit
 
 final class CourseCompleteViewModel: BaseViewModel {
-    var coordinator: AddCourseFlowCoordinating
+    var coordinator: CourseFlowCoordinator
     private let addCourseUseCase: AddCourseUseCase
     
     var courseRequestDTO: CourseRequestDTO
     
     init(
-        coordinator: AddCourseFlowCoordinating,
+        coordinator: CourseFlowCoordinator,
         addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(),
         courseRequestDTO: CourseRequestDTO
     ) {
@@ -29,6 +29,17 @@ final class CourseCompleteViewModel: BaseViewModel {
 // MARK: - Coordinating
 extension CourseCompleteViewModel {
     func popToHomeView() {
-        coordinator.popToHomeView()
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.popToHomeView()
+            
+        case is RegisterReviewCoordinator:
+            guard let coordinator = self.coordinator as? RegisterReviewCoordinator else { return }
+            coordinator.popToHomeView()
+            
+        default:
+            break
+        }
     }
 }

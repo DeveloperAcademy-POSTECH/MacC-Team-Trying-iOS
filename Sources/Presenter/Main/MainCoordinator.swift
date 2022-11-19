@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol Popable {
+    func popViewController()
+}
+
 final class MainCoordinator: Coordinator {
     enum TabBarItem: CaseIterable {
         case home
@@ -123,8 +127,4 @@ extension MainCoordinator: MoveToAnotherTab {
     func moveToLogTab() {
         tabBarController.selectedIndex = 1
     }
-}
-
-protocol Popable {
-    func popViewController()
 }

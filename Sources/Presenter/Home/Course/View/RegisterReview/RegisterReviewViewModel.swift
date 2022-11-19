@@ -10,7 +10,7 @@ import Combine
 import UIKit
 
 final class RegisterReviewViewModel: BaseViewModel {
-    var coordinator: AddCourseFlowCoordinating
+    var coordinator: CourseFlowCoordinator
     private let addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl()
     
     var courseRequestDTO: CourseRequestDTO
@@ -18,7 +18,7 @@ final class RegisterReviewViewModel: BaseViewModel {
     var reviewContent: String?
     
     init(
-        coordinator: AddCourseFlowCoordinating,
+        coordinator: CourseFlowCoordinator,
         courseRequestDTO: CourseRequestDTO,
         images: [UIImage] = []
     ) {
@@ -31,11 +31,33 @@ final class RegisterReviewViewModel: BaseViewModel {
 // MARK: - Coordinating
 extension RegisterReviewViewModel {
     func pop() {
-        coordinator.popViewController()
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.popViewController()
+            
+        case is RegisterReviewCoordinator:
+            guard let coordinator = self.coordinator as? RegisterReviewCoordinator else { return }
+            coordinator.popViewController()
+            
+        default:
+            break
+        }
     }
     
     func pushToNextView() {
-        coordinator.pushToCompleteView(self.courseRequestDTO)
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.pushToCompleteView(self.courseRequestDTO)
+            
+        case is RegisterReviewCoordinator:
+            guard let coordinator = self.coordinator as? RegisterReviewCoordinator else { return }
+            coordinator.pushToCompleteView(self.courseRequestDTO)
+            
+        default:
+            break
+        }
     }
 }
 
