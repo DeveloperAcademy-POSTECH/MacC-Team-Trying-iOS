@@ -89,7 +89,7 @@ extension Font {
     }
 
     private static func registerFont(fontName: String, fontExtension: String) {
-        guard let fontURL = Bundle(identifier: "com.Try-ing.MatStar")?.url(forResource: fontName, withExtension: fontExtension),
+        guard let fontURL = Bundle(identifier: "com.Try-ing.ComeIt")?.url(forResource: fontName, withExtension: fontExtension),
               let fontDataProvider = CGDataProvider(url: fontURL as CFURL),
               let font = CGFont(fontDataProvider) else {
             debugPrint("Couldn't create font from filename: \(fontName) with extension \(fontExtension)")

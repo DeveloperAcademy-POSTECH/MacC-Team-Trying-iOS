@@ -151,4 +151,6 @@ extension SignUpEnterPasswordViewController: TextFieldWithMessageViewComponentDe
     func textFieldDidChange(_ text: String) {
         viewModel.textFieldDidChange(text)
     }
+
+    func textFieldDidChange(_ textFieldView: UIView, _ text: String) { }
 }

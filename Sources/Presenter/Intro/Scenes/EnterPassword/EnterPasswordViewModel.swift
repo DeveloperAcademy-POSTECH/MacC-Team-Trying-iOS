@@ -48,8 +48,8 @@ final class EnterPasswordViewModel: BaseViewModel, EnterPasswordBusinessLogic {
         Task {
             do {
                 self.isLoading = true
-
-                let accessToken = try await signInService.signIn(.init(email: email, password: password))
+                let deviceToken = UserDefaults.standard.string(forKey: "fcmToken") ?? ""
+                let accessToken = try await signInService.signIn(.init(email: email, password: password, deviceToken: deviceToken))
                 UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
 
                 self.isLoading = false

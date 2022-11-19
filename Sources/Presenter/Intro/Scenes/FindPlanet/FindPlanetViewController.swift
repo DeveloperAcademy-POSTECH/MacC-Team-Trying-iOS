@@ -44,13 +44,6 @@ final class FindPlanetViewController: IntroBaseViewController<FindPlanetViewMode
                 self?.planetImageView.image = UIImage(named: imageName)
             }
             .cancel(with: cancelBag)
-
-        viewModel.$isLoading
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isLoading in
-                self?.nextButton.loading = isLoading
-            }
-            .cancel(with: cancelBag)
     }
 
     override func setAttribute() {
@@ -65,6 +58,8 @@ final class FindPlanetViewController: IntroBaseViewController<FindPlanetViewMode
         planetNameLabel.font = .designSystem(weight: .bold, size: ._20)
 
         codeTextFieldView.isUserInteractionEnabled = false
+
+        nextButton.addTarget(self, action: #selector(nextButtonDidTapped), for: .touchUpInside)
     }
 
     override func setLayout() {
@@ -107,9 +102,13 @@ final class FindPlanetViewController: IntroBaseViewController<FindPlanetViewMode
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         self.view.endEditing(true)
-//        self.codeTextFieldView.resignFirstResponder()
     }
 }
 
 extension FindPlanetViewController {
+
+    @objc
+    func nextButtonDidTapped() {
+        self.viewModel.nextButtonDidTapped()
+    }
 }

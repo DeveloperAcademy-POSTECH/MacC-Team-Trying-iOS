@@ -18,11 +18,7 @@ enum PlanetRequestModel {
     struct JoinPlanet: RequestBody {
         let code: String
     }
-
-    struct GetInvitationCode: RequestBody {
-        let planetID: Int
-    }
-
+    
     struct GetPlanetByCode: RequestBody {
         let code: String
     }
