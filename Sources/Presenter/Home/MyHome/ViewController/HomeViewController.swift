@@ -43,7 +43,7 @@ final class HomeViewController: BaseViewController {
     var myCancelBag = Set<AnyCancellable>()
     let viewModel: HomeViewModel
     var dateInfoIsHidden: Bool = false
-    var selectedDate: Date = Date()
+    
     
     let homeTitle: UILabel = {
         let label = UILabel()
@@ -221,12 +221,8 @@ final class HomeViewController: BaseViewController {
             try await viewModel.fetchUserInfo()
             try await viewModel.fetchDateRange(dateRange: currentDateRange)
             try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
-            if viewModel.hasCourse(selectedDate: Date.currentDateString) {
-                try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
-                self.dateCoureRegisterButton.isHidden = true
-            } else {
-                setRegisterButton(.addCourse)
-            }
+            self.dateCoureRegisterButton.isHidden = true
+            
         }
     }
     
@@ -304,8 +300,8 @@ final class HomeViewController: BaseViewController {
     
     @objc
     func registerButtonTapped(_ sender: UIButton) {
-//        guard let type = AddCourseFlowType(rawValue: sender.tag) else { return }
-//        viewModel.startAddCourseFlow(type: type)
+        guard let courseType = CourseFlowType(rawValue: sender.tag) else { return }
+        viewModel.startAddCourseFlow(type: courseType)
     }
 }
 
@@ -453,11 +449,11 @@ extension HomeViewController: UITableViewDelegate {
 
 extension HomeViewController: ActionSheetDelegate {
     func presentModifyViewController() {
-        viewModel.startAddCourseFlow(type: self.selectedDate > Date() ? .editPlan : .editCourse)
+        viewModel.startAddCourseFlow(type: self.viewModel.selectedDate > Date() ? .editPlan : .editCourse)
     }
     
     func presentRegisterReviewViewController() {
-        if self.selectedDate > Date() {
+        if self.viewModel.selectedDate > Date() {
             let alert = UIAlertController(title: "안내", message: "미래의 계획은 후기를 등록할 수 없습니다", preferredStyle: UIAlertController.Style.alert)
             let okAction = UIAlertAction(title: "알겠습니다", style: .default)
             alert.addAction(okAction)
@@ -493,7 +489,7 @@ extension HomeViewController: CalendarViewDelegate {
     /// - Parameter date: 내가 누른 날짜
     func selectDate(_ date: Date?) {
         guard let date = date else { return }
-        self.selectedDate = date
+        self.viewModel.selectedDate = date
         let selectedDate = date.dateToString()
         Task {
             // MARK: - 내가 누른 날짜가 처음에 조회한 데이트가 존재하는 날짜에 포함되어있는지를 판단
