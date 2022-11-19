@@ -11,7 +11,6 @@ import Foundation
 struct AlarmResponse: Codable {
     let notifications: [AlarmDTO]
 }
-
 struct AlarmDTO: Codable {
     
     let notificationID: Int
