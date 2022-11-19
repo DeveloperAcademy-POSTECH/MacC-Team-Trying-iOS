@@ -18,7 +18,9 @@ enum OutgoingType {
 }
 
 final class UserWarningViewController: BaseViewController {
-    var viewModel = UserWarningViewModel()
+    
+    @Published var isAgreed: Bool = false
+    
     var outgoingType: OutgoingType
     
     var myCancelBag = Set<AnyCancellable>()
@@ -117,7 +119,7 @@ final class UserWarningViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
-        viewModel.$isAgreed
+        $isAgreed
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] revievedValue in
                 self?.setAgreeButton(checked: revievedValue)
@@ -155,7 +157,7 @@ final class UserWarningViewController: BaseViewController {
     
     @objc
     func agreeButtonTapped() {
-        viewModel.isAgreed.toggle()
+        isAgreed.toggle()
     }
     
     @objc

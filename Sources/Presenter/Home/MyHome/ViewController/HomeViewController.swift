@@ -287,15 +287,7 @@ final class HomeViewController: BaseViewController {
     }
     
     @objc
-    func alarmButtonTapped() {
-        print("알람버튼이눌렸습니다")
-        // MARK: - 행성나가기 확인
-//        let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
-//        backButtonItem.tintColor = .designSystem(.white)
-//        let nextVC = UserWarningViewController(outgoingType: .membershipWithdrawal)
-//        navigationController?.pushViewController(nextVC, animated: true)
-//        navigationItem.backBarButtonItem = backButtonItem
-        
+    func alarmButtonTapped() {        
     }
     
     @objc
