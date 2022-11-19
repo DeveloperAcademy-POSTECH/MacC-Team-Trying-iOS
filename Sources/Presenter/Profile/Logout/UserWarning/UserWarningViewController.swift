@@ -153,22 +153,6 @@ final class UserWarningViewController: BaseViewController {
         setNavigation()
     }
     
-    private func bulletPointList(strings: [String]) -> NSAttributedString {
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.headIndent = 15
-        paragraphStyle.minimumLineHeight = 20
-        paragraphStyle.maximumLineHeight = 20
-        paragraphStyle.tabStops = [NSTextTab(textAlignment: .left, location: 15)]
-
-        let stringAttributes = [
-            NSAttributedString.Key.font: UIFont.designSystem(weight: .regular, size: ._13),
-            NSAttributedString.Key.foregroundColor: UIColor.designSystem(.white),
-            NSAttributedString.Key.paragraphStyle: paragraphStyle
-        ]
-        let string = strings.map({ "•\t\($0)" }).joined(separator: "\n\n")
-        return NSAttributedString(string: string, attributes: stringAttributes)
-    }
-    
     @objc
     func agreeButtonTapped() {
         viewModel.isAgreed.toggle()
@@ -177,6 +161,8 @@ final class UserWarningViewController: BaseViewController {
     @objc
     func nextButtonTapped() {
         print("다음으로 넘어갑니다")
+        let nextVC = RecoverUserInfoViewController()
+        navigationController?.pushViewController(nextVC, animated: true)
     }
 }
 
@@ -200,7 +186,7 @@ extension UserWarningViewController {
         mainTitleLabel.text = outgoingType == .exitPlanet ? "\(userName)별을 나가실건가요?" : "회원을 탈퇴하시겠습니까?"
         titleImage.image = UIImage(named: planetImageName)
     }
-    
+
     private func setNavigation() {
         self.title = outgoingType == .exitPlanet ? "행성 나가기" : "회원 탈퇴"
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._15)]
@@ -276,4 +262,20 @@ extension UserWarningViewController {
             make.height.equalTo(58)
         }
     }
+}
+
+func bulletPointList(strings: [String]) -> NSAttributedString {
+    let paragraphStyle = NSMutableParagraphStyle()
+    paragraphStyle.headIndent = 15
+    paragraphStyle.minimumLineHeight = 20
+    paragraphStyle.maximumLineHeight = 20
+    paragraphStyle.tabStops = [NSTextTab(textAlignment: .left, location: 15)]
+
+    let stringAttributes = [
+        NSAttributedString.Key.font: UIFont.designSystem(weight: .regular, size: ._13),
+        NSAttributedString.Key.foregroundColor: UIColor.designSystem(.white),
+        NSAttributedString.Key.paragraphStyle: paragraphStyle
+    ]
+    let string = strings.map({ "•\t\($0)" }).joined(separator: "\n\n")
+    return NSAttributedString(string: string, attributes: stringAttributes)
 }
