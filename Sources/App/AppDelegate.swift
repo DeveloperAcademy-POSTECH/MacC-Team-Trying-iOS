@@ -58,8 +58,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     private func registerForRemoteNotifications() {
         FirebaseApp.configure()
         
-//        Messaging.messaging().delegate = self
-//        allall.noti.delegate = self
         FpnCenter.messaging.delegate = self
         FpnCenter.notificationCenter.delegate = self
         FpnCenter.notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
@@ -114,7 +112,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         // TODO: 로그인 시 FCM Token을 서버에 넘겨주세요. (FCM 토큰은 앱이 지웠다가 다시 설치하면 토큰값이 바뀝니다.)
-        print("!!\(fcmToken)")
         print("✨FCM Token : \(fcmToken)")
         UserDefaults.standard.set(fcmToken, forKey: "fcmToken")
     }
