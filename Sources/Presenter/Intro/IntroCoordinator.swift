@@ -47,6 +47,21 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
         navigationController?.setViewControllers([startController], animated: false)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
+
+    func startWithCreatePlanet() {
+        let createPlanet = CreatePlanetViewController(viewModel: CreatePlanetViewModel(coordinator: self))
+        navigationController?.setViewControllers([createPlanet], animated: false)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+
+    func startWithWaitingMate(selectedPlanet: String, planetName: String, code: String) {
+        let waitMate = WaitingInvitationViewController(
+            viewModel: .init(selectedPlanet: selectedPlanet, planetName: planetName, code: code, coordinator: self)
+        )
+        navigationController?.setViewControllers([waitMate], animated: false)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+
 }
 
 // MARK: - CoordinatorLogic
@@ -166,7 +181,7 @@ extension IntroCoordinator {
 
     func coordinateToCreatePlanetScene() {
         let createPlanet = CreatePlanetViewController(viewModel: .init(coordinator: self))
-        navigationController?.pushViewController(createPlanet, animated: true)
+        navigationController?.setViewControllers([createPlanet], animated: true)
     }
 
     func coordinateToCreatePlanetCompleteScene(selectedPlanet: String, planetName: String, code: String) {
@@ -197,6 +212,7 @@ extension IntroCoordinator {
         let invitationCodeViewController = InvitationCodeViewController(viewModel: .init(coordinator: self))
         navigationController?.pushViewController(invitationCodeViewController, animated: true)
     }
+
     func backToConfirmPasswordScene() {
         let viewControllers: [UIViewController] = self.navigationController?.viewControllers ?? []
         if viewControllers.count >= 3 {

@@ -10,6 +10,7 @@ import Foundation
 
 struct ReviewEntity {
     let id: Int
+    var imagesURL: [String]
     let author: UserEntity
     let content: String
 }

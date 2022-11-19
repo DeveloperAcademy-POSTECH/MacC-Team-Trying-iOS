@@ -12,7 +12,7 @@ enum SignInRequestModel {
     struct Email: RequestBody {
         let email: String
         let password: String
-        let deviceToken: String = "1"
+        let deviceToken: String
     }
 
     struct Kakao: RequestBody {

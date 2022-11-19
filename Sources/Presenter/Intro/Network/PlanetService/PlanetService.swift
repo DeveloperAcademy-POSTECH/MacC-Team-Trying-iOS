@@ -18,12 +18,12 @@ struct PlanetService {
     func joinPlanet(_ body: PlanetRequestModel.JoinPlanet) async throws -> EmptyResponseBody {
         try await provider.send(.join(body))
     }
-
-    func getInvitationCode(_ query: PlanetRequestModel.GetInvitationCode) async throws -> PlanetResponseModel.GetInvitationCode {
-        try await provider.send(.getInvitationCode(query))
-    }
-
+    
     func getPlanetByCode(_ query: PlanetRequestModel.GetPlanetByCode) async throws -> PlanetResponseModel.GetPlanetByCode {
         try await provider.send(.getPlanetByCode(query))
+    }
+
+    func deletePlanet() async throws -> EmptyResponseBody {
+        try await provider.send(.deletePlanet)
     }
 }

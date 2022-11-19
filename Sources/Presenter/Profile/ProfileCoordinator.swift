@@ -8,9 +8,15 @@
 
 import UIKit
 
+protocol ProfileCoordinatorDelegate: AnyObject {
+    func coordinateToLoginScene()
+}
+
 final class ProfileCoordinator: Coordinator {
     weak var navigationController: UINavigationController?
-    
+
+    var delegate: ProfileCoordinatorDelegate?
+
     init(navigationController: UINavigationController?) {
         self.navigationController = navigationController
     }
@@ -25,7 +31,8 @@ final class ProfileCoordinator: Coordinator {
 }
 
 // MARK: - Coordinating Methods
-extension ProfileCoordinator: EditDayViewCoordinating, Popable {
+extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoordinatorLogic, EditNicknamCoordinatorLogic, EditPasswordCoordinatorLogic, EditPlanetCoordinatorLogic {
+
     func pushToEditDayView() {
         let viewModel = EditDayViewModel(coordinator: self)
         let viewController = EditDayViewController(viewModel: viewModel)
@@ -35,5 +42,39 @@ extension ProfileCoordinator: EditDayViewCoordinating, Popable {
     
     func popViewController() {
         navigationController?.popViewController(animated: true)
+    }
+
+    func coordinateToEditProfile() {
+        let editProfile = EditProfileViewController(viewModel: .init(coordinator: self))
+        editProfile.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(editProfile, animated: true)
+    }
+
+    func back() {
+        self.navigationController?.popViewController(animated: true)
+    }
+
+    func coordinateToEditNicknameScene(nickname: String) {
+        let editNickname = EditNicknameViewController(viewModel: .init(nickname: nickname, coordinator: self))
+        editNickname.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(editNickname, animated: true)
+    }
+
+    func coordinateToEditPasswordScene() {
+        let editPassword = EditPasswordViewController(viewModel: .init(coordinator: self))
+        editPassword.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(editPassword, animated: true)
+    }
+     func coordinateToLoginScene() {
+        delegate?.coordinateToLoginScene()
+    }
+
+    func coordinateToEditPlanet(date: String, planetName: String, planetImageName: String) {
+        let editPlanet = EditPlanetViewController(viewModel: .init(date: date, planetName: planetName, planetImage: planetImageName, coordinator: self))
+        editPlanet.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(editPlanet, animated: true)
+    }
+    func coordinateToDeRegisterScene() {
+        // MARK: 이동
     }
 }

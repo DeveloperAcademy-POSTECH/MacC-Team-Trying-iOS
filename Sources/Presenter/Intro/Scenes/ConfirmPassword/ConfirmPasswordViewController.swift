@@ -10,7 +10,6 @@ import Combine
 import UIKit
 
 import CancelBag
-import PinLayout
 
 final class ConfirmPasswordViewController: IntroBaseViewController<ConfirmPasswordViewModel> {
 

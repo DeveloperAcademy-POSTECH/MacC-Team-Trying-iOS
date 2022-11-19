@@ -48,7 +48,7 @@ final class ServiceTermViewController: IntroBaseViewController<ServiceTermViewMo
 
         titleLabel.numberOfLines = 0
         let attributedString = NSMutableAttributedString()
-            .gmarketSansBold(string: "COME IT ", fontSize: ._15)
+            .gmarketSansBold(string: "우주라이크 ", fontSize: ._15)
             .gmarketSansLight(string: "이용을 위해\n약관에 동의해 주세요.", fontSize: ._15)
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 4
@@ -57,6 +57,10 @@ final class ServiceTermViewController: IntroBaseViewController<ServiceTermViewMo
             value: paragraphStyle,
             range: .init(location: 0, length: attributedString.length)
         )
+        attributedString.addAttributes(
+            [NSAttributedString.Key.foregroundColor: UIColor.designSystem(.mainYellow)],
+            range: .init(location: 0, length: 5)
+        )
         titleLabel.attributedText = attributedString
         nextButton.isEnabled = false
         nextButton.title = "다음"
@@ -64,7 +68,7 @@ final class ServiceTermViewController: IntroBaseViewController<ServiceTermViewMo
 
         termLabel1.text = "전체동의"
         termLabel2.text = "(필수)만 14세 이상입니다."
-        termLabel3.text = "(필수) COME IT 회원약관 및 이용약관 동의"
+        termLabel3.text = "(필수) 우주라이크 회원약관 및 이용약관 동의"
         termLabel4.text = "(필수) 개인정보처리방침"
 
         termButton3.titleLabel?.font = .designSystem(weight: .regular, size: ._13)
@@ -106,7 +110,7 @@ final class ServiceTermViewController: IntroBaseViewController<ServiceTermViewMo
         checkButton1.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(50)
             make.leading.equalToSuperview().inset(20)
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(25)
         }
         termLabel1.snp.makeConstraints { make in
             make.leading.equalTo(checkButton1.snp.trailing).offset(23)
@@ -115,7 +119,7 @@ final class ServiceTermViewController: IntroBaseViewController<ServiceTermViewMo
         checkButton2.snp.makeConstraints { make in
             make.top.equalTo(checkButton1.snp.bottom).offset(16)
             make.leading.equalToSuperview().inset(20)
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(25)
         }
         termLabel2.snp.makeConstraints { make in
             make.leading.equalTo(checkButton2.snp.trailing).offset(23)
@@ -124,7 +128,7 @@ final class ServiceTermViewController: IntroBaseViewController<ServiceTermViewMo
         checkButton3.snp.makeConstraints { make in
             make.top.equalTo(checkButton2.snp.bottom).offset(16)
             make.leading.equalToSuperview().inset(20)
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(25)
         }
         termLabel3.snp.makeConstraints { make in
             make.leading.equalTo(checkButton3.snp.trailing).offset(23)
@@ -133,7 +137,7 @@ final class ServiceTermViewController: IntroBaseViewController<ServiceTermViewMo
         checkButton4.snp.makeConstraints { make in
             make.top.equalTo(checkButton3.snp.bottom).offset(16)
             make.leading.equalToSuperview().inset(20)
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(25)
 
         }
         termLabel4.snp.makeConstraints { make in
@@ -185,14 +189,14 @@ extension ServiceTermViewController {
     @objc
     func termButton3DidTapped() {
         let viewController = TermViewController(viewModel: .init())
-        viewController.navigationTitle = "서비스 이용약관"
+        viewController.termType = .service
         navigationController?.pushViewController(viewController, animated: true)
     }
 
     @objc
     func termButton4DidTapped() {
         let viewController = TermViewController(viewModel: .init())
-        viewController.navigationTitle = "개인정보처리방침"
+        viewController.termType = .privacy
         navigationController?.pushViewController(viewController, animated: true)
     }
 }

@@ -34,12 +34,9 @@ final class LogCoordinator: Coordinator,
         navigationController?.present(viewController, animated: true)
     }
     
-    func pushMyConstellationViewController() {
-        // TODO: 수정이요~ 데이터 구조 확정 후 편집예정
-        let viewModel = LogHomeViewModel(coordinator: self)
-        let vm = MyConstellationViewModel(coordinator: self)
-        let viewController = MyConstellationViewController(viewModel: vm)
-        viewController.courses = viewModel.courses
+    func pushMyConstellationViewController(courses: [CourseEntity]) {
+        let viewModel = MyConstellationViewModel(coordinator: self, courses: courses)
+        let viewController = MyConstellationViewController(viewModel: viewModel)
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     

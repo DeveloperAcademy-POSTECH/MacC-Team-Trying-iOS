@@ -12,7 +12,7 @@ final class InvitationCodeButton: BaseButton {
 
     var invitationCode: String = "" {
         didSet {
-            configuration?.title = "초대코드 : \(invitationCode)"
+            configuration?.title = "초대코드 복사 : \(invitationCode)"
         }
     }
 
