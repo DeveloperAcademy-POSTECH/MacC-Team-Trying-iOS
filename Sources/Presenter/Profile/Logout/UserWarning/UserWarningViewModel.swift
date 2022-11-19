@@ -1,5 +1,5 @@
 //
-//  LogoutViewModel.swift
+//  UserWarningViewModel.swift
 //  ComeIt
 //
 //  Created by uiskim on 2022/11/18.
@@ -8,7 +8,7 @@
 
 import Combine
 
-final class LogoutViewModel: BaseViewModel {
+final class UserWarningViewModel: BaseViewModel {
     
     @Published var isAgreed: Bool = false
 
