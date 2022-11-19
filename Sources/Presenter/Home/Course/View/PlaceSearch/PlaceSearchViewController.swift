@@ -14,7 +14,12 @@ import CancelBag
 import SnapKit
 
 protocol PlacePresenting: AnyObject {
+    /// 겸색 결과로 나온 장소의 위치를 지도에서 보여줍니다.
+    /// - Parameter place: 선택한 장소
     func presentSelectedPlace(place: Place)
+    
+    /// 검색 결과로 나온 여러 장소들의 위치를 지도에서 보여줍니다.
+    /// - Parameter places: 검색 결과로 나온 여러 장소들
     func presentSearchedPlaces(places: [Place])
 }
 

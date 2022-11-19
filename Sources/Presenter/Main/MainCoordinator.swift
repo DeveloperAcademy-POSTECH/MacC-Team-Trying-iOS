@@ -124,3 +124,7 @@ extension MainCoordinator: MoveToAnotherTab {
         tabBarController.selectedIndex = 1
     }
 }
+
+protocol Popable {
+    func popViewController()
+}

@@ -25,9 +25,9 @@ final class HomeCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func startAddCourseFlow(type: AddCourseFlowType) {
-        let addCourseCoordinator = AddCourseCoordinator(type: type, navigationController: navigationController)
-        addCourseCoordinator.start()
+    func startAddCourseFlow(courseRequestDTO: CourseRequestDTO) {
+        let addCourseCoordinator = AddCourseCoordinator(navigationController: navigationController)
+        addCourseCoordinator.start(courseRequestDTO)
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  AddCourseCompleteViewController.swift
+//  CourseCompleteViewController.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/18.
@@ -7,17 +7,17 @@
 //
 
 import Combine
+import CoreLocation
 import CoreMotion
 import UIKit
 
 import CancelBag
 import Lottie
 import SnapKit
-import CoreLocation
 
-final class AddCourseCompleteViewController: BaseViewController {
-    private let type: AddCourseFlowType
-    var viewModel: AddCourseCompleteViewModel
+final class CourseCompleteViewController: BaseViewController {
+    private let type: CourseFlowType
+    var viewModel: CourseCompleteViewModel
     
     private lazy var mediumStarBackgroundView = MediumStarBackgroundView(
         frame: CGRect(
@@ -32,7 +32,7 @@ final class AddCourseCompleteViewController: BaseViewController {
         label.numberOfLines = 0
         let attributedString = NSMutableAttributedString()
         let firstString = NSAttributedString(string: "새로운 별자리가", attributes: [.font: UIFont.gmarksans(weight: .light, size: ._15)])
-        let secondString = NSAttributedString(string: type == .record ? "\n기록" : "\n계획", attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
+        let secondString = NSAttributedString(string: type == .addCourse ? "\n기록" : "\n계획", attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
         let thirdString = NSAttributedString(string: "됐습니다!", attributes: [.font: UIFont.gmarksans(weight: .medium, size: ._15)])
         attributedString.append(firstString)
         attributedString.append(secondString)
@@ -53,7 +53,7 @@ final class AddCourseCompleteViewController: BaseViewController {
         return lottie
     }()
     private lazy var constellationView: UIView = {
-        let view = self.makeConstellation(places: viewModel.places)
+        let view = self.makeConstellation(places: viewModel.courseRequestDTO.places)
         view.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
         return view
     }()
@@ -78,10 +78,10 @@ final class AddCourseCompleteViewController: BaseViewController {
         // input
         
         // output
-        self.courseTitleLabel.text = viewModel.courseTitle
+        self.courseTitleLabel.text = self.viewModel.courseRequestDTO.title
     }
     
-    init(type: AddCourseFlowType, viewModel: AddCourseCompleteViewModel) {
+    init(type: CourseFlowType, viewModel: CourseCompleteViewModel) {
         self.type = type
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -109,21 +109,15 @@ final class AddCourseCompleteViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension AddCourseCompleteViewController {
+extension CourseCompleteViewController {
     private func setUI() {
-        setAttributes()
         setGyroMotion()
         
-        if type == .record {
-            setRecordCompleteViewLayout()
+        if type == .addCourse {
+            self.setRecordCompleteViewLayout()
         } else {
-            setPlanCompleteViewLayout()
+            self.setPlanCompleteViewLayout()
         }
-    }
-    
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
     }
     
     /// RecordComplete 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -131,7 +125,6 @@ extension AddCourseCompleteViewController {
         view.addSubviews(
             mediumStarBackgroundView,
             completeLabel,
-            // starLottie,
             constellationView,
             courseTitleLabel,
             doneButton
@@ -141,14 +134,6 @@ extension AddCourseCompleteViewController {
             make.centerX.equalToSuperview()
             make.top.equalTo(view.safeAreaLayoutGuide).inset(80)
         }
-        
-        /*
-        starLottie.snp.makeConstraints { make in
-            make.top.equalTo(completeLabel.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(105)
-            make.height.equalTo(170)
-        }
-        */
         
         courseTitleLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
@@ -189,7 +174,7 @@ extension AddCourseCompleteViewController {
         }
     }
     
-    func makeConstellation(places: [Place]) -> UIView {
+    private func makeConstellation(places: [Place]) -> UIView {
         let constellationView = UIView()
         constellationView.backgroundColor = .clear
         constellationView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
@@ -285,7 +270,7 @@ extension AddCourseCompleteViewController {
 }
 
 // MARK: - User Interactions
-extension AddCourseCompleteViewController {
+extension CourseCompleteViewController {
     @objc
     private func didTapDoneButton(_ sender: UIButton) {
         viewModel.popToHomeView()

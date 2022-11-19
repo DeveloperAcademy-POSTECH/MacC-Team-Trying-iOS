@@ -1,5 +1,5 @@
 //
-//  AddCourseTitleViewController.swift
+//  CourseTitleViewController.swift
 //  ComeIt
 //
 //  Created by 김승창 on 2022/11/05.
@@ -12,10 +12,11 @@ import UIKit
 import CancelBag
 import SnapKit
 
-final class AddCourseTitleViewController: BaseViewController {
-    var type: AddCourseFlowType
-    var viewModel: AddCourseTitleViewModel
+final class CourseTitleViewController: BaseViewController {
+    var type: CourseFlowType
+    var viewModel: CourseTitleViewModel
     
+    // MARK: UI Components
     private let descriptionLabel1: UILabel = {
         let label = UILabel()
         label.text = "생성할 코스의 이름을"
@@ -45,10 +46,10 @@ final class AddCourseTitleViewController: BaseViewController {
     private func bind() {
         // input
         titleTextField.textPublisher()
-            .assign(to: &viewModel.$courseTitle)
+            .assign(to: &viewModel.courseRequestDTO.$title)
         
         // output
-        viewModel.$courseTitle
+        viewModel.courseRequestDTO.$title
             .sink { [weak self] courseTitle in
                 guard let self = self else { return }
                 self.nextButton.isEnabled = courseTitle.isEmpty ? false : true
@@ -56,7 +57,7 @@ final class AddCourseTitleViewController: BaseViewController {
             .cancel(with: cancelBag)
     }
     
-    init(type: AddCourseFlowType, viewModel: AddCourseTitleViewModel) {
+    init(type: CourseFlowType, viewModel: CourseTitleViewModel) {
         self.type = type
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -66,6 +67,7 @@ final class AddCourseTitleViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -95,27 +97,35 @@ final class AddCourseTitleViewController: BaseViewController {
 }
 
 // MARK: - UI
-extension AddCourseTitleViewController: NavigationBarConfigurable {
+extension CourseTitleViewController: NavigationBarConfigurable {
     private func setUI() {
         configureRecordTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
         setBackgroundGyroMotion()
-        setAttributes()
+        setNavigationBar()
         setLayout()
     }
     
-    /// Attributes를 설정합니다.
-    private func setAttributes() {
-        
+    private func setNavigationBar() {
+        switch self.type {
+        case .addCourse:
+            configureRecordTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
+            
+        case .editCourse:
+            configureRecordTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
+            
+        case .addPlan:
+            configurePlanTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
+            
+        case .editPlan:
+            configurePlanTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
+            
+        default:
+            break
+        }
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-        if type == .record {
-            configureRecordTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
-        } else {
-            configurePlanTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
-        }
-        
         view.addSubviews(
             descriptionLabel1,
             descriptionLabel2,
@@ -150,7 +160,7 @@ extension AddCourseTitleViewController: NavigationBarConfigurable {
 }
 
 // MARK: - User Interactions
-extension AddCourseTitleViewController {
+extension CourseTitleViewController {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         self.view.endEditing(true)
@@ -235,6 +245,6 @@ extension AddCourseTitleViewController {
     
     @objc
     private func nextButtonPressed(_ sender: UIButton) {
-        viewModel.pushToAddCourseMapView()
+        viewModel.pushToNextView()
     }
 }

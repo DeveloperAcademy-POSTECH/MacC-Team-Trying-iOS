@@ -10,18 +10,14 @@ import Combine
 import CoreLocation
 import MapKit
 
-protocol PlaceSearchResultMapViewCoordinating {
-    func pushToPlaceSearchResultMapView(searchText: String, searchedPlaces: [Place], presentLocation: CLLocationCoordinate2D)
-}
-
 final class PlaceSearchViewModel: BaseViewModel {
-    var coordinator: Coordinator
+    var coordinator: AddCourseFlowCoordinating
     private let placeSearchUseCase: PlaceSearchUseCase
     
     @Published var places: [Place]
     
     init(
-        coordinator: Coordinator,
+        coordinator: AddCourseFlowCoordinating,
         placeSearchUseCase: PlaceSearchUseCase = PlaceSearchUseCaseImpl(),
         places: [Place] = []
     ) {
@@ -34,12 +30,10 @@ final class PlaceSearchViewModel: BaseViewModel {
 // MARK: - Coordinating
 extension PlaceSearchViewModel {
     func pop() {
-        guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
     }
     
     func pushToPlaceSearchResultMapView(searchText: String, searchedPlaces: [Place], presentLocation: CLLocationCoordinate2D) {
-        guard let coordinator = coordinator as? PlaceSearchResultMapViewCoordinating else { return }
         coordinator.pushToPlaceSearchResultMapView(searchText: searchText, searchedPlaces: searchedPlaces, presentLocation: presentLocation)
     }
 }
