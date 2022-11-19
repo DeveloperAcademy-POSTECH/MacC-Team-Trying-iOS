@@ -47,6 +47,7 @@ final class LogTicketViewController: BaseViewController {
 extension LogTicketViewController {
     
     private func setUI() {
+        super.backgroundView.isHidden = true
         configureTicketView()
         setLayout()
     }
@@ -64,7 +65,7 @@ extension LogTicketViewController {
     private func setLayout() {
         view.addSubview(logTicketView)
         logTicketView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(DeviceInfo.screenHeight * 0.05924170616)
+            make.top.equalToSuperview()
             make.centerX.equalToSuperview()
             make.width.equalTo(DeviceInfo.screenWidth * 0.8974358974)
             make.height.equalTo(DeviceInfo.screenHeight * 0.8163507109)
@@ -72,19 +73,15 @@ extension LogTicketViewController {
     }
     
     private func addButtonTarget() {
-        logTicketView.dismissButton.addTarget(self, action: #selector(tapDismissButton), for: .touchUpInside)
         logTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         logTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
     }
     
     @objc
-    func tapDismissButton() {
-        viewModel?.tapDismissButton()
-    }
-    @objc
     func tapLikeButton() {
         viewModel?.tapLikeButton()
     }
+    
     @objc
     func tapFlopButton() {
         viewModel?.tapFlopButton()

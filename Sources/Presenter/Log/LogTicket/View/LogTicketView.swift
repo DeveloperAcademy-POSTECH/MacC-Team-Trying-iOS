@@ -17,27 +17,25 @@ class LogTicketView: UIView {
             setPageControl()
         }
     }
+    
     var courseNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .bold, size: ._15)
         return label
     }()
+    
     lazy var likebutton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "unlike_image"), for: .normal)
         return button
     }()
-    lazy var dismissButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "xmark"), for: .normal)
-        button.tintColor = .white
-        return button
-    }()
+    
     lazy var flopButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "refresh"), for: .normal)
         return button
     }()
+    
     var bodyTextView: UITextView = {
         let textView = UITextView()
         textView.font = UIFont.designSystem(weight: .regular, size: ._13)
@@ -47,12 +45,15 @@ class LogTicketView: UIView {
         textView.isEditable = false
         return textView
     }()
+    
     private let dateTitleLabel = LogTicketLabel(title: "Date", color: .white)
     private let numberTitleLabel = LogTicketLabel(title: "No.", color: .white)
     private let fromTitleLabel = LogTicketLabel(title: "From", color: .white)
+    
     var dateLabel = LogTicketLabel(color: .designSystem(Palette.grayC5C5C5) ?? .white)
     var numberLabel = LogTicketLabel(color: .designSystem(Palette.grayC5C5C5) ?? .white)
     var fromLabel = LogTicketLabel(color: .designSystem(Palette.grayC5C5C5) ?? .white)
+    
     private let pageControl = UIPageControl()
     
     private var ImageScrollView: UIScrollView = {
@@ -72,7 +73,6 @@ class LogTicketView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        layer.cornerRadius = 18
         self.addSubviews(
             courseNameLabel,
             ImageScrollView,
@@ -85,12 +85,10 @@ class LogTicketView: UIView {
             pageControl,
             bodyTextView,
             likebutton,
-            dismissButton,
             flopButton
         )
-        setBlur()
         setLayouts()
-        
+        setBlur()
     }
     
     required init?(coder: NSCoder) {
@@ -185,20 +183,17 @@ extension LogTicketView {
             make.right.equalTo(fromLabel.snp.right)
             make.centerY.equalTo(courseNameLabel.snp.centerY)
         }
-        dismissButton.snp.makeConstraints { make in
-            make.width.equalTo(DeviceInfo.screenWidth * 0.05641025641)
-            make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)
-            make.right.equalToSuperview().offset(-DeviceInfo.screenWidth * 0.05128205128)
-            make.top.equalToSuperview().offset(DeviceInfo.screenHeight * 0.02369668246)
-        }
         flopButton.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.06153846154)
             make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)
-            make.centerX.equalTo(dismissButton.snp.centerX)
+            make.right.equalToSuperview().offset(-DeviceInfo.screenWidth * 0.05128205128)
             make.bottom.equalToSuperview().offset(-DeviceInfo.screenHeight * 0.02369668246)
         }
     }
+    
     private func drawTicket() {
+        layer.cornerRadius = 18
+        backgroundColor = .clear
         let radious = DeviceInfo.screenWidth * 0.1282051282 / 2
         let ticketShapeLayer = CAShapeLayer()
         ticketShapeLayer.frame = self.bounds
@@ -246,12 +241,14 @@ extension LogTicketView {
         layer.shadowRadius = 10
         layer.shadowOffset = .zero
         layer.mask = ticketShapeLayer
+        
     }
+    
     private func setBlur() {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.regular)
         let outerVisualEffectView = UIVisualEffectView(effect: blurEffect)
-        outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.8).cgColor
-        outerVisualEffectView.layer.opacity = 0.8
+        outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.5).cgColor
+        outerVisualEffectView.layer.opacity = 0.5
         outerVisualEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
         self.addSubview(outerVisualEffectView)
         self.sendSubviewToBack(outerVisualEffectView)

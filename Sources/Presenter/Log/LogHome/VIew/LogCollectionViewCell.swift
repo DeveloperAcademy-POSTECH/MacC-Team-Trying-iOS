@@ -87,7 +87,7 @@ extension LogCollectionViewCell {
         }
         
         courseNameButton.snp.makeConstraints { make in
-            make.width.equalTo(150)
+            make.width.equalTo(123)
             make.height.equalTo(35)
             make.centerX.equalToSuperview()
             make.bottom.equalTo(dateLabel.snp.top).offset(-10)

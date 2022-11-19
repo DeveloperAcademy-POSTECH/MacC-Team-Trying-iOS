@@ -29,8 +29,6 @@ final class LogCoordinator: Coordinator,
     func presentTicketViewController() {
         let viewModel = LogTicketViewModel(coordinator: self)
         let viewController = LogTicketViewController(viewModel: viewModel)
-        viewController.view.backgroundColor = .clear
-        viewController.modalPresentationStyle = .popover
         navigationController?.present(viewController, animated: true)
     }
     
