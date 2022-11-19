@@ -181,21 +181,3 @@ class PushSettingViewController: BaseViewController, UNUserNotificationCenterDel
     }
 }
 
-protocol EditNotificationCoordinating {
-    func pushToEditNotificationView()
-}
-
-extension ProfileViewModel {
-    func pushToEditNotificationView() {
-        guard let coordinator = coordinator as? EditNotificationCoordinating else { return }
-        coordinator.pushToEditNotificationView()
-    }
-}
-
-extension ProfileCoordinator: EditNotificationCoordinating {
-    func pushToEditNotificationView() {
-        let viewModel = PushNotificationViewModel(coordinator: self)
-        let viewController = PushSettingViewController(viewModel: viewModel)
-        self.navigationController?.pushViewController(viewController, animated: true)
-    }
-}

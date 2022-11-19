@@ -62,3 +62,10 @@ extension ProfileViewModel {
         coordinator.coordinateToEditProfile()
     }
 }
+
+extension ProfileViewModel {
+    func pushToEditNotificationView() {
+        guard let coordinator = coordinator as? EditNotificationCoordinating else { return }
+        coordinator.pushToEditNotificationView()
+    }
+}
