@@ -16,7 +16,8 @@ struct FetchConstellationDTO: Codable {
     // MARK: - Course
     struct Course: Codable {
         let courseId: Int
-        let title, date: String
+        let title: String
+        let date: String
         let liked: Bool
         let places: [PlaceElement]
     }
@@ -31,7 +32,7 @@ struct FetchConstellationDTO: Codable {
     // MARK: - PlacePlace
     struct Place: Codable {
         let placeId: Int
-        let name, address, roadAddress: String
+        let name: String
         let coordinate: Coordinate
     }
 
