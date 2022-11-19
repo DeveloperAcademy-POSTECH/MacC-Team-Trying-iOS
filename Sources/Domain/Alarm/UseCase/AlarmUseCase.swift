@@ -13,6 +13,7 @@ protocol AlarmUseCaseDelegate: AnyObject {
     func fetchAlarms() -> AnyPublisher<[AlarmEntity], Error>
     func readAlarm(id: Int)
     func removeAllAlarms()
+    func toggleAlarmPermission(isPermission: Bool)
 }
 
 class AlarmUseCase: AlarmUseCaseDelegate {
@@ -27,6 +28,10 @@ class AlarmUseCase: AlarmUseCaseDelegate {
     
     func removeAllAlarms() {
         alarmInterface.removeAllAlarms()
+    }
+    
+    func toggleAlarmPermission(isPermission: Bool) {
+        alarmInterface.toggleAlarmPermission(isPermission: isPermission)
     }
     
     private let alarmInterface: AlarmInterface

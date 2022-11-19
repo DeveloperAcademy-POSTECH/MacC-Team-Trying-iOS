@@ -13,4 +13,5 @@ protocol AlarmInterface {
     func fetchAlarms() -> AnyPublisher<[AlarmEntity], Error>
     func readAlarm(id: Int)
     func removeAllAlarms()
+    func toggleAlarmPermission(isPermission: Bool)
 }

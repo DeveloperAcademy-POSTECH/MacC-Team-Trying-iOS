@@ -14,7 +14,8 @@ class AlarmAPI {
     private let cancelBag = CancelBag()
     
     //TODO: token 수정
-    private var token = "  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhOTNmMzlmMS1lOGMxLTRmOGEtYWJiZS1mODRkNzg0NjE1OTAiLCJhdXRoIjoiVVNFUiJ9.8Asj5tsfluzvtJou2knvgxs8Ctig4oRgGqJnwQsOWz5nFTKEBOUgBE6ffYw_YwhQrFRSxhXvuTDABuLiF4NpEA"
+    //UserDefaults.standard.string(forKey: "accessToken")
+    private var token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0OWMwZWJiYS0xYWJmLTRhNzYtYTVmNS05MzYwM2MwZDIwYWQiLCJhdXRoIjoiVVNFUiJ9.Cjf3DXaX82Aq9eKVLHjW9dTLdDny18_k0P0DS-6HcbtLD70_j4018abuMVwuSFOasbPmx63qh_STxxQ4YZ_osA"
     
     private let host = "https://comeit.site/"
     
@@ -22,7 +23,7 @@ class AlarmAPI {
         let urlStr = encodeUrl(string: addStringParameter(type: type))
         guard let url = URL(string: urlStr) else { return }
 
-        var request = URLRequest(url:url)
+        var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         request.addValue("Bearer \(token)", forHTTPHeaderField: "accessToken")
 
@@ -67,6 +68,27 @@ class AlarmAPI {
             .cancel(with: cancelBag)
     }
     
+    func toggleAlarmPermission(type: AlarmApiType, isPermission: Bool) {
+        let urlStr = encodeUrl(string: addStringParameter(type: type))
+        guard let url = URL(string: urlStr) else { return }
+
+        var request = URLRequest(url: url)
+        let json: [String: Any] = ["allow": isPermission]
+        request.httpMethod = "PATCH"
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "accessToken")
+        request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: json)
+        
+        URLSession.shared.dataTaskPublisher(for: request)
+            .map(\.data)
+            .print()
+            .eraseToAnyPublisher()
+            .assertNoFailure()
+            .sink(receiveValue: { _ in
+            })
+            .cancel(with: cancelBag)
+    }
+    
 }
 
 extension AlarmAPI {
@@ -80,6 +102,8 @@ extension AlarmAPI {
             urlString += "notifications/\(id)"
         case .delete:
             urlString += "notifications"
+        case .togglePermission:
+            urlString += "users/notification"
         }
         return urlString
     }
@@ -94,4 +118,5 @@ enum AlarmApiType {
     case fetch
     case check
     case delete
+    case togglePermission
 }

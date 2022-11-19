@@ -277,8 +277,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             case 1:
                 viewModel.pushToEditDayView()
             case 2:
-                // TODO: 푸쉬 설정
-                break
+                viewModel.pushToEditNotificationView()
             default:
                 break
                 

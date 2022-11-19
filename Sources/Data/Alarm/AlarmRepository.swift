@@ -8,7 +8,7 @@
 
 import Foundation
 import Combine
-
+//TODO 계속받아오기?
 class AlarmRepository: AlarmInterface {
     
     private let alarmAPI: AlarmAPI
@@ -56,7 +56,8 @@ class AlarmRepository: AlarmInterface {
         case .new:
             return description.replacingOccurrences(of: "] ", with: "]\n")
         case .tommorow:
-            return description.replacingOccurrences(of: "!", with: "!\n")
+            return description.replacingOccurrences(of: "! ", with: "!\n")
+//            return description
         case .arrive:
             return description.replacingOccurrences(of: "~ ", with: "~\n")
         }
@@ -73,7 +74,6 @@ class AlarmRepository: AlarmInterface {
     func checkAlarm(id: Int) {
         alarmAPI.checkAlarm(type: .check, id: id)
     }
-    
     
     private func getAlarms(alarmResponse: AlarmResponse) -> [AlarmEntity] {
         let dtos = alarmResponse.notifications
@@ -109,6 +109,10 @@ class AlarmRepository: AlarmInterface {
 
     func removeAllAlarms() {
         alarmAPI.removeAllAlarms(type: .delete)
+    }
+    
+    func toggleAlarmPermission(isPermission: Bool) {
+        alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: isPermission)
     }
     
 }
