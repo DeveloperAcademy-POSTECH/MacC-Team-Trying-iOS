@@ -304,8 +304,8 @@ final class HomeViewController: BaseViewController {
     
     @objc
     func registerButtonTapped(_ sender: UIButton) {
-        guard let type = AddCourseFlowType(rawValue: sender.tag) else { return }
-        viewModel.startAddCourseFlow(type: type)
+//        guard let type = AddCourseFlowType(rawValue: sender.tag) else { return }
+//        viewModel.startAddCourseFlow(type: type)
     }
 }
 
