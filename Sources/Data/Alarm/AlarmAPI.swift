@@ -15,7 +15,7 @@ class AlarmAPI {
     
     //TODO: token 수정
     //UserDefaults.standard.string(forKey: "accessToken")
-    private var token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0OWMwZWJiYS0xYWJmLTRhNzYtYTVmNS05MzYwM2MwZDIwYWQiLCJhdXRoIjoiVVNFUiJ9.Cjf3DXaX82Aq9eKVLHjW9dTLdDny18_k0P0DS-6HcbtLD70_j4018abuMVwuSFOasbPmx63qh_STxxQ4YZ_osA"
+    private var token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIwNmZhNWU2NC1mMmNmLTQ4OWQtYTIxZi04NzE4NTdmMjEwNjgiLCJhdXRoIjoiVVNFUiJ9.R4B2v0S-NHSseJd7m566oZZ6tFVeDWSH3uALT4XPX2eNIJeQ7OQ7RjQXte0KVZzXESFI6Ws2R65GdeiXgRQ_1g"
     
     private let host = "https://comeit.site/"
     
