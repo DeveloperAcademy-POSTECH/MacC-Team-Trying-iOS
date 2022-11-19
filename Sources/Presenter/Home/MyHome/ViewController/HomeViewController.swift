@@ -168,8 +168,10 @@ final class HomeViewController: BaseViewController {
             .sink { [weak self] receivedValue in
                 guard let self = self else { return }
                 if receivedValue?.mate != nil {
+                    print("메이트 있음")
                     self.setHasMateUI()
                 } else {
+                    print("메이트 없음")
                     self.setNoMateUI()
                 }
             }
@@ -287,6 +289,7 @@ final class HomeViewController: BaseViewController {
     @objc
     func alarmButtonTapped() {
         print("알람버튼이눌렸습니다")
+        // MARK: - 행성나가기 확인
         let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backButtonItem.tintColor = .designSystem(.white)
         let nextVC = UserWarningViewController(outgoingType: .membershipWithdrawal)

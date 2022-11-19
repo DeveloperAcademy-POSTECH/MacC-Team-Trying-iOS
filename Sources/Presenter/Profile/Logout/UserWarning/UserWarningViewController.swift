@@ -160,9 +160,19 @@ final class UserWarningViewController: BaseViewController {
     
     @objc
     func nextButtonTapped() {
-        print("다음으로 넘어갑니다")
-        let nextVC = RecoverUserInfoViewController()
-        navigationController?.pushViewController(nextVC, animated: true)
+
+        if outgoingType == .exitPlanet {
+            Task {
+                try await ExitAPIService.exitPlanet()
+                let nextVC = RecoverUserInfoViewController()
+                navigationController?.pushViewController(nextVC, animated: true)
+            }
+        } else {
+            Task {
+                try await ExitAPIService.membershipWithdrawal()
+                
+            }
+        }
     }
 }
 
