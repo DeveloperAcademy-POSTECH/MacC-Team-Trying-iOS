@@ -9,17 +9,17 @@
 import UIKit
 
 protocol AddCourseUseCase {
-    func addCourse(addCourseDTO: AddCourseDTO, images: [UIImage]) async throws
+    func addCourse(courseRequestDTO: CourseRequestDTO) async throws -> Int
 }
 
 final class AddCourseUseCaseImpl: AddCourseUseCase {
     private let addCourseRepository: AddCourseRepository
     
-    init(addCourseRepository: AddCourseRepository = AddCourseRepositoryImpl()) {
+    init(addCourseRepository: AddCourseRepository) {
         self.addCourseRepository = addCourseRepository
     }
     
-    func addCourse(addCourseDTO: AddCourseDTO, images: [UIImage]) async throws {
-        try await addCourseRepository.addCourse(addCourseDTO: addCourseDTO, images: images)
+    func addCourse(courseRequestDTO: CourseRequestDTO) async throws -> Int {
+        try await addCourseRepository.addCourse(courseRequestDTO: courseRequestDTO)
     }
 }

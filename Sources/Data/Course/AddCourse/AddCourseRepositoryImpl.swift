@@ -9,38 +9,71 @@
 import UIKit
 
 final class AddCourseRepositoryImpl: AddCourseRepository {
-    // FIXME: token 수정하기
-    private let url = "http://15.165.72.196:3059/courses"
-    private let method = "POST"
-    private let token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImRmMTg4ZTllLTg1ODItNGI2ZC1hM2NmLWEzNTNmY2FkMzE5NSIsImF1dGgiOiJVU0VSIn0.iemX4cOign5PyhkaixHK3GEDP5X6ABuWSt_ar4HzMEOhEX888SCauHYla_lRMgZTeQnmOAa8oqpAiuvcytzqdg"
-    
-    func addCourse(addCourseDTO: AddCourseDTO, images: [UIImage]) async throws {
-        var request = URLRequest(url: URL(string: url)!)
-        request.httpMethod = method
+    func addCourse(courseRequestDTO: CourseRequestDTO) async throws -> Int {
+        let token = UserDefaults.standard.string(forKey: "accessToken")
+        let urlString = "https://comeit.site/courses"
+        
+        guard let url = URL(string: urlString) else { throw NetworkingError.urlError }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json;charset=UTF-8", forHTTPHeaderField: "Content-Type")
         request.setValue(token, forHTTPHeaderField: "accessToken")
         
-        let boundary = UUID().uuidString
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        var data = Data()
-        data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("Content-Disposition: form-data; name=data\r\n".data(using: .utf8)!)
-        data.append("Content-Type: application/json\r\n\r\n".data(using: .utf8)!)
-        data.append(try JSONEncoder().encode(addCourseDTO))
+        guard let uploadData = try? JSONEncoder().encode(self.convertToRequest(courseRequestDTO)) else { throw NetworkingError.encodeError }
         
-        images.forEach { image in
-            data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-            data.append("Content-Disposition: form-data; name=images; filename=image.png\r\n".data(using: .utf8)!)
-            data.append("Content-Type: image/png\r\n\r\n".data(using: .utf8)!)
-            data.append(image.pngData()!)
-            data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        let (data, response) = try await URLSession.shared.upload(for: request, from: uploadData)
+        
+        let statusCode = (response as! HTTPURLResponse).statusCode
+        guard try self.judgeStatus(by: statusCode) == true else { throw
+            NetworkingError.invalidServerResponse
         }
         
-        let (responseData, response) = try await URLSession.shared.upload(for: request, from: data)
-        if (response as! HTTPURLResponse).statusCode == 200 {
-            dump(try JSONDecoder().decode(AddCourseResponse.self, from: responseData))
-        } else {
-            print((response as! HTTPURLResponse).statusCode)
-            dump(try JSONDecoder().decode(AddCourseError.self, from: responseData))
+        guard let result = try? JSONDecoder().decode(AddCourseResponse.self, from: data) else { throw NetworkingError.decodeError(toType: AddCourseResponse.self) }
+        
+        return result.courseId
+    }
+}
+
+// MARK: - Helper
+extension AddCourseRepositoryImpl {
+    private func convertToRequest(_ courseRequestDTO: CourseRequestDTO) -> AddCourseRequest {
+        var places = [AddCourseRequest.Place]()
+        
+        courseRequestDTO.places.forEach { place in
+            let placeElement = AddCourseRequest.Place.PlaceElement(
+                identifier: place.id,
+                name: place.title,
+                category: place.category,
+                address: place.address,
+                latitude: place.location.latitude,
+                longitude: place.location.longitude
+            )
+            
+            let element = AddCourseRequest.Place(
+                place: placeElement,
+                memo: place.memo
+            )
+            
+            places.append(element)
+        }
+        
+        return AddCourseRequest(
+            title: courseRequestDTO.title,
+            date: courseRequestDTO.date,
+            places: places
+        )
+    }
+    
+    private func judgeStatus(by statusCode: Int) throws -> Bool {
+        switch statusCode {
+        case 200:
+            return true
+        case 400..<500:
+            throw NetworkingError.requestError(statusCode)
+        case 500:
+            throw NetworkingError.serverError(statusCode)
+        default:
+            throw NetworkingError.networkFailError(statusCode)
         }
     }
 }
