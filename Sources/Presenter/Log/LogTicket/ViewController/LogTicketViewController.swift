@@ -14,6 +14,8 @@ import CancelBag
 import SnapKit
 
 final class LogTicketViewController: BaseViewController {
+    
+    private var didTapLikeButton: Bool = false
 
     var viewModel: LogTicketViewModel?
     
@@ -79,11 +81,21 @@ extension LogTicketViewController {
     
     @objc
     func tapLikeButton() {
+        print("like Button Tapped")
+        switch didTapLikeButton {
+        case true:
+            logTicketView.likebutton.setImage(UIImage(named: "unlike_image"), for: .normal)
+            didTapLikeButton.toggle()
+        case false:
+            logTicketView.likebutton.setImage(UIImage(named: "like_image"), for: .normal)
+            didTapLikeButton.toggle()
+        }
         viewModel?.tapLikeButton()
     }
     
     @objc
     func tapFlopButton() {
+        
         viewModel?.tapFlopButton()
     }
 }

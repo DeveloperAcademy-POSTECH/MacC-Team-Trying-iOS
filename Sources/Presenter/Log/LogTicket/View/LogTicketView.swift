@@ -70,7 +70,7 @@ class LogTicketView: UIView {
         scrollView.showsHorizontalScrollIndicator = false
         return scrollView
     }()
-    
+    // MARK: Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.addSubviews(
@@ -122,7 +122,7 @@ extension LogTicketView: UIScrollViewDelegate {
         let value = scrollView.contentOffset.x / scrollView.frame.size.width
         setPageControlSelectedPage(currentPage: Int(round(value)))
     }
-    
+    // MARK: PageControl 설정
     private func setPageControl() {
         pageControl.currentPage = 0
         pageControl.numberOfPages = imageUrl.count
@@ -137,6 +137,7 @@ extension LogTicketView: UIScrollViewDelegate {
 }
 
 extension LogTicketView {
+    // Snapkit을 사용해 Component의 Layout을 배치합니다.
     private func setLayouts() {
         ImageScrollView.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.8974358974)
@@ -191,6 +192,7 @@ extension LogTicketView {
         }
     }
     
+    // MARK: Ticket Drawing
     private func drawTicket() {
         layer.cornerRadius = 18
         backgroundColor = .clear
@@ -244,6 +246,7 @@ extension LogTicketView {
         
     }
     
+    // MARK: Blur Effect 추가
     private func setBlur() {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.regular)
         let outerVisualEffectView = UIVisualEffectView(effect: blurEffect)
