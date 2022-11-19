@@ -31,6 +31,14 @@ final class EditPasswordViewController: BaseViewController {
     }
 
     private func bind() {
+
+        viewModel.$nextButtonIsEnable
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEnabled in
+                self?.nextButton.isEnabled = isEnabled
+            }
+            .cancel(with: cancelBag)
+
         viewModel.$passwordState
             .receive(on: DispatchQueue.main)
             .sink { [weak self] currentState in

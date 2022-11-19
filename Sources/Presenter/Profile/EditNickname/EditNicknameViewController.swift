@@ -26,7 +26,7 @@ final class EditNicknameViewController: BaseViewController {
     }
 
     lazy var titleLabels = IntroTitleLabels()
-    lazy var codeTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .nickname)
+    lazy var nicknameTextFieldView: TextFieldWithMessageViewComponent = TextFieldWithMessageView(textType: .nickname)
     lazy var nextButton = IntroButton(type: .system)
 
     override func viewDidLoad() {
@@ -54,8 +54,15 @@ final class EditNicknameViewController: BaseViewController {
         viewModel.$nicknameTextFieldState
             .receive(on: DispatchQueue.main)
             .sink { [weak self] currentState in
-                self?.codeTextFieldView.updateState(currentState)
+                self?.nicknameTextFieldView.updateState(currentState)
                 self?.nextButton.isEnabled = currentState == .validNickname
+            }
+            .cancel(with: cancelBag)
+
+        viewModel.$setupNickname
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] nickname in
+                self?.nicknameTextFieldView.updatePlaceholder(nickname)
             }
             .cancel(with: cancelBag)
 
@@ -68,7 +75,7 @@ final class EditNicknameViewController: BaseViewController {
 
         titleLabels.subTitle = "닉네임을 입력해 주세요!"
 
-        codeTextFieldView.delegate = self
+        nicknameTextFieldView.delegate = self
 
         nextButton.title = "수정 완료"
         nextButton.addTarget(self, action: #selector(nextButtonDidTap), for: .touchUpInside)
@@ -77,14 +84,14 @@ final class EditNicknameViewController: BaseViewController {
     private func setLayout() {
 
         view.addSubview(titleLabels)
-        view.addSubview(codeTextFieldView)
+        view.addSubview(nicknameTextFieldView)
         view.addSubview(nextButton)
 
         titleLabels.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(view.safeAreaLayoutGuide).offset(54)
         }
-        codeTextFieldView.snp.makeConstraints { make in
+        nicknameTextFieldView.snp.makeConstraints { make in
             make.top.equalTo(titleLabels.snp.bottom).offset(30)
             make.leading.trailing.equalToSuperview().inset(20)
         }
@@ -167,6 +174,4 @@ extension EditNicknameViewController: TextFieldWithMessageViewComponentDelegate 
     func textFieldDidChange(_ text: String) {
         viewModel.textFieldDidChange(text)
     }
-
-    func textFieldDidChange(_ textFieldView: UIView, _ text: String) { }
 }

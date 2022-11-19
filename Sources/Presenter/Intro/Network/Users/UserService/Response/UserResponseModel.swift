@@ -17,10 +17,12 @@ struct UserResponseModel: Decodable {
 
     struct Mate: Decodable {
         let name: String
+        let email: String?
     }
 
     struct Planet: Decodable {
         let name: String
+        let meetDate: String
         let dday: Int
         let image: String
         let code: String?

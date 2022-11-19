@@ -62,7 +62,7 @@ enum TextFieldState {
         case .doubleCheckPassword:
             return "비밀번호를 다시 확인해주세요."
         case .goodDoubleCheckPassword:
-            return ""
+            return "일치!"
         }
     }
 
@@ -79,6 +79,8 @@ enum TextFieldState {
         case .validPassword:
             return .green
         case .validNickname:
+            return .green
+        case .goodDoubleCheckPassword:
             return .green
         default:
             return .red
@@ -98,6 +100,8 @@ enum TextFieldState {
         case .validPassword:
             return .green
         case .validNickname:
+            return .green
+        case .goodDoubleCheckPassword:
             return .green
         default:
             return .red

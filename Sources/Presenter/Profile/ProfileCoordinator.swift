@@ -31,7 +31,7 @@ final class ProfileCoordinator: Coordinator {
 }
 
 // MARK: - Coordinating Methods
-extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoordinatorLogic, EditNicknamCoordinatorLogic, EditPasswordCoordinatorLogic {
+extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoordinatorLogic, EditNicknamCoordinatorLogic, EditPasswordCoordinatorLogic, EditPlanetCoordinatorLogic {
 
     func pushToEditDayView() {
         let viewModel = EditDayViewModel(coordinator: self)
@@ -69,6 +69,11 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
         delegate?.coordinateToLoginScene()
     }
 
+    func coordinateToEditPlanet(date: String, planetName: String, planetImageName: String) {
+        let editPlanet = EditPlanetViewController(viewModel: .init(date: date, planetName: planetName, planetImage: planetImageName, coordinator: self))
+        editPlanet.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(editPlanet, animated: true)
+    }
     func coordinateToDeRegisterScene() {
         // MARK: 이동
     }

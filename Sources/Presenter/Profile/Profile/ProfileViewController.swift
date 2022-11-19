@@ -44,6 +44,12 @@ final class ProfileViewController: BaseViewController {
         tableView.separatorInset = .init(top: 0, left: 20, bottom: 0, right: 20)
         return tableView
     }()
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        viewModel.fetchUserInformation()
+    }
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -164,8 +170,8 @@ extension ProfileViewController {
         HapticManager.instance.selection()
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { action in
-            // TODO: logic 추가
+        let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { [weak self] action in
+            self?.viewModel.coordinateToEditPlanet()
         }
         let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { action in
             // TODO: logic 추가

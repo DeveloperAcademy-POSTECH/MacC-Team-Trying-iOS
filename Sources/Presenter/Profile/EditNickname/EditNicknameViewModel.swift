@@ -23,6 +23,7 @@ final class EditNicknameViewModel: BaseViewModel {
 
     @Published var nicknameTextFieldState: TextFieldState
     @Published var isLoading: Bool
+    @Published var setupNickname: String
 
     var nickname: String
 
@@ -32,6 +33,7 @@ final class EditNicknameViewModel: BaseViewModel {
         coordinator: EditNicknamCoordinatorLogic
     ) {
         self.nickname = nickname
+        self.setupNickname = nickname
         self.userService = userService
         self.nicknameTextFieldState = .emptyNickname
         self.isLoading = false

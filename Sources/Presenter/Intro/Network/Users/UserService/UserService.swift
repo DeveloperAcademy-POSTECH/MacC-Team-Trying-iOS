@@ -37,4 +37,8 @@ struct UserService {
             )
         )
     }
+
+    func editPlanet(date: String, planetName: String, planetImageName: String) async throws -> EmptyResponseBody {
+        try await provider.send(.editPlanet(.init(name: planetName, date: date, image: planetImageName)))
+    }
 }

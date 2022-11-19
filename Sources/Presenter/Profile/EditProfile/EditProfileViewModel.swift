@@ -24,6 +24,7 @@ final class EditProfileViewModel: BaseViewModel {
 
     @Published var email: String
     @Published var nickname: String
+    @Published var socialAccount: Bool = false
 
     init(
         coordinator: EditProfileCoordinatorLogic,
@@ -48,6 +49,8 @@ final class EditProfileViewModel: BaseViewModel {
             do {
                 let userInformation = try await userSerivce.getUserInformations()
                 nickname = userInformation.me.name
+                email = userInformation.me.email ?? ""
+                socialAccount = userInformation.socialAccount
             }
         }
     }

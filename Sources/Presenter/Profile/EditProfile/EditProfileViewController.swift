@@ -58,11 +58,12 @@ final class EditProfileViewController: BaseViewController {
             }
             .cancel(with: cancelBag)
 
-        viewModel.$email
+        viewModel.$socialAccount
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] email in
-                self?.emailLabel.text = email.isEmpty ? "소셜 로그인" : email
-                self?.passwordChangeButton.isHidden = email.isEmpty
+            .sink { [weak self] isSocialAccount in
+                self?.passwordChangeButton.isHidden = isSocialAccount
+                self?.emailLabel.text = isSocialAccount ? "소셜 로그인" : self?.viewModel.email
+                self?.passwordLabel.text = isSocialAccount ? "소셜 로그인" : "**********"
             }
             .cancel(with: cancelBag)
     }

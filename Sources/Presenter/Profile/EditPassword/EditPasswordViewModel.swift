@@ -23,6 +23,7 @@ final class EditPasswordViewModel: BaseViewModel {
     @Published var passwordState: TextFieldState
     @Published var changePasswordState: TextFieldState
     @Published var repasswordState: TextFieldState
+    @Published var nextButtonIsEnable: Bool = false
 
     var password: String
     var changePassword: String
@@ -51,7 +52,10 @@ final class EditPasswordViewModel: BaseViewModel {
                     self?.coordinator.back()
                 }
             } catch {
-                ToastFactory.show(message: "비밀번호가 일치하지 않아요!")
+                passwordState = .wrongPassword
+                DispatchQueue.main.async {
+                    ToastFactory.show(message: "비밀번호가 일치하지 않아요!")
+                }
             }
         }
     }
@@ -63,6 +67,7 @@ final class EditPasswordViewModel: BaseViewModel {
         let passwordPattern = #"^[A-Za-z0-9]{8,12}"#
         let result = text.range(of: passwordPattern, options: .regularExpression)
         passwordState = (result != nil) ? .validPassword : .invalidPassword
+        checkEnable()
     }
 
     func textField2DidChange(_ text: String) {
@@ -72,11 +77,24 @@ final class EditPasswordViewModel: BaseViewModel {
         let passwordPattern = #"^[A-Za-z0-9]{8,12}"#
         let result = text.range(of: passwordPattern, options: .regularExpression)
         changePasswordState = (result != nil) ? .validPassword : .invalidPassword
+        repasswordState = repassword == changePassword  ? .goodDoubleCheckPassword : .doubleCheckPassword
+        checkEnable()
     }
 
     func textField3DidChange(_ text: String) {
         repassword = text
 
         repasswordState = repassword == changePassword  ? .goodDoubleCheckPassword : .doubleCheckPassword
+        checkEnable()
+    }
+
+    func checkEnable() {
+        if repasswordState == .goodDoubleCheckPassword &&
+            changePasswordState == .validPassword &&
+            passwordState == .validPassword {
+            nextButtonIsEnable = true
+        } else {
+            nextButtonIsEnable = false
+        }
     }
 }
