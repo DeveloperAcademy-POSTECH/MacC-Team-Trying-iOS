@@ -11,7 +11,6 @@ import Foundation
 enum PlanetResponseModel {
 
     struct CreatePlanet: Decodable {
-        let planetId: Int
         let code: String
     }
 
@@ -20,7 +19,6 @@ enum PlanetResponseModel {
     }
 
     struct GetPlanetByCode: Decodable {
-        let planetId: Int
         let name: String
         let image: String
     }

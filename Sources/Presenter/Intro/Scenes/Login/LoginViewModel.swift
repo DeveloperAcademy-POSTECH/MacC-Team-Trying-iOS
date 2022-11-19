@@ -77,13 +77,16 @@ final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
         Task {
             do {
                 guard let token = try await kakaoLoginManager.kakaoLogin() else { return }
-                let accessToken = try await signinServcee.signInWithKakao(.init(identifier: token, deviceToken: "1"))
+                let deviceToken = UserDefaults.standard.string(forKey: "fcmToken") ?? ""
+                let accessToken = try await signinServcee.signInWithKakao(.init(identifier: token, deviceToken: deviceToken))
                 UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
 
                 self.doneLogin = .main
 
             } catch SignInError.nouser(let identifier) {
                 self.doneLogin = .serviceTerm(.kakao(identifier))
+            } catch {
+                await LoadingView.shared.hide()
             }
         }
     }
@@ -120,13 +123,15 @@ extension LoginViewModel: AppleLoginManagerDelegate {
     func appleLoginSuccess(_ user: AppleLoginManager.AppleUser) {
         Task {
             do {
-                let accessToken = try await signinServcee.signInWithApple(.init(identifier: user.userIdentifier, deviceToken: "1"))
+                let deviceToken = UserDefaults.standard.string(forKey: "fcmToken") ?? ""
+                let accessToken = try await signinServcee.signInWithApple(.init(identifier: user.userIdentifier, deviceToken: deviceToken))
                 UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
 
                 self.doneLogin = .main
             } catch SignInError.nouser(let identifier) {
-
                 self.doneLogin = .serviceTerm(.apple(identifier))
+            } catch {
+                await LoadingView.shared.hide()
             }
         }
     }

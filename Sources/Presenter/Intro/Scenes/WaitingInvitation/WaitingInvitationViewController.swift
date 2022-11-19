@@ -20,7 +20,7 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
     lazy var planetNameLabel = UILabel()
     lazy var mateLabel = UILabel()
     lazy var invitationCodeButton = InvitationCodeButton(type: .system)
-    lazy var nextButton = IntroButton(type: .system)
+    lazy var deleteButton = UIButton(type: .system)
 
     override func bind() {
 
@@ -49,16 +49,21 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
     override func setAttribute() {
         super.setAttribute()
 
+        deleteButton.addTarget(self, action: #selector(deleteButtonDidTapped), for: .touchUpInside)
+        deleteButton.titleLabel?.font = .designSystem(weight: .regular, size: ._15)
+        deleteButton.setTitle("행성삭제", for: .normal)
+        deleteButton.setTitleColor(.red, for: .normal)
+
+        setNavigationBar()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: deleteButton)
         navigationItem.hidesBackButton = true
         navigationItem.title = "가입 진행 중"
 
         mateLabel.text = "메이트를 초대해서 같이 행성을 꾸며보세요!"
-        mateLabel.font = UIFont.designSystem(weight: .regular, size: ._15)
+        mateLabel.font = UIFont.designSystem(weight: .regular, size: ._13)
 
         planetNameLabel.font = UIFont.designSystem(weight: .bold, size: ._20)
-
-        nextButton.title = "확인"
-        nextButton.addTarget(self, action: #selector(nextButtonDidTapped), for: .touchUpInside)
+        invitationCodeButton.addTarget(self, action: #selector(invitationCodeButtonDidTapped), for: .touchUpInside)
     }
 
     override func setLayout() {
@@ -70,7 +75,6 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
         view.addSubview(planetNameLabel)
         view.addSubview(mateLabel)
         view.addSubview(invitationCodeButton)
-        view.addSubview(nextButton)
 
         currentProgressView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(42)
@@ -89,14 +93,10 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
             make.centerX.equalToSuperview()
         }
         mateLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(invitationCodeButton.snp.top).offset(-20)
+            make.bottom.equalTo(invitationCodeButton.snp.top).offset(-10)
             make.centerX.equalToSuperview()
         }
         invitationCodeButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.bottom.equalTo(nextButton.snp.top).offset(-15)
-        }
-        nextButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
@@ -108,7 +108,31 @@ final class WaitingInvitationViewController: IntroBaseViewController<WaitingInvi
 extension WaitingInvitationViewController {
 
     @objc
-    func nextButtonDidTapped() {
-        viewModel.nextButtonDidTapped()
+    func invitationCodeButtonDidTapped() {
+        UIPasteboard.general.string = viewModel.code
+        ToastFactory.show(message: "코드가 복사되었어요!", type: .success)
+    }
+
+    @objc
+    func deleteButtonDidTapped() {
+        viewModel.deletePlanet()
+    }
+}
+
+extension WaitingInvitationViewController {
+
+    private func setNavigationBar() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .black
+        appearance.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ]
+        appearance.shadowColor = .clear
+        self.navigationController?.navigationBar.standardAppearance = appearance
+        self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
     }
 }

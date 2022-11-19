@@ -28,4 +28,6 @@ enum AssetName: String {
     case btn_uncheck
     case btn_week_calendar
     case btn_month_calendar
+    case img_privacy_term
+    case img_service_term
 }

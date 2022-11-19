@@ -58,6 +58,7 @@ final class CreatePlanetViewModel: BaseViewModel, CreatePlanetBusinessLogic {
             do {
                 let planetInfo = try await planetService.createPlanet(.init(name: planetName, image: selectedPlanet))
 
+                print(planetInfo)
                 DispatchQueue.main.async {
                     self.coordinator.coordinateToCreatePlanetCompleteScene(
                         selectedPlanet: self.selectedPlanet,

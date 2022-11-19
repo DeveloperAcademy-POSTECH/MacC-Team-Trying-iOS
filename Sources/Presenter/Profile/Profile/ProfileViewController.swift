@@ -14,7 +14,7 @@ import SnapKit
 
 final class ProfileViewController: BaseViewController {
     private let sections = ["활동내역", "회원설정", "고객센터"]
-    private let userSetting = ["닉네임 수정", "디데이 수정", "푸쉬 설정"]
+    private let userSetting = ["내 정보 수정", "디데이 수정", "푸쉬 설정"]
     private let services = ["공지사항", "서비스 약관", "자주 묻는 질문"]
     
     var viewModel: ProfileViewModel
@@ -44,6 +44,12 @@ final class ProfileViewController: BaseViewController {
         tableView.separatorInset = .init(top: 0, left: 20, bottom: 0, right: 20)
         return tableView
     }()
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        viewModel.fetchUserInformation()
+    }
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -106,6 +112,8 @@ final class ProfileViewController: BaseViewController {
 // MARK: - UI
 extension ProfileViewController: NavigationBarConfigurable {
     private func setUI() {
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         
         view.addSubview(scrollView)
@@ -162,8 +170,8 @@ extension ProfileViewController {
         HapticManager.instance.selection()
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { action in
-            // TODO: logic 추가
+        let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { [weak self] action in
+            self?.viewModel.coordinateToEditPlanet()
         }
         let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { action in
             // TODO: logic 추가
@@ -272,8 +280,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         case 1:
             switch indexPath.row {
             case 0:
-                // TODO: 닉네임 수정
-                break
+                viewModel.editProfileButtonDidTapped()
             case 1:
                 viewModel.pushToEditDayView()
             case 2:

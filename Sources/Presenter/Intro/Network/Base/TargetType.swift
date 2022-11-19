@@ -47,7 +47,8 @@ extension TargetType {
     var query: QueryItems? { nil }
 
     var headers: HTTPHeader? {
-        ["accessToken": token]
+        print(token)
+        return ["accessToken": token]
     }
 
     var body: RequestBody? { nil }

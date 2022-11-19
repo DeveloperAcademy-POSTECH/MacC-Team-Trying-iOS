@@ -55,6 +55,5 @@ final class LoadingView: BaseView {
             self.indicator.stopAnimating()
             self.removeFromSuperview()
         }
-
     }
 }

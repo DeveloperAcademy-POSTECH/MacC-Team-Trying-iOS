@@ -14,8 +14,13 @@ protocol TextFieldWithMessageViewComponentDelegate: AnyObject {
     /// 텍스트가 입력되는 실시간 함수
     /// - Parameter text: 텍스트
     func textFieldDidChange(_ text: String)
+    func textFieldDidChange(_ textFieldView: UIView, _ text: String)
 }
 
+extension TextFieldWithMessageViewComponentDelegate {
+    func textFieldDidChange(_ text: String) { }
+    func textFieldDidChange(_ textFieldView: UIView, _ text: String) { }
+}
 /*
     사용방법
 ```
@@ -91,12 +96,17 @@ extension TextFieldWithMessageView: TextFieldWithMessageViewComponent {
 
     }
 
+    func updatePlaceholder(_ text: String) {
+        textField.placeholder = text
+    }
+    
     @objc
     func textFieldDidchange(_ textField: UITextField) {
         guard let text = textField.text else {
             return
         }
         delegate?.textFieldDidChange(text)
+        delegate?.textFieldDidChange(self, text)
     }
 
     func textFieldBecomeFirstResponder() {

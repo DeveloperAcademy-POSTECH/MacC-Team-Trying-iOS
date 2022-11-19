@@ -39,13 +39,6 @@ final class SignUpEnterNicknameViewController: IntroBaseViewController<SignUpEnt
                 self?.nextButton.isEnabled = currentState == .validNickname
             }
             .cancel(with: cancelBag)
-
-        viewModel.$isLoading
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isLoading in
-                self?.nextButton.loading = isLoading
-            }
-            .cancel(with: cancelBag)
     }
 
     override func setAttribute() {
