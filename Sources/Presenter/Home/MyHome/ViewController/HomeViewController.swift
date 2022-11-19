@@ -287,7 +287,8 @@ final class HomeViewController: BaseViewController {
     }
     
     @objc
-    func alarmButtonTapped() {        
+    func alarmButtonTapped() {
+        viewModel.pushToAlarmView()
     }
     
     @objc

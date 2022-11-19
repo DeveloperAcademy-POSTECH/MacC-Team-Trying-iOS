@@ -11,10 +11,12 @@ import Combine
 import CancelBag
 
 class AlarmAPI {
+
     private let cancelBag = CancelBag()
     
     //TODO: token 수정
-    private var token = "  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhOTNmMzlmMS1lOGMxLTRmOGEtYWJiZS1mODRkNzg0NjE1OTAiLCJhdXRoIjoiVVNFUiJ9.8Asj5tsfluzvtJou2knvgxs8Ctig4oRgGqJnwQsOWz5nFTKEBOUgBE6ffYw_YwhQrFRSxhXvuTDABuLiF4NpEA"
+
+    private var token = UserDefaults().string(forKey: "accessToken") ?? ""
     
     private let host = "https://comeit.site/"
     
@@ -22,9 +24,9 @@ class AlarmAPI {
         let urlStr = encodeUrl(string: addStringParameter(type: type))
         guard let url = URL(string: urlStr) else { return }
 
-        var request = URLRequest(url:url)
+        var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
-        request.addValue("Bearer \(token)", forHTTPHeaderField: "accessToken")
+        request.addValue("\(token)", forHTTPHeaderField: "accessToken")
 
         URLSession.shared.dataTaskPublisher(for: request)
             .map(\.data)
@@ -40,7 +42,7 @@ class AlarmAPI {
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.addValue("Bearer \(token)", forHTTPHeaderField: "accessToken")
+        request.addValue("\(token)", forHTTPHeaderField: "accessToken")
         
         return URLSession.shared.dataTaskPublisher(for: request)
             .receive(on: RunLoop.main)
@@ -55,8 +57,30 @@ class AlarmAPI {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.addValue("Bearer \(token)", forHTTPHeaderField: "accessToken")
+        request.addValue("\(token)", forHTTPHeaderField: "accessToken")
 
+        URLSession.shared.dataTaskPublisher(for: request)
+            .map(\.data)
+            .print()
+            .eraseToAnyPublisher()
+            .assertNoFailure()
+            .sink(receiveValue: { _ in
+            })
+            .cancel(with: cancelBag)
+    }
+    
+    func toggleAlarmPermission(type: AlarmApiType, isPermission: Bool) {
+        print("accessToken:", token)
+        let urlStr = encodeUrl(string: addStringParameter(type: type))
+        guard let url = URL(string: urlStr) else { return }
+
+        var request = URLRequest(url: url)
+        let json: [String: Any] = ["allow": isPermission]
+        request.httpMethod = "PATCH"
+        request.addValue("\(token)", forHTTPHeaderField: "accessToken")
+        request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: json)
+        
         URLSession.shared.dataTaskPublisher(for: request)
             .map(\.data)
             .print()
@@ -80,6 +104,8 @@ extension AlarmAPI {
             urlString += "notifications/\(id)"
         case .delete:
             urlString += "notifications"
+        case .togglePermission:
+            urlString += "users/notification"
         }
         return urlString
     }
@@ -94,4 +120,5 @@ enum AlarmApiType {
     case fetch
     case check
     case delete
+    case togglePermission
 }
