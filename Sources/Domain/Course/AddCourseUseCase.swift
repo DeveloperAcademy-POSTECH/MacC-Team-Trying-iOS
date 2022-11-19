@@ -8,10 +8,6 @@
 
 import UIKit
 
-protocol AddCourseRepository {
-    func addCourse(addCourseDTO: AddCourseDTO, images: [UIImage]) async throws
-}
-
 protocol AddCourseUseCase {
     func addCourse(addCourseDTO: AddCourseDTO, images: [UIImage]) async throws
 }
