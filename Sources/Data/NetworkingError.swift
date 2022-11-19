@@ -10,6 +10,7 @@ import Foundation
 
 enum NetworkingError: Error {
     case urlError
+    case encodeError
     case decodeError(toType: Decodable.Type)
     case requestError(_ statusCode: Int)
     case serverError(_ statusCode: Int)
