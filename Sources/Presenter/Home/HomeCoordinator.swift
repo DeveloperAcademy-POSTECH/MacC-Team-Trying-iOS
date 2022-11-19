@@ -1,0 +1,87 @@
+//
+//  HomeCoordinator.swift
+//  ComeIt
+//
+//  Created by uiskim on 2022/11/09.
+//  Copyright © 2022 Try-ing. All rights reserved.
+//
+
+import UIKit
+
+final class HomeCoordinator: Coordinator {
+    weak var navigationController: UINavigationController?
+    
+    weak var parentCoordinator: MoveToAnotherTab?
+    
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
+    }
+    
+    func start() {
+        guard let navigationController = navigationController else { return }
+        let viewModel = HomeViewModel(coordinator: self)
+        let viewController = HomeViewController(viewModel: viewModel)
+        
+        navigationController.pushViewController(viewController, animated: true)
+    }
+}
+
+protocol AlarmViewCoordinatingInAlarmViewCoordinating {
+    func goToLogView()
+}
+
+extension HomeCoordinator: AlarmViewCoordinatingInAlarmViewCoordinating {
+    func goToLogView() {
+        navigationController?.popViewController(animated: true)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.parentCoordinator?.moveToLogTab()
+        }
+    }
+}
+
+protocol goToRootViewControllerDelegate: AnyObject {
+    func popToRootViewController()
+}
+
+protocol AlarmViewCoordinating {
+    func pushToAlarmViewController()
+}
+
+extension HomeCoordinator: goToRootViewControllerDelegate, AlarmViewCoordinating {
+    func popToRootViewController() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func pushToAlarmViewController() {
+        let alarmViewController = AlarmViewController(alarmViewModel: AlarmViewModel(coordinator: self))
+        self.navigationController?.pushViewController(alarmViewController, animated: true)
+    }
+}
+
+// MARK: - Course Flow
+extension HomeCoordinator {
+    func startAddCourseFlow(courseRequestDTO: CourseRequestDTO) {
+        let addCourseCoordinator = AddCourseCoordinator(navigationController: navigationController)
+        addCourseCoordinator.start(courseRequestDTO)
+    }
+    
+    func startRegisterReviewFlow(courseRequestDTO: CourseRequestDTO) {
+        let registerReviewCoordinator = RegisterReviewCoordinator(navigationController: navigationController)
+        registerReviewCoordinator.start(courseRequestDTO)
+    }
+    
+    func startEditCourseFlow(courseRequestDTO: CourseRequestDTO) {
+        let editCourseCoordinator = EditCourseCoordinator(navigationController: navigationController)
+        editCourseCoordinator.start(courseRequestDTO)
+    }
+    
+    func startAddPlanFlow(courseRequestDTO: CourseRequestDTO) {
+        let addPlanCoordinator = AddPlanCoordinator(navigationController: navigationController)
+        addPlanCoordinator.start(courseRequestDTO)
+    }
+    
+    func startEditPlanFlow(courseRequestDTO: CourseRequestDTO) {
+        let editPlanCoordinator = EditPlanCoordinator(navigationController: navigationController)
+        editPlanCoordinator.start(courseRequestDTO)
+    }
+}

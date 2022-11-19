@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol Popable {
+    func popViewController()
+}
+
 final class MainCoordinator: Coordinator {
     enum TabBarItem: CaseIterable {
         case home

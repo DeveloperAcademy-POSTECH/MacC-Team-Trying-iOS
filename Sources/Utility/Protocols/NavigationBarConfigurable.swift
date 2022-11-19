@@ -42,8 +42,15 @@ protocol NavigationBarConfigurable: BaseViewController {
     ///   - target: Target
     ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
     ///   - mapAction: 지도 버튼이 눌렸을 때 실행할 @objc 메소드
-    ///   - textEditingAction: TextField 편집 시 실행할 @objc 메소드
-    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector, textEditingAction: Selector)
+    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector)
+    
+    /// 장소 검색 후 결과를 지도로 보여주는 화면에서 사용되는 Navigation Bar를 설정합니다.
+    /// - Parameters:
+    ///   - target: Target
+    ///   - searchText: 검색을 하기 위해 입력한 String
+    ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
+    ///   - dismissAction: Dismiss Button이 눌렸을 때 실행할 @objc 메소드
+    func configurePlaceSearchResultMapNavigationBar(target: Any, searchText: String, popAction: Selector, dismissAction: Selector)
     
     /// 데이트 기록 과정에서 사진, 데이트 후기를 입력하는 화면에서 사용되는 Navigation Bar를 설정합니다.
     /// - Parameters:
@@ -68,7 +75,7 @@ extension NavigationBarConfigurable {
     func configureRecordTitleNavigationBar(target: Any, popAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
-            button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
             button.addTarget(target, action: popAction, for: .touchUpInside)
             return button
         }()
@@ -87,7 +94,7 @@ extension NavigationBarConfigurable {
     func configurePlanTitleNavigationBar(target: Any, popAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
-            button.setImage(UIImage(named: Constants.Image.chevron_left), for: .normal)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
             button.addTarget(target, action: popAction, for: .touchUpInside)
             return button
         }()
@@ -182,18 +189,14 @@ extension NavigationBarConfigurable {
         navigationItem.rightBarButtonItem = rightButtonItem
     }
     
-    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector, textEditingAction: Selector) {
+    func configureSearchNavigationBar(target: Any, popAction: Selector, mapAction: Selector) {
         let backButton: UIButton = {
             let button = UIButton(type: .custom)
             button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
             button.addTarget(target, action: popAction, for: .touchUpInside)
             return button
         }()
-        let textFieldView: CustomTextField = {
-            let textField = CustomTextField(type: .placeSearch)
-            textField.addTarget(target, action: textEditingAction, for: .editingChanged)
-            return textField
-        }()
+        let textFieldView = CustomTextField(type: .placeSearch)
         let mapButton: UIButton = {
             let button = UIButton(type: .custom)
             let configuration = UIImage.SymbolConfiguration(pointSize: 20)
@@ -216,6 +219,66 @@ extension NavigationBarConfigurable {
         let rightButtonItem = UIBarButtonItem(customView: mapButton)
         navigationItem.leftBarButtonItem = leftButtonItem
         navigationItem.rightBarButtonItem = rightButtonItem
+    }
+    
+    func configurePlaceSearchResultMapNavigationBar(target: Any, searchText: String, popAction: Selector, dismissAction: Selector) {
+        let backButton: UIButton = {
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
+            button.addTarget(target, action: popAction, for: .touchUpInside)
+            return button
+        }()
+        let textLabel: UILabel = {
+            let label = UILabel()
+            label.text = searchText
+            label.font = .designSystem(weight: .regular, size: ._15)
+            label.textColor = .designSystem(.white)
+            return label
+        }()
+        let dismissButton: UIButton = {
+            let button = UIButton()
+            button.setImage(UIImage(systemName: "xmark"), for: .normal)
+            button.tintColor = .designSystem(.white)
+            button.addTarget(target, action: dismissAction, for: .touchUpInside)
+            return button
+        }()
+        let titleView: UIView = {
+            let view = UIView()
+            view.backgroundColor = .designSystem(.black)
+            view.layer.cornerRadius = 22
+            let tapGestureRecognizer = UITapGestureRecognizer(target: target, action: popAction)
+            view.addGestureRecognizer(tapGestureRecognizer)
+            return view
+        }()
+        
+        titleView.addSubviews(
+            backButton,
+            textLabel,
+            dismissButton
+        )
+        
+        backButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(23)
+            make.centerY.equalToSuperview()
+        }
+        
+        textLabel.snp.makeConstraints { make in
+            make.leading.equalTo(backButton.snp.trailing).offset(12)
+            make.centerY.equalToSuperview()
+        }
+        
+        dismissButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(10)
+            make.centerY.equalToSuperview()
+        }
+        
+        titleView.snp.makeConstraints { make in
+            make.width.equalTo(DeviceInfo.screenWidth * 0.8974)
+            make.height.equalTo(44)
+        }
+        
+        navigationItem.hidesBackButton = true
+        navigationItem.titleView = titleView
     }
     
     func configureCourseDetailNavigationBar(target: Any, popAction: Selector) {
