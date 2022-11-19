@@ -9,14 +9,30 @@
 import CoreLocation
 import MapKit
 
-struct Place {
+struct Place: Hashable {
+    let id: Int
     let title: String
     let category: String
     let address: String
     let location: CLLocationCoordinate2D
-    let memo: String?
+    var memo: String?
+    
+    static func == (lhs: Place, rhs: Place) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(title)
+        hasher.combine(category)
+        hasher.combine(address)
+        hasher.combine(location.latitude)
+        hasher.combine(location.longitude)
+        hasher.combine(memo)
+    }
 }
 
+/*
 extension Place {
     static let firstDatePlaces = [
         Place(title: "포항공대", category: "대학교", address: "경북 포항시 남구 효리단길", location: CLLocationCoordinate2D(latitude: 36.01436040811483, longitude: 129.32476193278993), memo: "테스트 메모"),
@@ -30,3 +46,4 @@ extension Place {
         Place(title: "금련산", category: "산", address: "경북 포항시 북구 창포동", location: CLLocationCoordinate2D(latitude: 35.161204733671845, longitude: 129.09472209989778), memo: nil)
     ]
 }
+*/

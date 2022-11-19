@@ -18,19 +18,10 @@ final class AddCourseMapViewController: BaseViewController {
     var type: AddCourseFlowType
     var viewModel: AddCourseMapViewModel
     
-    private var recentAnnotation: MKAnnotation?
-    private lazy var locationManager: CLLocationManager = {
-        let manager = CLLocationManager()
-        manager.delegate = self
-        manager.requestWhenInUseAuthorization()
-        manager.desiredAccuracy = .infinity
-        manager.startUpdatingLocation()
-        manager.startUpdatingHeading()
-        manager.startMonitoringSignificantLocationChanges()
-        return manager
-    }()
+    // private var recentAnnotations = [MKAnnotation]()
+    private var selectedAnnotations = [MKAnnotation]()
+    private let locationManager = LocationManager.shared
     
-    var currentLocation: CLLocation!
     private lazy var placeMapView: MKMapView = {
         let map = MKMapView()
         map.register(StarAnnotationView.self, forAnnotationViewWithReuseIdentifier: StarAnnotationView.identifier)
@@ -38,8 +29,8 @@ final class AddCourseMapViewController: BaseViewController {
         map.setRegion(
             MKCoordinateRegion(
                 center: CLLocationCoordinate2D(
-                    latitude: currentLocation.coordinate.latitude,
-                    longitude: currentLocation.coordinate.longitude
+                    latitude: locationManager.latitude,
+                    longitude: locationManager.longitude
                 ),
                 span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
             ),
@@ -47,15 +38,27 @@ final class AddCourseMapViewController: BaseViewController {
         )
         map.showsUserLocation = true
         map.setUserTrackingMode(.followWithHeading, animated: true)
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapMapView(_:)))
-        map.addGestureRecognizer(tapGestureRecognizer)
+        map.showsCompass = false
+        // let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapMapView(_:)))
+        // map.addGestureRecognizer(tapGestureRecognizer)
         return map
     }()
+    private lazy var userTrackingButton: MKUserTrackingButton = {
+        let button = MKUserTrackingButton()
+        button.mapView = placeMapView
+        button.backgroundColor = .designSystem(.gray252632)
+        button.tintColor = .designSystem(.mainYellow)
+        button.layer.cornerRadius = 5
+        return button
+    }()
+    /*
     private lazy var placeDetailView: PlaceDetailView = {
         let view = PlaceDetailView()
+        view.memoTextField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
         view.addCourseButton.addTarget(self, action: #selector(didTapAddCourseButton(_:)), for: .touchUpInside)
         return view
     }()
+    */
     private lazy var placeListView: PlaceListView = {
         let view = PlaceListView(parentView: self.view)
         view.mapPlaceTableView.dataSource = self
@@ -74,10 +77,13 @@ final class AddCourseMapViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
+        /*
         self.placeDetailView.memoTextField.optionalTextPublisher()
             .assign(to: &viewModel.$memo)
+        */
         
         // output
+        /*
         self.viewModel.$memo
             .receive(on: DispatchQueue.main)
             .sink { [weak self] memo in
@@ -85,6 +91,7 @@ final class AddCourseMapViewController: BaseViewController {
                 self.placeDetailView.memoTextField.text = memo
             }
             .cancel(with: cancelBag)
+        */
         
         self.viewModel.$places
             .sink(receiveValue: { [weak self] places in
@@ -101,7 +108,7 @@ final class AddCourseMapViewController: BaseViewController {
                         self.nextButton.hide()
                     }
                 }
-
+  
                 DispatchQueue.main.async {
                     // MARK: reload가 조금 느리게 되는 이슈가 있습니다.
                     self.placeListView.mapPlaceTableView.reloadData()
@@ -124,40 +131,29 @@ final class AddCourseMapViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        currentLocation = locationManager.location
         setUI()
         bind()
     }
     
+    /*
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         setNofifications()
-        
-        if CLLocationManager.locationServicesEnabled() {
-            if CLLocationManager.authorizationStatus() == .denied || CLLocationManager.authorizationStatus() == .restricted {
-                let alert = UIAlertController(title: "Error", message: "위치 서비스 기능이 꺼져있습니다.", preferredStyle: .alert)
-                let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
-                alert.addAction(confirmAction)
-                self.present(alert, animated: true, completion: nil)
-            } else {
-                locationManager.desiredAccuracy = kCLLocationAccuracyBest
-                locationManager.delegate = self
-                locationManager.requestWhenInUseAuthorization()
-                currentLocation = locationManager.location
-            }
-        } else {
-            let alert = UIAlertController(title: "Error", message: "위치 서비스 제공을 할 수 없습니다.", preferredStyle: .alert)
-            let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
-            alert.addAction(confirmAction)
-            self.present(alert, animated: true, completion: nil)
-        }
     }
+    */
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        removeNotifications()
+        // self.removeNotifications()
+        
+        // self.removeRecentAnnotations()
+        DispatchQueue.main.async {
+            // self.placeDetailView.hide()
+            self.placeListView.hide()
+            self.nextButton.hide()
+        }
     }
 }
 
@@ -170,9 +166,11 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
+        placeMapView.addSubview(userTrackingButton)
+        
         view.addSubviews(
             placeMapView,
-            placeDetailView,
+            // placeDetailView,
             placeListView,
             nextButton
         )
@@ -181,12 +179,19 @@ extension AddCourseMapViewController: NavigationBarConfigurable {
             make.top.leading.trailing.bottom.equalToSuperview()
         }
         
+        userTrackingButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview().inset(50)
+        }
+        
+        /*
         placeDetailView.snp.makeConstraints { make in
             make.leading
                 .trailing.equalToSuperview()
             make.bottom.equalToSuperview().inset(-placeDetailView.height)
             make.height.equalTo(placeDetailView.height)
         }
+        */
         
         placeListView.snp.makeConstraints { make in
             make.leading
@@ -211,6 +216,7 @@ extension AddCourseMapViewController: UITableViewDataSource, UITableViewDelegate
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         self.viewModel.changePlaceOrder(sourceIndex: sourceIndexPath.row, to: destinationIndexPath.row)
+        self.changeAnnotationOrder(sourceIndex: sourceIndexPath.row, to: destinationIndexPath.row)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -249,6 +255,7 @@ extension AddCourseMapViewController: UITableViewDragDelegate, UITableViewDropDe
 
 // MARK: - User Interactions
 extension AddCourseMapViewController {
+    /*
     private func setNofifications() {
         NotificationCenter.default.addObserver(
             self,
@@ -317,6 +324,7 @@ extension AddCourseMapViewController {
             object: nil
         )
     }
+    */
 
     @objc
     private func backButtonPressed(_ sender: UIButton) {
@@ -325,24 +333,34 @@ extension AddCourseMapViewController {
     
     @objc
     private func placeSearchButtonPressed(_ sender: UIButton) {
-        placeDetailView.memoTextField.resignFirstResponder()
+        // placeDetailView.memoTextField.resignFirstResponder()
         viewModel.pushToPlaceSearchView()
     }
     
     @objc
+    private func dismissKeyboard(_ sender: UITextField) {
+        sender.resignFirstResponder()
+    }
+    
+    /*
+    @objc
     private func didTapAddCourseButton(_ sender: UIButton) {
+        /*
         placeDetailView.memoTextField.resignFirstResponder()
         viewModel.addPlace(self.placeDetailView.selectedPlace!)
-        viewModel.addAnnotation(recentAnnotation!)
-        recentAnnotation = nil
+         */
+        self.selectedAnnotations.append(recentAnnotations.first!)
+        recentAnnotations.removeAll()
     }
+     */
     
     @objc
     private func didTapDeleteButton(_ sender: UIButton) {
         let index = sender.tag
         HapticManager.instance.selection()
         viewModel.deletePlace(index)
-        viewModel.deleteAnnotation(map: self.placeMapView, at: index)
+        let removedAnnotation = self.selectedAnnotations.remove(at: index)
+        self.placeMapView.removeAnnotation(removedAnnotation)
     }
     
     @objc
@@ -356,13 +374,13 @@ extension AddCourseMapViewController {
             viewModel.pushToAddCourseCompleteView()
         }
     }
-    
-    private func presentPlaceDetailView(with place: CLPlacemark) {
-        placeDetailView.selectedPlace = place
+
+    private func presentPlaceDetailView(with place: Place) {
+        // placeDetailView.selectedPlace = place
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.placeListView.hide()
-            self.placeDetailView.present()
+            // self.placeDetailView.present()
             self.nextButton.hide()
             
             UIView.animate(
@@ -378,7 +396,7 @@ extension AddCourseMapViewController {
     private func presentPlaceListView() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.placeDetailView.hide()
+            // self.placeDetailView.hide()
             self.placeListView.present()
             self.nextButton.present()
             
@@ -392,6 +410,7 @@ extension AddCourseMapViewController {
         }
     }
     
+    /*
     @objc
     private func didTapMapView(_ sender: UITapGestureRecognizer) {
         placeDetailView.memoTextField.resignFirstResponder()
@@ -400,38 +419,60 @@ extension AddCourseMapViewController {
         let mapPoint = placeMapView.convert(location, toCoordinateFrom: placeMapView)
         
         if sender.state == .ended {
-            searchLocation(mapPoint)
-        }
-    }
-    
-    private func removeRecentAnnotation() {
-        guard let recentAnnotation = recentAnnotation else { return }
-        placeMapView.removeAnnotation(recentAnnotation)
-    }
-    
-    private func searchLocation(_ point: CLLocationCoordinate2D) {
-        let geocoder: CLGeocoder = CLGeocoder()
-        let location = CLLocation(latitude: point.latitude, longitude: point.longitude)
-        
-        removeRecentAnnotation()
-        
-        geocoder.reverseGeocodeLocation(location) { placeMarks, error in
-            if error == nil, let marks = placeMarks {
-                marks.forEach { placeMark in
-                    let starAnnotation = StarAnnotation(
-                        coordinate: CLLocationCoordinate2D(
-                            latitude: point.latitude,
-                            longitude: point.longitude
+            self.removeRecentAnnotations()
+            Task {
+                self.placeMapView.isUserInteractionEnabled = false
+                let place = try await self.viewModel.searchPlace(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
+                
+                if let place = place {
+                    self.addStarAnnotation(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
+                    self.presentPlaceDetailView(with: place)
+                } else {
+                    DispatchQueue.main.async {
+                        self.placeDetailView.hide()
+                        self.placeListView.hide()
+                        self.nextButton.hide()
+                        
+                        UIView.animate(
+                            withDuration: 0.3,
+                            delay: 0,
+                            animations: {
+                                self.view.layoutIfNeeded()
+                            }
                         )
-                    )
-                    
-                    self.presentPlaceDetailView(with: placeMark)
-                    self.placeMapView.addAnnotation(starAnnotation)
+                    }
                 }
-            } else {
-                print("검색 실패")
+                self.placeMapView.isUserInteractionEnabled = true
             }
         }
+    }
+    */
+    
+    private func addStarAnnotation(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        let starAnnotation = StarAnnotation(
+            coordinate: CLLocationCoordinate2D(
+                latitude: latitude,
+                longitude: longitude
+            )
+        )
+        // self.recentAnnotations.append(starAnnotation)
+        self.selectedAnnotations.append(starAnnotation)
+        DispatchQueue.main.async {
+            self.placeMapView.addAnnotation(starAnnotation)
+        }
+    }
+    
+    /*
+    private func removeRecentAnnotations() {
+        self.placeMapView.removeAnnotations(self.recentAnnotations)
+        self.recentAnnotations.removeAll()
+    }
+     */
+    
+    private func changeAnnotationOrder(sourceIndex: Int, to destinationIndex: Int) {
+        let targetAnnotation = selectedAnnotations[sourceIndex]
+        self.selectedAnnotations.remove(at: sourceIndex)
+        self.selectedAnnotations.insert(targetAnnotation, at: destinationIndex)
     }
 }
 
@@ -440,7 +481,6 @@ extension AddCourseMapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? StarAnnotation else { return nil }
         
-        recentAnnotation = annotation
         var annotationView = self.placeMapView.dequeueReusableAnnotationView(withIdentifier: StarAnnotationView.identifier)
         
         if annotationView == nil {
@@ -453,34 +493,64 @@ extension AddCourseMapViewController: MKMapViewDelegate {
         
         annotationView?.image = UIImage(named: Constants.Image.starAnnotation)
         
-        annotationView?.clusteringIdentifier = viewModel.courseTitle
-        annotationView?.displayPriority = .defaultHigh
-        
         return annotationView
+    }
+    
+    /*
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        guard let annotationView = view as? StarAnnotationView,
+        let selectedAnnotation = annotationView.annotation as? StarAnnotation else { return }
+        
+        if self.recentAnnotations.contains(where: { annotation -> Bool in
+            return annotation === selectedAnnotation
+        }) {
+            
+        } else {
+            
+        }
+    }
+     */
+}
+
+// MARK: - AddPlaceDelegate
+extension AddCourseMapViewController: AddPlaceDelegate {
+    func addPlace(place: Place) {
+        self.viewModel.addPlace(place)
+        self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
     }
 }
 
-// MARK: - CLLocationManagerDelegate
-extension AddCourseMapViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        locationManager = manager
-        currentLocation = locationManager.location
+/*
+// MARK: - PlacePresenting
+extension AddCourseMapViewController: PlacePresenting {
+    func presentSelectedPlace(place: Place) {
+        self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
+        self.presentLocation(latitude: place.location.latitude, longitude: place.location.longitude, span: 0.01)
+        self.presentPlaceDetailView(with: place)
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .notDetermined :
-            manager.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse:
-            self.currentLocation = locationManager.location
-        case .authorizedAlways:
-            self.currentLocation = locationManager.location
-        case .restricted :
-            break
-        case .denied :
-            break
-        default:
-            break
+    func presentSearchedPlaces(places: [Place]) {
+        let averageLatitude = places.reduce(into: 0.0) { $0 += $1.location.latitude } / Double(places.count)
+        let averageLongitude = places.reduce(into: 0.0) { $0 += $1.location.longitude } / Double(places.count)
+        
+        self.removeRecentAnnotations()
+        DispatchQueue.main.async {
+            self.placeDetailView.hide()
+            self.placeListView.hide()
+            self.nextButton.hide()
         }
+        
+        places.forEach { place in
+            self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
+        }
+        
+        self.presentLocation(latitude: averageLatitude, longitude: averageLongitude, span: 0.05)
+    }
+    
+    private func presentLocation(latitude: CLLocationDegrees, longitude: CLLocationDegrees, span: Double) {
+        let spanValue = MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
+        
+        placeMapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: spanValue), animated: true)
     }
 }
+*/

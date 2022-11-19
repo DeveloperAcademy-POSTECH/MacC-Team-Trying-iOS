@@ -12,19 +12,14 @@ import UIKit
 import SnapKit
 
 final class PlaceDetailView: UIView {
-    var height: CGFloat = 190
-    
-    var selectedPlace: CLPlacemark? {
+	var height: CGFloat = 190
+
+    var selectedPlace: Place? {
         didSet {
             guard let selectedPlace = selectedPlace else { return }
-            let name = selectedPlace.name ?? ""
-            // TODO: 카테고리로 수정하기
-            let category = selectedPlace.country ?? ""
-            let administrativeArea = selectedPlace.administrativeArea ?? ""
-            let locality = selectedPlace.locality ?? ""
-            let thoroughfare = selectedPlace.thoroughfare ?? ""
-            let subThoroughfare = selectedPlace.subThoroughfare ?? ""
-            let address = "\(administrativeArea) \(locality) \(thoroughfare) \(subThoroughfare)"
+            let name = selectedPlace.title
+            let category = selectedPlace.category
+            let address = selectedPlace.address
             
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }

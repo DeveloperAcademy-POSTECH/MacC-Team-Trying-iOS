@@ -10,13 +10,23 @@ import Combine
 import CoreLocation
 import MapKit
 
+protocol PlaceSearchResultMapViewCoordinating {
+    func pushToPlaceSearchResultMapView(searchText: String, searchedPlaces: [Place], presentLocation: CLLocationCoordinate2D)
+}
+
 final class PlaceSearchViewModel: BaseViewModel {
     var coordinator: Coordinator
-    @Published var places: [Place]
-    @Published var memo: String?
+    private let placeSearchUseCase: PlaceSearchUseCase
     
-    init(coordinator: Coordinator, places: [Place] = []) {
+    @Published var places: [Place]
+    
+    init(
+        coordinator: Coordinator,
+        placeSearchUseCase: PlaceSearchUseCase = PlaceSearchUseCaseImpl(),
+        places: [Place] = []
+    ) {
         self.coordinator = coordinator
+        self.placeSearchUseCase = placeSearchUseCase
         self.places = places
     }
 }
@@ -27,44 +37,29 @@ extension PlaceSearchViewModel {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
     }
+    
+    func pushToPlaceSearchResultMapView(searchText: String, searchedPlaces: [Place], presentLocation: CLLocationCoordinate2D) {
+        guard let coordinator = coordinator as? PlaceSearchResultMapViewCoordinating else { return }
+        coordinator.pushToPlaceSearchResultMapView(searchText: searchText, searchedPlaces: searchedPlaces, presentLocation: presentLocation)
+    }
 }
 
 // MARK: - Business Logic
 extension PlaceSearchViewModel {
-    /// 검색 결과를 가지고 MKLocalSearch를 수행합니다.
-    /// - Parameter text: TextField에 입력된 String
-    func searchPlace(_ text: String) {
-        let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = text
-        let search = MKLocalSearch(request: request)
-        
-        var tempPlaces: [Place] = []
-        search.start { [weak self] response, _ in
-            guard let response = response, let self = self else { return }
-            
-            response.mapItems.forEach { [weak self] place in
-                guard let self = self else { return }
-                // MARK: 검색 지역을 대한민국으로 제한합니다.
-                if place.placemark.countryCode == "KR" {
-                    tempPlaces.append(self.convertToPlace(place, memo: self.memo))
-                }
-            }
-            self.places = tempPlaces
-        }
-    }
-}
-
-// MARK: - Helper
-extension PlaceSearchViewModel {
-    private func convertToPlace(_ place: MKMapItem, memo: String?) -> Place {
-        let address = "\(place.placemark.administrativeArea ?? "") \(place.placemark.locality ?? "") \(place.placemark.thoroughfare ?? "") \(place.placemark.subThoroughfare ?? "")"
-        
-        return Place(
-            title: place.name ?? "",
-            category: place.pointOfInterestCategory?.koreanCategory ?? "",
-            address: address,
-            location: place.placemark.coordinate,
-            memo: memo
+    func searchPlace(query: String) async throws {
+        let locationManager = LocationManager.shared
+        self.places = try await self.placeSearchUseCase.searchPlace(
+            query: query,
+            latitude: locationManager.latitude,
+            longitude: locationManager.longitude
         )
+    }
+    
+    func getPlace(index: Int) -> Place {
+        return places[index]
+    }
+    
+    func getPlaces() -> [Place] {
+        return places
     }
 }

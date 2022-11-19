@@ -7,19 +7,29 @@
 //
 
 import Combine
+import CoreLocation
 import UIKit
 
 import CancelBag
 import SnapKit
 
+protocol PlacePresenting: AnyObject {
+    func presentSelectedPlace(place: Place)
+    func presentSearchedPlaces(places: [Place])
+}
+
 final class PlaceSearchViewController: BaseViewController {
+    private enum PlaceSearchTableSection {
+        case main
+    }
+    
+    var searchText: String = ""
     var viewModel: PlaceSearchViewModel
     
+    private var dataSource: UITableViewDiffableDataSource<PlaceSearchTableSection, Place>!
     private lazy var placeSearchTableView: UITableView = {
         let tableView = UITableView()
-        tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(PlaceSearchTableViewCell.self, forCellReuseIdentifier: PlaceSearchTableViewCell.identifier)
         tableView.backgroundColor = .clear
         tableView.allowsSelection = false
         tableView.separatorStyle = .singleLine
@@ -33,6 +43,18 @@ final class PlaceSearchViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
+        if let textField = self.navigationItem.leftBarButtonItem?.customView as? CustomTextField {
+            textField.textPublisher()
+                .debounce(for: 0.3, scheduler: RunLoop.main)
+                .sink { [weak self] text in
+                    guard let self = self else { return }
+                    self.searchText = text
+                    Task {
+                        try await self.viewModel.searchPlace(query: text)
+                    }
+                }
+                .cancel(with: cancelBag)
+        }
         
         // output
         viewModel.$places
@@ -46,7 +68,12 @@ final class PlaceSearchViewController: BaseViewController {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     self.hideEmptyResultView()
                 }
-                self.placeSearchTableView.reloadData()
+                
+                var snapshot = NSDiffableDataSourceSnapshot<PlaceSearchTableSection, Place>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(places)
+                self.dataSource.apply(snapshot, animatingDifferences: true)
+                
             }
             .cancel(with: cancelBag)
     }
@@ -62,16 +89,22 @@ final class PlaceSearchViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .designSystem(.black)
+        
         setUI()
         bind()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        presentKeyboard()
     }
 }
 
 // MARK: - UI
 extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), mapAction: #selector(mapButtonPressed(_:)), textEditingAction: #selector(textFieldEditing(_:)))
+        configureSearchNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)), mapAction: #selector(mapButtonPressed(_:)))
         setBackgroundGyroMotion()
         setAttributes()
         setLayout()
@@ -81,11 +114,19 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
     private func setAttributes() {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(screenPressed(_:)))
         view.addGestureRecognizer(tapGestureRecognizer)
-    }
-    
-    @objc
-    private func textFieldEditing(_ sender: UITextField) {
-        viewModel.searchPlace(sender.text ?? "")
+        
+        self.placeSearchTableView.register(PlaceSearchTableViewCell.self, forCellReuseIdentifier: PlaceSearchTableViewCell.identifier)
+        
+        self.dataSource = UITableViewDiffableDataSource<PlaceSearchTableSection, Place>(tableView: self.placeSearchTableView, cellProvider: { tableView, indexPath, place -> UITableViewCell? in
+            
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: PlaceSearchTableViewCell.identifier, for: indexPath) as? PlaceSearchTableViewCell else { return nil }
+            
+            cell.configure(place)
+            cell.detailButton.tag = indexPath.row
+            cell.detailButton.addTarget(self, action: #selector(self.detailButtonPressed(_:)), for: .touchUpInside)
+            
+            return cell
+        })
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -111,37 +152,18 @@ extension PlaceSearchViewController: NavigationBarConfigurable {
     private func hideEmptyResultView() {
         emptyResultView.removeFromSuperview()
     }
+    
+    private func presentKeyboard() {
+        guard let textField = navigationItem.leftBarButtonItem?.customView as? CustomTextField else { return }
+        textField.becomeFirstResponder()
+    }
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
-extension PlaceSearchViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.places.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: PlaceSearchTableViewCell.identifier, for: indexPath) as? PlaceSearchTableViewCell else { return UITableViewCell() }
-        let place = viewModel.places[indexPath.row]
-        cell.titleLabel.text = place.title
-        cell.addressLabel.text = place.address
-        cell.categoryLabel.text = place.category
-        cell.detailButton.tag = indexPath.row
-        
-        cell.detailButton.addTarget(self, action: #selector(detailButtonPressed(_:)), for: .touchUpInside)
-        return cell
-    }
-    
+extension PlaceSearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         67
     }
-    
-    /*
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView()
-        headerView.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
-        return headerView
-    }
-    */
 }
 
 // MARK: - User Interaction
@@ -153,7 +175,13 @@ extension PlaceSearchViewController {
     
     @objc
     private func mapButtonPressed(_ sender: UIButton) {
-        viewModel.pop()
+        navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
+        let places = viewModel.getPlaces()
+
+        let averageLatitude = places.reduce(into: 0.0) { $0 += $1.location.latitude } / Double(places.count)
+        let averageLongitude = places.reduce(into: 0.0) { $0 += $1.location.longitude } / Double(places.count)
+        
+        self.viewModel.pushToPlaceSearchResultMapView(searchText: searchText, searchedPlaces: places, presentLocation: CLLocationCoordinate2D(latitude: averageLatitude, longitude: averageLongitude))
     }
     
     @objc
@@ -164,5 +192,13 @@ extension PlaceSearchViewController {
     @objc
     private func detailButtonPressed(_ sender: UIButton) {
         navigationItem.leftBarButtonItem?.customView?.resignFirstResponder()
+        
+        let place = viewModel.getPlace(index: sender.tag)
+        self.viewModel.pushToPlaceSearchResultMapView(searchText: searchText, searchedPlaces: [place], presentLocation: place.location)
+    }
+    
+    @objc
+    private func dismissKeyboard(_ sender: UITextField) {
+        sender.resignFirstResponder()
     }
 }

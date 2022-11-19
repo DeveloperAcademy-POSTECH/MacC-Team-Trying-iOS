@@ -80,3 +80,14 @@ final class PlaceSearchTableViewCell: UITableViewCell {
         }
     }
 }
+
+// MARK: - Configure Method
+extension PlaceSearchTableViewCell {
+    func configure(_ place: Place) {
+        DispatchQueue.main.async {
+            self.titleLabel.text = place.title
+            self.addressLabel.text = place.address
+            self.categoryLabel.text = place.category
+        }
+    }
+}

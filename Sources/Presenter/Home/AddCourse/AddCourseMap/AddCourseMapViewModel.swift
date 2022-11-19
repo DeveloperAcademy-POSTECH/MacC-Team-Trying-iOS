@@ -25,24 +25,26 @@ protocol RecordCourseCoordinating {
 }
 
 final class AddCourseMapViewModel: BaseViewModel {
-    private let addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl()
     var coordinator: Coordinator
+    private let addCourseUseCase: AddCourseUseCase
+    private let placeSearchUseCase: PlaceSearchUseCase
     
     let courseTitle: String
     @Published var places: [Place]
-    @Published var memo: String?
-    var annotations: [MKAnnotation]
+    // @Published var memo: String?
     
     init(
         coordinator: Coordinator,
+        addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(),
+        placeSearchUseCase: PlaceSearchUseCase = PlaceSearchUseCaseImpl(),
         courseTitle: String,
-        places: [Place] = [],
-        annotations: [MKAnnotation] = []
+        places: [Place] = []
     ) {
         self.coordinator = coordinator
+        self.addCourseUseCase = addCourseUseCase
+        self.placeSearchUseCase = placeSearchUseCase
         self.courseTitle = courseTitle
         self.places = places
-        self.annotations = annotations
     }
 }
 
@@ -80,53 +82,24 @@ extension AddCourseMapViewModel {
 
 // MARK: - Methods
 extension AddCourseMapViewModel {
-    func addPlace(_ place: CLPlacemark) {
-        places.append(convertToPlace(place: place, memo: memo))
+    func addPlace(_ place: Place) {
+        /*
+        var selectedPlace = place
+        selectedPlace.memo = self.memo
+        places.append(selectedPlace)
         self.memo = nil
+         */
+        self.places.append(place)
     }
     
     func deletePlace(_ index: Int) {
         places.remove(at: index)
     }
     
-    func addAnnotation(_ annotation: MKAnnotation) {
-        annotations.append(annotation)
-    }
-    
-    func deleteAnnotation(map: MKMapView, at index: Int) {
-        map.removeAnnotation(annotations[index])
-        annotations.remove(at: index)
-    }
-    
     func changePlaceOrder(sourceIndex: Int, to destinationIndex: Int) {
         let targetPlace = places[sourceIndex]
         places.remove(at: sourceIndex)
         places.insert(targetPlace, at: destinationIndex)
-    }
-}
-
-// MARK: - Helper
-extension AddCourseMapViewModel {
-    private func convertToPlace(place: CLPlacemark, memo: String?) -> Place {
-        let title = place.name ?? ""
-        // TODO: 카테고리로 변경하기
-        let category = place.country ?? ""
-        let administrativeArea = place.administrativeArea ?? ""
-        let locality = place.locality ?? ""
-        let thoroughfare = place.thoroughfare ?? ""
-        let subThoroughfare = place.subThoroughfare ?? ""
-        let address = "\(administrativeArea) \(locality) \(thoroughfare) \(subThoroughfare)"
-        
-        return Place(
-            title: title,
-            category: category,
-            address: address,
-            location: CLLocationCoordinate2D(
-                latitude: place.location?.coordinate.latitude ?? 0,
-                longitude: place.location?.coordinate.longitude ?? 0
-            ),
-            memo: memo
-        )
     }
 }
 
@@ -140,9 +113,17 @@ extension AddCourseMapViewModel {
             isPublic: false,
             places: places
         )
-        try await addCourseUseCase.addCourse(addCourseDTO: dto, images: [])
+        try await self.addCourseUseCase.addCourse(addCourseDTO: dto, images: [])
     }
     
+    func getAddress(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> String {
+        // return try await self.placeSearchUseCase.getAddress(latitude: latitude, longitude: longitude)
+        return ""
+    }
+}
+
+// MARK: - Helper
+extension AddCourseMapViewModel {
     private func convertToDTO(
         planetId: String,
         courseTitle: String,
