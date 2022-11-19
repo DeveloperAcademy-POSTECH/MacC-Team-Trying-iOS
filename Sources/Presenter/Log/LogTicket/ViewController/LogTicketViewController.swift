@@ -16,14 +16,14 @@ import SnapKit
 final class LogTicketViewController: BaseViewController {
     
     private var didTapLikeButton: Bool = false
-
+    
     var viewModel: LogTicketViewModel?
     
     private var logTicketView = LogTicketView()
     /// View Model과 bind 합니다.
     private func bind() {
         // input
-
+        
         // output
     }
     
@@ -95,7 +95,18 @@ extension LogTicketViewController {
     
     @objc
     func tapFlopButton() {
+        let transitionOptions: UIView.AnimationOptions = [.transitionFlipFromRight, .showHideTransitionViews]
+        
+        // MARK: Card Flip Animation
+        UIView.transition(with: logTicketView, duration: 0.7, options: transitionOptions, animations: {
+            self.logTicketView.isHidden = true
+        })
+        
+        UIView.transition(with: logTicketView, duration: 0.7, options: transitionOptions, animations: {
+            self.logTicketView.isHidden = false
+        })
         
         viewModel?.tapFlopButton()
+        
     }
 }
