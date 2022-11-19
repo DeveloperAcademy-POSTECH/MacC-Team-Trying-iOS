@@ -46,14 +46,6 @@ final class EnterPasswordViewController: PlanetAnimatedViewController<EnterPassw
                 self?.passwordTextFieldView.updateState(currentState)
             }
             .cancel(with: cancelBag)
-
-        viewModel.$isLoading
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isLoading in
-                self?.loginButton.loading = isLoading
-            }
-            .cancel(with: cancelBag)
-
     }
 
     override func setAttribute() {

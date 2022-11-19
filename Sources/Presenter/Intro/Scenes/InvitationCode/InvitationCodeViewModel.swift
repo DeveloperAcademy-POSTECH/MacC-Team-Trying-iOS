@@ -51,7 +51,9 @@ final class InvitationCodeViewModel: BaseViewModel, InvitationCodeBusinessLogic 
                     )
                 }
             } catch {
-
+                DispatchQueue.main.async {
+                    ToastFactory.show(message: "코드가 존재하지 않아요!")
+                }
             }
         }
     }

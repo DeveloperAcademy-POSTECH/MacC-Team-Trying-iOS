@@ -13,31 +13,6 @@ import CancelBag
 import SnapKit
 import Lottie
 
-enum AddCourseFlowType: Int {
-    // 과거에 계획을 안한경우 -> 계획,후기를 등록합니다0
-    case addCourse = 0
-    
-    // 후기등록건드려야함
-    // 과거인데 계획을 했을경우 -> 후기만 등록합니다
-    // 미래인데 계획을 했을경우 -> 버튼 비활성화되어야함
-    case registerReview
-    
-    // 수정버튼 건드려야함
-    // 과거인데 계획이 되어있고 수정을 하는경우 -> 타이틀과 장소를 수정합니다0
-    case editCourse
-    
-    // 미래인데 계획이 안되어있는 경우 -> 버튼 title을 바꿔야합니다0
-    case addPlan
-    
-    // 수정버튼 건드려야함
-    // 미래인데 계획이 되어있고 수정을 하는 경우 -> 타이틀하고 장소를 수정합니다0
-    case editPlan
-    
-    // 이전에있던 addCourseFlowType Case
-    case plan
-    case record
-}
-
 final class HomeViewController: BaseViewController {
     
     var myCancelBag = Set<AnyCancellable>()
@@ -288,14 +263,7 @@ final class HomeViewController: BaseViewController {
     
     @objc
     func alarmButtonTapped() {
-        print("알람버튼이눌렸습니다")
-        // MARK: - 행성나가기 확인
-//        let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
-//        backButtonItem.tintColor = .designSystem(.white)
-//        let nextVC = UserWarningViewController(outgoingType: .membershipWithdrawal)
-//        navigationController?.pushViewController(nextVC, animated: true)
-//        navigationItem.backBarButtonItem = backButtonItem
-        
+        viewModel.pushToAlarmView()
     }
     
     @objc
@@ -312,7 +280,7 @@ final class HomeViewController: BaseViewController {
     
     @objc
     func registerButtonTapped(_ sender: UIButton) {
-        guard let type = AddCourseFlowType(rawValue: sender.tag) else { return }
+        guard let type = CourseFlowType(rawValue: sender.tag) else { return }
         viewModel.startAddCourseFlow(type: type)
     }
 }
@@ -522,7 +490,7 @@ extension HomeViewController: CalendarViewDelegate {
     }
     
     /// 데이트가 없다면 데이트추가하기 버튼을 보여주는 분기처리 함수
-    private func setRegisterButton(_ type: AddCourseFlowType) {
+    private func setRegisterButton(_ type: CourseFlowType) {
         switch type {
         case .addCourse:
             dateCoureRegisterButton.setTitle(" 별자리 등록하기", for: .normal)

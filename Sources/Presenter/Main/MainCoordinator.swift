@@ -8,6 +8,13 @@
 
 import UIKit
 
+protocol Popable {
+    func popViewController()
+}
+protocol MainCoordinatorDelegate: AnyObject {
+    func coordinateToLoginSceneFromProfile()
+}
+
 final class MainCoordinator: Coordinator {
     enum TabBarItem: CaseIterable {
         case home
@@ -65,10 +72,11 @@ final class MainCoordinator: Coordinator {
     }
     
     weak var navigationController: UINavigationController?
-    
+    weak var delegate: MainCoordinatorDelegate?
+
     let tabBarController: UITabBarController
     let tabBarItems: [TabBarItem] = [ .home, .search, .feed, .profile]
-    
+
     init(navigationController: UINavigationController?) {
         self.navigationController = navigationController
         self.tabBarController = UITabBarController()
@@ -90,6 +98,19 @@ extension MainCoordinator {
         navigationController.tabBarItem = tabItem
         
         let coordinator = item.getCoordinator(navigationController: navigationController)
+        
+        if item == .home {
+            if let coordinator = coordinator as? HomeCoordinator {
+                coordinator.parentCoordinator = self
+                print(coordinator, coordinator.parentCoordinator)
+            }
+        } else if item == .profile {
+            if let coordinator = coordinator as? ProfileCoordinator {
+                coordinator.delegate = self
+                print(coordinator, coordinator.delegate)
+            }
+        }
+        
         coordinator.start()
         
         return navigationController
@@ -104,5 +125,22 @@ extension MainCoordinator {
         tabBarController.setViewControllers(tabControllers, animated: false)
         navigationController.setNavigationBarHidden(true, animated: true)
         navigationController.setViewControllers([tabBarController], animated: true) 
+    }
+}
+
+protocol MoveToAnotherTab: AnyObject {
+    func moveToLogTab()
+}
+
+extension MainCoordinator: MoveToAnotherTab {
+    func moveToLogTab() {
+        tabBarController.selectedIndex = 1
+    }
+}
+
+extension MainCoordinator: ProfileCoordinatorDelegate {
+    func coordinateToLoginScene() {
+        print("coordinateToLoginScene")
+        delegate?.coordinateToLoginSceneFromProfile()
     }
 }

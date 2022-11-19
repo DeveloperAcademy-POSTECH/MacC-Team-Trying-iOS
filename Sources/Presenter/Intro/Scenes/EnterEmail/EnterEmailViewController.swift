@@ -47,13 +47,6 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
             }
             .cancel(with: cancelBag)
 
-        viewModel.$isLoading
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isLoading in
-                self?.nextButton.loading = isLoading
-            }
-            .cancel(with: cancelBag)
-
         viewModel.$leaveAnimation
             .receive(on: DispatchQueue.main)
             .filter { $0 == true }
@@ -72,7 +65,7 @@ final class EnterEmailViewController: PlanetAnimatedViewController<EnterEmailVie
 
         title = "로그인"
 
-        titleLabels.title = "COME IT 이용을 위해서"
+        titleLabels.title = "우주라이크 이용을 위해서"
         titleLabels.subTitle = "로그인을 해주세요!"
 
         planetImageView.alpha = 0

@@ -1,17 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "btn_apple.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "apple_login.svg",
+      "idiom" : "universal"
     }
   ],
   "info" : {
@@ -19,6 +10,7 @@
     "version" : 1
   },
   "properties" : {
+    "preserves-vector-representation" : true,
     "template-rendering-intent" : "original"
   }
 }

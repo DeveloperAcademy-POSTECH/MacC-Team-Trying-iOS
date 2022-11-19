@@ -43,7 +43,7 @@ class LogCollectionViewCell: UICollectionViewCell {
 
 extension LogCollectionViewCell {
     
-    func configure(with places: [Place]) {
+    func configure(with places: [PlaceEntity]) {
         self.contentView.subviews
             .filter { view in
                 return !(view == dateLabel || view == courseNameLabel)
@@ -75,13 +75,13 @@ extension LogCollectionViewCell {
         }
     }
     
-    func makeConstellation(places: [Place]) -> UIView {
+    func makeConstellation(places: [PlaceEntity]) -> UIView {
         let constellationView = UIView()
         constellationView.backgroundColor = .clear
         constellationView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
         
-        let latitudeArray = places.map { CGFloat($0.location.latitude) }
-        let longitudeArray = places.map { CGFloat($0.location.longitude) }
+        let latitudeArray = places.map { CGFloat($0.coordinate.latitude) }
+        let longitudeArray = places.map { CGFloat($0.coordinate.longitude) }
         
         guard let minX = latitudeArray.min(),
               let maxX = latitudeArray.max(),

@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         self.registerForRemoteNotifications()
         UserDefaults.standard.set("Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI5YmNkMTg0Zi02OWVlLTQzODAtYWY2ZC0wYzNiY2FkNTA4OTAiLCJhdXRoIjoiVVNFUiJ9.ee6CVoBjBqHmoukNeTjuzkxipWQ4BJWsKmolndCSlEdX24JgFmWbnFhYkFJBTBLRny1xd6zn_PHSCWqoan7daw", forKey: "accessToken")
+        Font.registerFonts()
         KakaoSDK.initSDK(appKey: "041c741d45744f54da6ed10e0f946672")
         self.window = UIWindow(frame: UIScreen.main.bounds)
         
@@ -82,5 +83,7 @@ extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         // TODO: 로그인 시 FCM Token을 서버에 넘겨주세요. (FCM 토큰은 앱이 지웠다가 다시 설치하면 토큰값이 바뀝니다.)
         print("✨FCM Token : \(fcmToken)")
+        UserDefaults.standard.set(fcmToken, forKey: "fcmToken")
+        
     }
 }

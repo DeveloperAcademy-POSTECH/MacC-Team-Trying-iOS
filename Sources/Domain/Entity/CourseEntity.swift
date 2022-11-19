@@ -11,8 +11,6 @@ import Foundation
 struct CourseEntity {
     let id: Int
     let courseTitle: String
-    let date: Date
+    let date: String
     var places: [PlaceEntity]
-    var imagesURL: [String]
-    var reviews: [ReviewEntity]
 }
