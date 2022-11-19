@@ -14,6 +14,7 @@ final class CourseTitleViewModel: BaseViewModel {
     let coordinator: CourseFlowCoordinator
     
     var courseRequestDTO: CourseRequestDTO
+    @Published var title: String = ""
     
     init(
         coordinator: CourseFlowCoordinator,
@@ -21,6 +22,13 @@ final class CourseTitleViewModel: BaseViewModel {
     ) {
         self.coordinator = coordinator
         self.courseRequestDTO = courseRequestDTO
+    }
+}
+
+// MARK: - Business Logic
+extension CourseTitleViewModel {
+    func updateDTOCourseTitle() {
+        self.courseRequestDTO.title = self.title
     }
 }
 
@@ -50,6 +58,8 @@ extension CourseTitleViewModel {
     }
     
     func pushToNextView() {
+        self.updateDTOCourseTitle()
+        
         switch self.coordinator {
         case is AddCourseCoordinator:
             guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }

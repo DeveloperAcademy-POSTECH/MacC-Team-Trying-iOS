@@ -46,10 +46,10 @@ final class CourseTitleViewController: BaseViewController {
     private func bind() {
         // input
         titleTextField.textPublisher()
-            .assign(to: &viewModel.courseRequestDTO.$title)
+            .assign(to: &self.viewModel.$title)
         
         // output
-        viewModel.courseRequestDTO.$title
+        viewModel.$title
             .sink { [weak self] courseTitle in
                 guard let self = self else { return }
                 self.nextButton.isEnabled = courseTitle.isEmpty ? false : true
