@@ -6,7 +6,7 @@
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 // MARK: - Welcome
 struct SelectedDateCourseDTO: Codable {
@@ -14,7 +14,6 @@ struct SelectedDateCourseDTO: Codable {
     let title, date: String
     let liked: Bool
     let places: [PlaceElement]
-
     // MARK: - PlaceElement
     struct PlaceElement: Codable {
         let place: PlacePlace
@@ -24,8 +23,8 @@ struct SelectedDateCourseDTO: Codable {
 
     // MARK: - PlacePlace
     struct PlacePlace: Codable {
-        let placeId: Int
-        let name: String
+        let placeId, identifier: Int
+        let name, category, address: String
         let coordinate: Coordinate
     }
 
@@ -34,5 +33,3 @@ struct SelectedDateCourseDTO: Codable {
         let longitude, latitude: Double
     }
 }
-
-
