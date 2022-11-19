@@ -108,23 +108,18 @@ extension HomeViewModel {
         guard let coordinator = coordinator as? HomeCoordinator else { return }
         switch type {
         case .addCourse:
-            coordinator.startAddCourseFlow(courseRequestDTO: .init(title: "", date: selectedDate.toString(), places: []))
-            print(selectedDate.toString())
+            coordinator.startAddCourseFlow(courseRequestDTO: .init(title: "", date: selectedDate.dateToString(), places: []))
         case .registerReview:
             guard let dateCourse = dateCourse else { return }
-            coordinator.startRegisterReviewFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: dateCourse.courseDate, places: places))
-            print(dateCourse.courseDate)
+            coordinator.startRegisterReviewFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: selectedDate.dateToString(), places: places))
         case .editCourse:
             guard let dateCourse = dateCourse else { return }
-            coordinator.startEditCourseFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: dateCourse.courseDate, places: places))
-            print(dateCourse.courseDate)
+            coordinator.startEditCourseFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: selectedDate.dateToString(), places: places))
         case .addPlan:
-            coordinator.startAddPlanFlow(courseRequestDTO: .init(title: "", date: selectedDate.toString(), places: []))
-            print(selectedDate.toString())
+            coordinator.startAddPlanFlow(courseRequestDTO: .init(title: "", date: selectedDate.dateToString(), places: []))
         case .editPlan:
             guard let dateCourse = dateCourse else { return }
-            coordinator.startEditPlanFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: dateCourse.courseDate, places: places))
-            print(dateCourse.courseDate)
+            coordinator.startEditPlanFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: selectedDate.dateToString(), places: places))
         }
     }
 }
