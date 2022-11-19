@@ -23,6 +23,12 @@ final class UserWarningViewController: BaseViewController {
     
     var myCancelBag = Set<AnyCancellable>()
     
+    let titleImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
     let warningPhraseView: UIView = {
         let view = UIView()
         view.backgroundColor = .white.withAlphaComponent(0.1)
@@ -31,12 +37,11 @@ final class UserWarningViewController: BaseViewController {
         return view
     }()
     
-    let titleLabel: UILabel = {
+    let mainTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "테스트용도입니다"
-        label.textAlignment = .center
-        label.font = .designSystem(weight: .bold, size: ._15)
         label.textColor = .designSystem(.white)
+        label.font = .designSystem(weight: .bold, size: ._15)
+        label.textAlignment = .center
         return label
     }()
     
@@ -143,19 +148,9 @@ final class UserWarningViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        nextButton.setTitle(outgoingType == .exitPlanet ? "행성나가기" : "회원탈퇴", for: .normal)
-
-        summaryLabel.text = outgoingType == .exitPlanet ? "⭐행성이 없으면 앱의 모든기능을 사용할 수 없어요!\n⭐복구기간이 지나면 기록된 내용들이 사라져요!" :
-                                                    "⭐회원탈퇴 시 행성이 사라져요!\n⭐행성에 기록된 모든 정보가 삭제 돼요!"
-        summaryLabel.setLineSpacing(spacing: 10)
-        
-        let exitPlanetLabels = ["나와 메이트 둘 중 한명이라도 행성을 나가게되면, 지금까지 기록된 내용들이 전부 차단됩니다.", "행성에 기록된 자료는 30일까지 복구가 가능하며, 30일 이후는 보관된 자료들이 삭제가 됩니다.", "복구 시 기존의 기능들을 다시 정상적으로 사용할 수 있습니다"]
-        
-        let membershipWithdrawalLabels = ["나와 메이트 둘 중 한명이라도 회원탈퇴를 하게 되면, 행성이 바로 삭제됩니다.", "행성에 기록된 모든 기록들이 전부 삭제됩니다.", "행성에 기록된 자료는 복구가 불가능합니다."]
-        warningPhraseLabel.attributedText = bulletPointList(strings: outgoingType == .exitPlanet ? exitPlanetLabels : membershipWithdrawalLabels)
-        
         setUI()
         bind()
+        setNavigation()
     }
     
     private func bulletPointList(strings: [String]) -> NSAttributedString {
@@ -170,9 +165,7 @@ final class UserWarningViewController: BaseViewController {
             NSAttributedString.Key.foregroundColor: UIColor.designSystem(.white),
             NSAttributedString.Key.paragraphStyle: paragraphStyle
         ]
-
         let string = strings.map({ "•\t\($0)" }).joined(separator: "\n\n")
-
         return NSAttributedString(string: string, attributes: stringAttributes)
     }
     
@@ -192,6 +185,25 @@ extension UserWarningViewController {
     private func setUI() {
         setAttributes()
         setConstraints()
+        let userName = UserDefaults.standard.string(forKey: "name")
+        let planetImageName = UserDefaults.standard.string(forKey: "planetImageString")
+        guard let userName = userName else { return }
+        guard let planetImageName = planetImageName else { return }
+        let exitPlanetLabels = ["나와 메이트 둘 중 한명이라도 행성을 나가게되면, 지금까지 기록된 내용들이 전부 차단됩니다.", "행성에 기록된 자료는 30일까지 복구가 가능하며, 30일 이후는 보관된 자료들이 삭제가 됩니다.", "복구 시 기존의 기능들을 다시 정상적으로 사용할 수 있습니다"]
+        let membershipWithdrawalLabels = ["나와 메이트 둘 중 한명이라도 회원탈퇴를 하게 되면, 행성이 바로 삭제됩니다.", "행성에 기록된 모든 기록들이 전부 삭제됩니다.", "행성에 기록된 자료는 복구가 불가능합니다."]
+        
+        nextButton.setTitle(outgoingType == .exitPlanet ? "행성나가기" : "회원탈퇴", for: .normal)
+        summaryLabel.text = outgoingType == .exitPlanet ? "⭐행성이 없으면 앱의 모든기능을 사용할 수 없어요!\n⭐복구기간이 지나면 기록된 내용들이 사라져요!" :
+                                                    "⭐회원탈퇴 시 행성이 사라져요!\n⭐행성에 기록된 모든 정보가 삭제 돼요!"
+        summaryLabel.setLineSpacing(spacing: 10)
+        warningPhraseLabel.attributedText = bulletPointList(strings: outgoingType == .exitPlanet ? exitPlanetLabels : membershipWithdrawalLabels)
+        mainTitleLabel.text = outgoingType == .exitPlanet ? "\(userName)별을 나가실건가요?" : "회원을 탈퇴하시겠습니까?"
+        titleImage.image = UIImage(named: planetImageName)
+    }
+    
+    private func setNavigation() {
+        self.title = outgoingType == .exitPlanet ? "행성 나가기" : "회원 탈퇴"
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._15)]
     }
     
     /// Attributes를 설정합니다.
@@ -199,7 +211,8 @@ extension UserWarningViewController {
         view.addSubview(agreeButton)
         view.addSubview(nextButton)
         view.addSubview(warningPhraseView)
-        warningPhraseView.addSubview(titleLabel)
+        view.addSubview(titleImage)
+        warningPhraseView.addSubview(mainTitleLabel)
         warningPhraseView.addSubview(subTitleLable)
         warningPhraseView.addSubview(summaryPhraseView)
         summaryPhraseView.addSubview(summaryLabel)
@@ -211,6 +224,12 @@ extension UserWarningViewController {
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
+        
+        titleImage.snp.makeConstraints { make in
+            make.centerY.equalTo(warningPhraseView.snp.top)
+            make.centerX.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(124)
+        }
         
         warningPhraseView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(178)
@@ -224,7 +243,7 @@ extension UserWarningViewController {
             make.trailing.equalToSuperview().inset(25)
         }
         
-        titleLabel.snp.makeConstraints { make in
+        mainTitleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(50)
             make.bottom.equalTo(subTitleLable.snp.top)
         }
@@ -258,4 +277,3 @@ extension UserWarningViewController {
         }
     }
 }
-

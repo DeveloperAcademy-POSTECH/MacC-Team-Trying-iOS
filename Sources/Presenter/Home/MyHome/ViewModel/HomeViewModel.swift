@@ -53,6 +53,8 @@ final class HomeViewModel: BaseViewModel {
              print("Decoder오류")
              return
          }
+        UserDefaults.standard.set(myUserInfo.me.name, forKey: "name")
+        UserDefaults.standard.set(myUserInfo.planet?.image, forKey: "planetImageString")
         self.user = myUserInfo
     }
     
