@@ -8,28 +8,31 @@
 
 import Foundation
 
+// MARK: - Welcome
 struct SelectedDateCourseDTO: Codable {
     let courseId: Int
     let title, date: String
     let liked: Bool
     let places: [PlaceElement]
-    
+
     // MARK: - PlaceElement
     struct PlaceElement: Codable {
-        let memo: String
         let place: PlacePlace
+        let memo: String
         let distanceFromNext: Double?
     }
 
     // MARK: - PlacePlace
     struct PlacePlace: Codable {
         let placeId: Int
-        let name, address, roadAddress: String
+        let name: String
         let coordinate: Coordinate
     }
 
     // MARK: - Coordinate
     struct Coordinate: Codable {
-        let latitude, longitude: Double
+        let longitude, latitude: Double
     }
 }
+
+

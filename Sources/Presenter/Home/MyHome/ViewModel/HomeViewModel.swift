@@ -48,11 +48,13 @@ final class HomeViewModel: BaseViewModel {
     }
     
     func fetchUserInfo() async throws {
-        let data = try await HomeAPIService.fetchUserAsync(tokenType: .hasMate)
+        let data = try await HomeAPIService.fetchUserAsync()
         guard let myUserInfo = try? JSONDecoder().decode(UserInfoDTO.self, from: data) else {
              print("Decoder오류")
              return
          }
+        UserDefaults.standard.set(myUserInfo.me.name, forKey: "name")
+        UserDefaults.standard.set(myUserInfo.planet?.image, forKey: "planetImageString")
         self.user = myUserInfo
     }
     

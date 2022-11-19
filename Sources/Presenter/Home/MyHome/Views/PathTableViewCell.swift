@@ -205,9 +205,13 @@ class PathTableViewCell: UITableViewCell {
             return
         }
         
-        let appStoreURL = URL(string: "https://tom7930.tistory.com/54")
-        guard let appStoreURL = appStoreURL else { return }
-        UIApplication.shared.canOpenURL(url) ? UIApplication.shared.open(url) : UIApplication.shared.open(appStoreURL)
+        let appStoreURL = URL(string: "http://itunes.apple.com/app/id311867728?mt=8")!
+
+        if UIApplication.shared.canOpenURL(url) {
+          UIApplication.shared.open(url)
+        } else {
+          UIApplication.shared.open(appStoreURL)
+        }
     }
     
     @objc
