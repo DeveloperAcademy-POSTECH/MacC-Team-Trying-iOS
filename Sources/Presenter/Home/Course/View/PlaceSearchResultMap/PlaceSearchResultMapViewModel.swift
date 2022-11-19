@@ -36,6 +36,10 @@ extension PlaceSearchResultMapViewModel {
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
             coordinator.popViewController()
             
+        case is EditPlanCoordinator:
+            guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
+            coordinator.popViewController()
+            
         default:
             break
         }
@@ -53,6 +57,10 @@ extension PlaceSearchResultMapViewModel {
             
         case is AddPlanCoordinator:
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
+            coordinator.dismissToPlaceSearchMapView()
+            
+        case is EditPlanCoordinator:
+            guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
             coordinator.dismissToPlaceSearchMapView()
             
         default:

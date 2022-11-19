@@ -46,6 +46,10 @@ extension CourseCompleteViewModel {
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
             coordinator.popToHomeView()
             
+        case is EditPlanCoordinator:
+            guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
+            coordinator.popToHomeView()
+            
         default:
             break
         }

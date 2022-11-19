@@ -50,6 +50,10 @@ extension CourseMapViewModel {
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
             coordinator.popViewController()
             
+        case is EditPlanCoordinator:
+            guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
+            coordinator.popViewController()
+            
         default:
             break
         }
@@ -69,6 +73,10 @@ extension CourseMapViewModel {
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
             coordinator.pushToPlaceSearchView()
             
+        case is EditPlanCoordinator:
+            guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
+            coordinator.pushToPlaceSearchView()
+            
         default:
             break
         }
@@ -86,6 +94,10 @@ extension CourseMapViewModel {
             
         case is AddPlanCoordinator:
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
+            coordinator.pushToCompleteView(self.courseRequestDTO)
+            
+        case is EditPlanCoordinator:
+            guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
             coordinator.pushToCompleteView(self.courseRequestDTO)
             
         default:

@@ -40,6 +40,10 @@ extension CourseTitleViewModel {
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
             coordinator.popToHomeView()
             
+        case is EditPlanCoordinator:
+            guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
+            coordinator.popToHomeView()
+            
         default:
             break
         }
@@ -57,6 +61,10 @@ extension CourseTitleViewModel {
             
         case is AddPlanCoordinator:
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
+            coordinator.pushToCourseMapView(courseRequestDTO)
+            
+        case is EditPlanCoordinator:
+            guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
             coordinator.pushToCourseMapView(courseRequestDTO)
             
         default:
