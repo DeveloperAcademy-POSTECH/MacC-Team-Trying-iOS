@@ -11,11 +11,12 @@ import Combine
 import CancelBag
 
 class AlarmAPI {
+
     private let cancelBag = CancelBag()
     
     //TODO: token 수정
-    //UserDefaults.standard.string(forKey: "accessToken")
-    private var token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIwNmZhNWU2NC1mMmNmLTQ4OWQtYTIxZi04NzE4NTdmMjEwNjgiLCJhdXRoIjoiVVNFUiJ9.R4B2v0S-NHSseJd7m566oZZ6tFVeDWSH3uALT4XPX2eNIJeQ7OQ7RjQXte0KVZzXESFI6Ws2R65GdeiXgRQ_1g"
+
+    private var token = UserDefaults().string(forKey: "accessToken") ?? ""
     
     private let host = "https://comeit.site/"
     
@@ -25,7 +26,7 @@ class AlarmAPI {
 
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
-        request.addValue("Bearer \(token)", forHTTPHeaderField: "accessToken")
+        request.addValue("\(token)", forHTTPHeaderField: "accessToken")
 
         URLSession.shared.dataTaskPublisher(for: request)
             .map(\.data)
@@ -41,7 +42,7 @@ class AlarmAPI {
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.addValue("Bearer \(token)", forHTTPHeaderField: "accessToken")
+        request.addValue("\(token)", forHTTPHeaderField: "accessToken")
         
         return URLSession.shared.dataTaskPublisher(for: request)
             .receive(on: RunLoop.main)
@@ -56,7 +57,7 @@ class AlarmAPI {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.addValue("Bearer \(token)", forHTTPHeaderField: "accessToken")
+        request.addValue("\(token)", forHTTPHeaderField: "accessToken")
 
         URLSession.shared.dataTaskPublisher(for: request)
             .map(\.data)
@@ -69,13 +70,14 @@ class AlarmAPI {
     }
     
     func toggleAlarmPermission(type: AlarmApiType, isPermission: Bool) {
+        print("accessToken:", token)
         let urlStr = encodeUrl(string: addStringParameter(type: type))
         guard let url = URL(string: urlStr) else { return }
 
         var request = URLRequest(url: url)
         let json: [String: Any] = ["allow": isPermission]
         request.httpMethod = "PATCH"
-        request.addValue("Bearer \(token)", forHTTPHeaderField: "accessToken")
+        request.addValue("\(token)", forHTTPHeaderField: "accessToken")
         request.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
         request.httpBody = try? JSONSerialization.data(withJSONObject: json)
         

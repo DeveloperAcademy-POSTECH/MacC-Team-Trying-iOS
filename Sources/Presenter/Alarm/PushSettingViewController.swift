@@ -76,11 +76,9 @@ class PushSettingViewController: BaseViewController, UNUserNotificationCenterDel
             forName: UIApplication.willEnterForegroundNotification,
             object: nil,
             queue: .main) { [weak self] _ in
-                print("!!!!",self, self?.viewModel.permission, "->")
                 UNUserNotificationCenter.current().getNotificationSettings { settings in
                     DispatchQueue.main.async {
                         if settings.authorizationStatus == .authorized {
-                            //그냥 나갓다와도 바뀌는문제.
                             self?.viewModel.permission = true
                         } else {
                             self?.viewModel.permission = false
@@ -91,7 +89,6 @@ class PushSettingViewController: BaseViewController, UNUserNotificationCenterDel
                 }
         }
         setNavigation()
-
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -137,15 +134,17 @@ class PushSettingViewController: BaseViewController, UNUserNotificationCenterDel
     }
     
     func setAuthAlertAction() {
-            let authAlertController : UIAlertController
+        let authAlertController = UIAlertController(title: "위치 사용 권한이 필요합니다.", message: "위치 권한을 허용해야만 앱을 사용하실 수 있습니다.", preferredStyle: .alert)
 
-            authAlertController = UIAlertController(title: "위치 사용 권한이 필요합니다.", message: "위치 권한을 허용해야만 앱을 사용하실 수 있습니다.", preferredStyle: .alert)
-
-            let getAuthAction = UIAlertAction(title: "설정", style: .default, handler: { (UIAlertAction) in
+            let getAuthAction = UIAlertAction(
+                title: "설정",
+                style: .default,
+                handler: { _ in
                 if let appSettings = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(appSettings,options: [:], completionHandler: nil)
+                    UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
                 }
-            })
+                }
+            )
         let cancelAction = UIAlertAction(title: "취소", style: .destructive, handler: { _ in
             self.notificationSwitch.isOn = false
         })
@@ -166,10 +165,8 @@ class PushSettingViewController: BaseViewController, UNUserNotificationCenterDel
                     self.viewModel.permission = true
                 }
             }
-            
         } else {
             viewModel.permission.toggle()
-            print("!!1")
         }
     }
     
