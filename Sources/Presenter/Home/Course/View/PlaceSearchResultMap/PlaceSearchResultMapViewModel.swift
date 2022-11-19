@@ -11,11 +11,11 @@ import Combine
 import CancelBag
 
 final class PlaceSearchResultMapViewModel: BaseViewModel {
-    var coordinator: AddCourseFlowCoordinating
+    var coordinator: CourseFlowCoordinator
     
     @Published var memo: String?
     
-    init(coordinator: AddCourseFlowCoordinating) {
+    init(coordinator: CourseFlowCoordinator) {
         self.coordinator = coordinator
     }
 }
@@ -23,10 +23,32 @@ final class PlaceSearchResultMapViewModel: BaseViewModel {
 // MARK: - Coordinating
 extension PlaceSearchResultMapViewModel {
     func pop() {
-        coordinator.popViewController()
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.popViewController()
+            
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.popViewController()
+            
+        default:
+            break
+        }
     }
     
     func dismiss() {
-        coordinator.dismissToPlaceSearchMapView()
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.dismissToPlaceSearchMapView()
+            
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.dismissToPlaceSearchMapView()
+            
+        default:
+            break
+        }
     }
 }

@@ -13,7 +13,7 @@ import MapKit
 import CancelBag
 
 final class CourseMapViewModel: BaseViewModel {
-    var coordinator: AddCourseFlowCoordinating
+    var coordinator: CourseFlowCoordinator
     
     private let addCourseUseCase: AddCourseUseCase
     
@@ -22,7 +22,7 @@ final class CourseMapViewModel: BaseViewModel {
     // @Published var memo: String?
     
     init(
-        coordinator: AddCourseFlowCoordinating,
+        coordinator: CourseFlowCoordinator,
         addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(),
         courseRequestDTO: CourseRequestDTO,
         places: [Place] = []
@@ -37,22 +37,49 @@ final class CourseMapViewModel: BaseViewModel {
 // MARK: - Coordinating
 extension CourseMapViewModel {
     func pop() {
-        coordinator.popViewController()
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.popViewController()
+            
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.popViewController()
+            
+        default:
+            break
+        }
     }
     
     func pushToPlaceSearchView() {
-        coordinator.pushToPlaceSearchView()
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.pushToPlaceSearchView()
+            
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.pushToPlaceSearchView()
+            
+        default:
+            break
+        }
     }
     
     func pushToNextView() {
-        coordinator.pushToRegisterReviewView(self.courseRequestDTO)
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.pushToRegisterReviewView(self.courseRequestDTO)
+            
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.pushToCompleteView(self.courseRequestDTO)
+            
+        default:
+            break
+        }
     }
-
-    /*
-    func pushToCourseCompleteView() {
-        coordinator.pushToCompleteView(self.courseRequestDTO)
-    }
-     */
 }
 
 // MARK: - Methods

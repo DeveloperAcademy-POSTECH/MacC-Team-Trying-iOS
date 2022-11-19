@@ -11,13 +11,13 @@ import CoreLocation
 import MapKit
 
 final class PlaceSearchViewModel: BaseViewModel {
-    var coordinator: AddCourseFlowCoordinating
+    var coordinator: CourseFlowCoordinator
     private let placeSearchUseCase: PlaceSearchUseCase
     
     @Published var places: [Place]
     
     init(
-        coordinator: AddCourseFlowCoordinating,
+        coordinator: CourseFlowCoordinator,
         placeSearchUseCase: PlaceSearchUseCase = PlaceSearchUseCaseImpl(),
         places: [Place] = []
     ) {
@@ -30,11 +30,33 @@ final class PlaceSearchViewModel: BaseViewModel {
 // MARK: - Coordinating
 extension PlaceSearchViewModel {
     func pop() {
-        coordinator.popViewController()
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.popViewController()
+            
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.popViewController()
+            
+        default:
+            break
+        }
     }
     
     func pushToPlaceSearchResultMapView(searchText: String, searchedPlaces: [Place], presentLocation: CLLocationCoordinate2D) {
-        coordinator.pushToPlaceSearchResultMapView(searchText: searchText, searchedPlaces: searchedPlaces, presentLocation: presentLocation)
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.pushToPlaceSearchResultMapView(searchText: searchText, searchedPlaces: searchedPlaces, presentLocation: presentLocation)
+            
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.pushToPlaceSearchResultMapView(searchText: searchText, searchedPlaces: searchedPlaces, presentLocation: presentLocation)
+            
+        default:
+            break
+        }
     }
 }
 

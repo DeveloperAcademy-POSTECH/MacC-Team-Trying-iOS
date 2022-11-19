@@ -11,12 +11,12 @@ import Combine
 import CancelBag
 
 final class CourseTitleViewModel: BaseViewModel {
-    let coordinator: AddCourseFlowCoordinating
+    let coordinator: CourseFlowCoordinator
     
     var courseRequestDTO: CourseRequestDTO
     
     init(
-        coordinator: AddCourseFlowCoordinating,
+        coordinator: CourseFlowCoordinator,
         courseRequestDTO: CourseRequestDTO
     ) {
         self.coordinator = coordinator
@@ -27,10 +27,32 @@ final class CourseTitleViewModel: BaseViewModel {
 // MARK: - Coordinating
 extension CourseTitleViewModel {
     func pop() {
-        coordinator.popViewController()
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.popViewController()
+            
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.popViewController()
+            
+        default:
+            break
+        }
     }
     
     func pushToNextView() {
-        coordinator.pushToCourseMapView(courseRequestDTO)
+        switch self.coordinator {
+        case is AddCourseCoordinator:
+            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+            coordinator.pushToCourseMapView(courseRequestDTO)
+            
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.pushToCourseMapView(courseRequestDTO)
+            
+        default:
+            break
+        }
     }
 }

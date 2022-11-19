@@ -37,6 +37,10 @@ extension CourseCompleteViewModel {
         case is RegisterReviewCoordinator:
             guard let coordinator = self.coordinator as? RegisterReviewCoordinator else { return }
             coordinator.popToHomeView()
+        
+        case is EditCourseCoordinator:
+            guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
+            coordinator.popToHomeView()
             
         default:
             break
