@@ -149,7 +149,6 @@ extension MainCoordinator: MoveToAnotherTab {
     func moveToLogTab() {
         tabBarController.selectedIndex = 2
         logCoordinator?.navigationController?.popToRootViewController(animated: false)
-        //appdelegate에서 notification center?
     }
 }
 
