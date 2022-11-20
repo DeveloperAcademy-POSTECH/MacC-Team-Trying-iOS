@@ -48,7 +48,9 @@ final class EditPlanCoordinator: CourseFlowCoordinator {
     
     func start(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseTitleViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseTitleViewController(type: .addCourse, viewModel: viewModel)
+        let viewController = CourseTitleViewController(type: .editPlan, viewModel: viewModel)
+        
+        viewController.hidesBottomBarWhenPushed = true
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }

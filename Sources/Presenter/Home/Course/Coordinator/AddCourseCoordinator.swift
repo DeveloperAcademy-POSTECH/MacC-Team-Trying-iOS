@@ -53,6 +53,9 @@ final class AddCourseCoordinator: CourseFlowCoordinator {
         let viewModel = CourseTitleViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
         let viewController = CourseTitleViewController(type: .addCourse, viewModel: viewModel)
         
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.navigationBar.isHidden = false
+        
         self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

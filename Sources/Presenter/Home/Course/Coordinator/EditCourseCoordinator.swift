@@ -48,7 +48,10 @@ final class EditCourseCoordinator: CourseFlowCoordinator {
     
     func start(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseTitleViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseTitleViewController(type: .addCourse, viewModel: viewModel)
+        let viewController = CourseTitleViewController(type: .editCourse, viewModel: viewModel)
+        
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.navigationBar.isHidden = false
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }
