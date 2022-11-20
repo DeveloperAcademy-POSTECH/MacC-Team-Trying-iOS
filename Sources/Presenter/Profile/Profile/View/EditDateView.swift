@@ -49,6 +49,12 @@ final class EditDateView: UIView {
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .wheels
         datePicker.locale = Locale(identifier: "ko_KR")
+        
+        var components = DateComponents()
+        components.day = 0
+        let maxDate = Calendar.autoupdatingCurrent.date(byAdding: components, to: Date())
+        datePicker.maximumDate = maxDate
+
         return datePicker
     }()
     
