@@ -12,8 +12,6 @@ import UIKit
 import SnapKit
 
 final class ProfilePlanetView: UIView {
-    lazy var placeLabel = UILabel()
-    
     lazy var planetImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -46,24 +44,18 @@ extension ProfilePlanetView {
     
     private func presentCouplePlanetView() {
         self.addSubviews(
-            placeLabel,
             planetImageView,
             planetNameLabel
         )
         
-        placeLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(20)
-            make.leading.equalToSuperview().inset(20)
-        }
-        
         planetImageView.snp.makeConstraints { make in
-            make.top.equalTo(placeLabel.snp.bottom).offset(68)
+            make.top.equalToSuperview().inset(60)
             make.centerX.equalToSuperview()
             make.height.equalTo(100)
         }
         
         planetNameLabel.snp.makeConstraints { make in
-            make.top.equalTo(planetImageView.snp.bottom).offset(20)
+            make.top.equalTo(planetImageView.snp.bottom).offset(30)
             make.centerX.equalToSuperview()
         }
     }

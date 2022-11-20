@@ -87,6 +87,7 @@ final class ProfileViewController: BaseViewController {
             }
             .cancel(with: cancelBag)
         
+        /*
         viewModel.$numberOfPlaces
             .receive(on: DispatchQueue.main)
             .sink { [weak self] number in
@@ -104,6 +105,7 @@ final class ProfileViewController: BaseViewController {
                 self.profilePlanetView.placeLabel.attributedText = string
             }
             .cancel(with: cancelBag)
+         */
         
         viewModel.$activities
             .receive(on: DispatchQueue.main)
@@ -138,7 +140,11 @@ final class ProfileViewController: BaseViewController {
 extension ProfileViewController: NavigationBarConfigurable {
     private func setUI() {
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
-        
+        setBackgroundGyroMotion()
+        setLayout()
+    }
+    
+    private func setLayout() {
         view.addSubviews(
             scrollView,
             editDateView
@@ -162,7 +168,7 @@ extension ProfileViewController: NavigationBarConfigurable {
         profilePlanetView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(290)
+            make.height.equalTo(260)
         }
         
         profileTableView.snp.makeConstraints { make in

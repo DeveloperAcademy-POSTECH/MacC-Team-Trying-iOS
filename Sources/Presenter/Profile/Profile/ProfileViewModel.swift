@@ -24,7 +24,7 @@ final class ProfileViewModel: BaseViewModel {
     private let userService: UserService
     private let planetService: PlanetService
 
-    @Published var numberOfPlaces: Int
+    // @Published var numberOfPlaces: Int
     @Published var planetImageName: String
     @Published var planetName: String
     @Published var activities: (Int, Int)       // 내 별자리 개수, 좋아하는 코스 개수
@@ -35,7 +35,7 @@ final class ProfileViewModel: BaseViewModel {
         userService: UserService = UserService(),
         planetService: PlanetService = PlanetService()
     ) {
-        self.numberOfPlaces = 0
+        // self.numberOfPlaces = 0
         self.planetImageName = ""
         self.planetName = ""
         self.activities = (0, 0)
