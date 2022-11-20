@@ -16,6 +16,8 @@ struct DateDday {
 }
 
 struct HomeCourse {
+    let courseId: Int?
+    let courseDate: String
     let courseTitle: String
     let courseList: [DatePath]
 }
@@ -32,6 +34,8 @@ final class HomeViewModel: BaseViewModel {
     @Published var user: UserInfoDTO?
     @Published var dateCalendarList: [YearMonthDayDate] = []
     @Published var dateCourse: HomeCourse?
+    @Published var places: [Place] = []
+    var selectedDate: Date = Date()
     let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     
     let ddayDateList = [
@@ -78,7 +82,7 @@ final class HomeViewModel: BaseViewModel {
     /// - Parameter selectedDate: 캘린더에서 내가 누른 날짜
     /// - Returns: 내가누른 날짜가 fetchDateRange에서 받아온 리스트에 포함되어있는지 아닌지를 판단하는 함수
     func hasCourse(selectedDate: String) -> Bool {
-        guard let selectedDate = selectedDate.toDate() else { return false }
+        guard let selectedDate = selectedDate.toDate() else { return true }
         return dateCalendarList.map { $0.asDate() }.contains(selectedDate)
     }
     
@@ -93,7 +97,10 @@ final class HomeViewModel: BaseViewModel {
         let placeList: [DatePath] = selectedDateCourse.places.map { placeElement in
             DatePath(title: placeElement.place.name, comment: placeElement.memo, distance: placeElement.distanceFromNext, location: .init(latitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.latitude), longitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.longitude)))
         }
-        dateCourse = HomeCourse(courseTitle: selectedDateCourse.title, courseList: placeList)
+        places = selectedDateCourse.places.map { element in
+            Place(id: element.place.placeId, title: element.place.name, category: element.place.category, address: element.place.address, location: .init(latitude: element.place.coordinate.latitude, longitude: element.place.coordinate.longitude), memo: element.memo)
+        }
+        dateCourse = HomeCourse(courseId: selectedDateCourse.courseId, courseDate: selectedDateCourse.date, courseTitle: selectedDateCourse.title, courseList: placeList)
     }
 }
 
@@ -101,26 +108,26 @@ final class HomeViewModel: BaseViewModel {
 extension HomeViewModel {
     func startAddCourseFlow(type: CourseFlowType) {
         guard let coordinator = coordinator as? HomeCoordinator else { return }
-        
-        // FIXME: 임시로 Mock DTO를 전달합니다. 선택된 Course로 전달하도록 수정해야 합니다.
-        coordinator.startAddCourseFlow(
-            courseRequestDTO: CourseRequestDTO(
-                title: "포항 데이트",
-                date: "2022년 11월 19일",
-                places: [
-                    Place(
-                        id: 1,
-                        title: "참뼈",
-                        category: "음식점",
-                        address: "포항",
-                        location: CLLocationCoordinate2D(
-                            latitude: 36,
-                            longitude: 129
-                        )
-                    )
-                ]
-            )
-        )
+        switch type {
+        case .addCourse:
+            coordinator.startAddCourseFlow(courseRequestDTO: .init(title: "", date: selectedDate.toString(), places: []))
+            print(selectedDate.toString())
+        case .registerReview:
+            guard let dateCourse = dateCourse else { return }
+            coordinator.startRegisterReviewFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: dateCourse.courseDate, places: places))
+            print(dateCourse.courseDate)
+        case .editCourse:
+            guard let dateCourse = dateCourse else { return }
+            coordinator.startEditCourseFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: dateCourse.courseDate, places: places))
+            print(dateCourse.courseDate)
+        case .addPlan:
+            coordinator.startAddPlanFlow(courseRequestDTO: .init(title: "", date: selectedDate.toString(), places: []))
+            print(selectedDate.toString())
+        case .editPlan:
+            guard let dateCourse = dateCourse else { return }
+            coordinator.startEditPlanFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: dateCourse.courseDate, places: places))
+            print(dateCourse.courseDate)
+        }
     }
 }
 
