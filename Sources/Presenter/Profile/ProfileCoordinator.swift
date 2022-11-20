@@ -65,7 +65,8 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
         editPassword.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(editPassword, animated: true)
     }
-     func coordinateToLoginScene() {
+    
+    func coordinateToLoginScene() {
         delegate?.coordinateToLoginScene()
     }
 

@@ -7,6 +7,7 @@
 //
 
 import Combine
+import Foundation
 
 import CancelBag
 
@@ -14,26 +15,33 @@ protocol ProfileCoordinatorLogic: Coordinator {
     func pushToEditDayView()
     func coordinateToEditProfile()
     func coordinateToEditPlanet(date: String, planetName: String, planetImageName: String)
+    func coordinateToLoginScene()
 }
 
 final class ProfileViewModel: BaseViewModel {
     var coordinator: ProfileCoordinatorLogic
     private let userService: UserService
+    private let planetService: PlanetService
 
-    // FIXME: Data binding
-    @Published var numberOfPlaces: Int = 249
-    @Published var planetImageName: String = "planet_purple"
-    @Published var planetName: String = "찰리"
-
+    @Published var numberOfPlaces: Int
+    @Published var planetImageName: String
+    @Published var planetName: String
+    @Published var activities: (Int, Int)       // 내 별자리 개수, 좋아하는 코스 개수
     var date: String
 
     init(
         coordinator: ProfileCoordinatorLogic,
-        userService: UserService = UserService()
+        userService: UserService = UserService(),
+        planetService: PlanetService = PlanetService()
     ) {
+        self.numberOfPlaces = 0
+        self.planetImageName = ""
+        self.planetName = ""
+        self.activities = (0, 0)
         self.date = ""
         self.coordinator = coordinator
         self.userService = userService
+        self.planetService = planetService
     }
 
     func fetchUserInformation() {
@@ -42,6 +50,8 @@ final class ProfileViewModel: BaseViewModel {
                 let userInformation = try await userService.getUserInformations()
                 planetImageName = userInformation.planet?.image ?? "planet_purple"
                 planetName = userInformation.planet?.name ?? ""
+                activities.0 = userInformation.activities.courseCount
+                activities.1 = userInformation.activities.likedCount
                 date = userInformation.planet?.meetDate ?? ""
             }
         }
@@ -49,6 +59,22 @@ final class ProfileViewModel: BaseViewModel {
 
     func coordinateToEditPlanet() {
         coordinator.coordinateToEditPlanet(date: date, planetName: planetName, planetImageName: planetImageName)
+    }
+    
+    func deletePlanet() {
+        Task {
+            do {
+                _ = try await self.planetService.deletePlanet()
+                
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    UserDefaults.standard.removeObject(forKey: "accessToken")
+                    self.coordinator.coordinateToLoginScene()
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
 }
 
