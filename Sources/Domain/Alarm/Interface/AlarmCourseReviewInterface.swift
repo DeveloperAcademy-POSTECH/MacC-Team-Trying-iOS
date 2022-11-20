@@ -9,6 +9,6 @@
 import Foundation
 
 protocol AlarmCourseReviewInterface {
-    func getCourseWith(id: String) async throws -> AlarmCourseIdDTO
+    func getCourseWith(id: String) async throws -> HomeCourse
     func getReviewWith(id: String) async throws -> AlarmReviewIdDTO
 }

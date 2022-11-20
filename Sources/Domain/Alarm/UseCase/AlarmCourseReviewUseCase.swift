@@ -9,7 +9,7 @@
 import Foundation
 
 protocol AlarmCourseReviewUseCaseDelegate {
-    func getCourseWith(id: String) async throws -> AlarmCourseIdDTO
+    func getCourseWith(id: String) async throws -> HomeCourse
     func getReviewWith(id: String) async throws -> AlarmReviewIdDTO
 }
 
@@ -21,7 +21,7 @@ class AlarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate {
         self.alarmCourseReviewInterface = alarmCourseReviewInterface
     }
     
-    func getCourseWith(id: String) async throws -> AlarmCourseIdDTO {
+    func getCourseWith(id: String) async throws -> HomeCourse {
         return try await alarmCourseReviewInterface.getCourseWith(id: id)
     }
     

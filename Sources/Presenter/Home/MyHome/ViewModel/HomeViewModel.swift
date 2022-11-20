@@ -149,8 +149,8 @@ extension HomeViewModel {
         guard let courseId = notification.object as? String else { return }
         Task {
             let course = try await alarmCourseReviewUseCase.getCourseWith(id: courseId)
-            print("alarm을 통한 course:", course)
-            print("alarm을 통한 데이트 날짜:", course.date)
+            //MARK: 아래코드하면 달력뷰에서 그 날 날짜 코스나온다. 
+//            dateCourse = course
         }
   
     }
