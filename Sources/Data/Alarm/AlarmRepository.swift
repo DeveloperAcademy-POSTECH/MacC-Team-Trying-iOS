@@ -77,7 +77,7 @@ class AlarmRepository: AlarmInterface {
     }
     
     func deleteAlarm(id: Int) async throws -> Bool {
-        return try await alarmAPI.deleteAlarm(type: .deleteAll, id: id)
+        return try await alarmAPI.deleteAlarm(type: .deleteOne, id: id)
     }
     
     private func getAlarms(alarmResponse: AlarmResponse) -> [AlarmEntity] {

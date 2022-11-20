@@ -21,7 +21,7 @@ class AlarmAPI {
     private let host = "https://comeit.site/"
     
     func deleteAlarm(type: AlarmApiType, id: Int) async throws -> Bool {
-        let urlStr = encodeUrl(string: addStringParameter(type: type))
+        let urlStr = encodeUrl(string: addStringParameter(type: type, id: id))
         guard let url = URL(string: urlStr) else { return false }
 
         var request = URLRequest(url: url)
