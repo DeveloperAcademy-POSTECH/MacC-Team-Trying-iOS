@@ -506,8 +506,19 @@ extension CourseMapViewController: MKMapViewDelegate {
 // MARK: - AddPlaceDelegate
 extension CourseMapViewController: AddPlaceDelegate {
     func addPlace(place: Place) {
-        self.viewModel.addPlace(place)
-        self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
+        if viewModel.places.contains(place) {
+            let alertController = UIAlertController(title: "이미 추가된 장소예요!", message: nil, preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "확인", style: .default) { _ in
+                DispatchQueue.main.async {
+                    self.presentPlaceListView()
+                }
+            }
+            alertController.addAction(confirmAction)
+            self.present(alertController, animated: true)
+        } else {
+            self.viewModel.addPlace(place)
+            self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
+        }
     }
 }
 

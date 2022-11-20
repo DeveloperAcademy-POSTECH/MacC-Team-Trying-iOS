@@ -37,6 +37,7 @@ final class PlaceSearchViewController: BaseViewController {
         tableView.delegate = self
         tableView.backgroundColor = .clear
         tableView.allowsSelection = false
+        tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .singleLine
         tableView.separatorInset = .init(top: 0, left: -15, bottom: 0, right: 0)
         tableView.separatorInsetReference = .fromAutomaticInsets
