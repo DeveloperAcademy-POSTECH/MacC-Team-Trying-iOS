@@ -92,30 +92,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if target == "COURSE" {
             mainCoordinator.tabBarController.selectedIndex = 0
             mainCoordinator.homeCoordinator?.navigationController?.popToRootViewController(animated: true)
-//            Task {
-//                let course = try await AlarmIdAPI().getCourseWith(.course, id: targetId)
             NotificationCenter.default.post(name: Notification.Name("COURSE"), object: targetId)
-//                print("course", course)
-//            }
-            
-
         } else if target == "REVIEW" {
             mainCoordinator.tabBarController.selectedIndex = 2
             mainCoordinator.logCoordinator?.navigationController?.popToRootViewController(animated: true)
             NotificationCenter.default.post(name: Notification.Name("REVIEW"), object: targetId)
-//            Task {
-//                let review = try await AlarmIdAPI().getReviewWith(.review, id: targetId)
-//                print("review", review)
-//            }
         }
-        
-        //foreground
-//        if application.applicationState == .active {
-//        }
-        //background
-//        if application.applicationState == .inactive {
-//        }
-        
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
