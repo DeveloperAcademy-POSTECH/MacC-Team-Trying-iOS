@@ -25,6 +25,7 @@ final class AddCourseRepositoryImpl: AddCourseRepository {
         
         let statusCode = (response as! HTTPURLResponse).statusCode
         guard statusCode == 200 else {
+            #if DEBUG
             print("🔥statusCode : \(statusCode)")
             let debug = try JSONDecoder().decode(PodingError.self, from: data)
             print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
@@ -32,10 +33,13 @@ final class AddCourseRepositoryImpl: AddCourseRepository {
             print("code       : \(debug.code)")
             print("message    : \(debug.message)")
             print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+            #endif
             
             throw try self.judgeErrorStatus(by: statusCode)
         }
+        #if DEBUG
         print("🎉🎉🎉🎉🎉 API 통신 성공 🎉🎉🎉🎉🎉")
+        #endif
         
         guard let result = try? JSONDecoder().decode(AddCourseResponse.self, from: data) else { throw NetworkingError.decodeError(toType: AddCourseResponse.self) }
         

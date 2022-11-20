@@ -9,13 +9,13 @@
 import Foundation
 
 final class EditCourseRepositoryImpl: EditCourseRepository {
-    func editCourse(_ editCourseDTO: CourseRequestDTO) async throws -> Int {
+    func editCourse(_ courseRequestDTO: CourseRequestDTO) async throws -> Int {
         let token = UserDefaults.standard.string(forKey: "accessToken")
         
-        let urlString = "https://comeit.site/courses/\(editCourseDTO.id!)"
+        let urlString = "https://comeit.site/courses/\(courseRequestDTO.id!)"
         guard let url = URL(string: urlString) else { throw NetworkingError.urlError }
         
-        guard let jsonData = try? JSONEncoder().encode(self.convertToRequest(editCourseDTO)) else {
+        guard let jsonData = try? JSONEncoder().encode(self.convertToRequest(courseRequestDTO)) else {
             throw NetworkingError.encodeError
         }
         
@@ -26,37 +26,44 @@ final class EditCourseRepositoryImpl: EditCourseRepository {
         request.httpBody = jsonData
         
         let (data, response) = try await URLSession.shared.data(for: request)
-        let statusCode = (response as! HTTPURLResponse).statusCode
-        guard try self.judgeStatus(by: statusCode) == true else { throw
-            NetworkingError.invalidServerResponse
-        }
         
-        let networkResult = try self.decodeData(from: data, to: EditCourseResponse.self)
+        let statusCode = (response as! HTTPURLResponse).statusCode
+        
+        guard statusCode == 200 else {
+            #if DEBUG
+            print("🔥statusCode : \(statusCode)")
+            let debug = try JSONDecoder().decode(PodingError.self, from: data)
+            print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+            print("id         : \(debug.id)")
+            print("code       : \(debug.code)")
+            print("message    : \(debug.message)")
+            print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+            #endif
+            
+            throw try self.judgeErrorStatus(by: statusCode)
+        }
+        #if DEBUG
+        print("🎉🎉🎉🎉🎉 API 통신 성공 🎉🎉🎉🎉🎉")
+        #endif
+        
+        guard let networkResult = try? self.decodeData(from: data, to: EditCourseResponse.self) else {
+            throw NetworkingError.decodeError(toType: EditCourseResponse.self)
+        }
         return networkResult.courseId
     }
 }
 
 // MARK: - Helper
 extension EditCourseRepositoryImpl {
-        private func judgeStatus(by statusCode: Int) throws -> Bool {
-            switch statusCode {
-            case 200:
-                return true
-            case 400..<500:
-                throw NetworkingError.requestError(statusCode)
-            case 500:
-                throw NetworkingError.serverError(statusCode)
-            default:
-                throw NetworkingError.networkFailError(statusCode)
-            }
+    private func judgeErrorStatus(by statusCode: Int) throws -> Error {
+        switch statusCode {
+        case 400..<500:
+            throw NetworkingError.requestError(statusCode)
+        case 500:
+            throw NetworkingError.serverError(statusCode)
+        default:
+            throw NetworkingError.networkFailError(statusCode)
         }
-    
-    private func encodeData(from data: Data) throws -> Data {
-        guard let encodedData = try? JSONEncoder().encode(data) else {
-            throw NetworkingError.encodeError
-        }
-        
-        return encodedData
     }
     
     private func decodeData<T: Decodable>(from data: Data, to type: T.Type) throws -> T {

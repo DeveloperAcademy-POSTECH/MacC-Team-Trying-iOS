@@ -24,7 +24,7 @@ final class DeleteCourseRepositoryImpl: DeleteCourseRepository {
         
         let statusCode = (response as! HTTPURLResponse).statusCode
         guard statusCode == 200 else {
-            print("✨코스 아이디 : \(courseId)")
+            #if DEBUG
             print("🔥statusCode : \(statusCode)")
             let debug = try JSONDecoder().decode(PodingError.self, from: data)
             print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
@@ -32,10 +32,13 @@ final class DeleteCourseRepositoryImpl: DeleteCourseRepository {
             print("code       : \(debug.code)")
             print("message    : \(debug.message)")
             print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+            #endif
             
             throw try self.judgeErrorStatus(by: statusCode)
         }
+        #if DEBUG
         print("🎉🎉🎉🎉🎉 API 통신 성공 🎉🎉🎉🎉🎉")
+        #endif
     }
 }
 
