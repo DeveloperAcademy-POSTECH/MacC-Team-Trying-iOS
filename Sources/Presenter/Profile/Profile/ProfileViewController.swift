@@ -44,6 +44,21 @@ final class ProfileViewController: BaseViewController {
         tableView.separatorInset = .init(top: 0, left: 20, bottom: 0, right: 20)
         return tableView
     }()
+    
+    private lazy var blackBackgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .designSystem(.black)?.withAlphaComponent(0.6)
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(blackBackgroundViewPressed(_:)))
+        view.addGestureRecognizer(tapGestureRecognizer)
+        return view
+    }()
+    private lazy var editDateView: EditDateView = {
+        let view = EditDateView()
+        view.datePicker.addTarget(self, action: #selector(dateSelected(_:)), for: .valueChanged)
+        view.dismissButton.addTarget(self, action: #selector(editDateDismissButtonPressed(_:)), for: .touchUpInside)
+        view.doneButton.addTarget(self, action: #selector(editDateDoneButtonPressed(_:)), for: .touchUpInside)
+        return view
+    }()
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -122,11 +137,12 @@ final class ProfileViewController: BaseViewController {
 // MARK: - UI
 extension ProfileViewController: NavigationBarConfigurable {
     private func setUI() {
-        navigationItem.backButtonTitle = ""
-        navigationController?.navigationBar.tintColor = .white
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         
-        view.addSubview(scrollView)
+        view.addSubviews(
+            scrollView,
+            editDateView
+        )
         scrollView.snp.makeConstraints { make in
             make.top.bottom.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
@@ -155,6 +171,56 @@ extension ProfileViewController: NavigationBarConfigurable {
             make.height.equalTo(600)
             make.bottom.equalToSuperview()
         }
+
+        editDateView.snp.makeConstraints { make in
+            make.leading
+                .trailing.equalToSuperview().inset(30)
+            make.height.equalTo(editDateView.height)
+            make.bottom.equalToSuperview().inset(-editDateView.height)
+        }
+    }
+    
+    private func hideEditDateView() {
+        DispatchQueue.main.async {
+            self.editDateView.hide()
+            
+            UIView.animate(
+                withDuration: 0.4,
+                delay: 0,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+            
+            self.blackBackgroundView.removeFromSuperview()
+        }
+        
+        self.toggleSettingButtonEnable()
+    }
+    
+    private func presentEditDateView() {
+        self.view.addSubview(self.blackBackgroundView)
+        self.blackBackgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        self.view.bringSubviewToFront(self.editDateView)
+        DispatchQueue.main.async {
+            self.editDateView.present()
+            
+            UIView.animate(
+                withDuration: 0.7,
+                delay: 0,
+                usingSpringWithDamping: 0.75,
+                initialSpringVelocity: 0.5,
+                options: .curveEaseInOut,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+        
+        self.toggleSettingButtonEnable()
     }
 }
 
@@ -188,6 +254,31 @@ extension ProfileViewController {
         alertController.addAction(cancelAction)
         
         present(alertController, animated: true)
+    }
+    
+    @objc
+    private func dateSelected(_ sender: UIDatePicker) {
+        print(sender.date)
+    }
+    
+    @objc
+    private func editDateDismissButtonPressed(_ sender: UIButton) {
+        self.hideEditDateView()
+    }
+    
+    @objc
+    private func editDateDoneButtonPressed(_ sender: UIButton) {
+        self.hideEditDateView()
+    }
+    
+    @objc
+    private func blackBackgroundViewPressed(_ sender: UITapGestureRecognizer) {
+        self.hideEditDateView()
+    }
+    
+    private func toggleSettingButtonEnable() {
+        guard let settingButton = self.navigationItem.rightBarButtonItem?.customView as? UIButton else { return }
+        settingButton.isEnabled.toggle()
     }
 }
 
@@ -265,7 +356,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             case 0:
                 viewModel.editProfileButtonDidTapped()
             case 1:
-                viewModel.pushToEditDayView()
+                self.presentEditDateView()
             case 2:
                 viewModel.pushToEditNotificationView()
             default:

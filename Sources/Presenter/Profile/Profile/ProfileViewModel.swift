@@ -56,9 +56,15 @@ final class ProfileViewModel: BaseViewModel {
             }
         }
     }
-
-    func coordinateToEditPlanet() {
-        coordinator.coordinateToEditPlanet(date: date, planetName: planetName, planetImageName: planetImageName)
+    
+    func editDate() {
+        Task {
+            do {
+                // try await self.planetService
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
     
     func deletePlanet() {
@@ -86,6 +92,10 @@ extension ProfileViewModel {
 
     func editProfileButtonDidTapped() {
         coordinator.coordinateToEditProfile()
+    }
+    
+    func coordinateToEditPlanet() {
+        coordinator.coordinateToEditPlanet(date: date, planetName: planetName, planetImageName: planetImageName)
     }
 }
 
