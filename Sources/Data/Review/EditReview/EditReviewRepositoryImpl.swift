@@ -1,31 +1,28 @@
 //
-//  AddReviewRepositoryImpl.swift
+//  EditReviewRepositoryImpl.swift
 //  ComeIt
 //
-//  Created by 김승창 on 2022/11/19.
+//  Created by 김승창 on 2022/11/20.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-final class AddReviewRepositoryImpl: AddReviewRepository {
-    func addReview(courseId: Int, content: String, images: [UIImage]) async throws -> Int {
+final class EditReviewRepositoryImpl: EditReviewRepository {
+    func editReview(reviewId: Int, content: String, images: [UIImage]) async throws {
         let token = UserDefaults.standard.string(forKey: "accessToken")
         
-        let urlString = "https://comeit.site/reviews"
+        let urlString = "https://comeit.site/reviews/\(reviewId)"
         guard let url = URL(string: urlString) else { throw NetworkingError.urlError }
         
         let boundary = UUID().uuidString
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = "PUT"
         request.setValue("multipart/form-data;charset=UTF-8; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.setValue(token, forHTTPHeaderField: "accessToken")
         
         var data = Data()
-        data.append("--\(boundary)\r\n".data(using: .utf8)!)
-        data.append("Content-Disposition: form-data; name=courseId\r\n\r\n".data(using: .utf8)!)
-        data.append("\(courseId)\r\n".data(using: .utf8)!)
         
         data.append("--\(boundary)\r\n".data(using: .utf8)!)
         data.append("Content-Disposition: form-data; name=content\r\n\r\n".data(using: .utf8)!)
@@ -63,16 +60,11 @@ final class AddReviewRepositoryImpl: AddReviewRepository {
         #if DEBUG
         print("🎉🎉🎉🎉🎉 API 통신 성공 🎉🎉🎉🎉🎉")
         #endif
-        
-        guard let result = try? JSONDecoder().decode(AddReviewResponse.self, from: responseData) else {
-            throw NetworkingError.decodeError(toType: AddReviewResponse.self)
-        }
-        return result.reviewId
     }
 }
 
 // MARK: - Helper
-extension AddReviewRepositoryImpl {
+extension EditReviewRepositoryImpl {
     private func judgeErrorStatus(by statusCode: Int) throws -> Error {
         switch statusCode {
         case 400..<500:
