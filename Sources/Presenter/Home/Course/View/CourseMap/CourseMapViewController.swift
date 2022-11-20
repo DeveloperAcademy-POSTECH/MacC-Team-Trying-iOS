@@ -18,8 +18,8 @@ final class CourseMapViewController: BaseViewController {
     var type: CourseFlowType
     var viewModel: CourseMapViewModel
     
-    // private var recentAnnotations = [MKAnnotation]()
-    private var selectedAnnotations = [MKAnnotation]()
+    // private var temporaryAnnotations = [MKAnnotation]()
+    private var lastAnnotations = [MKAnnotation]()
     private let locationManager = LocationManager.shared
     
     private lazy var placeMapView: MKMapView = {
@@ -110,6 +110,7 @@ final class CourseMapViewController: BaseViewController {
                 }
   
                 DispatchQueue.main.async {
+                    self.drawPlaceAnnotations(places: places)
                     // MARK: reload가 조금 느리게 되는 이슈가 있습니다.
                     self.placeListView.mapPlaceTableView.reloadData()
                     self.nextButton.setTitle("\(numberOfPlaces)개 선택 완료", for: .normal)
@@ -122,6 +123,7 @@ final class CourseMapViewController: BaseViewController {
         self.type = type
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        setLastAnnotations()
     }
     
     required init?(coder: NSCoder) {
@@ -148,7 +150,7 @@ final class CourseMapViewController: BaseViewController {
         
         // self.removeNotifications()
         
-        // self.removeRecentAnnotations()
+        // self.removeTemporaryAnnotations()
         DispatchQueue.main.async {
             // self.placeDetailView.hide()
             self.placeListView.hide()
@@ -213,6 +215,18 @@ extension CourseMapViewController: NavigationBarConfigurable {
             make.bottom.equalToSuperview().inset(-58)
         }
     }
+    
+    private func setLastAnnotations() {
+        self.lastAnnotations = viewModel.places.map { StarAnnotation(coordinate: $0.location) }
+    }
+    
+    private func drawPlaceAnnotations(places: [Place]) {
+        self.placeMapView.removeAnnotations(lastAnnotations)
+        let newAnnotations = places.map { StarAnnotation(coordinate: $0.location) }
+        self.placeMapView.addAnnotations(newAnnotations)
+        
+        self.lastAnnotations = newAnnotations
+    }
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
@@ -223,7 +237,6 @@ extension CourseMapViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         self.viewModel.changePlaceOrder(sourceIndex: sourceIndexPath.row, to: destinationIndexPath.row)
-        self.changeAnnotationOrder(sourceIndex: sourceIndexPath.row, to: destinationIndexPath.row)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -356,8 +369,8 @@ extension CourseMapViewController {
         placeDetailView.memoTextField.resignFirstResponder()
         viewModel.addPlace(self.placeDetailView.selectedPlace!)
          */
-        self.selectedAnnotations.append(recentAnnotations.first!)
-        recentAnnotations.removeAll()
+        self.selectedAnnotations.append(temporaryAnnotations.first!)
+        temporaryAnnotations.removeAll()
     }
      */
     
@@ -366,8 +379,6 @@ extension CourseMapViewController {
         let index = sender.tag
         HapticManager.instance.selection()
         viewModel.deletePlace(index)
-        let removedAnnotation = self.selectedAnnotations.remove(at: index)
-        self.placeMapView.removeAnnotation(removedAnnotation)
     }
     
     @objc
@@ -419,7 +430,7 @@ extension CourseMapViewController {
         let mapPoint = placeMapView.convert(location, toCoordinateFrom: placeMapView)
         
         if sender.state == .ended {
-            self.removeRecentAnnotations()
+            self.removeTemporaryAnnotations()
             Task {
                 self.placeMapView.isUserInteractionEnabled = false
                 let place = try await self.viewModel.searchPlace(latitude: mapPoint.latitude, longitude: mapPoint.longitude)
@@ -448,32 +459,12 @@ extension CourseMapViewController {
     }
     */
     
-    private func addStarAnnotation(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
-        let starAnnotation = StarAnnotation(
-            coordinate: CLLocationCoordinate2D(
-                latitude: latitude,
-                longitude: longitude
-            )
-        )
-        // self.recentAnnotations.append(starAnnotation)
-        self.selectedAnnotations.append(starAnnotation)
-        DispatchQueue.main.async {
-            self.placeMapView.addAnnotation(starAnnotation)
-        }
-    }
-    
     /*
-    private func removeRecentAnnotations() {
-        self.placeMapView.removeAnnotations(self.recentAnnotations)
-        self.recentAnnotations.removeAll()
+    private func removeTemporaryAnnotations() {
+        self.placeMapView.removeAnnotations(self.temporaryAnnotations)
+        self.temporaryAnnotations.removeAll()
     }
      */
-    
-    private func changeAnnotationOrder(sourceIndex: Int, to destinationIndex: Int) {
-        let targetAnnotation = selectedAnnotations[sourceIndex]
-        self.selectedAnnotations.remove(at: sourceIndex)
-        self.selectedAnnotations.insert(targetAnnotation, at: destinationIndex)
-    }
 }
 
 // MARK: - MKMapViewDelegate
@@ -521,7 +512,6 @@ extension CourseMapViewController: AddPlaceDelegate {
             self.present(alertController, animated: true)
         } else {
             self.viewModel.addPlace(place)
-            self.addStarAnnotation(latitude: place.location.latitude, longitude: place.location.longitude)
         }
     }
 }
@@ -539,7 +529,7 @@ extension CourseMapViewController: PlacePresenting {
         let averageLatitude = places.reduce(into: 0.0) { $0 += $1.location.latitude } / Double(places.count)
         let averageLongitude = places.reduce(into: 0.0) { $0 += $1.location.longitude } / Double(places.count)
         
-        self.removeRecentAnnotations()
+        self.removeTemporaryAnnotations()
         DispatchQueue.main.async {
             self.placeDetailView.hide()
             self.placeListView.hide()
