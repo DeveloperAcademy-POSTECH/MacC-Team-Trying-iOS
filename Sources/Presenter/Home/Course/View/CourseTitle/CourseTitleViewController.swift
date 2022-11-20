@@ -53,10 +53,14 @@ final class CourseTitleViewController: BaseViewController {
     private func bind() {
         // input
         titleTextField.textPublisher()
-            .assign(to: &self.viewModel.$title)
+            .sink(receiveValue: { courseTitle in
+                self.viewModel.title = courseTitle
+            })
+            .cancel(with: cancelBag)
         
         // output
         viewModel.$title
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] courseTitle in
                 guard let self = self else { return }
                 self.titleTextField.text = courseTitle
