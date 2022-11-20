@@ -11,18 +11,23 @@ import UIKit
 
 final class RegisterReviewViewModel: BaseViewModel {
     var coordinator: CourseFlowCoordinator
-    private let addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl()
+    private let addCourseUseCase: AddCourseUseCase
+    private let addReviewUseCase: AddReviewUseCase
     
     var courseRequestDTO: CourseRequestDTO
     @Published var images: [UIImage]
-    var reviewContent: String?
+    @Published var reviewContent: String?
     
     init(
         coordinator: CourseFlowCoordinator,
+        addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(addCourseRepository: AddCourseRepositoryImpl()),
+        addReviewUseCase: AddReviewUseCase = AddReviewUseCaseImpl(addReviewRepository: AddReviewRepositoryImpl()),
         courseRequestDTO: CourseRequestDTO,
         images: [UIImage] = []
     ) {
         self.coordinator = coordinator
+        self.addCourseUseCase = addCourseUseCase
+        self.addReviewUseCase = addReviewUseCase
         self.courseRequestDTO = courseRequestDTO
         self.images = images
     }
@@ -49,11 +54,35 @@ extension RegisterReviewViewModel {
         switch self.coordinator {
         case is AddCourseCoordinator:
             guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
-            coordinator.pushToCompleteView(self.courseRequestDTO)
+            Task {
+                guard let courseId = self.courseRequestDTO.id,
+                      let reviewContent = reviewContent else { return }
+                do {
+                    _ = try await self.addReviewUseCase.addReview(courseId: courseId, content: reviewContent, images: self.images)
+                    
+                    DispatchQueue.main.async {
+                        coordinator.pushToCompleteView(self.courseRequestDTO)
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
             
         case is RegisterReviewCoordinator:
             guard let coordinator = self.coordinator as? RegisterReviewCoordinator else { return }
-            coordinator.pushToCompleteView(self.courseRequestDTO)
+            Task {
+                guard let courseId = self.courseRequestDTO.id,
+                      let reviewContent = reviewContent else { return }
+                do {
+                    _ = try await self.addReviewUseCase.addReview(courseId: courseId, content: reviewContent, images: self.images)
+                    
+                    DispatchQueue.main.async {
+                        coordinator.pushToCompleteView(self.courseRequestDTO)
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
             
         default:
             break
