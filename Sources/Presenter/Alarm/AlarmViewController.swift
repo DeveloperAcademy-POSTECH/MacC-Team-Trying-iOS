@@ -12,6 +12,11 @@ import UIKit
 class AlarmViewController: BaseViewController {
 
     let alarmViewModel: AlarmViewModel
+    private let refreshControl: UIRefreshControl = {
+        let rc = UIRefreshControl()
+        rc.addTarget(self, action: #selector(refreshAlarmData), for: .valueChanged)
+        return rc
+    }()
     
     init(alarmViewModel: AlarmViewModel) {
         self.alarmViewModel = alarmViewModel
@@ -22,12 +27,17 @@ class AlarmViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let tableView: UITableView = {
+    @objc private func refreshAlarmData(_ sender: Any) {
+        alarmViewModel.fetchAlamrs()
+    }
+    
+    private lazy var tableView: UITableView = {
         let tv = UITableView()
         tv.separatorColor = .designSystem(.gray818181)
         tv.register(AlarmTableViewcell.self, forCellReuseIdentifier: AlarmTableViewcell.cellID)
         tv.backgroundColor = .clear
         tv.tableHeaderView = UIView()
+        tv.addSubview(refreshControl)
         return tv
     }()
 
@@ -101,6 +111,7 @@ class AlarmViewController: BaseViewController {
             .sink { alamrs in
                 self.noAlarmStackView.isHidden = alamrs.isEmpty ? false : true
                 self.tableView.reloadData()
+                self.refreshControl.endRefreshing()
             }
             .cancel(with: cancelBag)
     }

@@ -150,6 +150,7 @@ extension HomeViewModel {
         Task {
             let course = try await alarmCourseReviewUseCase.getCourseWith(id: courseId)
             print("alarm을 통한 course:", course)
+            print("alarm을 통한 데이트 날짜:", course.date)
         }
   
     }
