@@ -371,8 +371,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
                 // TODO: 공지사항
                 break
             case 1:
-                // TODO: 서비스 약관
-                break
+                self.viewModel.pushToServiceTermView()
             case 2:
                 // TODO: 1대1 문의
                 break

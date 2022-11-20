@@ -16,6 +16,7 @@ protocol ProfileCoordinatorLogic: Coordinator {
     func coordinateToEditProfile()
     func coordinateToEditPlanet(date: String, planetName: String, planetImageName: String)
     func coordinateToLoginScene()
+    func pushToServiceTermView()
 }
 
 final class ProfileViewModel: BaseViewModel {
@@ -96,6 +97,10 @@ extension ProfileViewModel {
     
     func coordinateToEditPlanet() {
         coordinator.coordinateToEditPlanet(date: date, planetName: planetName, planetImageName: planetImageName)
+    }
+    
+    func pushToServiceTermView() {
+        self.coordinator.pushToServiceTermView()
     }
 }
 

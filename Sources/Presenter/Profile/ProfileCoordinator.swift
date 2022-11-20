@@ -78,6 +78,13 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
     func coordinateToDeRegisterScene() {
         // MARK: 이동
     }
+    
+    func pushToServiceTermView() {
+        let viewController = TermViewController(viewModel: .init())
+        viewController.termType = .service
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
 }
 
 extension ProfileCoordinator: EditNotificationCoordinating {
