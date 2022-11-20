@@ -115,12 +115,13 @@ extension PlaceSearchRepositoryImpl {
         var places = [Place]()
         
         dto.documents.forEach { document in
+            let address = document.roadAddressName.isEmpty ? document.addressName : document.roadAddressName
             places.append(
                 Place(
                     id: Int(document.id)!,
                     title: document.placeName,
                     category: document.categoryGroupName,
-                    address: document.roadAddressName,
+                    address: address,
                     location: CLLocationCoordinate2D(
                         latitude: Double(document.longitude)!,
                         longitude: Double(document.latitude)!
