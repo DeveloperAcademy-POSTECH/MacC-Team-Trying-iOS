@@ -14,14 +14,16 @@ import CancelBag
 import SnapKit
 
 final class LogTicketViewController: BaseViewController {
-
+    
+    private var didTapLikeButton: Bool = false
+    
     var viewModel: LogTicketViewModel?
     
     private var logTicketView = LogTicketView()
     /// View Model과 bind 합니다.
     private func bind() {
         // input
-
+        
         // output
     }
     
@@ -47,6 +49,7 @@ final class LogTicketViewController: BaseViewController {
 extension LogTicketViewController {
     
     private func setUI() {
+        super.backgroundView.isHidden = true
         configureTicketView()
         setLayout()
     }
@@ -64,7 +67,7 @@ extension LogTicketViewController {
     private func setLayout() {
         view.addSubview(logTicketView)
         logTicketView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(DeviceInfo.screenHeight * 0.05924170616)
+            make.top.equalToSuperview()
             make.centerX.equalToSuperview()
             make.width.equalTo(DeviceInfo.screenWidth * 0.8974358974)
             make.height.equalTo(DeviceInfo.screenHeight * 0.8163507109)
@@ -72,21 +75,38 @@ extension LogTicketViewController {
     }
     
     private func addButtonTarget() {
-        logTicketView.dismissButton.addTarget(self, action: #selector(tapDismissButton), for: .touchUpInside)
         logTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         logTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
     }
     
     @objc
-    func tapDismissButton() {
-        viewModel?.tapDismissButton()
-    }
-    @objc
     func tapLikeButton() {
+        print("like Button Tapped")
+        switch didTapLikeButton {
+        case true:
+            logTicketView.likebutton.setImage(UIImage(named: "unlike_image"), for: .normal)
+            didTapLikeButton.toggle()
+        case false:
+            logTicketView.likebutton.setImage(UIImage(named: "like_image"), for: .normal)
+            didTapLikeButton.toggle()
+        }
         viewModel?.tapLikeButton()
     }
+    
     @objc
     func tapFlopButton() {
+        let transitionOptions: UIView.AnimationOptions = [.transitionFlipFromRight, .showHideTransitionViews]
+        
+        // MARK: Card Flip Animation
+        UIView.transition(with: logTicketView, duration: 0.7, options: transitionOptions, animations: {
+            self.logTicketView.isHidden = true
+        })
+        
+        UIView.transition(with: logTicketView, duration: 0.7, options: transitionOptions, animations: {
+            self.logTicketView.isHidden = false
+        })
+        
         viewModel?.tapFlopButton()
+        
     }
 }
