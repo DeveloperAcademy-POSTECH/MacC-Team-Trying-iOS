@@ -29,21 +29,21 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
         Task {
             do {
                 let userInformations = try await userService.getUserInformations()
-                if userInformations.planet == nil {
-                    await coordinateToCreatePlanet()
-                } else if userInformations.mate == nil {
-                    guard let planet = userInformations.planet else { return }
-                    await coordinateToWaitingMate(
-                        selectedPlanet: planet.image,
-                        planetName: planet.name,
-                        code: planet.code ?? ""
-                    )
-                    return
-                } else {
+//                if userInformations.planet == nil {
+//                    await coordinateToCreatePlanet()
+//                } else if userInformations.mate == nil {
+//                    guard let planet = userInformations.planet else { return }
+//                    await coordinateToWaitingMate(
+//                        selectedPlanet: planet.image,
+//                        planetName: planet.name,
+//                        code: planet.code ?? ""
+//                    )
+//                    return
+//                } else {
                     await coordinateToMainScene()
-                }
-            } catch {
-                await coordinateToLogincScene()
+//                }
+//            } catch {
+//                await coordinateToLogincScene()
             }
         }
     }

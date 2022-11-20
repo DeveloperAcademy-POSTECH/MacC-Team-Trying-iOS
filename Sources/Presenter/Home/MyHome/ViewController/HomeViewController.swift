@@ -44,7 +44,6 @@ final class HomeViewController: BaseViewController {
     let viewModel: HomeViewModel
     var dateInfoIsHidden: Bool = false
     
-    
     let homeTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .bold, size: ._20)
@@ -197,6 +196,7 @@ final class HomeViewController: BaseViewController {
                     make.leading.trailing.equalToSuperview().inset(20)
                     // MARK: - 하나의 cell높이(59), Header의 높이 43, Footer의 높이(60)에서 자연스럽게 10추가
                     make.height.equalTo(receivedValue.courseList.count * 59 + 43 + 70)
+                    
                 }
                 self.pathTableView.reloadData()
             }
@@ -220,9 +220,12 @@ final class HomeViewController: BaseViewController {
             let currentDateRange = getCurrentDateRange()
             try await viewModel.fetchUserInfo()
             try await viewModel.fetchDateRange(dateRange: currentDateRange)
-            try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
-            self.dateCoureRegisterButton.isHidden = true
-            
+            if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
+                try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
+                self.dateCoureRegisterButton.isHidden = true
+            } else {
+                setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
+            }
         }
     }
     
@@ -476,7 +479,12 @@ extension HomeViewController: ActionSheetDelegate {
 extension HomeViewController: CalendarViewDelegate {
     func changeCalendarPage(startDate: String, endDate: String) {
         Task {
-            try await viewModel.fetchDateRange(dateRange: [startDate, endDate])
+            try await viewModel.fetchDateRange(
+                dateRange: [
+                    viewModel.selectedDate.month2Before.dateToString(),
+                    viewModel.selectedDate.month2After.dateToString()
+                ]
+            )
         }
     }
     
@@ -491,12 +499,11 @@ extension HomeViewController: CalendarViewDelegate {
     func selectDate(_ date: Date?) {
         guard let date = date else { return }
         self.viewModel.selectedDate = date
-        let selectedDate = date.dateToString()
         Task {
             // MARK: - 내가 누른 날짜가 처음에 조회한 데이트가 존재하는 날짜에 포함되어있는지를 판단
             // 데이트가 존재하지 않는날짜를 누르면 api자체를 호출하지 않게끔 하기 위한 분기처리 - 서버에서 데이터를 안주게 처리
-            if viewModel.hasCourse(selectedDate: selectedDate) {
-                try await viewModel.fetchSelectedDateCourse(selectedDate: selectedDate)
+            if viewModel.dateCalendarList.map({ $0.asDate() }).contains(date) {
+                try await viewModel.fetchSelectedDateCourse(selectedDate: date.dateToString())
                 self.dateCoureRegisterButton.isHidden = true
             } else {
                 setRegisterButton(date > Date() ? .addPlan : .addCourse)
@@ -529,7 +536,7 @@ extension HomeViewController: CalendarViewDelegate {
 
     private func getCurrentDateRange() -> [String] {
         let currentDate = Date()
-        let beforeDate = Date().monthBefore
+        let beforeDate = Date().month2Before
         let nextDate = currentDate.month2After
         let beforeDateString = beforeDate.dateToString()
         let afterDateString = nextDate.dateToString()
