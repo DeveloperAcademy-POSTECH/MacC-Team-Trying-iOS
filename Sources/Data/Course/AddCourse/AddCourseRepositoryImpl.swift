@@ -24,9 +24,18 @@ final class AddCourseRepositoryImpl: AddCourseRepository {
         let (data, response) = try await URLSession.shared.upload(for: request, from: uploadData)
         
         let statusCode = (response as! HTTPURLResponse).statusCode
-        guard try self.judgeStatus(by: statusCode) == true else { throw
-            NetworkingError.invalidServerResponse
+        guard statusCode == 200 else {
+            print("🔥statusCode : \(statusCode)")
+            let debug = try JSONDecoder().decode(PodingError.self, from: data)
+            print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+            print("id         : \(debug.id)")
+            print("code       : \(debug.code)")
+            print("message    : \(debug.message)")
+            print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+            
+            throw try self.judgeErrorStatus(by: statusCode)
         }
+        print("🎉🎉🎉🎉🎉 API 통신 성공 🎉🎉🎉🎉🎉")
         
         guard let result = try? JSONDecoder().decode(AddCourseResponse.self, from: data) else { throw NetworkingError.decodeError(toType: AddCourseResponse.self) }
         
@@ -64,10 +73,8 @@ extension AddCourseRepositoryImpl {
         )
     }
     
-    private func judgeStatus(by statusCode: Int) throws -> Bool {
+    private func judgeErrorStatus(by statusCode: Int) throws -> Error {
         switch statusCode {
-        case 200:
-            return true
         case 400..<500:
             throw NetworkingError.requestError(statusCode)
         case 500:
