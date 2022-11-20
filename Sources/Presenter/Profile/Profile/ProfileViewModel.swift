@@ -60,7 +60,7 @@ final class ProfileViewModel: BaseViewModel {
     func editDate() {
         Task {
             do {
-                // try await self.planetService
+                _ = try await self.userService.editPlanet(date: date, planetName: self.planetName, planetImageName: self.planetImageName)
             } catch {
                 print(error.localizedDescription)
             }

@@ -258,7 +258,7 @@ extension ProfileViewController {
     
     @objc
     private func dateSelected(_ sender: UIDatePicker) {
-        print(sender.date)
+        self.viewModel.date = sender.date.dateToString()
     }
     
     @objc
@@ -268,6 +268,7 @@ extension ProfileViewController {
     
     @objc
     private func editDateDoneButtonPressed(_ sender: UIButton) {
+        self.viewModel.editDate()
         self.hideEditDateView()
     }
     
