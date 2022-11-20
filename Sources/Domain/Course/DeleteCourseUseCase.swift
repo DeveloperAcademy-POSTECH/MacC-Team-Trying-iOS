@@ -9,7 +9,7 @@
 import Foundation
 
 protocol DeleteCourseUseCase {
-    func deleteCourse(_ courseRequestDTO: CourseRequestDTO) async throws
+    func deleteCourse(_ courseId: Int) async throws
 }
 
 final class DeleteCourseUseCaseImpl: DeleteCourseUseCase {
@@ -19,7 +19,7 @@ final class DeleteCourseUseCaseImpl: DeleteCourseUseCase {
         self.deleteCourseRepository = deleteCourseRepository
     }
     
-    func deleteCourse(_ courseRequestDTO: CourseRequestDTO) async throws {
-        return try await self.deleteCourseRepository.deleteCourse(courseRequestDTO)
+    func deleteCourse(_ courseId: Int) async throws {
+        return try await self.deleteCourseRepository.deleteCourse(courseId)
     }
 }

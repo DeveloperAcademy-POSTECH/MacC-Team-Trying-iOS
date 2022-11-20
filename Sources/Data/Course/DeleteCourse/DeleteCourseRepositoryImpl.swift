@@ -9,10 +9,10 @@
 import Foundation
 
 final class DeleteCourseRepositoryImpl: DeleteCourseRepository {
-    func deleteCourse(_ courseRequestDTO: CourseRequestDTO) async throws {
+    func deleteCourse(_ courseId: Int) async throws {
         let token = UserDefaults.standard.string(forKey: "accessToken")
         
-        let urlString = "https://comeit.site/courses\(courseRequestDTO.id!)"
+        let urlString = "https://comeit.site/courses/\(courseId)"
         
         guard let url = URL(string: urlString) else { throw NetworkingError.urlError }
         var request = URLRequest(url: url)
@@ -20,21 +20,29 @@ final class DeleteCourseRepositoryImpl: DeleteCourseRepository {
         request.setValue("application/json;charset=UTF-8", forHTTPHeaderField: "Content-Type")
         request.setValue(token, forHTTPHeaderField: "accessToken")
         
-        let (_ , response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
         
         let statusCode = (response as! HTTPURLResponse).statusCode
-        guard try self.judgeStatus(by: statusCode) == true else { throw
-            NetworkingError.invalidServerResponse
+        guard statusCode == 200 else {
+            print("✨코스 아이디 : \(courseId)")
+            print("🔥statusCode : \(statusCode)")
+            let debug = try JSONDecoder().decode(PodingError.self, from: data)
+            print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+            print("id         : \(debug.id)")
+            print("code       : \(debug.code)")
+            print("message    : \(debug.message)")
+            print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+            
+            throw try self.judgeErrorStatus(by: statusCode)
         }
+        print("🎉🎉🎉🎉🎉 API 통신 성공 🎉🎉🎉🎉🎉")
     }
 }
 
 // MARK: - Helper
 extension DeleteCourseRepositoryImpl {
-    private func judgeStatus(by statusCode: Int) throws -> Bool {
+    private func judgeErrorStatus(by statusCode: Int) throws -> Error {
         switch statusCode {
-        case 200:
-            return true
         case 400..<500:
             throw NetworkingError.requestError(statusCode)
         case 500:

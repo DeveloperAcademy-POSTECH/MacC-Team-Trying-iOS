@@ -30,6 +30,8 @@ struct DatePath {
 }
 
 final class HomeViewModel: BaseViewModel {
+    var coordinator: Coordinator
+    private let deleteCourseUseCase: DeleteCourseUseCase
 
     @Published var user: UserInfoDTO?
     @Published var dateCalendarList: [YearMonthDayDate] = []
@@ -43,11 +45,15 @@ final class HomeViewModel: BaseViewModel {
         DateDday(title: "강릉데이트", dday: 30),
         DateDday(title: "서울데이트", dday: 40)
     ]
-
-    var coordinator: Coordinator
     
-    init(coordinator: Coordinator) {
+    init(
+        coordinator: Coordinator,
+        deleteCourseUseCase: DeleteCourseUseCase = DeleteCourseUseCaseImpl(
+            deleteCourseRepository: DeleteCourseRepositoryImpl()
+        )
+    ) {
         self.coordinator = coordinator
+        self.deleteCourseUseCase = deleteCourseUseCase
         super.init()
     }
     
@@ -99,6 +105,17 @@ final class HomeViewModel: BaseViewModel {
             Place(id: element.place.placeId, title: element.place.name, category: element.place.category, address: element.place.address, location: .init(latitude: element.place.coordinate.latitude, longitude: element.place.coordinate.longitude), memo: element.memo)
         }
         dateCourse = HomeCourse(courseId: selectedDateCourse.courseId, courseDate: selectedDateCourse.date, courseTitle: selectedDateCourse.title, courseList: placeList)
+    }
+    
+    func deleteSelectedCourse() {
+        Task {
+            do {
+                guard let courseId = self.dateCourse?.courseId else { return }
+                try await self.deleteCourseUseCase.deleteCourse(courseId)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
 }
 

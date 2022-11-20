@@ -19,7 +19,6 @@ final class HomeViewController: BaseViewController {
     let viewModel: HomeViewModel
     var dateInfoIsHidden: Bool = false
     
-    
     let homeTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .bold, size: ._20)
@@ -445,6 +444,10 @@ extension HomeViewController: ActionSheetDelegate {
     
     func showSettingActionSheet(alert: UIAlertController) {
         self.present(alert, animated: true)
+    }
+    
+    func deleteSelectedCourse() {
+        self.viewModel.deleteSelectedCourse()
     }
 }
 

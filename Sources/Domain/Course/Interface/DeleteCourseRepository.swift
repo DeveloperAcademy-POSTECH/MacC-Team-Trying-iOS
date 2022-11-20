@@ -9,5 +9,5 @@
 import Foundation
 
 protocol DeleteCourseRepository {
-    func deleteCourse(_ courseRequestDTO: CourseRequestDTO) async throws
+    func deleteCourse(_ courseId: Int) async throws
 }

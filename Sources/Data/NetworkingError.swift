@@ -21,3 +21,9 @@ enum NetworkingError: Error {
         case noAddress
     }
 }
+
+struct PodingError: Decodable {
+    let id: String
+    let code: String
+    let message: String
+}
