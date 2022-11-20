@@ -27,7 +27,8 @@ class AlarmViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc private func refreshAlarmData(_ sender: Any) {
+    @objc
+    private func refreshAlarmData(_ sender: Any) {
         alarmViewModel.fetchAlamrs()
     }
     
@@ -79,9 +80,33 @@ class AlarmViewController: BaseViewController {
         alarmViewModel.popToBackViewController()
     }
     
+    func setAuthAlertAction() {
+        let authAlertController = UIAlertController(title: "알림", message: "알림을 전체 삭제 하시겠어요?", preferredStyle: .alert)
+
+        let getAuthAction = UIAlertAction(
+            title: "삭제할래요",
+            style: .destructive,
+            handler: { _ in
+                self.alarmViewModel.allDeleteTap()
+            }
+        )
+        let cancelAction = UIAlertAction(
+            title: "아니요",
+            style: .cancel
+        )
+            authAlertController.addAction(getAuthAction)
+            authAlertController.addAction(cancelAction)
+            self.present(authAlertController, animated: true, completion: nil)
+        }
+    
     @objc
     func allDeleteTap() {
-        alarmViewModel.allDeleteTap()
+        
+        DispatchQueue.main.async {
+            self.setAuthAlertAction()
+        }
+        
+//        alarmViewModel.allDeleteTap()
     }
     
     override func viewDidLoad() {

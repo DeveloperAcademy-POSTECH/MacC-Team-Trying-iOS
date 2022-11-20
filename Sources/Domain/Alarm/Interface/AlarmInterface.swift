@@ -12,6 +12,6 @@ import Combine
 protocol AlarmInterface {
     func fetchAlarms() -> AnyPublisher<[AlarmEntity], Error>
     func readAlarm(id: Int)
-    func removeAllAlarms()
+    func removeAllAlarms() async throws -> Bool
     func toggleAlarmPermission(isPermission: Bool)
 }

@@ -108,8 +108,8 @@ class AlarmRepository: AlarmInterface {
         alarmAPI.checkAlarm(type: .check, id: id)
     }
 
-    func removeAllAlarms() {
-        alarmAPI.removeAllAlarms(type: .delete)
+    func removeAllAlarms() async throws -> Bool {
+        return try await alarmAPI.removeAllAlarms(type: .delete)
     }
     
     func toggleAlarmPermission(isPermission: Bool) {

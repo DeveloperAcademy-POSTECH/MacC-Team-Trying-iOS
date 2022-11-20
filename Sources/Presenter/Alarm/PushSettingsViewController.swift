@@ -134,17 +134,17 @@ class PushSettingsViewController: BaseViewController, UNUserNotificationCenterDe
     }
     
     func setAuthAlertAction() {
-        let authAlertController = UIAlertController(title: "위치 사용 권한이 필요합니다.", message: "위치 권한을 허용해야만 앱을 사용하실 수 있습니다.", preferredStyle: .alert)
+        let authAlertController = UIAlertController(title: "알림 사용 권한이 필요합니다.", message: "알림 권한을 허용해야만 앱을 사용하실 수 있습니다.", preferredStyle: .alert)
 
-            let getAuthAction = UIAlertAction(
-                title: "설정",
-                style: .default,
-                handler: { _ in
-                if let appSettings = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
-                }
-                }
-            )
+        let getAuthAction = UIAlertAction(
+            title: "설정",
+            style: .default,
+            handler: { _ in
+            if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+            }
+            }
+        )
         let cancelAction = UIAlertAction(title: "취소", style: .destructive, handler: { _ in
             self.notificationSwitch.isOn = false
         })

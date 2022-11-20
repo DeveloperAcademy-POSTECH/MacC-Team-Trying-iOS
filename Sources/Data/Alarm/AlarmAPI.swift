@@ -20,22 +20,30 @@ class AlarmAPI {
     
     private let host = "https://comeit.site/"
     
-    func removeAllAlarms(type: AlarmApiType) {
+    func removeAllAlarms(type: AlarmApiType) async throws -> Bool {
         let urlStr = encodeUrl(string: addStringParameter(type: type))
-        guard let url = URL(string: urlStr) else { return }
+        guard let url = URL(string: urlStr) else { return false }
 
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         request.addValue("\(token)", forHTTPHeaderField: "accessToken")
 
-        URLSession.shared.dataTaskPublisher(for: request)
-            .map(\.data)
-            .eraseToAnyPublisher()
-            .assertNoFailure()
-            .sink(receiveValue: { _ in
-            })
-            .cancel(with: cancelBag)
+        let (data, urlResponse) = try await URLSession.shared.data(for: request)
+        guard let urlResponse = urlResponse as? HTTPURLResponse else { return false }
+        if urlResponse.statusCode != 200 {
+            return false
+        }
+        return true
+        
+//        URLSession.shared.dataTaskPublisher(for: request)
+//            .map(\.data)
+//            .eraseToAnyPublisher()
+//            .assertNoFailure()
+//            .sink(receiveValue: { _ in
+//            })
+//            .cancel(with: cancelBag)
     }
+    
     func getAlarms(type: AlarmApiType) -> AnyPublisher<AlarmResponse, Error> {
         let urlStr = encodeUrl(string: addStringParameter(type: type, id: nil))
         let url = URL(string: urlStr)!

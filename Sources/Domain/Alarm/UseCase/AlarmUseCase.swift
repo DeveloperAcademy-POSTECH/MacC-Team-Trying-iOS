@@ -12,7 +12,7 @@ import Combine
 protocol AlarmUseCaseDelegate: AnyObject {
     func fetchAlarms() -> AnyPublisher<[AlarmEntity], Error>
     func readAlarm(id: Int)
-    func removeAllAlarms()
+    func removeAllAlarms() async throws -> Bool
     func toggleAlarmPermission(isPermission: Bool)
 }
 
@@ -26,8 +26,8 @@ class AlarmUseCase: AlarmUseCaseDelegate {
         alarmInterface.readAlarm(id: id)
     }
     
-    func removeAllAlarms() {
-        alarmInterface.removeAllAlarms()
+    func removeAllAlarms() async throws -> Bool {
+        return try await alarmInterface.removeAllAlarms()
     }
     
     func toggleAlarmPermission(isPermission: Bool) {

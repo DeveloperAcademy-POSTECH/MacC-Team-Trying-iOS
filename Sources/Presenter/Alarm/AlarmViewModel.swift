@@ -13,7 +13,6 @@ import CancelBag
 class AlarmViewModel: BaseViewModel {
     
     let alarmUseCase: AlarmUseCaseDelegate = AlarmUseCase(alarmInterface: AlarmRepository())
-//    let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     var coordinator: Coordinator
     
     @Published var alarms: [AlarmEntity] = []
@@ -68,8 +67,10 @@ class AlarmViewModel: BaseViewModel {
     }
     
     func allDeleteTap() {
-        alarmUseCase.removeAllAlarms()
-        popToBackViewController()
+        Task {
+            if try await alarmUseCase.removeAllAlarms() {
+                self.alarms = []
+            }
+        }
     }
-    
 }

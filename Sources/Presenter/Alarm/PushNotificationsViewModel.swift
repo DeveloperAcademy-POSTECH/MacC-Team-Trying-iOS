@@ -26,7 +26,6 @@ class PushNotificationsViewModel: BaseViewModel {
     func bind() {
         
         $permission.sink { permission in
-            print("!!permission 잘바뀌었어 ->", permission)
             UserDefaults().set(permission, forKey: "alarmPermssion")
             self.alarmUseCase.toggleAlarmPermission(isPermission: permission)
         }
