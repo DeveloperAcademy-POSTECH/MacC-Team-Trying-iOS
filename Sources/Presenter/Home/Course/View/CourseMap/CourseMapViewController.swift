@@ -499,15 +499,10 @@ extension CourseMapViewController: MKMapViewDelegate {
     /*
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         guard let annotationView = view as? StarAnnotationView,
-        let selectedAnnotation = annotationView.annotation as? StarAnnotation else { return }
+              let selectedAnnotation = annotationView.annotation as? StarAnnotation,
+              let selectedPlace = viewModel.places.first(where: { $0.location.latitude == selectedAnnotation.coordinate.latitude && $0.location.longitude == selectedAnnotation.coordinate.longitude }) else { return }
         
-        if self.recentAnnotations.contains(where: { annotation -> Bool in
-            return annotation === selectedAnnotation
-        }) {
-            
-        } else {
-            
-        }
+        self.presentPlaceDetailView(with: selectedPlace)
     }
      */
 }
