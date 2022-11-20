@@ -60,7 +60,7 @@ final class EditPlanCoordinator: CourseFlowCoordinator {
 extension EditPlanCoordinator: EditPlanCoordinating {
     func pushToCourseMapView(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseMapViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseMapViewController(viewModel: viewModel)
+        let viewController = CourseMapViewController(type: .editPlan, viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }
@@ -89,7 +89,7 @@ extension EditPlanCoordinator: EditPlanCoordinating {
     
     func pushToCompleteView(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseCompleteViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseCompleteViewController(type: .addCourse, viewModel: viewModel)
+        let viewController = CourseCompleteViewController(type: .editPlan, viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }

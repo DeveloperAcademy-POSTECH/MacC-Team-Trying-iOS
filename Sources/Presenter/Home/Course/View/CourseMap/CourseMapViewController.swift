@@ -15,6 +15,7 @@ import CancelBag
 import SnapKit
 
 final class CourseMapViewController: BaseViewController {
+    var type: CourseFlowType
     var viewModel: CourseMapViewModel
     
     // private var recentAnnotations = [MKAnnotation]()
@@ -117,7 +118,8 @@ final class CourseMapViewController: BaseViewController {
             .cancel(with: cancelBag)
     }
     
-    init(viewModel: CourseMapViewModel) {
+    init(type: CourseFlowType, viewModel: CourseMapViewModel) {
+        self.type = type
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -158,7 +160,14 @@ final class CourseMapViewController: BaseViewController {
 // MARK: - UI
 extension CourseMapViewController: NavigationBarConfigurable {
     private func setUI() {
-        configureRecordMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(placeSearchButtonPressed(_:)))
+        switch type {
+        case .addCourse, .editCourse:
+            configureRecordMapNavigationBar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(placeSearchButtonPressed(_:)))
+        case .addPlan, .editPlan:
+            configurePlanMapNavigationNar(target: self, dismissAction: #selector(backButtonPressed(_:)), pushAction: #selector(placeSearchButtonPressed(_:)))
+        default:
+            break
+        }
         setLayout()
     }
     

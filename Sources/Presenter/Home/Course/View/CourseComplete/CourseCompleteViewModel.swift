@@ -11,17 +11,14 @@ import UIKit
 
 final class CourseCompleteViewModel: BaseViewModel {
     var coordinator: CourseFlowCoordinator
-    private let addCourseUseCase: AddCourseUseCase
     
     var courseRequestDTO: CourseRequestDTO
     
     init(
         coordinator: CourseFlowCoordinator,
-        addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(),
         courseRequestDTO: CourseRequestDTO
     ) {
         self.coordinator = coordinator
-        self.addCourseUseCase = addCourseUseCase
         self.courseRequestDTO = courseRequestDTO
     }
 }

@@ -186,7 +186,7 @@ extension NavigationBarConfigurable {
         
         let nextButton: UIButton = {
             var configuration = UIButton.Configuration.filled()
-            var attributedString = AttributedString.init("어디를 방문하실 계획인가요??")
+            var attributedString = AttributedString.init("어디를 가실 계획인가요?")
             attributedString.font = .designSystem(weight: .regular, size: ._15)
             configuration.attributedTitle = attributedString
             configuration.titleAlignment = .leading

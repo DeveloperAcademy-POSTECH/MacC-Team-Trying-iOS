@@ -64,7 +64,7 @@ final class AddCourseCoordinator: CourseFlowCoordinator {
 extension AddCourseCoordinator: AddCourseFlowCoordinating {
     func pushToCourseMapView(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseMapViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseMapViewController(viewModel: viewModel)
+        let viewController = CourseMapViewController(type: .addCourse, viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }
