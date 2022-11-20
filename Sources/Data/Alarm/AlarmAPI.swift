@@ -20,6 +20,22 @@ class AlarmAPI {
     
     private let host = "https://comeit.site/"
     
+    func deleteAlarm(type: AlarmApiType, id: Int) async throws -> Bool {
+        let urlStr = encodeUrl(string: addStringParameter(type: type))
+        guard let url = URL(string: urlStr) else { return false }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.addValue("\(token)", forHTTPHeaderField: "accessToken")
+
+        let (_, urlResponse) = try await URLSession.shared.data(for: request)
+        guard let urlResponse = urlResponse as? HTTPURLResponse else { return false }
+        if urlResponse.statusCode != 200 {
+            return false
+        }
+        return true
+    }
+    
     func removeAllAlarms(type: AlarmApiType) async throws -> Bool {
         let urlStr = encodeUrl(string: addStringParameter(type: type))
         guard let url = URL(string: urlStr) else { return false }
@@ -28,20 +44,12 @@ class AlarmAPI {
         request.httpMethod = "DELETE"
         request.addValue("\(token)", forHTTPHeaderField: "accessToken")
 
-        let (data, urlResponse) = try await URLSession.shared.data(for: request)
+        let (_, urlResponse) = try await URLSession.shared.data(for: request)
         guard let urlResponse = urlResponse as? HTTPURLResponse else { return false }
         if urlResponse.statusCode != 200 {
             return false
         }
         return true
-        
-//        URLSession.shared.dataTaskPublisher(for: request)
-//            .map(\.data)
-//            .eraseToAnyPublisher()
-//            .assertNoFailure()
-//            .sink(receiveValue: { _ in
-//            })
-//            .cancel(with: cancelBag)
     }
     
     func getAlarms(type: AlarmApiType) -> AnyPublisher<AlarmResponse, Error> {
@@ -110,10 +118,13 @@ extension AlarmAPI {
         case .check:
             guard let id = id else { return "" }
             urlString += "notifications/\(id)"
-        case .delete:
+        case .deleteAll:
             urlString += "notifications"
         case .togglePermission:
             urlString += "users/notification"
+        case .deleteOne:
+            guard let id = id else { return "" }
+            urlString += "notifications/\(id)"
         }
         return urlString
     }
@@ -127,6 +138,7 @@ extension AlarmAPI {
 enum AlarmApiType {
     case fetch
     case check
-    case delete
+    case deleteAll
     case togglePermission
+    case deleteOne
 }

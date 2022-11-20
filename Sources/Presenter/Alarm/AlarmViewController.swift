@@ -101,12 +101,9 @@ class AlarmViewController: BaseViewController {
     
     @objc
     func allDeleteTap() {
-        
         DispatchQueue.main.async {
             self.setAuthAlertAction()
         }
-        
-//        alarmViewModel.allDeleteTap()
     }
     
     override func viewDidLoad() {
@@ -126,7 +123,6 @@ class AlarmViewController: BaseViewController {
         tableView.snp.makeConstraints { make in
             make.trailing.leading.bottom.top.equalTo(self.view.safeAreaLayoutGuide)
         }
-        
     }
 
     private func bind() {
@@ -196,4 +192,12 @@ extension AlarmViewController {
             action: #selector(allDeleteTap)
         )
     }
+}
+
+extension AlarmViewController {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+           if editingStyle == .delete {
+               alarmViewModel.deleteAlarmAt(indexPath.row)
+           }
+       }
 }

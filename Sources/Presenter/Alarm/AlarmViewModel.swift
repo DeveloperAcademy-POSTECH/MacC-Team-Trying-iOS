@@ -73,4 +73,13 @@ class AlarmViewModel: BaseViewModel {
             }
         }
     }
+    
+    func deleteAlarmAt(_ index: Int) {
+        Task {
+            let id = alarms[index].id
+            if try await alarmUseCase.deleteAlarm(id: id ) {
+                self.alarms = self.alarms.filter { $0.id != id }
+            }
+        }
+    }
 }

@@ -14,6 +14,7 @@ protocol AlarmUseCaseDelegate: AnyObject {
     func readAlarm(id: Int)
     func removeAllAlarms() async throws -> Bool
     func toggleAlarmPermission(isPermission: Bool)
+    func deleteAlarm(id: Int) async throws -> Bool
 }
 
 class AlarmUseCase: AlarmUseCaseDelegate {
@@ -35,6 +36,10 @@ class AlarmUseCase: AlarmUseCaseDelegate {
     }
     
     private let alarmInterface: AlarmInterface
+    
+    func deleteAlarm(id: Int) async throws -> Bool {
+        return try await alarmInterface.deleteAlarm(id: id)
+    }
     
     init(alarmInterface: AlarmInterface) {
         self.alarmInterface = alarmInterface

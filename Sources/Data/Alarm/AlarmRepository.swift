@@ -76,6 +76,10 @@ class AlarmRepository: AlarmInterface {
         alarmAPI.checkAlarm(type: .check, id: id)
     }
     
+    func deleteAlarm(id: Int) async throws -> Bool {
+        return try await alarmAPI.deleteAlarm(type: .deleteAll, id: id)
+    }
+    
     private func getAlarms(alarmResponse: AlarmResponse) -> [AlarmEntity] {
         let dtos = alarmResponse.notifications
         var type: AlarmType = .arrive
@@ -109,7 +113,7 @@ class AlarmRepository: AlarmInterface {
     }
 
     func removeAllAlarms() async throws -> Bool {
-        return try await alarmAPI.removeAllAlarms(type: .delete)
+        return try await alarmAPI.removeAllAlarms(type: .deleteAll)
     }
     
     func toggleAlarmPermission(isPermission: Bool) {

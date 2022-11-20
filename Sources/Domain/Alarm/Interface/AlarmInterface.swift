@@ -14,4 +14,5 @@ protocol AlarmInterface {
     func readAlarm(id: Int)
     func removeAllAlarms() async throws -> Bool
     func toggleAlarmPermission(isPermission: Bool)
+    func deleteAlarm(id: Int) async throws -> Bool
 }
