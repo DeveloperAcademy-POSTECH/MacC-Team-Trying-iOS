@@ -176,8 +176,8 @@ final class HomeViewController: BaseViewController {
             try await viewModel.fetchUserInfo()
             try await viewModel.fetchDateRange(dateRange: currentDateRange)
             if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
-                try await viewModel.fetchSelectedDateCourse(selectedDate: viewModel.selectedDate.toString())
-                self.calendarView.selectDateDirectly(self.selectedDate)
+                try await viewModel.fetchSelectedDateCourse(selectedDate: viewModel.selectedDate.dateToString())
+                self.calendarView.selectDateDirectly(viewModel.selectedDate)
                 self.dateCoureRegisterButton.isHidden = true
             } else {
                 setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
@@ -386,9 +386,7 @@ extension HomeViewController: CalendarViewDelegate {
     /// - Parameter date: 내가 누른 날짜
     func selectDate(_ date: Date?) {
         guard let date = date else { return }
-        
-        print(date)
-        
+
         Task {
             self.viewModel.selectedDate = date
             // MARK: - 내가 누른 날짜가 처음에 조회한 데이트가 존재하는 날짜에 포함되어있는지를 판단
