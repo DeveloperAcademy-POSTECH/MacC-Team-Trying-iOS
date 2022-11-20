@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         
         self.registerForRemoteNotifications()
-        UserDefaults.standard.set("Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlNTE0NTk0ZC1hMDUxLTQ5NTQtYTQ5Yy1hY2Q2YjIzMWJmYzIiLCJhdXRoIjoiVVNFUiJ9.WOhcykDZXoRSCBCkweIxJBy0erYCWva4NmIMB2RunjI22YCeOUr8ozXlROeiS8uVp950Rh7cBjw4PY03tt06vA", forKey: "accessToken")
+        UserDefaults.standard.set("Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI3YTk2NTFiZS1kNWIzLTQ5NDUtOTQ3Ny05NTUyMjU5MTIwMTYiLCJhdXRoIjoiVVNFUiJ9.xh5HUu4dRLjkb6nXv8lXVsDjQKpcc2FwnlfPXU5rulcL06rRx4Hnbh53Q69cMUdPsORGg9lM0P1DCTky0reQug", forKey: "accessToken")
         Font.registerFonts()
         KakaoSDK.initSDK(appKey: "041c741d45744f54da6ed10e0f946672")
         self.window = UIWindow(frame: UIScreen.main.bounds)

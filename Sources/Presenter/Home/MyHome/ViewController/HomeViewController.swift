@@ -165,13 +165,6 @@ final class HomeViewController: BaseViewController {
                 self.pathTableView.reloadData()
             }
             .store(in: &myCancelBag)
-        
-        viewModel.$selectedDate
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] date in
-                self?.selectedDate = date
-            }
-            .store(in: &myCancelBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
