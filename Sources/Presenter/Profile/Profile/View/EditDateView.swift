@@ -77,9 +77,8 @@ final class EditDateView: UIView {
 extension EditDateView {
     private func setUI() {
         self.layer.cornerRadius = 15
-        self.backgroundColor = .brown
         self.addSubviews(
-//            blurBackgroundView,
+            blurBackgroundView,
             dismissButton,
             imageView,
             viewLabel,
@@ -87,9 +86,9 @@ extension EditDateView {
             doneButton
         )
         
-//        blurBackgroundView.snp.makeConstraints { make in
-//            make.edges.equalToSuperview()
-//        }
+        blurBackgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         dismissButton.snp.makeConstraints { make in
             make.top
