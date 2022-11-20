@@ -241,17 +241,7 @@ extension ProfileViewController {
             self?.viewModel.coordinateToEditPlanet()
         }
         let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            
-            let exitPlanetAlert = UIAlertController(title: "행성을 삭제하시겠습니까?", message: "삭제 후 메이트와 함께한 모든 데이터가 삭제됩니다.", preferredStyle: .alert)
-            let cancelAction = UIAlertAction(title: "취소", style: .cancel)
-            let confirmAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
-                self.viewModel.deletePlanet()
-            }
-            exitPlanetAlert.addAction(cancelAction)
-            exitPlanetAlert.addAction(confirmAction)
-            
-            self.present(exitPlanetAlert, animated: true)
+            // TODO: 행성 나가기
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         

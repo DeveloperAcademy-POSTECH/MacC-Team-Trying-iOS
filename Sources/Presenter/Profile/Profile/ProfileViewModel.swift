@@ -22,7 +22,6 @@ protocol ProfileCoordinatorLogic: Coordinator {
 final class ProfileViewModel: BaseViewModel {
     var coordinator: ProfileCoordinatorLogic
     private let userService: UserService
-    private let planetService: PlanetService
 
     // @Published var numberOfPlaces: Int
     @Published var planetImageName: String
@@ -32,8 +31,7 @@ final class ProfileViewModel: BaseViewModel {
 
     init(
         coordinator: ProfileCoordinatorLogic,
-        userService: UserService = UserService(),
-        planetService: PlanetService = PlanetService()
+        userService: UserService = UserService()
     ) {
         // self.numberOfPlaces = 0
         self.planetImageName = ""
@@ -42,7 +40,6 @@ final class ProfileViewModel: BaseViewModel {
         self.date = ""
         self.coordinator = coordinator
         self.userService = userService
-        self.planetService = planetService
     }
 
     func fetchUserInformation() {
@@ -62,22 +59,6 @@ final class ProfileViewModel: BaseViewModel {
         Task {
             do {
                 _ = try await self.userService.editPlanet(date: date, planetName: self.planetName, planetImageName: self.planetImageName)
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-    }
-    
-    func deletePlanet() {
-        Task {
-            do {
-                _ = try await self.planetService.deletePlanet()
-                
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    UserDefaults.standard.removeObject(forKey: "accessToken")
-                    self.coordinator.coordinateToLoginScene()
-                }
             } catch {
                 print(error.localizedDescription)
             }
