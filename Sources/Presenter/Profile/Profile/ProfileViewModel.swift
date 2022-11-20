@@ -14,6 +14,7 @@ protocol ProfileCoordinatorLogic: Coordinator {
     func pushToEditDayView()
     func coordinateToEditProfile()
     func coordinateToEditPlanet(date: String, planetName: String, planetImageName: String)
+    func coordinateToExitPlanet(type: OutgoingType)
 }
 
 final class ProfileViewModel: BaseViewModel {
@@ -49,6 +50,10 @@ final class ProfileViewModel: BaseViewModel {
 
     func coordinateToEditPlanet() {
         coordinator.coordinateToEditPlanet(date: date, planetName: planetName, planetImageName: planetImageName)
+    }
+    
+    func coordinateToExitPlanet() {
+        coordinator.coordinateToExitPlanet(type: .exitPlanet)
     }
 }
 

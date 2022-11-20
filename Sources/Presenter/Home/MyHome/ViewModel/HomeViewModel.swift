@@ -35,7 +35,7 @@ final class HomeViewModel: BaseViewModel {
     @Published var dateCalendarList: [YearMonthDayDate] = []
     @Published var dateCourse: HomeCourse?
     @Published var places: [Place] = []
-    @Published var selectedDate: Date = Date()
+    @Published var selectedDate: Date = YearMonthDayDate.today.asDate()
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),

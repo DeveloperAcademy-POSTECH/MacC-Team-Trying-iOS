@@ -43,6 +43,7 @@ final class HomeViewController: BaseViewController {
     var myCancelBag = Set<AnyCancellable>()
     let viewModel: HomeViewModel
     var dateInfoIsHidden: Bool = false
+    var selectedDate: Date = YearMonthDayDate.today.asDate()
     
     let homeTitle: UILabel = {
         let label = UILabel()
@@ -164,6 +165,13 @@ final class HomeViewController: BaseViewController {
                 self.pathTableView.reloadData()
             }
             .store(in: &myCancelBag)
+        
+        viewModel.$selectedDate
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] date in
+                self?.selectedDate = date
+            }
+            .store(in: &myCancelBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -171,11 +179,12 @@ final class HomeViewController: BaseViewController {
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.isHidden = true
         Task {
-            let currentDateRange = getCurrentDateRange()
+            let currentDateRange = getDateRange(currentDate: viewModel.selectedDate)
             try await viewModel.fetchUserInfo()
             try await viewModel.fetchDateRange(dateRange: currentDateRange)
             if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
-                try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
+                try await viewModel.fetchSelectedDateCourse(selectedDate: viewModel.selectedDate.toString())
+                self.calendarView.selectDateDirectly(self.selectedDate)
                 self.dateCoureRegisterButton.isHidden = true
             } else {
                 setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
@@ -193,6 +202,17 @@ final class HomeViewController: BaseViewController {
         bind()
         setAttributes()
         setUI()
+        
+        Task {
+            let currentDateRange = getDateRange(currentDate: viewModel.selectedDate)
+            try await viewModel.fetchDateRange(dateRange: currentDateRange)
+            if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
+                try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
+                self.dateCoureRegisterButton.isHidden = true
+            } else {
+                setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
+            }
+        }
     }
     
     @objc
@@ -373,8 +393,11 @@ extension HomeViewController: CalendarViewDelegate {
     /// - Parameter date: 내가 누른 날짜
     func selectDate(_ date: Date?) {
         guard let date = date else { return }
-        self.viewModel.selectedDate = date
+        
+        print(date)
+        
         Task {
+            self.viewModel.selectedDate = date
             // MARK: - 내가 누른 날짜가 처음에 조회한 데이트가 존재하는 날짜에 포함되어있는지를 판단
             // 데이트가 존재하지 않는날짜를 누르면 api자체를 호출하지 않게끔 하기 위한 분기처리 - 서버에서 데이터를 안주게 처리
             if viewModel.dateCalendarList.map({ $0.asDate() }).contains(date) {
@@ -409,9 +432,8 @@ extension HomeViewController: CalendarViewDelegate {
         self.pathTableView.isHidden = true
     }
     
-    private func getCurrentDateRange() -> [String] {
-        let currentDate = Date()
-        let beforeDate = Date().month2Before
+    private func getDateRange(currentDate: Date) -> [String] {
+        let beforeDate = currentDate.month2Before
         let nextDate = currentDate.month2After
         let beforeDateString = beforeDate.dateToString()
         let afterDateString = nextDate.dateToString()

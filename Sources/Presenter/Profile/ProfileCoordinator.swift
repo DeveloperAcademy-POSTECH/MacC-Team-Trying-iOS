@@ -74,8 +74,15 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
         editPlanet.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(editPlanet, animated: true)
     }
+    
     func coordinateToDeRegisterScene() {
-        // MARK: 이동
+        let withdrwalViewController = UserWarningViewController(outgoingType: .membershipWithdrawal)
+        self.navigationController?.pushViewController(withdrwalViewController, animated: true)
+    }
+    
+    func coordinateToExitPlanet(type: OutgoingType) {
+        let exitPlanetViewController = UserWarningViewController(outgoingType: .exitPlanet)
+        self.navigationController?.pushViewController(exitPlanetViewController, animated: true)
     }
 }
 
