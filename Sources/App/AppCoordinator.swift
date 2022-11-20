@@ -12,7 +12,7 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
     let window: UIWindow
     weak var navigationController: UINavigationController?
     let userService: UserService = UserService()
-    var mainCoordinator: Coordinator?
+    var mainCoordinator: MainCoordinator?
     
     init(window: UIWindow) {
         self.window = window
@@ -50,9 +50,10 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
 
     @MainActor
     func coordinateToMainScene() {
-        let coordinator = MainCoordinator(navigationController: navigationController)
-        coordinator.start()
-        coordinator.delegate = self
+        mainCoordinator = MainCoordinator(navigationController: navigationController)
+        guard let mainCoordinator = mainCoordinator else { return }
+        mainCoordinator.start()
+        mainCoordinator.delegate = self
         window.makeKeyAndVisible()
     }
 

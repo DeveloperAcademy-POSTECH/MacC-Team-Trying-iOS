@@ -22,7 +22,7 @@ class AlarmRepository: AlarmInterface {
         format.dateFormat = "yyyy-MM-dd HH:mm:ss"
         let currentDateString = format.string(from: Date())
         if  let time = time,
-            let startTime = format.date(from: time)?.addingTimeInterval(60 * 60 * 18),
+            let startTime = format.date(from: time)?.addingTimeInterval(60 * 60 * 9),
             let endTime = format.date(from: currentDateString)?.addingTimeInterval(60 * 60 * 9) {
             return getTimeDiff(startTime: startTime, endTime: endTime)
         } else {
@@ -31,6 +31,7 @@ class AlarmRepository: AlarmInterface {
     }
     
     private func getTimeDiff(startTime: Date, endTime: Date) -> String {
+//        print("time", startTime, endTime)
         let originTime = Int(endTime.timeIntervalSince(startTime))
         let time = Int(endTime.timeIntervalSince(startTime)) / 3600
         switch time {

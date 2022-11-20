@@ -13,6 +13,7 @@ import CancelBag
 class AlarmViewModel: BaseViewModel {
     
     let alarmUseCase: AlarmUseCaseDelegate = AlarmUseCase(alarmInterface: AlarmRepository())
+//    let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     var coordinator: Coordinator
     
     @Published var alarms: [AlarmEntity] = []
@@ -32,10 +33,13 @@ class AlarmViewModel: BaseViewModel {
     }
     
     private func pushToAnotherViewController(index: Int) {
-        if alarms[index].type == .arrive {
+        let alarm = alarms[index]
+        if alarm.type == .arrive {
+            NotificationCenter.default.post(name: Notification.Name("REVIEW"), object: "\(alarm.targetId)")
             guard let coordinator = coordinator as? AlarmViewCoordinatingInAlarmViewCoordinating else { return }
             coordinator.goToLogView()
         } else {
+            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: "\(alarm.targetId)")
             popToBackViewController()
         }
     }

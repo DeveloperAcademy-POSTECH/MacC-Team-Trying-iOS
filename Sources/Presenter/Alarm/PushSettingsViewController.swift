@@ -1,8 +1,8 @@
 //
-//  PushSettingViewController.swift
+//  PushSettingsViewController.swift
 //  ComeIt
 //
-//  Created by Hankyu Lee on 2022/11/18.
+//  Created by Hankyu Lee on 2022/11/20.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
@@ -11,9 +11,9 @@ import SnapKit
 import UserNotifications
 import Firebase
 
-class PushSettingViewController: BaseViewController, UNUserNotificationCenterDelegate {
+class PushSettingsViewController: BaseViewController, UNUserNotificationCenterDelegate {
     
-    let viewModel: PushNotificationViewModel
+    let viewModel: PushNotificationsViewModel
     
     private let alarmMentStackView: UIStackView = {
         let alarmLabel = UILabel()
@@ -40,7 +40,7 @@ class PushSettingViewController: BaseViewController, UNUserNotificationCenterDel
        return controlSwicth
     }()
     
-    init(viewModel: PushNotificationViewModel) {
+    init(viewModel: PushNotificationsViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -180,4 +180,5 @@ class PushSettingViewController: BaseViewController, UNUserNotificationCenterDel
         viewModel.pop()
     }
 }
+
 

@@ -1,8 +1,8 @@
 //
-//  PushNotificationViewModel.swift
+//  PushNotificationsViewModel.swift
 //  ComeIt
 //
-//  Created by Hankyu Lee on 2022/11/18.
+//  Created by Hankyu Lee on 2022/11/20.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
@@ -10,7 +10,7 @@ import Foundation
 import Combine
 import CancelBag
 
-class PushNotificationViewModel: BaseViewModel {
+class PushNotificationsViewModel: BaseViewModel {
     
     let coordinator: Coordinator
     private let alarmUseCase: AlarmUseCaseDelegate = AlarmUseCase(alarmInterface: AlarmRepository())

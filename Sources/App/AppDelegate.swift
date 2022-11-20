@@ -15,6 +15,7 @@ import KakaoSDKCommon
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
+    
     var coordinator: AppCoordinator?
     let alarmAPI: AlarmAPI = AlarmAPI()
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -76,23 +77,44 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let userInfo = notification.request.content.userInfo
         completionHandler([.badge, .banner, .list])
+        print("!!", userInfo)
         // 앱이 foreground 상태일 때 push가 온 경우
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
-//        let json = data as NSDictionary
-    
-        // push를 탭한 경우
         let application = UIApplication.shared
-          
-        if application.applicationState == .active {
-            print(userInfo["target"], userInfo["targetId"])
+        
+        guard let target = userInfo["target"] as? String,
+              let targetId = userInfo["targetId"] as? String,
+              let coordinator = coordinator,
+              let mainCoordinator = coordinator.mainCoordinator else { return }
+        if target == "COURSE" {
+            mainCoordinator.tabBarController.selectedIndex = 0
+            mainCoordinator.homeCoordinator?.navigationController?.popToRootViewController(animated: true)
+//            Task {
+//                let course = try await AlarmIdAPI().getCourseWith(.course, id: targetId)
+            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: targetId)
+//                print("course", course)
+//            }
+            
+
+        } else if target == "REVIEW" {
+            mainCoordinator.tabBarController.selectedIndex = 2
+            mainCoordinator.logCoordinator?.navigationController?.popToRootViewController(animated: true)
+            NotificationCenter.default.post(name: Notification.Name("REVIEW"), object: targetId)
+//            Task {
+//                let review = try await AlarmIdAPI().getReviewWith(.review, id: targetId)
+//                print("review", review)
+//            }
         }
-          
-        if application.applicationState == .inactive {
-            print(userInfo["target"], userInfo["targetId"])
-        }
+        
+        //foreground
+//        if application.applicationState == .active {
+//        }
+        //background
+//        if application.applicationState == .inactive {
+//        }
         
     }
     
