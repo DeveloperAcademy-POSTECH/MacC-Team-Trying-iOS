@@ -73,6 +73,13 @@ extension LogCollectionViewCell {
         
         dateLabel.text = course.date
         courseNameButton.setTitle(course.courseTitle, for: .normal)
+        
+        courseNameButton.snp.remakeConstraints { make in
+            make.width.equalTo(17 * (courseNameButton.titleLabel?.text?.count ?? 0))
+            make.height.equalTo(35)
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(dateLabel.snp.top).offset(-10)
+        }
     }
     
     private func setConstraints() {
