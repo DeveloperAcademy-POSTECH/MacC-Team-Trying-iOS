@@ -18,7 +18,7 @@ class AlarmAPI {
 
     private var token = UserDefaults().string(forKey: "accessToken") ?? ""
     
-    private let host = "https://comeit.site/"
+    private let host = APIManager.baseURL
     
     func deleteAlarm(type: AlarmApiType, id: Int) async throws -> Bool {
         let urlStr = encodeUrl(string: addStringParameter(type: type, id: id))

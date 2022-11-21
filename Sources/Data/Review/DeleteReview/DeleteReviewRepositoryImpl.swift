@@ -12,7 +12,7 @@ final class DeleteReviewRepositoryImpl: DeleteReviewRepository {
     func deleteReview(_ reviewId: Int) async throws {
         let token = UserDefaults.standard.string(forKey: "accessToken")
         
-        let urlString = "https://comeit.site/reviews/\(reviewId)"
+        let urlString = "\(APIManager.baseURL)/reviews/\(reviewId)"
         
         guard let url = URL(string: urlString) else { throw NetworkingError.urlError }
         var request = URLRequest(url: url)

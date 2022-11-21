@@ -13,7 +13,7 @@ final class EditReviewRepositoryImpl: EditReviewRepository {
     func editReview(reviewId: Int, content: String, images: [UIImage]) async throws {
         let token = UserDefaults.standard.string(forKey: "accessToken")
         
-        let urlString = "https://comeit.site/reviews/\(reviewId)"
+        let urlString = "\(APIManager.baseURL)/reviews/\(reviewId)"
         guard let url = URL(string: urlString) else { throw NetworkingError.urlError }
         
         let boundary = UUID().uuidString
