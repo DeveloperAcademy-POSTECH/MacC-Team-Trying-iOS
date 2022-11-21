@@ -49,8 +49,8 @@ final class ProfileViewModel: BaseViewModel {
                 let userInformation = try await userService.getUserInformations()
                 planetImageName = userInformation.planet?.image ?? "planet_purple"
                 planetName = userInformation.planet?.name ?? ""
-                activities.0 = userInformation.activities.courseCount
-                activities.1 = userInformation.activities.likedCount
+                activities.0 = userInformation.activities?.courseCount ?? 10000
+                activities.1 = userInformation.activities?.likedCount ?? 10000
                 date = userInformation.planet?.meetDate ?? ""
             }
         }

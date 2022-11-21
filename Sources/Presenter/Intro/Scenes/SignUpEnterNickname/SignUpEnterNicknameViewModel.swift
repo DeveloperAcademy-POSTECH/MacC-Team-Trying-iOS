@@ -54,21 +54,21 @@ final class SignUpEnterNicknameViewModel: BaseViewModel, SignUpEnterNicknameBusi
         Task {
             do {
                 self.isLoading = true
-
+                let deviceToken = UserDefaults.standard.string(forKey: "fcmToken") ?? ""
                 switch type {
                 case .email(let model):
                     let accessToken = try await signUpService.signup(
-                        .init(email: model.email, password: model.password, name: nickname)
+                        .init(email: model.email, password: model.password, name: nickname, deviceToken: deviceToken)
                     )
                     UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
                 case .apple(let identifier):
                     let accessToken = try await signUpService.signupWithApple(
-                        .init(identifier: identifier, email: "aaa@bbs.com", name: nickname, deviceToken: "1")
+                        .init(identifier: identifier, name: nickname, deviceToken: deviceToken)
                     )
                     UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
                 case .kakao(let identifier):
                     let accessToken = try await signUpService.signupWitHKakao(
-                        .init(identifier: identifier, email: "aaa@b.com", name: nickname, deviceToken: "1")
+                        .init(identifier: identifier, name: nickname, deviceToken: deviceToken)
                     )
                     UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
                 }

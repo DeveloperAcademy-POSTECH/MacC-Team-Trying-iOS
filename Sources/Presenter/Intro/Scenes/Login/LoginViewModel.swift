@@ -15,6 +15,8 @@ protocol LoginCoordinatorLogic {
     func coordinateToEnterEmailScene()
     func coordinateToSignUpEmailScene()
     func coordinateToCreatePlanetScene()
+    func coordinateToWarningMateExitScene()
+    func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String, code: String)
     func coordinateToServiceTermScene(type: SignUpEnterNicknameViewModel.SignUpType)
     func coordinateToMainScene()
 }
@@ -34,10 +36,14 @@ final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
     let kakaoLoginManager: KakaoLoginManager
     let appleLoginManager: AppleLoginManager
     let signinServcee: SignInService
+    let userService: UserService
 
     enum RouteStep {
         case main
         case serviceTerm(SignUpEnterNicknameViewModel.SignUpType)
+        case createPlanet
+        case warning
+        case waitingMate(selectedPlanet: String, planetName: String, code: String)
     }
 
     @Published var doneLogin: RouteStep?
@@ -46,14 +52,15 @@ final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
         coordinator: LoginCoordinatorLogic,
         kakaoLoginManager: KakaoLoginManager = KakaoLoginManagerImpl(),
         appleLoginManager: AppleLoginManager = AppleLoginManager(),
-        signinService: SignInService = SignInService()
-
+        signinService: SignInService = SignInService(),
+        userService: UserService = UserService()
     ) {
         self.doneLogin = nil
         self.coordinator = coordinator
         self.kakaoLoginManager = kakaoLoginManager
         self.appleLoginManager = appleLoginManager
         self.signinServcee = signinService
+        self.userService = userService
         super.init()
 
         self.appleLoginManager.delegate = self
@@ -81,13 +88,56 @@ final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
                 let accessToken = try await signinServcee.signInWithKakao(.init(identifier: token, deviceToken: deviceToken))
                 UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
 
-                self.doneLogin = .main
+                let userInformations = try await userService.getUserInformations()
+
+                print("✨ ", userInformations)
+                if userInformations.planet == nil {
+                    self.doneLogin = .createPlanet
+                } else if userInformations.mate == nil {
+                    guard let planet = userInformations.planet else { return }
+                    if planet.hasBeenMateEntered {
+                        self.doneLogin = .warning
+                    } else {
+                        self.doneLogin = .waitingMate(
+                            selectedPlanet: planet.image,
+                            planetName: planet.name,
+                            code: planet.code ?? ""
+                        )
+                    }
+                    return
+                } else {
+                    self.doneLogin = .main
+                }
 
             } catch SignInError.nouser(let identifier) {
                 self.doneLogin = .serviceTerm(.kakao(identifier))
             } catch {
                 await LoadingView.shared.hide()
             }
+        }
+    }
+
+    func gotoWaitMate(selectedPlanet: String, planetName: String, code: String) {
+        DispatchQueue.main.async { [weak self] in
+            LoadingView.shared.hide()
+            self?.coordinator.coordinateToWaitingInvitationScene(
+                selectedPlanet: selectedPlanet,
+                planetName: planetName,
+                code: code
+            )
+        }
+    }
+
+    func gotoWarning() {
+        DispatchQueue.main.async { [weak self] in
+            LoadingView.shared.hide()
+            self?.coordinator.coordinateToWarningMateExitScene()
+        }
+    }
+    func gotoCreatPlanet() {
+        DispatchQueue.main.async { [weak self] in
+            LoadingView.shared.hide()
+            self?.coordinator.coordinateToCreatePlanetScene()
         }
     }
 

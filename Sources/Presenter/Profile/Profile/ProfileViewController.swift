@@ -142,6 +142,7 @@ extension ProfileViewController: NavigationBarConfigurable {
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
         setBackgroundGyroMotion()
         setLayout()
+        navigationItem.backButtonTitle = ""
     }
     
     private func setLayout() {
