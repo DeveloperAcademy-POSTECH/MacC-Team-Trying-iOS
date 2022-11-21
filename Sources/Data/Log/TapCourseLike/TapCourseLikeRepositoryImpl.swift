@@ -52,6 +52,5 @@ extension TapCourseLikeRepositoryImpl: TapCourseLikeRepository {
             #endif
             throw CourseLikeRequestError.response
         }
-        print("성공")
     }
 }

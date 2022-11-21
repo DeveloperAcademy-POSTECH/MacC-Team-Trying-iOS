@@ -46,7 +46,6 @@ final class LogTicketViewController: BaseViewController {
     
     // MARK: Life-Cycle
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         Task {
@@ -85,10 +84,10 @@ extension LogTicketViewController {
         super.backgroundView.isHidden = true
         setLayout()
     }
-
+    
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-    
+        
         view.addSubviews(
             firstView,
             secondView
@@ -117,7 +116,7 @@ extension LogTicketViewController {
         case .noReview:
             break
         }
-    
+        
         secondView.isHidden = true
     }
     
@@ -151,11 +150,12 @@ extension LogTicketViewController {
         myTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         logTicketEmptyView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         
-        viewModel.$courses.receive(on: DispatchQueue.main).sink { [weak self] _ in
-            guard let self = self else { return }
-            self.setLikeButtonImage(myTicketView.likebutton)
-        }
-        .cancel(with: cancelBag)
+        viewModel.$courses.receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.setLikeButtonImage(myTicketView.likebutton)
+            }
+            .cancel(with: cancelBag)
         
         configureTicketView(ticketView: myTicketView, index: 0)
         logTicketEmptyView.addCourseButton.isHidden = true
@@ -187,11 +187,11 @@ extension LogTicketViewController {
         
         configureTicketView(ticketView: mateTicketView, index: 1)
         
-        viewModel.$courses.receive(on: DispatchQueue.main).sink { [weak self] _ in
-            print("called")
-            guard let self = self else { return }
-            self.setLikeButtonImage(mateTicketView.likebutton)
-        }
+        viewModel.$courses.receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.setLikeButtonImage(mateTicketView.likebutton)
+            }
         .cancel(with: cancelBag)
         
         logTicketEmptyView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
@@ -227,12 +227,12 @@ extension LogTicketViewController {
         configureTicketView(ticketView: myTicketView, index: 0)
         configureTicketView(ticketView: mateTicketView, index: 1)
         
-        viewModel.$courses.receive(on:
-                                DispatchQueue.main).sink { [weak self] _ in
+        viewModel.$courses.receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
             guard let self = self else { return }
-            self.setLikeButtonImage(myTicketView.likebutton)
-            self.setLikeButtonImage(mateTicketView.likebutton)
-        }
+                self.setLikeButtonImage(myTicketView.likebutton)
+                self.setLikeButtonImage(mateTicketView.likebutton)
+            }
         .cancel(with: cancelBag)
         
         myTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)

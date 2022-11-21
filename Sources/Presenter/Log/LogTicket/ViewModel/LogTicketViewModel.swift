@@ -82,9 +82,7 @@ extension LogTicketViewModel {
     }
     
     func tapLikeCourse() async throws {
-        
         try await tapCourseLikeUseCase.setCourseLike(courseId: courses[currentIndex].id, isLike: courses[currentIndex].isLike)
-        
         courses[currentIndex].isLike.toggle()
     }
 }
