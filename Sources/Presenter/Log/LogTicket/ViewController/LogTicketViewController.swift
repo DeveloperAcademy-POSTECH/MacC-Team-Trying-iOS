@@ -131,7 +131,7 @@ extension LogTicketViewController {
         logTicketEmptyView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         
         configureTicketView(ticketView: myTicketView, index: 0)
-        logTicketEmptyView.bottomButton.isHidden = true
+        logTicketEmptyView.addCourseButton.isHidden = true
         logTicketEmptyView.logTicketEmptyViewLabel.text = "메이트의 후기가 아직 없어요!"
         
         myTicketView.snp.makeConstraints { make in
@@ -168,6 +168,7 @@ extension LogTicketViewController {
         configureTicketView(ticketView: mateTicketView, index: 1)
         
         logTicketEmptyView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
+        logTicketEmptyView.addCourseButton.addTarget(self, action: #selector(tapAddCourseButton), for: .touchUpInside)
         mateTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         mateTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         
@@ -183,6 +184,15 @@ extension LogTicketViewController {
             make.centerX.equalToSuperview()
             make.width.equalToSuperview()
             make.height.equalToSuperview()
+        }
+    }
+    
+    private func setLikeButtonImage(_ button: UIButton) {
+        switch viewModel.course.isLike {
+        case true:
+            button.setImage(UIImage(named: "unlike_image"), for: .normal)
+        case false:
+            button.setImage(UIImage(named: "like_image"), for: .normal)
         }
     }
     
@@ -238,5 +248,10 @@ extension LogTicketViewController {
     func tapLikeButton() {
         print("like Button Tapped")
         viewModel.tapLikeButton()
+    }
+    
+    @objc
+    func tapAddCourseButton() {
+        print("tapAddCourseButton")
     }
 }
