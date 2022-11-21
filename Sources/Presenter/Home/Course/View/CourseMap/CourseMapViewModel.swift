@@ -16,21 +16,60 @@ final class CourseMapViewModel: BaseViewModel {
     var coordinator: CourseFlowCoordinator
     
     private let addCourseUseCase: AddCourseUseCase
+    private let editCourseUseCase: EditCourseUseCase
     
     var courseRequestDTO: CourseRequestDTO
-    @Published var places: [Place]
+    @Published var places: [Place] {
+        didSet {
+            self.courseRequestDTO.places = self.places
+        }
+    }
     // @Published var memo: String?
     
     init(
         coordinator: CourseFlowCoordinator,
-        addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(),
-        courseRequestDTO: CourseRequestDTO,
-        places: [Place] = []
+        addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(addCourseRepository: AddCourseRepositoryImpl()),
+        editCourseUseCase: EditCourseUseCase = EditCourseUseCaseImpl(editCourseRepository: EditCourseRepositoryImpl()),
+        courseRequestDTO: CourseRequestDTO
     ) {
         self.coordinator = coordinator
         self.addCourseUseCase = addCourseUseCase
+        self.editCourseUseCase = editCourseUseCase
         self.courseRequestDTO = courseRequestDTO
-        self.places = places
+        
+        self.places = courseRequestDTO.places
+    }
+}
+
+// MARK: - Business Logic
+extension CourseMapViewModel {
+    func addPlace(_ place: Place) {
+        /*
+        var selectedPlace = place
+        selectedPlace.memo = self.memo
+        places.append(selectedPlace)
+        self.memo = nil
+         */
+        self.places.append(place)
+        self.courseRequestDTO.places = self.places
+    }
+    
+    func deletePlace(_ index: Int) {
+        places.remove(at: index)
+    }
+    
+    func changePlaceOrder(sourceIndex: Int, to destinationIndex: Int) {
+        let targetPlace = places[sourceIndex]
+        places.remove(at: sourceIndex)
+        places.insert(targetPlace, at: destinationIndex)
+    }
+    
+    func addCourse() async throws -> Int {
+        return try await self.addCourseUseCase.addCourse(courseRequestDTO: self.courseRequestDTO)
+    }
+    
+    func editCourse() async throws -> Int {
+        return try await self.editCourseUseCase.editCourse(self.courseRequestDTO)
     }
 }
 
@@ -86,11 +125,31 @@ extension CourseMapViewModel {
         switch self.coordinator {
         case is AddCourseCoordinator:
             guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
-            coordinator.pushToRegisterReviewView(self.courseRequestDTO)
+            Task {
+                do {
+                    self.courseRequestDTO.id = try await self.addCourse()
+                    
+                    DispatchQueue.main.async {
+                        coordinator.pushToRegisterReviewView(self.courseRequestDTO)
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
             
         case is EditCourseCoordinator:
             guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
-            coordinator.pushToCompleteView(self.courseRequestDTO)
+            Task {
+                do {
+                    _ = try await self.editCourse()
+                    
+                    DispatchQueue.main.async {
+                        coordinator.pushToCompleteView(self.courseRequestDTO)
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
             
         case is AddPlanCoordinator:
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
@@ -103,28 +162,5 @@ extension CourseMapViewModel {
         default:
             break
         }
-    }
-}
-
-// MARK: - Methods
-extension CourseMapViewModel {
-    func addPlace(_ place: Place) {
-        /*
-        var selectedPlace = place
-        selectedPlace.memo = self.memo
-        places.append(selectedPlace)
-        self.memo = nil
-         */
-        self.places.append(place)
-    }
-    
-    func deletePlace(_ index: Int) {
-        places.remove(at: index)
-    }
-    
-    func changePlaceOrder(sourceIndex: Int, to destinationIndex: Int) {
-        let targetPlace = places[sourceIndex]
-        places.remove(at: sourceIndex)
-        places.insert(targetPlace, at: destinationIndex)
     }
 }

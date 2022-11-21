@@ -55,6 +55,18 @@ final class RegisterReviewViewController: BaseViewController {
         // input
         
         // output
+        viewModel.$reviewContent
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] text in
+                guard let self = self else { return }
+                if let text = text {
+                    self.nextButton.isEnabled = text.isEmpty ? false : true
+                } else {
+                    self.nextButton.isEnabled = false
+                }
+            }
+            .cancel(with: cancelBag)
+        
         viewModel.$images
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -230,9 +242,6 @@ extension RegisterReviewViewController: UITextViewDelegate {
     
     @objc
     private func nextButtonPressed(_ sender: UIButton) {
-//        Task {
-//            try await viewModel.addCourseRecord()
-//        }
         viewModel.pushToNextView()
     }
     

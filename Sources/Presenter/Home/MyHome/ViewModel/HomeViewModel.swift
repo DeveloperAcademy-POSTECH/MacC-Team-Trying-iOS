@@ -30,6 +30,8 @@ struct DatePath {
 }
 
 final class HomeViewModel: BaseViewModel {
+    var coordinator: Coordinator
+    private let deleteCourseUseCase: DeleteCourseUseCase
 
     @Published var user: UserInfoDTO?
     @Published var dateCalendarList: [YearMonthDayDate] = []
@@ -43,11 +45,15 @@ final class HomeViewModel: BaseViewModel {
         DateDday(title: "강릉데이트", dday: 30),
         DateDday(title: "서울데이트", dday: 40)
     ]
-
-    var coordinator: Coordinator
     
-    init(coordinator: Coordinator) {
+    init(
+        coordinator: Coordinator,
+        deleteCourseUseCase: DeleteCourseUseCase = DeleteCourseUseCaseImpl(
+            deleteCourseRepository: DeleteCourseRepositoryImpl()
+        )
+    ) {
         self.coordinator = coordinator
+        self.deleteCourseUseCase = deleteCourseUseCase
         super.init()
     }
     
@@ -92,6 +98,17 @@ final class HomeViewModel: BaseViewModel {
         }
         dateCourse = HomeCourse(courseId: selectedDateCourse.courseId, courseDate: selectedDateCourse.date, courseTitle: selectedDateCourse.title, courseList: placeList)
     }
+    
+    func deleteSelectedCourse() {
+        Task {
+            do {
+                guard let courseId = self.dateCourse?.courseId else { return }
+                try await self.deleteCourseUseCase.deleteCourse(courseId)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
 }
 
 // MARK: - Coordinating
@@ -100,18 +117,18 @@ extension HomeViewModel {
         guard let coordinator = coordinator as? HomeCoordinator else { return }
         switch type {
         case .addCourse:
-            coordinator.startAddCourseFlow(courseRequestDTO: .init(title: "", date: selectedDate.toString(), places: []))
+            coordinator.startAddCourseFlow(courseRequestDTO: .init(title: "", date: selectedDate.dateToString(), places: []))
         case .registerReview:
             guard let dateCourse = dateCourse else { return }
-            coordinator.startRegisterReviewFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: dateCourse.courseDate, places: places))
+            coordinator.startRegisterReviewFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: selectedDate.dateToString(), places: places))
         case .editCourse:
             guard let dateCourse = dateCourse else { return }
-            coordinator.startEditCourseFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: dateCourse.courseDate, places: places))
+            coordinator.startEditCourseFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: selectedDate.dateToString(), places: places))
         case .addPlan:
-            coordinator.startAddPlanFlow(courseRequestDTO: .init(title: "", date: selectedDate.toString(), places: []))
+            coordinator.startAddPlanFlow(courseRequestDTO: .init(title: "", date: selectedDate.dateToString(), places: []))
         case .editPlan:
             guard let dateCourse = dateCourse else { return }
-            coordinator.startEditPlanFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: dateCourse.courseDate, places: places))
+            coordinator.startEditPlanFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: selectedDate.dateToString(), places: places))
         }
     }
 }

@@ -7,11 +7,5 @@
 //
 
 struct AddCourseResponse: Decodable {
-    let courseId: Double
-    var stars: [Star]
-    
-    struct Star: Decodable {
-        let x: Double
-        let y: Double
-    }
+    let courseId: Int
 }

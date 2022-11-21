@@ -14,6 +14,7 @@ protocol ActionSheetDelegate: AnyObject {
     func showSettingActionSheet(alert: UIAlertController)
     func presentModifyViewController()
     func presentRegisterReviewViewController()
+    func deleteSelectedCourse()
 }
 
 enum PathType {
