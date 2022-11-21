@@ -37,7 +37,7 @@ final class CourseMapViewController: BaseViewController {
             animated: true
         )
         map.showsUserLocation = true
-        map.setUserTrackingMode(.followWithHeading, animated: true)
+        map.setUserTrackingMode(.follow, animated: true)
         map.showsCompass = false
         // let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapMapView(_:)))
         // map.addGestureRecognizer(tapGestureRecognizer)
