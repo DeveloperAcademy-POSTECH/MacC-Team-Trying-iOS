@@ -144,19 +144,6 @@ final class CourseMapViewController: BaseViewController {
         setNofifications()
     }
     */
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        // self.removeNotifications()
-        
-        // self.removeTemporaryAnnotations()
-        DispatchQueue.main.async {
-            // self.placeDetailView.hide()
-            self.placeListView.hide()
-            self.nextButton.hide()
-        }
-    }
 }
 
 // MARK: - UI
