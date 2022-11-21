@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import MatStar
+//@testable import MatStar
 
 final class IntroButtonTests: XCTestCase {
 
