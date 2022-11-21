@@ -43,20 +43,14 @@ final class PlaceSearchRepositoryImpl: PlaceSearchRepository {
     func searchPlaceUsingKakao(query: String, coordinate: CLLocationCoordinate2D) async throws -> [Place] {
         var urlComponents = URLComponents(string: "https://dapi.kakao.com/v2/local/search/keyword.json")
         
-        let pageQueryItem = URLQueryItem(name: "page", value: "1")
-        let sizeQueryItem = URLQueryItem(name: "size", value: "15")
         let queryItem = URLQueryItem(name: "query", value: "\(query)")
         let longitudeQueryItem = URLQueryItem(name: "x", value: "\(String(coordinate.longitude))")
         let latitudeQueryItem = URLQueryItem(name: "y", value: "\(String(coordinate.latitude))")
-        let radiusQueryItem = URLQueryItem(name: "radius", value: "5000")
         
         urlComponents?.queryItems = [
-            pageQueryItem,
-            sizeQueryItem,
             queryItem,
             longitudeQueryItem,
-            latitudeQueryItem,
-            radiusQueryItem
+            latitudeQueryItem
         ]
         
         guard let urlString = urlComponents?.string,
