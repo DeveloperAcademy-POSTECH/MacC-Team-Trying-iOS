@@ -85,8 +85,8 @@ extension LogHomeViewModel {
         //MARK: DTO는 필요시 다른 모델에 매핑하여 사용
         guard let reviewId = notification.object as? String else { return }
         Task {
-            let review = try await alarmCourseReviewUseCase.getReviewWith(id: reviewId)
-            print("alarm을 통한 review:", review)
+            let course = try await alarmCourseReviewUseCase.getCourseWith(id: reviewId)
+            print("notification course:", course)
         }
     }
 }

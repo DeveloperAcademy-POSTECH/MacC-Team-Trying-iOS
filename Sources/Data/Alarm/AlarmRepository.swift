@@ -72,8 +72,8 @@ class AlarmRepository: AlarmInterface {
             .eraseToAnyPublisher()
     }
     
-    func checkAlarm(id: Int) {
-        alarmAPI.checkAlarm(type: .check, id: id)
+    func checkAlarm(id: Int) async throws -> Bool {
+        return try await alarmAPI.checkAlarm(type: .check, id: id)
     }
     
     func deleteAlarm(id: Int) async throws -> Bool {
@@ -108,8 +108,8 @@ class AlarmRepository: AlarmInterface {
         }
     }
     
-    func readAlarm(id: Int) {
-        alarmAPI.checkAlarm(type: .check, id: id)
+    func readAlarm(id: Int) async throws -> Bool {
+        return try await alarmAPI.checkAlarm(type: .check, id: id)
     }
 
     func removeAllAlarms() async throws -> Bool {

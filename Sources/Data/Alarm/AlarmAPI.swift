@@ -67,22 +67,20 @@ class AlarmAPI {
             .eraseToAnyPublisher()
     }
     
-    func checkAlarm(type: AlarmApiType, id: Int) {
+    func checkAlarm(type: AlarmApiType, id: Int) async throws -> Bool {
         let urlStr = encodeUrl(string: addStringParameter(type: type, id: id))
-        guard let url = URL(string: urlStr) else { return }
+        guard let url = URL(string: urlStr) else { return false }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("\(token)", forHTTPHeaderField: "accessToken")
 
-        URLSession.shared.dataTaskPublisher(for: request)
-            .map(\.data)
-            .print()
-            .eraseToAnyPublisher()
-            .assertNoFailure()
-            .sink(receiveValue: { _ in
-            })
-            .cancel(with: cancelBag)
+        let (_, urlResponse) = try await URLSession.shared.data(for: request)
+        guard let urlResponse = urlResponse as? HTTPURLResponse else { return false }
+        if urlResponse.statusCode != 200 {
+            return false
+        }
+        return true
     }
     
     func toggleAlarmPermission(type: AlarmApiType, isPermission: Bool) {

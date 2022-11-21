@@ -27,24 +27,29 @@ class AlarmViewModel: BaseViewModel {
     }
     
     func alarmTap(index: Int) {
-        alarmReadToggle(index: index)
-        pushToAnotherViewController(index: index)
+        Task {
+            if try await alarmReadToggle(index: index) {
+                self.alarms[index].checked = true
+                self.notificateAndMoveUi(index: index)
+            }
+        }
     }
     
-    private func pushToAnotherViewController(index: Int) {
+    private func notificateAndMoveUi(index: Int) {
         let alarm = alarms[index]
         if alarm.type == .arrive {
             NotificationCenter.default.post(name: Notification.Name("REVIEW"), object: "\(alarm.targetId)")
             guard let coordinator = coordinator as? AlarmViewCoordinatingInAlarmViewCoordinating else { return }
             coordinator.goToLogView()
         } else {
-            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: "\(alarm.targetId)")
-            popToBackViewController()
+            // MARK: 🛑 추후 홈뷰로 이동할때 🛑
+//            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: "\(alarm.targetId)")
+//            popToBackViewController()
         }
     }
     
-    private func alarmReadToggle(index: Int) {
-        alarmUseCase.readAlarm(id: alarms[index].id)
+    private func alarmReadToggle(index: Int) async throws -> Bool {
+        return try await alarmUseCase.readAlarm(id: alarms[index].id)
     }
 
     func makeAlarmRowWithInfo(index: Int) -> AlarmEntity {
@@ -52,7 +57,6 @@ class AlarmViewModel: BaseViewModel {
     }
     
     func fetchAlamrs() {
-        
         alarmUseCase.fetchAlarms()
             .sink { _ in
             } receiveValue: { alarms in

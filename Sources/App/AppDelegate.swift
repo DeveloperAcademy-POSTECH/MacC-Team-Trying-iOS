@@ -91,8 +91,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
               let mainCoordinator = coordinator.mainCoordinator else { return }
         if target == "COURSE" {
             mainCoordinator.tabBarController.selectedIndex = 0
-            mainCoordinator.homeCoordinator?.navigationController?.popToRootViewController(animated: true)
-            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: targetId)
+            mainCoordinator.homeCoordinator?.pushToAlarmViewController()
+
+            // MARK: 🛑 추후 홈뷰로 이동할때 🛑
+//            mainCoordinator.homeCoordinator?.navigationController?.popToRootViewController(animated: true)
+//            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: targetId)
+            
         } else if target == "REVIEW" {
             mainCoordinator.tabBarController.selectedIndex = 2
             mainCoordinator.logCoordinator?.navigationController?.popToRootViewController(animated: true)

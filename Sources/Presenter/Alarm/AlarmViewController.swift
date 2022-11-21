@@ -12,7 +12,7 @@ import UIKit
 class AlarmViewController: BaseViewController {
 
     let alarmViewModel: AlarmViewModel
-    private let refreshControl: UIRefreshControl = {
+    private lazy var refreshControl: UIRefreshControl = {
         let rc = UIRefreshControl()
         rc.addTarget(self, action: #selector(refreshAlarmData), for: .valueChanged)
         return rc

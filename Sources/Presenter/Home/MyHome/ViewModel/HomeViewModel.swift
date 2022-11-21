@@ -150,6 +150,7 @@ extension HomeViewModel {
         Task {
             let course = try await alarmCourseReviewUseCase.getCourseWith(id: courseId)
             //MARK: 아래코드하면 달력뷰에서 그 날 날짜 코스나온다.
+//            print("notification course:", course)
 //            dateCourse = course
         }
   
