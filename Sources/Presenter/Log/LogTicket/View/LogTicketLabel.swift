@@ -16,12 +16,14 @@ class LogTicketLabel: UILabel {
         self.textColor = color
         self.textAlignment = .left
     }
+    
     init(color: UIColor) {
         super.init(frame: .zero)
         self.font = UIFont.designSystem(weight: .medium, size: ._13)
         self.textColor = color
         self.textAlignment = .left
     }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

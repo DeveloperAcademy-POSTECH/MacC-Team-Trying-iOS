@@ -45,7 +45,6 @@ class LogTicketEmptyView: UIView {
     // MARK: Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         setLayouts()
         setBlur()
     }
@@ -62,7 +61,6 @@ class LogTicketEmptyView: UIView {
 extension LogTicketEmptyView {
     // Snapkit을 사용해 Component의 Layout을 배치합니다.
     private func setLayouts() {
-        
         self.addSubviews(
             flopButton,
             heartImageView,

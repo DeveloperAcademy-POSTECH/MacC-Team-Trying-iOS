@@ -50,8 +50,6 @@ final class LogTicketViewController: BaseViewController {
         Task {
             try await viewModel.fetchReviews()
             setReviewState()
-            print("#################")
-            print(self.reviewState)
             setUI()
         }
     }
@@ -84,15 +82,7 @@ extension LogTicketViewController {
         super.backgroundView.isHidden = true
         setLayout()
     }
-    
-    func configureTicketView(ticketView: LogTicketView, index: Int) {
-        ticketView.imageUrl = viewModel.reviews[index].imagesURL
-        ticketView.bodyTextView.text = viewModel.reviews[index].content
-        ticketView.courseNameLabel.text = viewModel.reviews[index].name
-        ticketView.dateLabel.text = viewModel.course.date
-        ticketView.numberLabel.text = "\(viewModel.currentIndex + 1)번째"
-        ticketView.fromLabel.text = "수정"
-    }
+
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
         
@@ -116,11 +106,11 @@ extension LogTicketViewController {
         
         switch reviewState {
         case .onlyMe:
-            onlyMe()
+            setOnlyMyReview()
         case .onlyMate:
-            onlyMate()
+            setOnlyMateReview()
         case .both:
-            both()
+            setBothReview()
         case .noReview:
             break
         }
@@ -128,13 +118,9 @@ extension LogTicketViewController {
         secondView.isHidden = true
     }
     
-    @objc
-    func tapLikeButton() {
-        print("like Button Tapped")
-        viewModel.tapLikeButton()
-    }
     
-    private func onlyMe() {
+    
+    private func setOnlyMyReview() {
         
         let myTicketView = LogTicketView()
         let logTicketEmptyView = LogTicketEmptyView()
@@ -165,7 +151,16 @@ extension LogTicketViewController {
         }
     }
     
-    private func onlyMate() {
+    private func configureTicketView(ticketView: LogTicketView, index: Int) {
+        ticketView.imageUrl = viewModel.reviews[index].imagesURL
+        ticketView.bodyTextView.text = viewModel.reviews[index].content
+        ticketView.courseNameLabel.text = viewModel.reviews[index].name
+        ticketView.dateLabel.text = viewModel.course.date
+        ticketView.numberLabel.text = "\(viewModel.currentIndex + 1)번째"
+        ticketView.fromLabel.text = "수정"
+    }
+    
+    private func setOnlyMateReview() {
         let logTicketEmptyView = LogTicketEmptyView()
         let mateTicketView = LogTicketView()
         
@@ -193,7 +188,7 @@ extension LogTicketViewController {
         }
     }
     
-    private func both() {
+    private func setBothReview() {
         
         let myTicketView = LogTicketView()
         let mateTicketView = LogTicketView()
@@ -239,5 +234,11 @@ extension LogTicketViewController {
         })
         
         viewModel.tapFlopButton()
+    }
+    
+    @objc
+    func tapLikeButton() {
+        print("like Button Tapped")
+        viewModel.tapLikeButton()
     }
 }
