@@ -52,8 +52,8 @@ final class CourseMapViewController: BaseViewController {
         return button
     }()
     /*
-    private lazy var placeDetailView: PlaceDetailView = {
-        let view = PlaceDetailView()
+    private lazy var placeDetailView: AddPlaceDetailView = {
+        let view = AddPlaceDetailView()
         view.memoTextField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
         view.addCourseButton.addTarget(self, action: #selector(didTapAddCourseButton(_:)), for: .touchUpInside)
         return view
@@ -204,12 +204,12 @@ extension CourseMapViewController: NavigationBarConfigurable {
     }
     
     private func setLastAnnotations() {
-        self.lastAnnotations = viewModel.places.map { StarAnnotation(coordinate: $0.location) }
+        self.lastAnnotations = viewModel.places.map { StarAnnotation(coordinate: $0.location, placeId: $0.id) }
     }
     
     private func drawPlaceAnnotations(places: [Place]) {
         self.placeMapView.removeAnnotations(lastAnnotations)
-        let newAnnotations = places.map { StarAnnotation(coordinate: $0.location) }
+        let newAnnotations = places.map { StarAnnotation(coordinate: $0.location, placeId: $0.id) }
         self.placeMapView.addAnnotations(newAnnotations)
         
         self.lastAnnotations = newAnnotations

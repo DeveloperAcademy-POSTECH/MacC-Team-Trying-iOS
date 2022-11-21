@@ -85,7 +85,6 @@ extension LogTicketViewController {
 
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
-    
         view.addSubviews(
             firstView,
             secondView
@@ -219,7 +218,6 @@ extension LogTicketViewController {
     
     @objc
     func tapFlopButton() {
-        
         let transitionOptions: UIView.AnimationOptions = [.transitionFlipFromRight, .showHideTransitionViews]
         
         // MARK: Card Flip Animation
