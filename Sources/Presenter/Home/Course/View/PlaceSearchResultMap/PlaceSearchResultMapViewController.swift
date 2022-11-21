@@ -27,8 +27,8 @@ final class PlaceSearchResultMapViewController: BaseViewController {
     private var recentAnnotation: MKAnnotation?
     private let presentLocation: CLLocationCoordinate2D
     
-    private lazy var placeDetailView: PlaceDetailView = {
-        let view = PlaceDetailView()
+    private lazy var placeDetailView: AddPlaceDetailView = {
+        let view = AddPlaceDetailView()
         view.memoTextField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
         view.addCourseButton.addTarget(self, action: #selector(addCourseButtonPressed(_:)), for: .touchUpInside)
         return view

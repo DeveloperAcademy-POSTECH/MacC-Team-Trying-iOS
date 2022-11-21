@@ -55,6 +55,8 @@ final class LogMapViewController: BaseViewController {
         map.showsUserLocation = true
         map.setUserTrackingMode(.follow, animated: true)
         map.showsCompass = false
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(mapViewPressed(_:)))
+        map.addGestureRecognizer(tapGestureRecognizer)
         return map
     }()
     
@@ -68,6 +70,8 @@ final class LogMapViewController: BaseViewController {
     }()
     
     private let reviewButton = ReviewButton()
+    
+    private let placeDetailView = PlaceInformationView()
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -114,7 +118,8 @@ extension LogMapViewController {
             mapView,
             dismissButton,
             popButton,
-            reviewButton
+            reviewButton,
+            placeDetailView
         )
         
         mapView.snp.makeConstraints { make in
@@ -141,6 +146,13 @@ extension LogMapViewController {
             make.bottom.equalToSuperview().inset(-reviewButton.height)
             make.width.equalTo(110)
             make.height.equalTo(reviewButton.height)
+        }
+        
+        placeDetailView.snp.makeConstraints { make in
+            make.leading
+                .trailing.equalToSuperview()
+            make.bottom.equalToSuperview().inset(-placeDetailView.height)
+            make.height.equalTo(placeDetailView.height)
         }
     }
     
@@ -193,6 +205,37 @@ extension LogMapViewController {
         self.dismissButton.isHidden.toggle()
         self.popButton.isHidden.toggle()
     }
+    
+    private func presentPlaceDetailView(with place: PlaceEntity) {
+        self.placeDetailView.selectedPlace = place
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.placeDetailView.present()
+            
+            UIView.animate(
+                withDuration: 0.3,
+                delay: 0,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+    }
+    
+    private func hidePlaceDetailView() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.placeDetailView.hide()
+            
+            UIView.animate(
+                withDuration: 0.3,
+                delay: 0,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+    }
 }
 
 // MARK: - MKMapViewDelegate
@@ -223,11 +266,12 @@ extension LogMapViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        if let starAnnotationView = view as? StarAnnotationView,
-           let starAnnotation = view.annotation as? StarAnnotation {
+        if let starAnnotation = view.annotation as? StarAnnotation {
             
-        } else if let constellationAnnotationView = view as? ConstellationAnnotationView,
-                  let constellationAnnotation = view.annotation as? ConstellationAnnotation {
+            guard let place = viewModel.places.first(where: { $0.id == starAnnotation.placeId }) else { return }
+            self.presentPlaceDetailView(with: place)
+            
+        } else if let constellationAnnotation = view.annotation as? ConstellationAnnotation {
             
             self.toggleDismissButton()
             self.presentStarAnnotations(selectedCourseID: constellationAnnotation.courseId)
@@ -248,6 +292,7 @@ extension LogMapViewController {
     
     @objc
     private func popButtonPressed(_ sender: UIButton) {
+        self.hidePlaceDetailView()
         self.toggleDismissButton()
         self.dismissReviewButton()
         self.presentConstellationAnnotations()
@@ -257,5 +302,10 @@ extension LogMapViewController {
     @objc
     private func recordButtonPressed(_ sender: UIButton) {
         // TODO: record button pressed
+    }
+    
+    @objc
+    private func mapViewPressed(_ sender: UITapGestureRecognizer) {
+        self.hidePlaceDetailView()
     }
 }

@@ -17,6 +17,7 @@ final class LogMapViewModel: BaseViewModel {
     private let coordinator: Coordinator
     
     var courses: [CourseEntity]
+    var places: [PlaceEntity]
     
     init(
         coordinator: Coordinator,
@@ -24,6 +25,7 @@ final class LogMapViewModel: BaseViewModel {
     ) {
         self.coordinator = coordinator
         self.courses = courses
+        self.places = []
     }
 }
 
@@ -34,6 +36,7 @@ extension LogMapViewModel {
         
         guard let selectedCourse = self.courses.first(where: { $0.id == courseId }) else { return [] }
         
+        self.places = selectedCourse.places
         selectedCourse.places.forEach { place in
             annotations.append(convertToStarAnnotation(place: place))
         }
@@ -44,6 +47,7 @@ extension LogMapViewModel {
     func fetchConstellationAnnotations() -> [MKAnnotation] {
         var annotations = [MKAnnotation]()
         
+        self.places.removeAll()
         self.courses.forEach { course in
             annotations.append(self.convertToConstellationAnnotation(course: course))
         }
