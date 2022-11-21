@@ -240,8 +240,8 @@ extension ProfileViewController {
         let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { [weak self] _ in
             self?.viewModel.coordinateToEditPlanet()
         }
-        let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { [weak self] _ in
-            // TODO: 행성 나가기
+        let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { [weak self] action in
+            self?.viewModel.coordinateToExitPlanet()
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         

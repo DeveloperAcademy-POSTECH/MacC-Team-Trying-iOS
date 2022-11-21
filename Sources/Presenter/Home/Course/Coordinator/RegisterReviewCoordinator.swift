@@ -32,7 +32,7 @@ final class RegisterReviewCoordinator: CourseFlowCoordinator {
         let viewModel = RegisterReviewViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
         let viewController = RegisterReviewViewController(viewModel: viewModel)
         
-        self.navigationController?.tabBarController?.tabBar.isHidden = true
+        viewController.hidesBottomBarWhenPushed = true
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }
@@ -42,7 +42,7 @@ final class RegisterReviewCoordinator: CourseFlowCoordinator {
 extension RegisterReviewCoordinator: RegisterReviewCoordinating {
     func pushToCompleteView(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseCompleteViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseCompleteViewController(type: .addCourse, viewModel: viewModel)
+        let viewController = CourseCompleteViewController(type: .registerReview, viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }

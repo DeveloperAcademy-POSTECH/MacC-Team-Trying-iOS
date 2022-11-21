@@ -17,6 +17,7 @@ protocol ProfileCoordinatorLogic: Coordinator {
     func coordinateToEditPlanet(date: String, planetName: String, planetImageName: String)
     func coordinateToLoginScene()
     func pushToServiceTermView()
+    func coordinateToExitPlanet(type: OutgoingType)
 }
 
 final class ProfileViewModel: BaseViewModel {
@@ -63,6 +64,10 @@ final class ProfileViewModel: BaseViewModel {
                 print(error.localizedDescription)
             }
         }
+    }
+    
+    func coordinateToExitPlanet() {
+        coordinator.coordinateToExitPlanet(type: .exitPlanet)
     }
 }
 
