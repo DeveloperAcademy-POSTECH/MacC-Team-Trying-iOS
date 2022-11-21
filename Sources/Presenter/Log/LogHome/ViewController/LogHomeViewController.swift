@@ -164,6 +164,17 @@ extension LogHomeViewController {
                 guard let self = self else { return }
                 self.logCollectionView.reloadData()
             }
+            .cancel(with: cancelBag)
+        
+        viewModel.$alarmIndex
+                    .receive(on: DispatchQueue.main)
+                    .sink { _ in
+                    } receiveValue: { [weak self] index in
+                        self?.logCollectionView.scrollToItem(at: IndexPath(row: max(0, index), section: 0), at: .left, animated: true)
+                        guard let course = self?.viewModel.courses[index] else { return }
+                        self?.viewModel.presentTicketView(course: course, currentIndex: index)
+                    }
+                    .cancel(with: cancelBag)
     }
     
     private func setUI() {
