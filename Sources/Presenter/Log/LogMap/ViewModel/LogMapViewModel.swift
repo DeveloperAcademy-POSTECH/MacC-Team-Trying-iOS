@@ -16,7 +16,6 @@ import CancelBag
 final class LogMapViewModel: BaseViewModel {
     private let coordinator: Coordinator
     
-    @Published var selectedPlaces = [Place]()
     var courses: [CourseEntity]
     
     init(
@@ -70,7 +69,7 @@ extension LogMapViewModel {
 }
 // MARK: - Coordinator
 extension LogMapViewModel {
-    func tapDismissButton() {
+    func dismissButtonPressed() {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
     }
