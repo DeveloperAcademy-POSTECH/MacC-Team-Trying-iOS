@@ -201,11 +201,6 @@ extension LogMapViewController {
         mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: spanValue), animated: true)
     }
     
-    private func toggleDismissButton() {
-        self.dismissButton.isHidden.toggle()
-        self.popButton.isHidden.toggle()
-    }
-    
     private func presentPlaceDetailView(with place: PlaceEntity) {
         self.placeDetailView.selectedPlace = place
         DispatchQueue.main.async { [weak self] in
@@ -255,9 +250,7 @@ extension LogMapViewController: MKMapViewDelegate {
             guard let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: ConstellationAnnotationView.identifier) else { return nil }
             
             annotationView.annotation = constellationAnnotation
-            
-            // FIXME: 별자리 그리는 메소드를 통해 Constellation Annotation마다 각자의 annotation image를 가지게 해야합니다.
-            annotationView.image = UIImage(named: "mock_cluster")
+            annotationView.image = self.makeConstellationAnnotationViewImage(courseID: constellationAnnotation.courseId)
             
             return annotationView
         } else {
@@ -307,5 +300,51 @@ extension LogMapViewController {
     @objc
     private func mapViewPressed(_ sender: UITapGestureRecognizer) {
         self.hidePlaceDetailView()
+    }
+}
+
+// MARK: - Helper
+extension LogMapViewController {
+    private func toggleDismissButton() {
+        self.dismissButton.isHidden.toggle()
+        self.popButton.isHidden.toggle()
+    }
+    
+    private func makeConstellationAnnotationViewImage(courseID: Int) -> UIImage {
+        guard let course = viewModel.courses.first(where: { $0.id == courseID }) else { return UIImage() }
+        guard let constellationImage = StarMaker.makeStars(places: course.places)?.resizeImageTo(size: CGSize(width: 15, height: 15)) else { return UIImage() }
+    
+        let font = UIFont.systemFont(ofSize: 11)
+        let imageAttachment = NSTextAttachment()
+        imageAttachment.bounds = CGRect(x: 0, y: (font.capHeight - constellationImage.size.height).rounded() / 2, width: constellationImage.size.width, height: constellationImage.size.height)
+        imageAttachment.image = constellationImage
+        let imageString = NSAttributedString(attachment: imageAttachment)
+        
+        let courseTitleString = NSAttributedString(
+            string: course.courseTitle,
+            attributes: [
+                .foregroundColor: UIColor.designSystem(.white) as Any,
+                .font: UIFont.designSystem(weight: .bold, size: ._11)
+            ]
+        )
+        
+        let attributedString = NSMutableAttributedString(string: "")
+        attributedString.append(imageString)
+        attributedString.append(NSAttributedString(string: " "))
+        attributedString.append(courseTitleString)
+        
+        let customAnnotationView = PaddingLabel(padding: UIEdgeInsets(top: 0, left: 10, bottom: 2, right: 10))
+        customAnnotationView.numberOfLines = 1
+        
+        customAnnotationView.attributedText = attributedString
+        
+        customAnnotationView.backgroundColor = .designSystem(.black)
+        customAnnotationView.layer.cornerRadius = 15
+        customAnnotationView.layer.masksToBounds = true
+        
+        customAnnotationView.frame.size = customAnnotationView.intrinsicContentSize
+        customAnnotationView.frame.size.height = 30
+        
+        return customAnnotationView.asImage()
     }
 }
