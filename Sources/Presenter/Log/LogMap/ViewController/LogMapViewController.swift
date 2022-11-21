@@ -67,25 +67,7 @@ final class LogMapViewController: BaseViewController {
         return button
     }()
     
-    private let ticketImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: Constants.Image.ticketIcon)
-        return imageView
-    }()
-    private lazy var recordButton: UIButton = {
-        let button = UIButton()
-        let title = NSAttributedString(string: "별자리 후기", attributes: [.font: UIFont.designSystem(weight: .bold, size: ._13)])
-        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
-        button.setAttributedTitle(title, for: .normal)
-        button.layer.cornerRadius = 17
-        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
-        button.backgroundColor = .designSystem(.black)
-        button.layer.borderColor = .designSystem(.mainYellow)
-        button.layer.borderWidth = 1
-        button.addTarget(self, action: #selector(recordButtonPressed(_:)), for: .touchUpInside)
-        button.sizeToFit()
-        return button
-    }()
+    private let reviewButton = ReviewButton()
     
     /// View Model과 bind 합니다.
     private func bind() {
@@ -127,13 +109,12 @@ extension LogMapViewController {
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
         mapView.addSubview(userTrackingButton)
-        recordButton.addSubview(ticketImageView)
         
         view.addSubviews(
             mapView,
             dismissButton,
             popButton,
-            recordButton
+            reviewButton
         )
         
         mapView.snp.makeConstraints { make in
@@ -155,16 +136,11 @@ extension LogMapViewController {
             make.leading.equalToSuperview().inset(20)
         }
         
-        ticketImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(10)
-            make.centerY.equalToSuperview()
-        }
-        
-        recordButton.snp.makeConstraints { make in
+        reviewButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(-80)
+            make.bottom.equalToSuperview().inset(-reviewButton.height)
             make.width.equalTo(110)
-            make.height.equalTo(34)
+            make.height.equalTo(reviewButton.height)
         }
     }
     
@@ -180,13 +156,9 @@ extension LogMapViewController {
         mapView.showAnnotations(starAnnotations, animated: true)
     }
     
-    private func presentRecordButton() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            self.recordButton.snp.updateConstraints { make in
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(20)
-            }
+    private func presentReviewButton() {
+        DispatchQueue.main.async {
+            self.reviewButton.present()
             
             UIView.animate(
                 withDuration: 0.4,
@@ -198,16 +170,12 @@ extension LogMapViewController {
         }
     }
     
-    private func dismissRecordButton() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            self.recordButton.snp.updateConstraints { make in
-                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(-80)
-            }
+    private func dismissReviewButton() {
+        DispatchQueue.main.async {
+            self.reviewButton.hide()
             
             UIView.animate(
-                withDuration: 0.4,
+                withDuration: 0.3,
                 delay: 0,
                 animations: {
                     self.view.layoutIfNeeded()
@@ -263,7 +231,7 @@ extension LogMapViewController: MKMapViewDelegate {
             
             self.toggleDismissButton()
             self.presentStarAnnotations(selectedCourseID: constellationAnnotation.courseId)
-            self.presentRecordButton()
+            self.presentReviewButton()
             
         } else {
             return
@@ -281,7 +249,7 @@ extension LogMapViewController {
     @objc
     private func popButtonPressed(_ sender: UIButton) {
         self.toggleDismissButton()
-        self.dismissRecordButton()
+        self.dismissReviewButton()
         self.presentConstellationAnnotations()
         presentLocation(latitude: mapView.region.center.latitude, longitude: mapView.region.center.longitude, span: 0.05)
     }
