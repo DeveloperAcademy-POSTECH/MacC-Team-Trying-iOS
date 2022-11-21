@@ -204,12 +204,12 @@ extension CourseMapViewController: NavigationBarConfigurable {
     }
     
     private func setLastAnnotations() {
-        self.lastAnnotations = viewModel.places.map { StarAnnotation(coordinate: $0.location) }
+        self.lastAnnotations = viewModel.places.map { StarAnnotation(coordinate: $0.location, placeId: $0.id) }
     }
     
     private func drawPlaceAnnotations(places: [Place]) {
         self.placeMapView.removeAnnotations(lastAnnotations)
-        let newAnnotations = places.map { StarAnnotation(coordinate: $0.location) }
+        let newAnnotations = places.map { StarAnnotation(coordinate: $0.location, placeId: $0.id) }
         self.placeMapView.addAnnotations(newAnnotations)
         
         self.lastAnnotations = newAnnotations

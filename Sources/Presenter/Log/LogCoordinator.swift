@@ -42,9 +42,11 @@ final class LogCoordinator: Coordinator,
         self.navigationController?.popViewController(animated: true)
     }
     
-    func pushLogMapViewController() {
-        let viewModel = LogMapViewModel(coordinator: self)
+    func pushLogMapViewController(courses: [CourseEntity]) {
+        let viewModel = LogMapViewModel(coordinator: self, courses: courses)
         let viewController = LogMapViewController(viewModel: viewModel)
+        
+        viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
     }
 }
