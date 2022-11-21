@@ -129,7 +129,7 @@ final class HomeViewController: BaseViewController {
                 guard let self = self else { return }
                 guard let receivedValue = receivedValue else { return }
                 self.pathTableView.isHidden = false
-                self.pathTableView.snp.makeConstraints { make in
+                self.pathTableView.snp.remakeConstraints { make in
                     make.top.equalTo(self.calendarView.snp.bottom).offset(10)
                     make.centerX.equalToSuperview()
                     make.leading.trailing.equalToSuperview().inset(20)
@@ -263,23 +263,34 @@ extension HomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PathTableViewCell.cellId, for: indexPath) as? PathTableViewCell else { return UITableViewCell() }
         cell.delegate = self
-        guard let course = viewModel.dateCourse else { return UITableViewCell() }
+        guard let courseList = viewModel.dateCourse?.courseList else { return UITableViewCell() }
+        
         switch indexPath.row {
         case 0:
+            cell.data = courseList[indexPath.row]
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
             cell.lineUpper.isHidden = true
-            // MARK: - 코스가 하나일때 분기처리
-            if course.courseList.count == 1 {
-                cell.lineLower.isHidden = true
-            }
-        case course.courseList.index(before: course.courseList.endIndex):
+            cell.lineLower.isHidden = false
+            cell.distance.isHidden = false
+            return cell
+        case courseList.count - 1:
+            cell.data = courseList[indexPath.row]
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
             cell.lineLower.isHidden = true
+            cell.lineUpper.isHidden = false
+            cell.distance.isHidden = true
+            return cell
         default:
+            cell.data = courseList[indexPath.row]
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
             cell.lineLower.isHidden = false
             cell.lineUpper.isHidden = false
+            cell.distance.isHidden = false
+            return cell
         }
-        cell.data = viewModel.dateCourse?.courseList[indexPath.row]
-        cell.backgroundColor = .clear
-        cell.selectionStyle = .none
         return cell
     }
 }

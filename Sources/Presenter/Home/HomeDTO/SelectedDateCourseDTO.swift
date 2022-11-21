@@ -17,7 +17,7 @@ struct SelectedDateCourseDTO: Codable {
     // MARK: - PlaceElement
     struct PlaceElement: Codable {
         let place: PlacePlace
-        let memo: String
+        let memo: String?
         let distanceFromNext: Double?
     }
 

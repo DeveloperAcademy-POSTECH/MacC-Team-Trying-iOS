@@ -60,7 +60,7 @@ class PathTableViewCell: UITableViewCell {
             title.text = data.title
             comment.text = data.comment
             guard let distance = data.distance else { return }
-            self.distance.text = Int(distance).changeDistance()
+            self.distance.text = distance.changeDistance()
         }
     }
     
