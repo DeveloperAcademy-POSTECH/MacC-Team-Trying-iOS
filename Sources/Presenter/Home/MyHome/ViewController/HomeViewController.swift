@@ -49,6 +49,15 @@ final class HomeViewController: BaseViewController {
         return label
     }()
     
+    let homeScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.isScrollEnabled = true
+        return scrollView
+    }()
+    
+    let contentView = UIView()
+    
     lazy var calendarView = CalendarView(today: .init(), frame: .init(origin: .zero, size: .init(width: DeviceInfo.screenWidth - 40, height: 0)))
     
     lazy var dateCoureRegisterButton: UIButton = {
@@ -138,6 +147,18 @@ final class HomeViewController: BaseViewController {
                     
                 }
                 self.pathTableView.reloadData()
+                
+                self.contentView.snp.remakeConstraints { make in
+                    make.top.equalToSuperview()
+                    make.width.equalToSuperview()
+                    if receivedValue.courseList.count > 2 {
+                        make.height.equalToSuperview().inset(-(receivedValue.courseList.count - 2) * 40)
+                    } else {
+                        make.height.equalToSuperview()
+                    }
+                    
+                    make.bottom.equalToSuperview()
+                }
             }
             .store(in: &myCancelBag)
     }
@@ -207,9 +228,15 @@ extension HomeViewController {
         view.addSubview(alarmButton)
         view.addSubview(ddayLabel)
         view.addSubview(nextDateLabel)
-        view.addSubview(pathTableView)
-        view.addSubview(calendarView)
-        view.addSubview(dateCoureRegisterButton)
+        view.addSubview(homeScrollView)
+        homeScrollView.addSubview(contentView)
+        
+        homeScrollView.addSubview(pathTableView)
+        homeScrollView.addSubview(calendarView)
+        homeScrollView.addSubview(dateCoureRegisterButton)
+//        view.addSubview(pathTableView)
+//        view.addSubview(calendarView)
+//        view.addSubview(dateCoureRegisterButton)
         pathTableView.delegate = self
         pathTableView.dataSource = self
         calendarView.delegate = self
@@ -241,8 +268,15 @@ extension HomeViewController {
             make.height.equalTo(15)
         }
         
+        homeScrollView.snp.makeConstraints { make in
+            make.top.equalTo(nextDateLabel.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview()
+            make.width.equalToSuperview()
+            make.bottom.equalToSuperview().inset(80)
+        }
+        
         calendarView.snp.makeConstraints { make in
-            make.top.equalTo(nextDateLabel.snp.bottom).offset(20)
+            make.top.equalToSuperview().inset(20)
             make.leading.trailing.equalToSuperview().inset(20)
         }
         
