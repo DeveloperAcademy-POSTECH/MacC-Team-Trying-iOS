@@ -10,6 +10,7 @@ import Foundation
 
 enum NetworkingError: Error {
     case urlError
+    case encodeError
     case decodeError(toType: Decodable.Type)
     case requestError(_ statusCode: Int)
     case serverError(_ statusCode: Int)
@@ -19,4 +20,10 @@ enum NetworkingError: Error {
     enum PlaceSearchError: Error {
         case noAddress
     }
+}
+
+struct PodingError: Decodable {
+    let id: String
+    let code: String
+    let message: String
 }

@@ -43,6 +43,7 @@ struct Constants {
         static let setting = "gearshape.fill"
         static let emptyResultStar = "empty_result_star"
         static let placeResultAnnotation = "PlaceResultAnnotation"
+        static let editDateImage = "EditDateImage"
     }
     
     struct Lottie {

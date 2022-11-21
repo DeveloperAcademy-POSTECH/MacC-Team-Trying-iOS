@@ -11,7 +11,8 @@ import Combine
 import CancelBag
 
 protocol SignUpEnterPasswordCoordinatorLogic {
-    func coordinateSignUpEnterNickname(email: String, password: String)
+    func coordinateToServiceTermScene(type: SignUpEnterNicknameViewModel.SignUpType)
+//    func coordinateSignUpEnterNickname(email: String, password: String)
 }
 
 protocol SignUpEnterPasswordBusinessLogic: BusinessLogic {
@@ -39,7 +40,9 @@ final class SignUpEnterPasswordViewModel: BaseViewModel, SignUpEnterPasswordBusi
     }
 
     func nextButtonDidTapped() {
-        coordinator.coordinateSignUpEnterNickname(email: email, password: password)
+        coordinator.coordinateToServiceTermScene(
+            type: .email(.init(email: email, password: password, name: "", deviceToken: ""))
+        )
     }
 
     func textFieldDidChange(_ text: String) {

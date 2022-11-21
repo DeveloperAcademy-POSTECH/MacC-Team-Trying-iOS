@@ -23,6 +23,12 @@ protocol NavigationBarConfigurable: BaseViewController {
     ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
     func configurePlanTitleNavigationBar(target: Any, popAction: Selector)
     
+    /// 코스의 타이틀을 수정하는 화면에서 사용되는 Navigation Bar를 설정합니다.
+    /// - Parameters:
+    ///   - target: Target
+    ///   - popAction: Back Button이 눌렸을 때 실행할 @objc 메소드
+    func configureEditTitleNavigationBar(target: Any, popAction: Selector)
+    
     /// 데이트 기록 과정에서 지도가 있는 화면에서 사용되는 Navigation Bar를 설정합니다.
     /// - Parameters:
     ///   - target: Target
@@ -111,6 +117,26 @@ extension NavigationBarConfigurable {
         navigationItem.titleView = titleLabel
     }
     
+    func configureEditTitleNavigationBar(target: Any, popAction: Selector) {
+        let backButton: UIButton = {
+            let button = UIButton(type: .custom)
+            button.setImage(UIImage(named: Constants.Image.navBackButton), for: .normal)
+            button.addTarget(target, action: popAction, for: .touchUpInside)
+            return button
+        }()
+        let titleLabel: UILabel = {
+            let label = UILabel()
+            label.text = "코스 수정"
+            label.textColor = .designSystem(.white)
+            label.font = .gmarksans(weight: .bold, size: ._15)
+            return label
+        }()
+        
+        let leftButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem = leftButtonItem
+        navigationItem.titleView = titleLabel
+    }
+    
     func configureRecordMapNavigationBar(target: Any, dismissAction: Selector, pushAction: Selector) {
         let dismissButton: UIButton = {
             let button = UIButton()
@@ -160,7 +186,7 @@ extension NavigationBarConfigurable {
         
         let nextButton: UIButton = {
             var configuration = UIButton.Configuration.filled()
-            var attributedString = AttributedString.init("어디를 방문하실 계획인가요??")
+            var attributedString = AttributedString.init("어디를 가실 계획인가요?")
             attributedString.font = .designSystem(weight: .regular, size: ._15)
             configuration.attributedTitle = attributedString
             configuration.titleAlignment = .leading
@@ -214,7 +240,7 @@ extension NavigationBarConfigurable {
             make.leading.equalToSuperview().inset(25)
             make.centerY.equalToSuperview()
         }
-
+        
         let leftButtonItem = UIBarButtonItem(customView: textFieldView)
         let rightButtonItem = UIBarButtonItem(customView: mapButton)
         navigationItem.leftBarButtonItem = leftButtonItem
@@ -302,14 +328,14 @@ extension NavigationBarConfigurable {
             return label
         }()
         /*
-        let dayLabel: UILabel = {
-            let label = UILabel()
-            label.text = "D+\(day)"
-            label.font = .gmarksans(weight: .bold, size: ._15)
-            label.textColor = .designSystem(.white)
-            return label
-        }()
-        */
+         let dayLabel: UILabel = {
+         let label = UILabel()
+         label.text = "D+\(day)"
+         label.font = .gmarksans(weight: .bold, size: ._15)
+         label.textColor = .designSystem(.white)
+         return label
+         }()
+         */
         let settingButton: UIButton = {
             let button = UIButton(type: .custom)
             let configuration = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
@@ -319,7 +345,7 @@ extension NavigationBarConfigurable {
             button.addTarget(target, action: settingAction, for: .touchUpInside)
             return button
         }()
-
+        
         let leftTitleItem = UIBarButtonItem(customView: titleView)
         // let dayLabelButtonItem = UIBarButtonItem(customView: dayLabel)
         let settingButtonItem = UIBarButtonItem(customView: settingButton)

@@ -35,7 +35,7 @@ final class PlaceListView: UIView {
             case .zero:
                 return 0
             case .one:
-                return 225
+                return 228
             case .two:
                 return 292
             case .moreThanThree:
@@ -55,7 +55,7 @@ final class PlaceListView: UIView {
             case 1:
                 self.mediumHeight = .one
                 if placeListViewStatus == .medium {
-                    self.height = 225
+                    self.height = 228
                 }
             case 2:
                 self.mediumHeight = .two
@@ -77,7 +77,7 @@ final class PlaceListView: UIView {
         }
     }
     private let minimumChangeValue: CGFloat = 50.0  // 최소로 움직여야 하는 값을 50으로 설정합니다.
-    private let collapsedHeight: CGFloat = 225
+    private let collapsedHeight: CGFloat = 228
     private var mediumHeight: PlaceListMediumHeight = .zero
     private let fullHeight: CGFloat = DeviceInfo.screenHeight * 0.8767
     var height: CGFloat = 0

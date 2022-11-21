@@ -17,9 +17,16 @@ final class CourseTitleViewController: BaseViewController {
     var viewModel: CourseTitleViewModel
     
     // MARK: UI Components
-    private let descriptionLabel1: UILabel = {
+    private lazy var descriptionLabel1: UILabel = {
         let label = UILabel()
-        label.text = "생성할 코스의 이름을"
+        switch self.type {
+        case .addCourse, .addPlan:
+            label.text = "생성할 코스의 이름을"
+        case .editCourse, .editPlan:
+            label.text = "수정할 코스의 이름을"
+        default:
+            break
+        }
         label.textColor = .designSystem(.white)
         label.font = .gmarksans(weight: .bold, size: ._20)
         return label
@@ -37,7 +44,7 @@ final class CourseTitleViewController: BaseViewController {
         return textField
     }()
     private lazy var nextButton: MainButton = {
-        let button = MainButton(type: .addCourse)
+        let button = MainButton(type: (self.type == .addCourse || self.type == .addPlan) ? .addCourse : .editCourse)
         button.addTarget(self, action: #selector(nextButtonPressed(_:)), for: .touchUpInside)
         return button
     }()
@@ -46,12 +53,17 @@ final class CourseTitleViewController: BaseViewController {
     private func bind() {
         // input
         titleTextField.textPublisher()
-            .assign(to: &self.viewModel.$title)
+            .sink(receiveValue: { courseTitle in
+                self.viewModel.title = courseTitle
+            })
+            .cancel(with: cancelBag)
         
         // output
         viewModel.$title
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] courseTitle in
                 guard let self = self else { return }
+                self.titleTextField.text = courseTitle
                 self.nextButton.isEnabled = courseTitle.isEmpty ? false : true
             }
             .cancel(with: cancelBag)
@@ -73,13 +85,6 @@ final class CourseTitleViewController: BaseViewController {
         
         setUI()
         bind()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        self.navigationController?.navigationBar.isHidden = false
-        self.tabBarController?.tabBar.isHidden = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -110,14 +115,11 @@ extension CourseTitleViewController: NavigationBarConfigurable {
         case .addCourse:
             configureRecordTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
             
-        case .editCourse:
-            configureRecordTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
-            
         case .addPlan:
             configurePlanTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
             
-        case .editPlan:
-            configurePlanTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
+        case .editCourse, .editPlan:
+            configureEditTitleNavigationBar(target: self, popAction: #selector(backButtonPressed(_:)))
             
         default:
             break

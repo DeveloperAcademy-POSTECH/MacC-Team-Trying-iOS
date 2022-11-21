@@ -53,6 +53,9 @@ final class AddCourseCoordinator: CourseFlowCoordinator {
         let viewModel = CourseTitleViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
         let viewController = CourseTitleViewController(type: .addCourse, viewModel: viewModel)
         
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.navigationBar.isHidden = false
+        
         self.navigationController?.pushViewController(viewController, animated: true)
     }
 }
@@ -61,7 +64,7 @@ final class AddCourseCoordinator: CourseFlowCoordinator {
 extension AddCourseCoordinator: AddCourseFlowCoordinating {
     func pushToCourseMapView(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseMapViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseMapViewController(viewModel: viewModel)
+        let viewController = CourseMapViewController(type: .addCourse, viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }

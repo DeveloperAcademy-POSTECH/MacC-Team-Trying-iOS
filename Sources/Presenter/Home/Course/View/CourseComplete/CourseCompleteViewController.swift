@@ -32,7 +32,14 @@ final class CourseCompleteViewController: BaseViewController {
         label.numberOfLines = 0
         let attributedString = NSMutableAttributedString()
         let firstString = NSAttributedString(string: "새로운 별자리가", attributes: [.font: UIFont.gmarksans(weight: .light, size: ._15)])
-        let secondString = NSAttributedString(string: type == .addCourse ? "\n기록" : "\n계획", attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
+        var labelString: String
+        switch type {
+        case .addCourse, .editCourse, .registerReview:
+            labelString = "\n기록"
+        case .addPlan, .editPlan:
+            labelString = "\n계획"
+        }
+        let secondString = NSAttributedString(string: labelString, attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
         let thirdString = NSAttributedString(string: "됐습니다!", attributes: [.font: UIFont.gmarksans(weight: .medium, size: ._15)])
         attributedString.append(firstString)
         attributedString.append(secondString)

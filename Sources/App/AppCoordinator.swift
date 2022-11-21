@@ -37,11 +37,16 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
                     await coordinateToCreatePlanet()
                 } else if userInformations.mate == nil {
                     guard let planet = userInformations.planet else { return }
-                    await coordinateToWaitingMate(
-                        selectedPlanet: planet.image,
-                        planetName: planet.name,
-                        code: planet.code ?? ""
-                    )
+                    if planet.hasBeenMateEntered {
+                        await coordinateToWarningMateExitScene()
+                    } else {
+                        await coordinateToWaitingMate(
+                            selectedPlanet: planet.image,
+                            planetName: planet.name,
+                            code: planet.code ?? ""
+                        )
+                    }
+
                     return
                 } else {
                     await coordinateToMainScene()
@@ -95,5 +100,12 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
 
     func coordinateToLoginSceneFromProfile() {
         self.coordinateToLogincSceneByDispatchQueue()
+    }
+
+    @MainActor
+    private func coordinateToWarningMateExitScene() {
+        let coordinator = IntroCoordinator(navigationController: navigationController)
+        coordinator.startWithUserWarningExitPlanet()
+        window.makeKeyAndVisible()
     }
 }
