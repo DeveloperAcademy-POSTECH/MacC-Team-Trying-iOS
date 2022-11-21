@@ -96,8 +96,8 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
 
 extension ProfileCoordinator: EditNotificationCoordinating {
     func pushToEditNotificationView() {
-        let viewModel = PushNotificationViewModel(coordinator: self)
-        let viewController = PushSettingViewController(viewModel: viewModel)
+        let viewModel = PushNotificationsViewModel(coordinator: self)
+        let viewController = PushSettingsViewController(viewModel: viewModel)
         self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

@@ -38,6 +38,7 @@ final class HomeViewModel: BaseViewModel {
     @Published var dateCourse: HomeCourse?
     @Published var places: [Place] = []
     @Published var selectedDate: Date = YearMonthDayDate.today.asDate()
+    let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),
@@ -55,6 +56,7 @@ final class HomeViewModel: BaseViewModel {
         self.coordinator = coordinator
         self.deleteCourseUseCase = deleteCourseUseCase
         super.init()
+        setNotification()
     }
     
     func fetchUserInfo() async throws {
@@ -137,5 +139,24 @@ extension HomeViewModel {
     func pushToAlarmView() {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
         coordinator.pushToAlarmViewController()
+    }
+}
+
+extension HomeViewModel {
+    func setNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(getNotification), name: NSNotification.Name("COURSE"), object: nil)
+    }
+    
+    @objc
+    private func getNotification(_ notification: Notification) {
+        //MARK: DTO는 필요시 다른 모델에 매핑하여 사용
+        guard let courseId = notification.object as? String else { return }
+        Task {
+            let course = try await alarmCourseReviewUseCase.getCourseWith(id: courseId)
+            //MARK: 아래코드하면 달력뷰에서 그 날 날짜 코스나온다.
+//            print("notification course:", course)
+//            dateCourse = course
+        }
+  
     }
 }
