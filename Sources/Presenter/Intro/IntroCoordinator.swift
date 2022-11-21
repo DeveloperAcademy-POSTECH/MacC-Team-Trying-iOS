@@ -62,6 +62,13 @@ final class IntroCoordinator: IntroCoordinatorProtocol {
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
+    func startWithUserWarningExitPlanet() {
+        let warning = UserWarningViewController(outgoingType: .exitPlanet)
+        navigationController?.setViewControllers([warning], animated: false)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+
+    }
+
 }
 
 // MARK: - CoordinatorLogic
@@ -170,7 +177,8 @@ extension IntroCoordinator {
                     .init(
                         email: email,
                         password: password,
-                        name: ""
+                        name: "",
+                        deviceToken: ""
                     )
                 ),
                 coordinator: self
@@ -194,6 +202,12 @@ extension IntroCoordinator {
             )
         )
         navigationController?.pushViewController(createPlanetComplete, animated: true)
+    }
+
+    func coordinateToWarningMateExitScene() {
+        let warning = UserWarningViewController(outgoingType: .exitPlanet)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationController?.setViewControllers([warning], animated: false)
     }
 
     func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String, code: String) {

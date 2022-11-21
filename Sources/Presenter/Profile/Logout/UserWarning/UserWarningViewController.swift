@@ -15,6 +15,7 @@ import SnapKit
 enum OutgoingType {
     case exitPlanet
     case membershipWithdrawal
+    case mateExitPlanet
 }
 
 enum WarningAlarmType {

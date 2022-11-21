@@ -11,7 +11,6 @@ import Foundation
 import CancelBag
 
 protocol ServiceTermCoordinatorLogic {
-    func coordinateToCreatePlanetScene()
     func coordinateToSignUpEnterNicknameScene(type: SignUpEnterNicknameViewModel.SignUpType)
 }
 
