@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         self.registerForRemoteNotifications()
         Font.registerFonts()
-        KakaoSDK.initSDK(appKey: "041c741d45744f54da6ed10e0f946672")
+        KakaoSDK.initSDK(appKey: "9c2a1e0b53a641cb78b1dfb36f00793d")
         self.window = UIWindow(frame: UIScreen.main.bounds)
 
         coordinator = AppCoordinator(window: window!)
