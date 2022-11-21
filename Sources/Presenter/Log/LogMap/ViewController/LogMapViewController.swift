@@ -20,19 +20,7 @@ final class LogMapViewController: BaseViewController {
     }
     
     var viewModel: LogMapViewModel
-    
-    private lazy var locationManager: CLLocationManager = {
-        let manager = CLLocationManager()
-        manager.delegate = self
-        manager.requestWhenInUseAuthorization()
-        manager.desiredAccuracy = .infinity
-        manager.startUpdatingLocation()
-        manager.startUpdatingHeading()
-        manager.startMonitoringSignificantLocationChanges()
-        return manager
-    }()
-    
-    var currentLocation: CLLocation!
+    private let locationManager = LocationManager.shared
     
     private lazy var dismissButton = UIButton()
     
@@ -44,15 +32,15 @@ final class LogMapViewController: BaseViewController {
         map.setRegion(
             MKCoordinateRegion(
                 center: CLLocationCoordinate2D(
-                    latitude: currentLocation.coordinate.latitude,
-                    longitude: currentLocation.coordinate.longitude
+                    latitude: locationManager.latitude,
+                    longitude: locationManager.longitude
                 ),
                 span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
             ),
             animated: true
         )
         map.showsUserLocation = true
-        map.setUserTrackingMode(.followWithHeading, animated: true)
+        map.setUserTrackingMode(.follow, animated: true)
         map.showsCompass = false
         return map
     }()
@@ -89,6 +77,7 @@ final class LogMapViewController: BaseViewController {
     /// View Model과 bind 합니다.
     private func bind() {
         // input
+        
         // output
     }
     
@@ -101,48 +90,17 @@ final class LogMapViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: Life-Cycle
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.isNavigationBarHidden = true
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // FIXME: 탭바 코드 삭제하기
-        navigationController?.tabBarController?.tabBar.isHidden = true
-        currentLocation = locationManager.location
+        
         setUI()
         bind()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
-        if CLLocationManager.locationServicesEnabled() {
-            if CLLocationManager.authorizationStatus() == .denied || CLLocationManager.authorizationStatus() == .restricted {
-                let alert = UIAlertController(title: "Error", message: "위치 서비스 기능이 꺼져있습니다.", preferredStyle: .alert)
-                let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
-                alert.addAction(confirmAction)
-                self.present(alert, animated: true, completion: nil)
-            } else {
-                locationManager.desiredAccuracy = kCLLocationAccuracyBest
-                locationManager.delegate = self
-                locationManager.requestWhenInUseAuthorization()
-                currentLocation = locationManager.location
-            }
-        } else {
-            let alert = UIAlertController(title: "Error", message: "위치 서비스 제공을 할 수 없습니다.", preferredStyle: .alert)
-            let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
-            alert.addAction(confirmAction)
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.tabBarController?.tabBar.isHidden = false
-        navigationController?.navigationBar.isHidden = false
+        self.navigationController?.isNavigationBarHidden = true
     }
 }
 
@@ -197,9 +155,9 @@ extension LogMapViewController {
         mapView.addAnnotations(viewModel.fetchConstellationAnnotations())
     }
     
-    private func presentStarAnnotations(selectedCourseTitle: String) {
+    private func presentStarAnnotations(selectedCourseID: Int) {
         mapView.removeAnnotations(mapView.annotations)
-        let starAnnotations = viewModel.fetchStarAnnotations(with: selectedCourseTitle)
+        let starAnnotations = viewModel.fetchStarAnnotations(with: selectedCourseID)
         mapView.addAnnotations(starAnnotations)
         mapView.showAnnotations(starAnnotations, animated: true)
     }
@@ -287,36 +245,11 @@ extension LogMapViewController: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         guard let view = view as? ConstellationAnnotationView,
-              let title = view.annotation?.title! else { return }
+              let annotation = view.annotation as? ConstellationAnnotation else { return }
         
         setDismissButton(type: .pop)
-        presentStarAnnotations(selectedCourseTitle: title)
+        presentStarAnnotations(selectedCourseID: annotation.courseId)
         presentRecordButton()
-    }
-}
-
-// MARK: - CLLocationManagerDelegate
-extension LogMapViewController: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        locationManager = manager
-        currentLocation = locationManager.location
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .notDetermined:
-            manager.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse:
-            self.currentLocation = locationManager.location
-        case .authorizedAlways:
-            self.currentLocation = locationManager.location
-        case .restricted:
-            break
-        case .denied:
-            break
-        default:
-            break
-        }
     }
 }
 

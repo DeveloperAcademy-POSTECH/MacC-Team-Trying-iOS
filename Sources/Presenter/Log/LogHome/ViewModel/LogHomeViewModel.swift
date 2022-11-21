@@ -20,7 +20,7 @@ protocol MyConstellationViewCoordinating {
 }
 
 protocol LogMapViewCoordinating {
-    func pushLogMapViewController()
+    func pushLogMapViewController(courses: [CourseEntity])
 }
 
 // MARK: ViewModel
@@ -61,7 +61,7 @@ extension LogHomeViewModel {
     // 지도화면으로 전환
     func pushLogMapViewController() {
         guard let coordinator = coordinator as? LogMapViewCoordinating else { return }
-        coordinator.pushLogMapViewController()
+        coordinator.pushLogMapViewController(courses: self.courses)
     }
 }
 
