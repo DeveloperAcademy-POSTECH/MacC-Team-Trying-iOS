@@ -37,7 +37,7 @@ final class HomeViewModel: BaseViewModel {
     @Published var dateCalendarList: [YearMonthDayDate] = []
     @Published var dateCourse: HomeCourse?
     @Published var places: [Place] = []
-    var selectedDate: Date = Date()
+    @Published var selectedDate: Date = YearMonthDayDate.today.asDate()
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),
@@ -80,14 +80,6 @@ final class HomeViewModel: BaseViewModel {
         dateCalendarList = myDateListDTO.dates
             .map { $0.getDateFromString() }
             .map { YearMonthDayDate(year: $0.year, month: $0.month, day: $0.day) }
-    }
-    
-    /// 코스가 존재하는지 존재하지 않는지 여부를 판단하는 함수
-    /// - Parameter selectedDate: 캘린더에서 내가 누른 날짜
-    /// - Returns: 내가누른 날짜가 fetchDateRange에서 받아온 리스트에 포함되어있는지 아닌지를 판단하는 함수
-    func hasCourse(selectedDate: String) -> Bool {
-        guard let selectedDate = selectedDate.toDate() else { return true }
-        return dateCalendarList.map { $0.asDate() }.contains(selectedDate)
     }
     
     /// 선택한 날짜의 데이트 코스 정보를 불러오는 함수
