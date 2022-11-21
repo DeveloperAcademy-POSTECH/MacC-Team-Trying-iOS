@@ -200,6 +200,12 @@ final class HomeViewController: BaseViewController {
                 self.dateCoureRegisterButton.isHidden = true
             } else {
                 setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
+                self.contentView.snp.remakeConstraints { make in
+                    make.top.equalToSuperview()
+                    make.width.equalToSuperview()
+                    make.height.equalToSuperview()
+                    make.bottom.equalToSuperview()
+                }
             }
         }
     }
@@ -234,9 +240,6 @@ extension HomeViewController {
         homeScrollView.addSubview(pathTableView)
         homeScrollView.addSubview(calendarView)
         homeScrollView.addSubview(dateCoureRegisterButton)
-//        view.addSubview(pathTableView)
-//        view.addSubview(calendarView)
-//        view.addSubview(dateCoureRegisterButton)
         pathTableView.delegate = self
         pathTableView.dataSource = self
         calendarView.delegate = self
@@ -420,6 +423,12 @@ extension HomeViewController: CalendarViewDelegate {
                 self.dateCoureRegisterButton.isHidden = true
             } else {
                 setRegisterButton(date > Date() ? .addPlan : .addCourse)
+                self.contentView.snp.remakeConstraints { make in
+                    make.top.equalToSuperview()
+                    make.width.equalToSuperview()
+                    make.height.equalToSuperview()
+                    make.bottom.equalToSuperview()
+                }
             }
         }
     }
