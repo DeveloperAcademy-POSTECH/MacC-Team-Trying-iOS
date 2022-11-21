@@ -74,7 +74,6 @@ class AlarmAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("\(token)", forHTTPHeaderField: "accessToken")
-
         let (_, urlResponse) = try await URLSession.shared.data(for: request)
         guard let urlResponse = urlResponse as? HTTPURLResponse else { return false }
         if urlResponse.statusCode != 200 {
