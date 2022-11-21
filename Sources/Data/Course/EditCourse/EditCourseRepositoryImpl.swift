@@ -12,7 +12,7 @@ final class EditCourseRepositoryImpl: EditCourseRepository {
     func editCourse(_ courseRequestDTO: CourseRequestDTO) async throws -> Int {
         let token = UserDefaults.standard.string(forKey: "accessToken")
         
-        let urlString = "https://comeit.site/courses/\(courseRequestDTO.id!)"
+        let urlString = "\(APIManager.baseURL)/courses/\(courseRequestDTO.id!)"
         guard let url = URL(string: urlString) else { throw NetworkingError.urlError }
         
         guard let jsonData = try? JSONEncoder().encode(self.convertToRequest(courseRequestDTO)) else {

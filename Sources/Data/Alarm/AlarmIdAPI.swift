@@ -18,7 +18,7 @@ class AlarmIdAPI {
 
     private var token = UserDefaults().string(forKey: "accessToken") ?? ""
     
-    private let host = "https://comeit.site/"
+    private let host = APIManager.baseURL
     
     func getCourseWith(_ type: AlarmIdApiType, id: String) async throws -> AlarmCourseIdDTO {
         let urlStr = encodeUrl(string: addStringParameter(type: type, id: id))
