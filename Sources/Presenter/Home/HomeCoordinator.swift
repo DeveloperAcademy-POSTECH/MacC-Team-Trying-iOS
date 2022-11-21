@@ -35,7 +35,7 @@ extension HomeCoordinator: AlarmViewCoordinatingInAlarmViewCoordinating {
         DispatchQueue.main.async {
             self.navigationController?.popViewController(animated: true)
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.parentCoordinator?.moveToLogTab()
         }
     }
