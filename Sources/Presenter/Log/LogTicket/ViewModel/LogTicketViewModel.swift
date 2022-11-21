@@ -72,7 +72,7 @@ extension LogTicketViewModel {
         fetchReviewUseCase.fetchReviewAsync(courseId: course.id)
     }
     
-    func moveToHomeBab() {
+    func moveToHomeTab() {
         guard let coordinator = coordinator as? MoveFromLogToHome else { return }
         coordinator.goToHomeView(course: course)
     }

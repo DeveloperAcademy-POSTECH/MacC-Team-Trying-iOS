@@ -118,6 +118,15 @@ extension LogTicketViewController {
         secondView.isHidden = true
     }
     
+    private func configureTicketView(ticketView: LogTicketView, index: Int) {
+        ticketView.imageUrl = viewModel.reviews[index].imagesURL
+        ticketView.bodyTextView.text = viewModel.reviews[index].content
+        ticketView.courseNameLabel.text = viewModel.reviews[index].name
+        ticketView.dateLabel.text = viewModel.course.date
+        ticketView.numberLabel.text = "\(viewModel.currentIndex + 1)번째"
+        ticketView.fromLabel.text = "수정"
+    }
+    
     private func setOnlyMyReview() {
         
         let myTicketView = LogTicketView()
@@ -134,6 +143,8 @@ extension LogTicketViewController {
         logTicketEmptyView.addCourseButton.isHidden = true
         logTicketEmptyView.logTicketEmptyViewLabel.text = "메이트의 후기가 아직 없어요!"
         
+        myTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "myName")
+        
         myTicketView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
@@ -149,15 +160,6 @@ extension LogTicketViewController {
         }
     }
     
-    private func configureTicketView(ticketView: LogTicketView, index: Int) {
-        ticketView.imageUrl = viewModel.reviews[index].imagesURL
-        ticketView.bodyTextView.text = viewModel.reviews[index].content
-        ticketView.courseNameLabel.text = viewModel.reviews[index].name
-        ticketView.dateLabel.text = viewModel.course.date
-        ticketView.numberLabel.text = "\(viewModel.currentIndex + 1)번째"
-        ticketView.fromLabel.text = "수정"
-    }
-    
     private func setOnlyMateReview() {
         let logTicketEmptyView = LogTicketEmptyView()
         let mateTicketView = LogTicketView()
@@ -171,6 +173,8 @@ extension LogTicketViewController {
         logTicketEmptyView.addCourseButton.addTarget(self, action: #selector(tapAddCourseButton), for: .touchUpInside)
         mateTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         mateTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
+        
+        mateTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "mateName")
         
         mateTicketView.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -212,12 +216,16 @@ extension LogTicketViewController {
         myTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         mateTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         
+        myTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "myName")
+        
         myTicketView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
             make.width.equalToSuperview()
             make.height.equalToSuperview()
         }
+        
+        mateTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "mateName")
         
         mateTicketView.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -253,6 +261,6 @@ extension LogTicketViewController {
     @objc
     func tapAddCourseButton() {
         print("tapAddCourseButton")
-        viewModel.moveToHomeBab()
+        viewModel.moveToHomeTab()
     }
 }

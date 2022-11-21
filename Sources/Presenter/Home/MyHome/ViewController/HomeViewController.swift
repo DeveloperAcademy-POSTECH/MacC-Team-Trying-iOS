@@ -167,6 +167,9 @@ final class HomeViewController: BaseViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.isHidden = true
+        UserDefaults.standard.set(viewModel.user?.me.name, forKey: "myName")
+        UserDefaults.standard.set(viewModel.user?.mate?.name, forKey: "mateName")
+        
         Task {
             let currentDateRange = getDateRange(currentDate: viewModel.selectedDate)
             try await viewModel.fetchUserInfo()
