@@ -57,24 +57,7 @@ final class LogHomeViewController: BaseViewController {
         button.isHidden = true
         return button
     }()
-    
-    let constellationDetailButton: UIButton = {
-        var button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.titleLabel?.adjustsFontForContentSizeCategory = true
-        button.setImage(UIImage(named: "ic_ticket")?.resizeImageTo(size: CGSize(width: 20, height: 20)), for: .normal)
-        button.titleLabel?.font = UIFont.designSystem(weight: .bold, size: ._11)
-        button.setTitle("별자리 후기", for: .normal)
-        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
-        button.semanticContentAttribute = .forceLeftToRight
-        button.contentVerticalAlignment = .center
-        button.contentHorizontalAlignment = .center
-        button.layer.cornerRadius = 13
-        button.layer.borderWidth = 2
-        button.layer.borderColor = .designSystem(.mainYellow)
-        return button
-    }()
-    
+
     private var mapButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "ic_map"), for: .normal)
@@ -148,9 +131,9 @@ extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogCollectionViewCell.identifier, for: indexPath) as? LogCollectionViewCell else { return UICollectionViewCell() }
-        cell.courseNameLabel.text = viewModel.courses[indexPath.row].courseTitle
-        cell.dateLabel.text = viewModel.courses[indexPath.row].date
-        cell.configure(with: viewModel.courses[indexPath.row].places)
+        
+        cell.configure(with: viewModel.courses[indexPath.row])
+        cell.courseNameButton.addTarget(self, action: #selector(tapConstellationDetailButton), for: .touchUpInside)
         return cell
     }
 }
@@ -203,18 +186,17 @@ extension LogHomeViewController {
         listButton.addTarget(self, action: #selector(tapListButton), for: .touchUpInside)
         previousConstellationButton.addTarget(self, action: #selector(tapPreviousConstellationButton), for: .touchUpInside)
         nextConstellationButton.addTarget(self, action: #selector(tapNextConstellationButton), for: .touchUpInside)
-        constellationDetailButton.addTarget(self, action: #selector(tapConstellationDetailButton), for: .touchUpInside)
     }
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setConstraints() {
+        
         view.addSubviews(
             mapButton,
             listButton,
             logCollectionView,
             previousConstellationButton,
             currentConstellationButton,
-            nextConstellationButton,
-            constellationDetailButton
+            nextConstellationButton
         )
         
         mapButton.snp.makeConstraints { make in
@@ -223,48 +205,47 @@ extension LogHomeViewController {
             make.right.equalToSuperview().inset(DeviceInfo.screenWidth * 0.0512)
             make.top.equalToSuperview().inset(DeviceInfo.screenHeight * 0.0663)
         }
+        
         listButton.snp.makeConstraints { make in
             make.width.height.equalTo(mapButton.snp.width)
             make.centerX.equalTo(mapButton.snp.centerX)
             make.top.equalTo(mapButton.snp.bottom).offset(DeviceInfo.screenWidth * 0.0512)
         }
+        
         logCollectionView.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth)
             make.height.equalTo(DeviceInfo.screenHeight * 0.7)
             make.centerX.equalToSuperview()
             make.top.equalTo(listButton.snp.bottom)
         }
+        
         currentConstellationButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(constellationDetailButton.snp.top).offset(-DeviceInfo.screenHeight * 30 / 844)
+            make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 135 / 844)
             make.width.height.equalTo(DeviceInfo.screenWidth * 50 / 390)
         }
+        
         previousConstellationButton.snp.makeConstraints { make in
             make.width.height.equalTo(currentConstellationButton.snp.width).multipliedBy(0.6)
             make.centerY.equalTo(currentConstellationButton.snp.centerY)
             make.right.equalTo(currentConstellationButton.snp.left).offset(-DeviceInfo.screenWidth * 20 / 390)
         }
+        
         nextConstellationButton.snp.makeConstraints { make in
             make.width.height.equalTo(currentConstellationButton.snp.width).multipliedBy(0.6)
             make.centerY.equalTo(currentConstellationButton.snp.centerY)
             make.left.equalTo(currentConstellationButton.snp.right).offset(DeviceInfo.screenWidth * 20 / 390)
         }
-        constellationDetailButton.snp.makeConstraints { make in
-            make.width.equalTo(100)
-            make.height.equalTo(30)
-            make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 105 / 844)
-        }
-    }
-    
-    @objc
-    func tapMapButton() {
-        viewModel.pushLogMapViewController()
     }
     
     @objc
     func tapConstellationDetailButton() {
         viewModel.presentTicketView()
+    }
+    
+    @objc
+    func tapMapButton() {
+        viewModel.pushLogMapViewController()
     }
     
     @objc
