@@ -13,6 +13,7 @@ struct UserResponseModel: Decodable {
     let mate: Mate?
     let planet: Planet?
     let hasNotification: Bool
+    let activities: Activity
     let socialAccount: Bool
 
     struct Mate: Decodable {
@@ -26,5 +27,10 @@ struct UserResponseModel: Decodable {
         let dday: Int
         let image: String
         let code: String?
+    }
+    
+    struct Activity: Decodable {
+        let courseCount: Int
+        let likedCount: Int
     }
 }

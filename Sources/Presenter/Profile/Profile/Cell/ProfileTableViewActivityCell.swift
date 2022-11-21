@@ -37,7 +37,7 @@ final class ProfileTableViewActivityCell: UITableViewCell {
         return label
     }()
     
-    lazy var numberOfCourseLabel: UILabel = {
+    lazy var numberOfLikedCourseLabel: UILabel = {
         let label = UILabel()
         label.font = .designSystem(weight: .bold, size: ._20)
         label.textColor = .designSystem(.mainYellow)
@@ -63,7 +63,7 @@ final class ProfileTableViewActivityCell: UITableViewCell {
             myConstellationLabel,
             numberOfConstellationLabel,
             courseLabel,
-            numberOfCourseLabel
+            numberOfLikedCourseLabel
         )
         
         myConstellationLabel.snp.makeConstraints { make in
@@ -81,7 +81,7 @@ final class ProfileTableViewActivityCell: UITableViewCell {
             make.trailing.equalToSuperview().inset(50)
         }
         
-        numberOfCourseLabel.snp.makeConstraints { make in
+        numberOfLikedCourseLabel.snp.makeConstraints { make in
             make.top.equalTo(courseLabel.snp.bottom).offset(10)
             make.centerX.equalTo(courseLabel)
         }

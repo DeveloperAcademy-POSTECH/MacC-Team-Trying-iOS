@@ -65,7 +65,8 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
         editPassword.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(editPassword, animated: true)
     }
-     func coordinateToLoginScene() {
+    
+    func coordinateToLoginScene() {
         delegate?.coordinateToLoginScene()
     }
 
@@ -83,6 +84,13 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
     func coordinateToExitPlanet(type: OutgoingType) {
         let exitPlanetViewController = UserWarningViewController(outgoingType: .exitPlanet)
         self.navigationController?.pushViewController(exitPlanetViewController, animated: true)
+    }
+    
+    func pushToServiceTermView() {
+        let viewController = TermViewController(viewModel: .init())
+        viewController.termType = .service
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }
 
