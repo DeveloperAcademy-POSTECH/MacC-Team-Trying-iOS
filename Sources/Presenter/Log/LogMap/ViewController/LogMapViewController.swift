@@ -22,7 +22,20 @@ final class LogMapViewController: BaseViewController {
     var viewModel: LogMapViewModel
     private let locationManager = LocationManager.shared
     
-    private lazy var dismissButton = UIButton()
+    private lazy var dismissButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: Constants.Image.navBarDeleteButton), for: .normal)
+        button.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var popButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: Constants.Image.navBarPopButton), for: .normal)
+        button.addTarget(self, action: #selector(popButtonPressed(_:)), for: .touchUpInside)
+        button.isHidden = true
+        return button
+    }()
     
     private lazy var mapView: MKMapView = {
         let map = MKMapView()
@@ -108,7 +121,6 @@ final class LogMapViewController: BaseViewController {
 extension LogMapViewController {
     private func setUI() {
         presentConstellationAnnotations()
-        setDismissButton(type: .dismiss)
         setLayout()
     }
     
@@ -120,6 +132,7 @@ extension LogMapViewController {
         view.addSubviews(
             mapView,
             dismissButton,
+            popButton,
             recordButton
         )
         
@@ -133,6 +146,11 @@ extension LogMapViewController {
         }
         
         dismissButton.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.leading.equalToSuperview().inset(20)
+        }
+        
+        popButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.equalToSuperview().inset(20)
         }
@@ -198,21 +216,14 @@ extension LogMapViewController {
         }
     }
     
-    private func setDismissButton(type: DismissButtonType) {
-        switch type {
-        case .dismiss:
-            dismissButton.setImage(UIImage(named: Constants.Image.navBarDeleteButton), for: .normal)
-            dismissButton.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
-            
-        case .pop:
-            dismissButton.setImage(UIImage(named: Constants.Image.navBarPopButton), for: .normal)
-            dismissButton.addTarget(self, action: #selector(popButtonPressed(_:)), for: .touchUpInside)
-        }
-    }
-    
     private func presentLocation(latitude: CLLocationDegrees, longitude: CLLocationDegrees, span: Double) {
         let spanValue = MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
         mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: spanValue), animated: true)
+    }
+    
+    private func toggleDismissButton() {
+        self.dismissButton.isHidden.toggle()
+        self.popButton.isHidden.toggle()
     }
 }
 
@@ -244,12 +255,19 @@ extension LogMapViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        guard let view = view as? ConstellationAnnotationView,
-              let annotation = view.annotation as? ConstellationAnnotation else { return }
-        
-        setDismissButton(type: .pop)
-        presentStarAnnotations(selectedCourseID: annotation.courseId)
-        presentRecordButton()
+        if let starAnnotationView = view as? StarAnnotationView,
+           let starAnnotation = view.annotation as? StarAnnotation {
+            
+        } else if let constellationAnnotationView = view as? ConstellationAnnotationView,
+                  let constellationAnnotation = view.annotation as? ConstellationAnnotation {
+            
+            self.toggleDismissButton()
+            self.presentStarAnnotations(selectedCourseID: constellationAnnotation.courseId)
+            self.presentRecordButton()
+            
+        } else {
+            return
+        }
     }
 }
 
@@ -257,15 +275,14 @@ extension LogMapViewController: MKMapViewDelegate {
 extension LogMapViewController {
     @objc
     private func dismissButtonPressed(_ sender: UIButton) {
-        // TODO: dismiss
-        viewModel.tapDismissButton()
+        self.viewModel.dismissButtonPressed()
     }
     
     @objc
     private func popButtonPressed(_ sender: UIButton) {
-        setDismissButton(type: .dismiss)
-        dismissRecordButton()
-        presentConstellationAnnotations()
+        self.toggleDismissButton()
+        self.dismissRecordButton()
+        self.presentConstellationAnnotations()
         presentLocation(latitude: mapView.region.center.latitude, longitude: mapView.region.center.longitude, span: 0.05)
     }
     
