@@ -63,14 +63,6 @@ extension CourseMapViewModel {
         places.remove(at: sourceIndex)
         places.insert(targetPlace, at: destinationIndex)
     }
-    
-    func addCourse() async throws -> Int {
-        return try await self.addCourseUseCase.addCourse(courseRequestDTO: self.courseRequestDTO)
-    }
-    
-    func editCourse() async throws -> Int {
-        return try await self.editCourseUseCase.editCourse(self.courseRequestDTO)
-    }
 }
 
 // MARK: - Coordinating
@@ -127,7 +119,7 @@ extension CourseMapViewModel {
             guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
             Task {
                 do {
-                    self.courseRequestDTO.id = try await self.addCourse()
+                    self.courseRequestDTO.id = try await self.addCourseUseCase.addCourse(courseRequestDTO: self.courseRequestDTO)
                     
                     DispatchQueue.main.async {
                         coordinator.pushToRegisterReviewView(self.courseRequestDTO)
@@ -141,7 +133,7 @@ extension CourseMapViewModel {
             guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
             Task {
                 do {
-                    _ = try await self.editCourse()
+                    _ = try await self.editCourseUseCase.editCourse(editCourseDTO: self.courseRequestDTO)
                     
                     DispatchQueue.main.async {
                         coordinator.pushToCompleteView(self.courseRequestDTO)
@@ -153,11 +145,31 @@ extension CourseMapViewModel {
             
         case is AddPlanCoordinator:
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
-            coordinator.pushToCompleteView(self.courseRequestDTO)
+            Task {
+                do {
+                    _ = try await self.addCourseUseCase.addCourse(courseRequestDTO: self.courseRequestDTO)
+                    
+                    DispatchQueue.main.async {
+                        coordinator.pushToCompleteView(self.courseRequestDTO)
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
             
         case is EditPlanCoordinator:
             guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
-            coordinator.pushToCompleteView(self.courseRequestDTO)
+            Task {
+                do {
+                    _ = try await self.editCourseUseCase.editCourse(editCourseDTO: self.courseRequestDTO)
+                    
+                    DispatchQueue.main.async {
+                        coordinator.pushToCompleteView(self.courseRequestDTO)
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
             
         default:
             break
