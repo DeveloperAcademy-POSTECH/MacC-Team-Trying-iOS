@@ -9,7 +9,7 @@
 import Foundation
 
 protocol EditCourseUseCase {
-    func editCourse(_ editCourseDTO: CourseRequestDTO) async throws -> Int
+    func editCourse(editCourseDTO: CourseRequestDTO) async throws -> Int
 }
 
 final class EditCourseUseCaseImpl: EditCourseUseCase {
@@ -19,7 +19,7 @@ final class EditCourseUseCaseImpl: EditCourseUseCase {
         self.editCourseRepository = editCourseRepository
     }
     
-    func editCourse(_ editCourseDTO: CourseRequestDTO) async throws -> Int {
+    func editCourse(editCourseDTO: CourseRequestDTO) async throws -> Int {
         return try await self.editCourseRepository.editCourse(editCourseDTO)
     }
 }
