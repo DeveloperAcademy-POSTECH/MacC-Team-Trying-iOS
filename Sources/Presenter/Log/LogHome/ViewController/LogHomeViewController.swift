@@ -100,13 +100,14 @@ final class LogHomeViewController: BaseViewController {
         self.navigationController?.isNavigationBarHidden = true
         Task {
             try await viewModel.fetchConstellation()
+            logCollectionView.reloadData()
+            setConstellationButtonOption()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        bind()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -156,15 +157,6 @@ extension LogHomeViewController: UIScrollViewDelegate {
 
 // MARK: - UI
 extension LogHomeViewController {
-    /// View Model과 bind 합니다.
-    private func bind() {
-        viewModel.$courses
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.logCollectionView.reloadData()
-            }
-    }
     
     private func setUI() {
         setAttributes()

@@ -55,6 +55,7 @@ class LogCollectionViewCell: UICollectionViewCell {
 extension LogCollectionViewCell {
     
     func configure(with course: CourseEntity) {
+        
         self.contentView.subviews
             .filter { view in
                 return !(view == dateLabel || view == courseNameButton)
@@ -75,7 +76,7 @@ extension LogCollectionViewCell {
         courseNameButton.setTitle(course.courseTitle, for: .normal)
         
         courseNameButton.snp.remakeConstraints { make in
-            make.width.equalTo(17 * (courseNameButton.titleLabel?.text?.count ?? 0))
+            make.width.equalTo(17 * (courseNameButton.titleLabel?.text?.count ?? 50) + 35)
             make.height.equalTo(35)
             make.centerX.equalToSuperview()
             make.bottom.equalTo(dateLabel.snp.top).offset(-10)
