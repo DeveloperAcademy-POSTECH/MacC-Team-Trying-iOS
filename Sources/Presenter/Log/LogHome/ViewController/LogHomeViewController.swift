@@ -50,7 +50,7 @@ final class LogHomeViewController: BaseViewController {
         button.isHidden = true
         return button
     }()
-    
+
     private var mapButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "ic_map"), for: .normal)
