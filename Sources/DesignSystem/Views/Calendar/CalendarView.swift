@@ -17,7 +17,7 @@ protocol CalendarViewDelegate: AnyObject {
 }
 
 final class CalendarView: BaseView {
-
+  
     static let inset: CGFloat = 0
     static let cellHeight: CGFloat = (DeviceInfo.screenWidth - 80 - 1 - CalendarView.inset * 6) / 7
 
@@ -66,14 +66,32 @@ final class CalendarView: BaseView {
     }
 
     typealias Section = CalendarSection
-    typealias PresentCalendarDataSource = PresentCalendarDiffableDataSource
+    typealias PresentCalendarDataSource = UICollectionViewDiffableDataSource<CalendarSection, CalendarSection.Item>
     typealias FollowingCalendarDataSource = FollowingCalendarDiffableDataSource
     typealias PrevioustCalendarDataSource = PreviousCalendarDiffableDataSource
     typealias DateSnapshot = NSDiffableDataSourceSnapshot<Section, Section.Item>
 
-    private lazy var previousDataSource = PresentCalendarDataSource(collectionView: previousMonthCollectionView)
-    private lazy var presentDataSource = PresentCalendarDataSource(collectionView: presentMonthCollectionView)
-    private lazy var followingDataSource = PresentCalendarDataSource(collectionView: followingMonthCollectionView)
+    private lazy var previousDataSource = PrevioustCalendarDataSource(collectionView: previousMonthCollectionView)
+    private lazy var presentDataSource = PresentCalendarDataSource.init(collectionView: presentMonthCollectionView) { collectionView, indexPath, itemIdentifier in
+        switch itemIdentifier {
+        case .day(let model):
+            let cell = collectionView.dequeueReusableCell(DateCollectionViewCell.self, for: indexPath)
+            cell.configure(with: model)
+
+            // 현재 날짜가 오늘이라면
+            // 1. 노란색 처리
+            // 2. 눌림 처리
+            if model.date == YearMonthDayDate.today {
+                cell.isToday()
+                collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
+            } else if model.date == self.selectedDate {
+                collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
+            }
+
+            return cell
+        }
+    }
+    private lazy var followingDataSource = FollowingCalendarDataSource(collectionView: followingMonthCollectionView)
 
     private var numberOfDaysInMonth: [Int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     private var sections: [CalendarSection] = []
@@ -201,6 +219,13 @@ final class CalendarView: BaseView {
         self.numberOfMonthRow = restCellCount == 0 ?
         minimumCellNumberOfPresentMonth / 7 :
         minimumCellNumberOfPresentMonth / 7 + 1
+    }
+    
+    func selectDateDirectly(_ date: Date) {
+        if let indexPath = presentDataSource.indexPath(for: .day(.init(date: date.toYearMonthDayDate(), isScheduled: true, isColored: true))) {
+            self.presentMonthCollectionView.selectItem(at: indexPath, animated: false, scrollPosition: .top)
+        }
+        
     }
 }
 
@@ -711,5 +736,11 @@ extension CalendarView {
         followingFrontCellNumber == 0 ?
         minimumCellNumberOfFollowingMonth :
         minimumCellNumberOfFollowingMonth + (7 - followingFrontCellNumber)
+    }
+}
+
+extension Date {
+    func toYearMonthDayDate() -> YearMonthDayDate {
+        .init(year: self.year, month: self.month, day: self.day)
     }
 }

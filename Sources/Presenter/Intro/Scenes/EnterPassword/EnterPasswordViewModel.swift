@@ -14,6 +14,9 @@ import CancelBag
 protocol EnterPasswordCoordinatorLogic {
     func coordinateToMainScene()
     func coordinateToFindPasswordScene(email: String)
+    func coordinateToCreatePlanetScene()
+    func coordinateToWarningMateExitScene()
+    func coordinateToWaitingInvitationScene(selectedPlanet: String, planetName: String, code: String)
 }
 
 protocol EnterPasswordBusinessLogic: BusinessLogic {
@@ -27,6 +30,7 @@ final class EnterPasswordViewModel: BaseViewModel, EnterPasswordBusinessLogic {
     private let coordinator: EnterPasswordCoordinatorLogic
 
     private let signInService = SignInService()
+    private let userService: UserService
 
     @Published var passwordTextFieldState: TextFieldState
     @Published var isLoading: Bool
@@ -35,13 +39,15 @@ final class EnterPasswordViewModel: BaseViewModel, EnterPasswordBusinessLogic {
 
     init(
         email: String,
-        coordinator: EnterPasswordCoordinatorLogic
+        coordinator: EnterPasswordCoordinatorLogic,
+        userService: UserService = UserService()
     ) {
         self.passwordTextFieldState = .empty
         self.email = email
         self.password = ""
         self.isLoading = false
         self.coordinator = coordinator
+        self.userService = userService
     }
 
     func loginButtonDidTapped() {
@@ -52,12 +58,38 @@ final class EnterPasswordViewModel: BaseViewModel, EnterPasswordBusinessLogic {
                 let accessToken = try await signInService.signIn(.init(email: email, password: password, deviceToken: deviceToken))
                 UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
 
+                let userInformations = try await userService.getUserInformations()
+
+                print("✨ ", userInformations)
+
                 self.isLoading = false
 
-                DispatchQueue.main.async {
-                    self.coordinator.coordinateToMainScene()
+                if userInformations.planet == nil {
+                    DispatchQueue.main.async { [weak self] in
+                        self?.coordinator.coordinateToCreatePlanetScene()
+                    }
+
+                } else if userInformations.mate == nil {
+                    guard let planet = userInformations.planet else { return }
+                    if planet.hasBeenMateEntered {
+                        DispatchQueue.main.async { [weak self] in
+                            self?.coordinator.coordinateToWarningMateExitScene()
+                        }
+                    } else {
+                        DispatchQueue.main.async { [weak self] in
+                            self?.coordinator.coordinateToWaitingInvitationScene(
+                                selectedPlanet: planet.image,
+                                planetName: planet.name,
+                                code: planet.code ?? ""
+                            )
+                        }
+                    }
+                    return
+                } else {
+                    DispatchQueue.main.async { [weak self] in
+                        self?.coordinator.coordinateToMainScene()
+                    }
                 }
-                
             } catch {
                 passwordTextFieldState = .wrongPassword
                 isLoading = false

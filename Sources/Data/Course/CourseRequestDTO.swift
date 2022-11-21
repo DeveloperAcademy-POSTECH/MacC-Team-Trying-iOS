@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CourseRequestDTO: Encodable {
+struct CourseRequestDTO {
     var id: Int?
     var title: String
     var date: String

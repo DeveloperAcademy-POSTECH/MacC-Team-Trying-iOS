@@ -16,6 +16,8 @@ struct DateDday {
 }
 
 struct HomeCourse {
+    let courseId: Int?
+    let courseDate: String
     let courseTitle: String
     let courseList: [DatePath]
 }
@@ -28,10 +30,15 @@ struct DatePath {
 }
 
 final class HomeViewModel: BaseViewModel {
+    var coordinator: Coordinator
+    private let deleteCourseUseCase: DeleteCourseUseCase
 
     @Published var user: UserInfoDTO?
     @Published var dateCalendarList: [YearMonthDayDate] = []
     @Published var dateCourse: HomeCourse?
+    @Published var places: [Place] = []
+    @Published var selectedDate: Date = YearMonthDayDate.today.asDate()
+    let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),
@@ -39,12 +46,17 @@ final class HomeViewModel: BaseViewModel {
         DateDday(title: "강릉데이트", dday: 30),
         DateDday(title: "서울데이트", dday: 40)
     ]
-
-    var coordinator: Coordinator
     
-    init(coordinator: Coordinator) {
+    init(
+        coordinator: Coordinator,
+        deleteCourseUseCase: DeleteCourseUseCase = DeleteCourseUseCaseImpl(
+            deleteCourseRepository: DeleteCourseRepositoryImpl()
+        )
+    ) {
         self.coordinator = coordinator
+        self.deleteCourseUseCase = deleteCourseUseCase
         super.init()
+        setNotification()
     }
     
     func fetchUserInfo() async throws {
@@ -72,14 +84,6 @@ final class HomeViewModel: BaseViewModel {
             .map { YearMonthDayDate(year: $0.year, month: $0.month, day: $0.day) }
     }
     
-    /// 코스가 존재하는지 존재하지 않는지 여부를 판단하는 함수
-    /// - Parameter selectedDate: 캘린더에서 내가 누른 날짜
-    /// - Returns: 내가누른 날짜가 fetchDateRange에서 받아온 리스트에 포함되어있는지 아닌지를 판단하는 함수
-    func hasCourse(selectedDate: String) -> Bool {
-        guard let selectedDate = selectedDate.toDate() else { return false }
-        return dateCalendarList.map { $0.asDate() }.contains(selectedDate)
-    }
-    
     /// 선택한 날짜의 데이트 코스 정보를 불러오는 함수
     /// - Parameter selectedDate: 캘린더에서 내가 누른 날짜
     func fetchSelectedDateCourse(selectedDate: String) async throws {
@@ -91,7 +95,21 @@ final class HomeViewModel: BaseViewModel {
         let placeList: [DatePath] = selectedDateCourse.places.map { placeElement in
             DatePath(title: placeElement.place.name, comment: placeElement.memo, distance: placeElement.distanceFromNext, location: .init(latitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.latitude), longitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.longitude)))
         }
-        dateCourse = HomeCourse(courseTitle: selectedDateCourse.title, courseList: placeList)
+        places = selectedDateCourse.places.map { element in
+            Place(id: element.place.placeId, title: element.place.name, category: element.place.category, address: element.place.address, location: .init(latitude: element.place.coordinate.latitude, longitude: element.place.coordinate.longitude), memo: element.memo)
+        }
+        dateCourse = HomeCourse(courseId: selectedDateCourse.courseId, courseDate: selectedDateCourse.date, courseTitle: selectedDateCourse.title, courseList: placeList)
+    }
+    
+    func deleteSelectedCourse() {
+        Task {
+            do {
+                guard let courseId = self.dateCourse?.courseId else { return }
+                try await self.deleteCourseUseCase.deleteCourse(courseId)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
 }
 
@@ -99,26 +117,21 @@ final class HomeViewModel: BaseViewModel {
 extension HomeViewModel {
     func startAddCourseFlow(type: CourseFlowType) {
         guard let coordinator = coordinator as? HomeCoordinator else { return }
-        
-        // FIXME: 임시로 Mock DTO를 전달합니다. 선택된 Course로 전달하도록 수정해야 합니다.
-        coordinator.startAddCourseFlow(
-            courseRequestDTO: CourseRequestDTO(
-                title: "포항 데이트",
-                date: "2022년 11월 19일",
-                places: [
-                    Place(
-                        id: 1,
-                        title: "참뼈",
-                        category: "음식점",
-                        address: "포항",
-                        location: CLLocationCoordinate2D(
-                            latitude: 36,
-                            longitude: 129
-                        )
-                    )
-                ]
-            )
-        )
+        switch type {
+        case .addCourse:
+            coordinator.startAddCourseFlow(courseRequestDTO: .init(title: "", date: selectedDate.dateToString(), places: []))
+        case .registerReview:
+            guard let dateCourse = dateCourse else { return }
+            coordinator.startRegisterReviewFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: selectedDate.dateToString(), places: places))
+        case .editCourse:
+            guard let dateCourse = dateCourse else { return }
+            coordinator.startEditCourseFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: selectedDate.dateToString(), places: places))
+        case .addPlan:
+            coordinator.startAddPlanFlow(courseRequestDTO: .init(title: "", date: selectedDate.dateToString(), places: []))
+        case .editPlan:
+            guard let dateCourse = dateCourse else { return }
+            coordinator.startEditPlanFlow(courseRequestDTO: .init(id: dateCourse.courseId, title: dateCourse.courseTitle, date: selectedDate.dateToString(), places: places))
+        }
     }
 }
 
@@ -126,5 +139,24 @@ extension HomeViewModel {
     func pushToAlarmView() {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
         coordinator.pushToAlarmViewController()
+    }
+}
+
+extension HomeViewModel {
+    func setNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(getNotification), name: NSNotification.Name("COURSE"), object: nil)
+    }
+    
+    @objc
+    private func getNotification(_ notification: Notification) {
+        //MARK: DTO는 필요시 다른 모델에 매핑하여 사용
+        guard let courseId = notification.object as? String else { return }
+        Task {
+            let course = try await alarmCourseReviewUseCase.getCourseWith(id: courseId)
+            //MARK: 아래코드하면 달력뷰에서 그 날 날짜 코스나온다.
+//            print("notification course:", course)
+//            dateCourse = course
+        }
+  
     }
 }
