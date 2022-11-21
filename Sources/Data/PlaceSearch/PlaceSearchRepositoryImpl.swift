@@ -43,20 +43,14 @@ final class PlaceSearchRepositoryImpl: PlaceSearchRepository {
     func searchPlaceUsingKakao(query: String, coordinate: CLLocationCoordinate2D) async throws -> [Place] {
         var urlComponents = URLComponents(string: "https://dapi.kakao.com/v2/local/search/keyword.json")
         
-        let pageQueryItem = URLQueryItem(name: "page", value: "1")
-        let sizeQueryItem = URLQueryItem(name: "size", value: "15")
         let queryItem = URLQueryItem(name: "query", value: "\(query)")
         let longitudeQueryItem = URLQueryItem(name: "x", value: "\(String(coordinate.longitude))")
         let latitudeQueryItem = URLQueryItem(name: "y", value: "\(String(coordinate.latitude))")
-        let radiusQueryItem = URLQueryItem(name: "radius", value: "5000")
         
         urlComponents?.queryItems = [
-            pageQueryItem,
-            sizeQueryItem,
             queryItem,
             longitudeQueryItem,
-            latitudeQueryItem,
-            radiusQueryItem
+            latitudeQueryItem
         ]
         
         guard let urlString = urlComponents?.string,
@@ -65,7 +59,7 @@ final class PlaceSearchRepositoryImpl: PlaceSearchRepository {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
-        request.setValue("KakaoAK fa0c6c8d186949d9d856d225a906fdba", forHTTPHeaderField: "Authorization")
+        request.setValue("KakaoAK 669f84dab6ff710e866e67aa5b5302a8", forHTTPHeaderField: "Authorization")
         
         let (data, response) = try await URLSession.shared.data(for: request)
         

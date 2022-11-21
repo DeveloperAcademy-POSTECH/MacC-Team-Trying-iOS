@@ -72,8 +72,8 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
                 let place = PlaceEntity(
                     id: placeElement.place.placeId,
                     title: placeElement.place.name,
-                    category: "",
-                    address: "",
+                    category: placeElement.place.category,
+                    address: placeElement.place.address,
                     coordinate: CLLocationCoordinate2D(latitude: placeElement.place.coordinate.latitude, longitude: placeElement.place.coordinate.longitude),
                     memo: placeElement.memo
                 )
