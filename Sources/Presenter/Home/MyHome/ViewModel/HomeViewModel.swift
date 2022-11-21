@@ -38,6 +38,7 @@ final class HomeViewModel: BaseViewModel {
     @Published var dateCourse: HomeCourse?
     @Published var places: [Place] = []
     @Published var selectedDate: Date = YearMonthDayDate.today.asDate()
+    let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     
     let ddayDateList = [
         DateDday(title: "인천데이트", dday: 10),
@@ -55,6 +56,7 @@ final class HomeViewModel: BaseViewModel {
         self.coordinator = coordinator
         self.deleteCourseUseCase = deleteCourseUseCase
         super.init()
+        setNotification()
     }
     
     func fetchUserInfo() async throws {
@@ -91,7 +93,7 @@ final class HomeViewModel: BaseViewModel {
             return
         }
         let placeList: [DatePath] = selectedDateCourse.places.map { placeElement in
-            DatePath(title: placeElement.place.name, comment: placeElement.memo, distance: placeElement.distanceFromNext, location: .init(latitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.latitude), longitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.longitude)))
+            DatePath(title: placeElement.place.name, comment: placeElement.memo ?? " ", distance: placeElement.distanceFromNext, location: .init(latitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.latitude), longitude: CLLocationDegrees(floatLiteral: placeElement.place.coordinate.longitude)))
         }
         places = selectedDateCourse.places.map { element in
             Place(id: element.place.placeId, title: element.place.name, category: element.place.category, address: element.place.address, location: .init(latitude: element.place.coordinate.latitude, longitude: element.place.coordinate.longitude), memo: element.memo)
@@ -137,5 +139,24 @@ extension HomeViewModel {
     func pushToAlarmView() {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
         coordinator.pushToAlarmViewController()
+    }
+}
+
+extension HomeViewModel {
+    func setNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(getNotification), name: NSNotification.Name("COURSE"), object: nil)
+    }
+    
+    @objc
+    private func getNotification(_ notification: Notification) {
+        //MARK: DTO는 필요시 다른 모델에 매핑하여 사용
+        guard let courseId = notification.object as? String else { return }
+        Task {
+            let course = try await alarmCourseReviewUseCase.getCourseWith(id: courseId)
+            //MARK: 아래코드하면 달력뷰에서 그 날 날짜 코스나온다.
+//            print("notification course:", course)
+//            dateCourse = course
+        }
+  
     }
 }

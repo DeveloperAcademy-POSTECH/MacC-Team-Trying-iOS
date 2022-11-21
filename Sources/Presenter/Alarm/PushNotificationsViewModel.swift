@@ -1,8 +1,8 @@
 //
-//  PushNotificationViewModel.swift
+//  PushNotificationsViewModel.swift
 //  ComeIt
 //
-//  Created by Hankyu Lee on 2022/11/18.
+//  Created by Hankyu Lee on 2022/11/20.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
@@ -10,7 +10,7 @@ import Foundation
 import Combine
 import CancelBag
 
-class PushNotificationViewModel: BaseViewModel {
+class PushNotificationsViewModel: BaseViewModel {
     
     let coordinator: Coordinator
     private let alarmUseCase: AlarmUseCaseDelegate = AlarmUseCase(alarmInterface: AlarmRepository())
@@ -26,7 +26,6 @@ class PushNotificationViewModel: BaseViewModel {
     func bind() {
         
         $permission.sink { permission in
-            print("!!permission 잘바뀌었어 ->", permission)
             UserDefaults().set(permission, forKey: "alarmPermssion")
             self.alarmUseCase.toggleAlarmPermission(isPermission: permission)
         }

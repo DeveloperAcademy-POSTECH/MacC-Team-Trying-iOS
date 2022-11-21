@@ -25,6 +25,7 @@ class PathTableHeader: UITableViewHeaderFooterView {
         title.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(20)
             make.leading.equalToSuperview().inset(20)
+            make.height.equalTo(20)
         }
     }
     

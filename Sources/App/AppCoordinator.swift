@@ -7,16 +7,19 @@
 //
 
 import UIKit
+import Combine
 
 final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinatorDelegate {
     let window: UIWindow
     weak var navigationController: UINavigationController?
     let userService: UserService = UserService()
-    var mainCoordinator: Coordinator?
+    var mainCoordinator: MainCoordinator?
+    
+    //MARK: 동작은 하나, 이쁘지 않은 코드 isGone
+    @Published var isMainCoordinatorMade: Bool = false
     
     init(window: UIWindow) {
         self.window = window
-        
         let navigationController = UINavigationController()
         navigationController.setNavigationBarHidden(true, animated: false)
         
@@ -24,6 +27,7 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
     }
     
     func start() {
+        
         window.rootViewController = navigationController
 
         Task {
@@ -46,6 +50,7 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
                     return
                 } else {
                     await coordinateToMainScene()
+                    isMainCoordinatorMade = true
                 }
             } catch {
                 await coordinateToLogincScene()
@@ -55,9 +60,10 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
 
     @MainActor
     func coordinateToMainScene() {
-        let coordinator = MainCoordinator(navigationController: navigationController)
-        coordinator.start()
-        coordinator.delegate = self
+        mainCoordinator = MainCoordinator(navigationController: navigationController)
+        guard let mainCoordinator = mainCoordinator else { return }
+        mainCoordinator.start()
+        mainCoordinator.delegate = self
         window.makeKeyAndVisible()
     }
 

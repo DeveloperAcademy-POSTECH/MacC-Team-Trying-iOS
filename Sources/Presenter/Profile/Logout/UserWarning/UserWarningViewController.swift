@@ -101,7 +101,7 @@ final class UserWarningViewController: BaseViewController {
         button.tintColor = .designSystem(.mainYellow)
         return button
     }()
-
+    
     let nextButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .designSystem(.gray818181)
@@ -168,17 +168,10 @@ final class UserWarningViewController: BaseViewController {
     
     @objc
     func nextButtonTapped() {
-
         if outgoingType == .exitPlanet {
-            Task {
-                makeUserWarningAlarm(.exitPlanet)
-                try await ExitAPIService.exitPlanet()
-            }
+            makeUserWarningAlarm(.exitPlanet)
         } else {
-            Task {
-                makeUserWarningAlarm(.withDrawalMembership)
-                try await ExitAPIService.membershipWithdrawal()
-            }
+            makeUserWarningAlarm(.withDrawalMembership)
         }
     }
     
@@ -186,14 +179,30 @@ final class UserWarningViewController: BaseViewController {
         switch alarmType {
         case .exitPlanet:
             let alert = UIAlertController(title: "행성을 나가시겠습니까", message: "행성을 정말로 나가시겠습니까?", preferredStyle: UIAlertController.Style.alert)
-            let defaultAction = UIAlertAction(title: "네 나가겠습니다", style: UIAlertAction.Style.default)
+            let defaultAction = UIAlertAction(title: "네 나가겠습니다", style: UIAlertAction.Style.default) { _ in
+                Task {
+                    try await ExitAPIService.exitPlanet()
+                    UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        exit(0)
+                    }
+                }
+            }
             let cancelAction = UIAlertAction(title: "아니요 안나가겠습니다", style: UIAlertAction.Style.cancel)
             alert.addAction(defaultAction)
             alert.addAction(cancelAction)
             self.present(alert, animated: false)
         case .withDrawalMembership:
             let alert = UIAlertController(title: "회원을 탈퇴하시겠습니까?", message: "모든정보가 지워집니다", preferredStyle: UIAlertController.Style.alert)
-            let defaultAction = UIAlertAction(title: "네 나가겠습니다", style: UIAlertAction.Style.default)
+            let defaultAction = UIAlertAction(title: "네 나가겠습니다", style: UIAlertAction.Style.default) { _ in
+                Task {
+                    try await ExitAPIService.membershipWithdrawal()
+                    UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        exit(0)
+                    }
+                }
+            }
             let cancelAction = UIAlertAction(title: "아니요 안나가겠습니다", style: UIAlertAction.Style.cancel)
             alert.addAction(defaultAction)
             alert.addAction(cancelAction)
@@ -216,13 +225,13 @@ extension UserWarningViewController {
         
         nextButton.setTitle(outgoingType == .exitPlanet ? "행성나가기" : "회원탈퇴", for: .normal)
         summaryLabel.text = outgoingType == .exitPlanet ? "⭐행성이 없으면 앱의 모든기능을 사용할 수 없어요!\n⭐복구기간이 지나면 기록된 내용들이 사라져요!" :
-                                                    "⭐회원탈퇴 시 행성이 사라져요!\n⭐행성에 기록된 모든 정보가 삭제 돼요!"
+        "⭐회원탈퇴 시 행성이 사라져요!\n⭐행성에 기록된 모든 정보가 삭제 돼요!"
         summaryLabel.setLineSpacing(spacing: 10)
         warningPhraseLabel.attributedText = bulletPointList(strings: outgoingType == .exitPlanet ? exitPlanetLabels : membershipWithdrawalLabels)
         mainTitleLabel.text = outgoingType == .exitPlanet ? "\(userName)별을 나가실건가요?" : "회원을 탈퇴하시겠습니까?"
         titleImage.image = UIImage(named: planetImageName)
     }
-
+    
     private func setNavigation() {
         self.title = outgoingType == .exitPlanet ? "행성 나가기" : "회원 탈퇴"
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._15)]
@@ -286,7 +295,7 @@ extension UserWarningViewController {
             make.top.bottom.equalToSuperview().inset(15)
             make.leading.trailing.equalToSuperview().inset(14)
         }
-
+        
         agreeButton.snp.makeConstraints { make in
             make.top.equalTo(warningPhraseView.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview().inset(20)
@@ -306,7 +315,7 @@ func bulletPointList(strings: [String]) -> NSAttributedString {
     paragraphStyle.minimumLineHeight = 20
     paragraphStyle.maximumLineHeight = 20
     paragraphStyle.tabStops = [NSTextTab(textAlignment: .left, location: 15)]
-
+    
     let stringAttributes = [
         NSAttributedString.Key.font: UIFont.designSystem(weight: .regular, size: ._13),
         NSAttributedString.Key.foregroundColor: UIColor.designSystem(.white),

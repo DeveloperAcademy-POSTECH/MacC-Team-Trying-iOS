@@ -49,6 +49,15 @@ final class HomeViewController: BaseViewController {
         return label
     }()
     
+    let homeScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.isScrollEnabled = true
+        return scrollView
+    }()
+    
+    let contentView = UIView()
+    
     lazy var calendarView = CalendarView(today: .init(), frame: .init(origin: .zero, size: .init(width: DeviceInfo.screenWidth - 40, height: 0)))
     
     lazy var dateCoureRegisterButton: UIButton = {
@@ -129,7 +138,7 @@ final class HomeViewController: BaseViewController {
                 guard let self = self else { return }
                 guard let receivedValue = receivedValue else { return }
                 self.pathTableView.isHidden = false
-                self.pathTableView.snp.makeConstraints { make in
+                self.pathTableView.snp.remakeConstraints { make in
                     make.top.equalTo(self.calendarView.snp.bottom).offset(10)
                     make.centerX.equalToSuperview()
                     make.leading.trailing.equalToSuperview().inset(20)
@@ -138,6 +147,18 @@ final class HomeViewController: BaseViewController {
                     
                 }
                 self.pathTableView.reloadData()
+                
+                self.contentView.snp.remakeConstraints { make in
+                    make.top.equalToSuperview()
+                    make.width.equalToSuperview()
+                    if receivedValue.courseList.count > 2 {
+                        make.height.equalToSuperview().inset(-(receivedValue.courseList.count - 2) * 40)
+                    } else {
+                        make.height.equalToSuperview()
+                    }
+
+                    make.bottom.equalToSuperview()
+                }
             }
             .store(in: &myCancelBag)
     }
@@ -146,18 +167,8 @@ final class HomeViewController: BaseViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.isHidden = true
-        Task {
-            let currentDateRange = getDateRange(currentDate: viewModel.selectedDate)
-            try await viewModel.fetchUserInfo()
-            try await viewModel.fetchDateRange(dateRange: currentDateRange)
-            if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
-                try await viewModel.fetchSelectedDateCourse(selectedDate: viewModel.selectedDate.dateToString())
-                self.calendarView.selectDateDirectly(viewModel.selectedDate)
-                self.dateCoureRegisterButton.isHidden = true
-            } else {
-                setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
-            }
-        }
+        setHomviewUI()
+
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -170,12 +181,23 @@ final class HomeViewController: BaseViewController {
         bind()
         setAttributes()
         setUI()
-        
+        setHomviewUI()
+    }
+    
+    func setHomviewUI() {
         Task {
+            self.contentView.snp.remakeConstraints { make in
+                make.top.equalToSuperview()
+                make.width.equalToSuperview()
+                make.height.equalToSuperview()
+                make.bottom.equalToSuperview()
+            }
             let currentDateRange = getDateRange(currentDate: viewModel.selectedDate)
+            try await viewModel.fetchUserInfo()
             try await viewModel.fetchDateRange(dateRange: currentDateRange)
             if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
-                try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
+                try await viewModel.fetchSelectedDateCourse(selectedDate: viewModel.selectedDate.dateToString())
+                self.calendarView.selectDateDirectly(viewModel.selectedDate)
                 self.dateCoureRegisterButton.isHidden = true
             } else {
                 setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
@@ -207,9 +229,12 @@ extension HomeViewController {
         view.addSubview(alarmButton)
         view.addSubview(ddayLabel)
         view.addSubview(nextDateLabel)
-        view.addSubview(pathTableView)
-        view.addSubview(calendarView)
-        view.addSubview(dateCoureRegisterButton)
+        view.addSubview(homeScrollView)
+        homeScrollView.addSubview(contentView)
+        
+        self.contentView.addSubview(pathTableView)
+        self.contentView.addSubview(calendarView)
+        self.contentView.addSubview(dateCoureRegisterButton)
         pathTableView.delegate = self
         pathTableView.dataSource = self
         calendarView.delegate = self
@@ -241,8 +266,15 @@ extension HomeViewController {
             make.height.equalTo(15)
         }
         
+        homeScrollView.snp.makeConstraints { make in
+            make.top.equalTo(nextDateLabel.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview()
+            make.width.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
+        
         calendarView.snp.makeConstraints { make in
-            make.top.equalTo(nextDateLabel.snp.bottom).offset(20)
+            make.top.equalToSuperview().inset(20)
             make.leading.trailing.equalToSuperview().inset(20)
         }
         
@@ -263,23 +295,42 @@ extension HomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PathTableViewCell.cellId, for: indexPath) as? PathTableViewCell else { return UITableViewCell() }
         cell.delegate = self
-        guard let course = viewModel.dateCourse else { return UITableViewCell() }
-        switch indexPath.row {
-        case 0:
+        guard let courseList = viewModel.dateCourse?.courseList else { return UITableViewCell() }
+        if courseList.count == 1 {
+            cell.data = courseList[0]
             cell.lineUpper.isHidden = true
-            // MARK: - 코스가 하나일때 분기처리
-            if course.courseList.count == 1 {
-                cell.lineLower.isHidden = true
-            }
-        case course.courseList.index(before: course.courseList.endIndex):
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
             cell.lineLower.isHidden = true
-        default:
-            cell.lineLower.isHidden = false
-            cell.lineUpper.isHidden = false
+            cell.distance.isHidden = true
+        } else {
+            switch indexPath.row {
+            case 0:
+                cell.data = courseList[indexPath.row]
+                cell.backgroundColor = .clear
+                cell.selectionStyle = .none
+                cell.lineUpper.isHidden = true
+                cell.lineLower.isHidden = false
+                cell.distance.isHidden = false
+                return cell
+            case courseList.count - 1:
+                cell.data = courseList[indexPath.row]
+                cell.backgroundColor = .clear
+                cell.selectionStyle = .none
+                cell.lineLower.isHidden = true
+                cell.lineUpper.isHidden = false
+                cell.distance.isHidden = true
+                return cell
+            default:
+                cell.data = courseList[indexPath.row]
+                cell.backgroundColor = .clear
+                cell.selectionStyle = .none
+                cell.lineLower.isHidden = false
+                cell.lineUpper.isHidden = false
+                cell.distance.isHidden = false
+                return cell
+            }
         }
-        cell.data = viewModel.dateCourse?.courseList[indexPath.row]
-        cell.backgroundColor = .clear
-        cell.selectionStyle = .none
         return cell
     }
 }
@@ -375,6 +426,12 @@ extension HomeViewController: CalendarViewDelegate {
                 self.dateCoureRegisterButton.isHidden = true
             } else {
                 setRegisterButton(date > Date() ? .addPlan : .addCourse)
+                self.contentView.snp.remakeConstraints { make in
+                    make.top.equalToSuperview()
+                    make.width.equalToSuperview()
+                    make.height.equalToSuperview()
+                    make.bottom.equalToSuperview()
+                }
             }
         }
     }

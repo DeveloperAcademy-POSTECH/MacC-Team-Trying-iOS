@@ -14,25 +14,25 @@ final class LogTicketViewModel: BaseViewModel {
     
     var coordinator: Coordinator
     
-    init(coordinator: Coordinator) {
-        self.coordinator = coordinator
-        super.init()
-        fetchData()
-    }
+    private var fetchReviewUseCase: FetchReviewUseCase
     
-    var data: TestModel?
-    // TODO: MOCK용 임시 함수
-    func fetchData() {
-        self.data = TestModel(
-            id: 1,
-            planet: "우디네 행성",
-            planetImage: "woodyPlanetImage",
-            title: "부산풀코스",
-            body: "배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.",
-            date: "2022년 10월 20일",
-            tag: ["삐갈레브레드", "포항공과대학교", "귀여운승창이"],
-            images: ["KyuandWoody", "lakeImage", "KyuandWoody", "lakeImage"]
-        )
+    var course: CourseEntity
+    
+    let currentIndex: Int
+    
+    @Published var reviews = [ReviewEntity]()
+    
+    init(
+        coordinator: Coordinator,
+        course: CourseEntity,
+        currentIndex: Int,
+        fetchReviewUseCase: FetchReviewUseCase = FetchReviewUseCaseImpl()
+    ) {
+        self.currentIndex = currentIndex
+        self.course = course
+        self.coordinator = coordinator
+        self.fetchReviewUseCase = fetchReviewUseCase
+        super.init()
     }
     
     func tapDismissButton() {
@@ -59,4 +59,12 @@ struct TestModel {
     let date: String
     let tag: [String]
     let images: [String]
+}
+
+extension LogTicketViewModel {
+    // MARK: 리뷰 API UseCase 호출
+    func fetchReviews() async throws {
+        reviews = try await
+        fetchReviewUseCase.fetchReviewAsync(courseId: course.id)
+    }
 }
