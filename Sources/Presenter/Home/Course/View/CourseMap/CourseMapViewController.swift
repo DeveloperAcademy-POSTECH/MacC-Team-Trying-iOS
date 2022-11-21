@@ -52,8 +52,8 @@ final class CourseMapViewController: BaseViewController {
         return button
     }()
     /*
-    private lazy var placeDetailView: PlaceDetailView = {
-        let view = PlaceDetailView()
+    private lazy var placeDetailView: AddPlaceDetailView = {
+        let view = AddPlaceDetailView()
         view.memoTextField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
         view.addCourseButton.addTarget(self, action: #selector(didTapAddCourseButton(_:)), for: .touchUpInside)
         return view
