@@ -45,9 +45,12 @@ final class LogTicketViewController: BaseViewController {
     }
     
     // MARK: Life-Cycle
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         Task {
+            try await viewModel.fetchConstellation()
             try await viewModel.fetchReviews()
             setReviewState()
             setUI()
@@ -114,17 +117,26 @@ extension LogTicketViewController {
         case .noReview:
             break
         }
-        
+    
         secondView.isHidden = true
     }
     
     private func configureTicketView(ticketView: LogTicketView, index: Int) {
         ticketView.imageUrl = viewModel.reviews[index].imagesURL
         ticketView.bodyTextView.text = viewModel.reviews[index].content
-        ticketView.courseNameLabel.text = viewModel.course.courseTitle
-        ticketView.dateLabel.text = viewModel.course.date
+        ticketView.courseNameLabel.text = viewModel.courses[index].courseTitle
+        ticketView.dateLabel.text = viewModel.courses[index].date
         ticketView.numberLabel.text = "\(viewModel.currentIndex + 1)번째"
         ticketView.fromLabel.text = "수정"
+    }
+    
+    private func setLikeButtonImage(_ button: UIButton) {
+        switch viewModel.courses[viewModel.currentIndex].isLike {
+        case true:
+            button.setImage(UIImage(named: "like_image"), for: .normal)
+        case false:
+            button.setImage(UIImage(named: "unlike_image"), for: .normal)
+        }
     }
     
     private func setOnlyMyReview() {
@@ -138,6 +150,12 @@ extension LogTicketViewController {
         myTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         myTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         logTicketEmptyView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
+        
+        viewModel.$courses.receive(on: DispatchQueue.main).sink { [weak self] _ in
+            guard let self = self else { return }
+            self.setLikeButtonImage(myTicketView.likebutton)
+        }
+        .cancel(with: cancelBag)
         
         configureTicketView(ticketView: myTicketView, index: 0)
         logTicketEmptyView.addCourseButton.isHidden = true
@@ -169,6 +187,13 @@ extension LogTicketViewController {
         
         configureTicketView(ticketView: mateTicketView, index: 1)
         
+        viewModel.$courses.receive(on: DispatchQueue.main).sink { [weak self] _ in
+            print("called")
+            guard let self = self else { return }
+            self.setLikeButtonImage(mateTicketView.likebutton)
+        }
+        .cancel(with: cancelBag)
+        
         logTicketEmptyView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         logTicketEmptyView.addCourseButton.addTarget(self, action: #selector(tapAddCourseButton), for: .touchUpInside)
         mateTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
@@ -191,15 +216,6 @@ extension LogTicketViewController {
         }
     }
     
-    private func setLikeButtonImage(_ button: UIButton) {
-        switch viewModel.course.isLike {
-        case true:
-            button.setImage(UIImage(named: "unlike_image"), for: .normal)
-        case false:
-            button.setImage(UIImage(named: "like_image"), for: .normal)
-        }
-    }
-    
     private func setBothReview() {
         
         let myTicketView = LogTicketView()
@@ -210,6 +226,14 @@ extension LogTicketViewController {
         
         configureTicketView(ticketView: myTicketView, index: 0)
         configureTicketView(ticketView: mateTicketView, index: 1)
+        
+        viewModel.$courses.receive(on:
+                                DispatchQueue.main).sink { [weak self] _ in
+            guard let self = self else { return }
+            self.setLikeButtonImage(myTicketView.likebutton)
+            self.setLikeButtonImage(mateTicketView.likebutton)
+        }
+        .cancel(with: cancelBag)
         
         myTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         mateTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
@@ -237,7 +261,6 @@ extension LogTicketViewController {
     
     @objc
     func tapFlopButton() {
-        
         let transitionOptions: UIView.AnimationOptions = [.transitionFlipFromRight, .showHideTransitionViews]
         
         // MARK: Card Flip Animation
@@ -248,19 +271,17 @@ extension LogTicketViewController {
         UIView.transition(with: secondView, duration: 0.7, options: transitionOptions, animations: {
             self.secondView.isHidden.toggle()
         })
-        
-        viewModel.tapFlopButton()
     }
     
     @objc
     func tapLikeButton() {
-        print("like Button Tapped")
-        viewModel.tapLikeButton()
+        Task {
+            try await viewModel.tapLikeCourse()
+        }
     }
     
     @objc
     func tapAddCourseButton() {
-        print("tapAddCourseButton")
         viewModel.moveToHomeTab()
     }
 }

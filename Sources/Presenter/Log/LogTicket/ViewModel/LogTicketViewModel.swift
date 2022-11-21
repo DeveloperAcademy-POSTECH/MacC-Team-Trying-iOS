@@ -20,7 +20,11 @@ final class LogTicketViewModel: BaseViewModel {
     
     private var fetchReviewUseCase: FetchReviewUseCase
     
-    var course: CourseEntity
+    private var fetchConstellationUseCase: FetchConstellationsUseCase
+    
+    private var tapCourseLikeUseCase: TapCourseLikeUseCase
+    
+    @Published var courses: [CourseEntity]
     
     let currentIndex: Int
     
@@ -28,28 +32,24 @@ final class LogTicketViewModel: BaseViewModel {
     
     init(
         coordinator: Coordinator,
-        course: CourseEntity,
+        courses: [CourseEntity],
         currentIndex: Int,
-        fetchReviewUseCase: FetchReviewUseCase = FetchReviewUseCaseImpl()
+        fetchReviewUseCase: FetchReviewUseCase = FetchReviewUseCaseImpl(),
+        tapCourseLikeUseCase: TapCourseLikeUseCase = TapCourseLikeUseCaseImpl(),
+        fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()
     ) {
         self.currentIndex = currentIndex
-        self.course = course
+        self.courses = courses
         self.coordinator = coordinator
         self.fetchReviewUseCase = fetchReviewUseCase
+        self.tapCourseLikeUseCase = tapCourseLikeUseCase
+        self.fetchConstellationUseCase = FetchConstellationsUseCaseImpl()
         super.init()
     }
     
     func tapDismissButton() {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
-    }
-    
-    func tapLikeButton() {
-        // TODO: UI 수정되어야하고 API 호출
-    }
-    
-    func tapFlopButton() {
-        // TODO: 카드가 뒤집히는 애니매이션
     }
 }
 
@@ -69,11 +69,22 @@ extension LogTicketViewModel {
     // MARK: 리뷰 API UseCase 호출
     func fetchReviews() async throws {
         reviews = try await
-        fetchReviewUseCase.fetchReviewAsync(courseId: course.id)
+        fetchReviewUseCase.fetchReviewAsync(courseId: courses[currentIndex].id)
+    }
+    
+    func fetchConstellation() async throws {
+        courses = try await fetchConstellationUseCase.fetchLogAsync()
     }
     
     func moveToHomeTab() {
         guard let coordinator = coordinator as? MoveFromLogToHome else { return }
-        coordinator.goToHomeView(course: course)
+        coordinator.goToHomeView(course: courses[currentIndex])
+    }
+    
+    func tapLikeCourse() async throws {
+        
+        try await tapCourseLikeUseCase.setCourseLike(courseId: courses[currentIndex].id, isLike: courses[currentIndex].isLike)
+        
+        courses[currentIndex].isLike.toggle()
     }
 }
