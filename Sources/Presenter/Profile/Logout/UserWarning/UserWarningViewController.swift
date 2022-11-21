@@ -17,6 +17,11 @@ enum OutgoingType {
     case membershipWithdrawal
 }
 
+enum WarningAlarmType {
+    case exitPlanet
+    case withDrawalMembership
+}
+
 final class UserWarningViewController: BaseViewController {
     
     @Published var isAgreed: Bool = false
@@ -165,15 +170,33 @@ final class UserWarningViewController: BaseViewController {
 
         if outgoingType == .exitPlanet {
             Task {
+                makeUserWarningAlarm(.exitPlanet)
                 try await ExitAPIService.exitPlanet()
-                let nextVC = RecoverUserInfoViewController()
-                navigationController?.pushViewController(nextVC, animated: true)
             }
         } else {
             Task {
+                makeUserWarningAlarm(.withDrawalMembership)
                 try await ExitAPIService.membershipWithdrawal()
-                
             }
+        }
+    }
+    
+    func makeUserWarningAlarm(_ alarmType: WarningAlarmType) {
+        switch alarmType {
+        case .exitPlanet:
+            let alert = UIAlertController(title: "행성을 나가시겠습니까", message: "행성을 정말로 나가시겠습니까?", preferredStyle: UIAlertController.Style.alert)
+            let defaultAction = UIAlertAction(title: "네 나가겠습니다", style: UIAlertAction.Style.default)
+            let cancelAction = UIAlertAction(title: "아니요 안나가겠습니다", style: UIAlertAction.Style.cancel)
+            alert.addAction(defaultAction)
+            alert.addAction(cancelAction)
+            self.present(alert, animated: false)
+        case .withDrawalMembership:
+            let alert = UIAlertController(title: "회원을 탈퇴하시겠습니까?", message: "모든정보가 지워집니다", preferredStyle: UIAlertController.Style.alert)
+            let defaultAction = UIAlertAction(title: "네 나가겠습니다", style: UIAlertAction.Style.default)
+            let cancelAction = UIAlertAction(title: "아니요 안나가겠습니다", style: UIAlertAction.Style.cancel)
+            alert.addAction(defaultAction)
+            alert.addAction(cancelAction)
+            self.present(alert, animated: false)
         }
     }
 }

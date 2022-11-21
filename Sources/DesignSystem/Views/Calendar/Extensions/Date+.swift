@@ -35,6 +35,10 @@ extension Date {
     var monthBefore: Date {
         Calendar.current.date(byAdding: .month, value: -1, to: self)!
     }
+    
+    var month2Before: Date {
+        Calendar.current.date(byAdding: .month, value: -2, to: self)!
+    }
 
     var monthAfter: Date {
         Calendar.current.date(byAdding: .month, value: 1, to: self)!
