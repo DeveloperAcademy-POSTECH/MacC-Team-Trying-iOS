@@ -156,7 +156,7 @@ final class HomeViewController: BaseViewController {
                     } else {
                         make.height.equalToSuperview()
                     }
-
+                    
                     make.bottom.equalToSuperview()
                 }
             }
@@ -169,8 +169,19 @@ final class HomeViewController: BaseViewController {
         self.navigationController?.navigationBar.isHidden = true
         UserDefaults.standard.set(viewModel.user?.me.name, forKey: "myName")
         UserDefaults.standard.set(viewModel.user?.mate?.name, forKey: "mateName")
-        setHomviewUI()
-
+        
+        Task {
+            let currentDateRange = getDateRange(currentDate: viewModel.selectedDate)
+            try await viewModel.fetchUserInfo()
+            try await viewModel.fetchDateRange(dateRange: currentDateRange)
+            if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
+                try await viewModel.fetchSelectedDateCourse(selectedDate: viewModel.selectedDate.dateToString())
+                self.calendarView.selectDateDirectly(viewModel.selectedDate)
+                self.dateCoureRegisterButton.isHidden = true
+            } else {
+                setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -181,28 +192,23 @@ final class HomeViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
-        setHomviewUI()
-    }
-    
-    func setHomviewUI() {
-    
-            self.contentView.snp.remakeConstraints { make in
-                make.top.equalToSuperview()
-                make.width.equalToSuperview()
-                make.height.equalToSuperview()
-                make.bottom.equalToSuperview()
-            }
-                make.bottom.equalToSuperview()
-            try await viewModel.fetchUserInfo()
+        setAttributes()
+        setUI()
+        
+        Task {
             let currentDateRange = getDateRange(currentDate: viewModel.selectedDate)
-            try await viewModel.fetchUserInfo()
-                try await viewModel.fetchSelectedDateCourse(selectedDate: viewModel.selectedDate.dateToString())
-                self.calendarView.selectDateDirectly(viewModel.selectedDate)
-                try await viewModel.fetchSelectedDateCourse(selectedDate: viewModel.selectedDate.dateToString())
-                self.calendarView.selectDateDirectly(viewModel.selectedDate)
+            try await viewModel.fetchDateRange(dateRange: currentDateRange)
+            if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
+                try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
                 self.dateCoureRegisterButton.isHidden = true
             } else {
                 setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
+                self.contentView.snp.remakeConstraints { make in
+                    make.top.equalToSuperview()
+                    make.width.equalToSuperview()
+                    make.height.equalToSuperview()
+                    make.bottom.equalToSuperview()
+                }
             }
         }
     }
@@ -232,11 +238,11 @@ extension HomeViewController {
         view.addSubview(ddayLabel)
         view.addSubview(nextDateLabel)
         view.addSubview(homeScrollView)
-        self.contentView.addSubview(pathTableView)
-        self.contentView.addSubview(calendarView)
-        self.contentView.addSubview(dateCoureRegisterButton)
-        self.contentView.addSubview(calendarView)
-        self.contentView.addSubview(dateCoureRegisterButton)
+        homeScrollView.addSubview(contentView)
+        
+        homeScrollView.addSubview(pathTableView)
+        homeScrollView.addSubview(calendarView)
+        homeScrollView.addSubview(dateCoureRegisterButton)
         pathTableView.delegate = self
         pathTableView.dataSource = self
         calendarView.delegate = self
@@ -270,9 +276,9 @@ extension HomeViewController {
         
         homeScrollView.snp.makeConstraints { make in
             make.top.equalTo(nextDateLabel.snp.bottom).offset(10)
-            make.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
             make.width.equalToSuperview()
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().inset(80)
         }
         
         calendarView.snp.makeConstraints { make in
@@ -296,42 +302,34 @@ extension HomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: PathTableViewCell.cellId, for: indexPath) as? PathTableViewCell else { return UITableViewCell() }
-        if courseList.count == 1 {
-            cell.data = courseList[0]
-        if courseList.count == 1 {
-            cell.data = courseList[0]
+        cell.delegate = self
+        guard let courseList = viewModel.dateCourse?.courseList else { return UITableViewCell() }
+        
+        switch indexPath.row {
+        case 0:
+            cell.data = courseList[indexPath.row]
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
             cell.lineUpper.isHidden = true
+            cell.lineLower.isHidden = false
+            cell.distance.isHidden = false
+            return cell
+        case courseList.count - 1:
+            cell.data = courseList[indexPath.row]
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
             cell.lineLower.isHidden = true
+            cell.lineUpper.isHidden = false
             cell.distance.isHidden = true
-        } else {
-            switch indexPath.row {
-            case 0:
-                cell.data = courseList[indexPath.row]
-                cell.backgroundColor = .clear
-                cell.selectionStyle = .none
-                cell.lineUpper.isHidden = true
-                cell.lineLower.isHidden = false
-                cell.distance.isHidden = false
-                return cell
-            case courseList.count - 1:
-                cell.data = courseList[indexPath.row]
-                cell.backgroundColor = .clear
-                cell.selectionStyle = .none
-                cell.lineLower.isHidden = true
-                cell.lineUpper.isHidden = false
-                cell.distance.isHidden = true
-                return cell
-            default:
-                cell.data = courseList[indexPath.row]
-                cell.backgroundColor = .clear
-                cell.selectionStyle = .none
-                cell.lineLower.isHidden = false
-                cell.lineUpper.isHidden = false
-                cell.distance.isHidden = false
-                return cell
-            }
-                return cell
-            }
+            return cell
+        default:
+            cell.data = courseList[indexPath.row]
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
+            cell.lineLower.isHidden = false
+            cell.lineUpper.isHidden = false
+            cell.distance.isHidden = false
+            return cell
         }
         return cell
     }

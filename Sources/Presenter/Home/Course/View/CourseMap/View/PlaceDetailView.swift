@@ -1,5 +1,5 @@
 //
-//  AddPlaceDetailView.swift
+//  PlaceDetailView.swift
 //  MatStar
 //
 //  Created by 김승창 on 2022/10/23.
@@ -11,7 +11,7 @@ import UIKit
 
 import SnapKit
 
-final class AddPlaceDetailView: UIView {
+final class PlaceDetailView: UIView {
 	var height: CGFloat = 190
 
     var selectedPlace: Place? {
@@ -112,7 +112,7 @@ final class AddPlaceDetailView: UIView {
 }
 
 // MARK: - BottomHidable
-extension AddPlaceDetailView: BottomHidable {
+extension PlaceDetailView: BottomHidable {
     func hide() {
         self.snp.updateConstraints { make in
             make.bottom.equalToSuperview().inset(-height)

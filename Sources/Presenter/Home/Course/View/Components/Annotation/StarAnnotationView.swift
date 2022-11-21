@@ -28,13 +28,8 @@ final class StarAnnotationView: MKAnnotationView {
 
 final class StarAnnotation: NSObject, MKAnnotation {
     let coordinate: CLLocationCoordinate2D
-    var placeId: Int
     
-    init(
-        coordinate: CLLocationCoordinate2D,
-        placeId: Int
-    ) {
+    init(coordinate: CLLocationCoordinate2D) {
         self.coordinate = coordinate
-        self.placeId = placeId
     }
 }

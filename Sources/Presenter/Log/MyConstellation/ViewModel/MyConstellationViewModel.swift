@@ -31,6 +31,6 @@ extension MyConstellationViewModel {
     // MARK: MapViewContoller 전환
     func pushLogMapViewController() {
         guard let coordinator = coordinator as? LogMapViewCoordinating else { return }
-        coordinator.pushLogMapViewController(courses: courses)
+        coordinator.pushLogMapViewController()
     }
 }
