@@ -10,6 +10,10 @@
 import Combine
 import Foundation
 
+protocol DisMissCoordinating {
+    func dismissTicketViewController()
+}
+
 final class LogTicketViewModel: BaseViewModel {
     
     var coordinator: Coordinator
@@ -66,5 +70,10 @@ extension LogTicketViewModel {
     func fetchReviews() async throws {
         reviews = try await
         fetchReviewUseCase.fetchReviewAsync(courseId: course.id)
+    }
+    
+    func moveToHomeBab() {
+        guard let coordinator = coordinator as? MoveFromLogToHome else { return }
+        coordinator.goToHomeView(course: course)
     }
 }

@@ -253,5 +253,6 @@ extension LogTicketViewController {
     @objc
     func tapAddCourseButton() {
         print("tapAddCourseButton")
+        viewModel.moveToHomeBab()
     }
 }

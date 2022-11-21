@@ -16,6 +16,8 @@ final class LogCoordinator: Coordinator,
     
     weak var navigationController: UINavigationController?
     
+    weak var parentCoordinator: MoveToHomeTap?
+    
     init(navigationController: UINavigationController) { self.navigationController = navigationController }
     
     // MARK: Coordinating functions
@@ -46,5 +48,18 @@ final class LogCoordinator: Coordinator,
         let viewModel = LogMapViewModel(coordinator: self)
         let viewController = LogMapViewController(viewModel: viewModel)
         self.navigationController?.pushViewController(viewController, animated: true)
+    }
+}
+
+protocol MoveFromLogToHome {
+    func goToHomeView(course: CourseEntity)
+}
+
+extension LogCoordinator: MoveFromLogToHome {
+    func goToHomeView(course: CourseEntity) {
+        DispatchQueue.main.async {
+            self.navigationController?.dismiss(animated: true)
+            self.parentCoordinator?.moveToHomeTap(course: course)
+        }
     }
 }
