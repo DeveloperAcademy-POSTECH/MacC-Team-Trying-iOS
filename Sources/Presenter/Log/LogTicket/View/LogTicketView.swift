@@ -139,51 +139,62 @@ extension LogTicketView: UIScrollViewDelegate {
 extension LogTicketView {
     // Snapkit을 사용해 Component의 Layout을 배치합니다.
     private func setLayouts() {
+        
         ImageScrollView.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.8974358974)
             make.height.equalTo(DeviceInfo.screenHeight * 0.3471563981)
             make.top.centerX.equalToSuperview()
         }
+        
         courseNameLabel.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(DeviceInfo.screenWidth * 0.05128205128)
             make.top.equalTo(ImageScrollView.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
         }
+        
         dateTitleLabel.snp.makeConstraints { make in
             make.left.equalTo(courseNameLabel.snp.left)
             make.top.equalTo(courseNameLabel.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
         }
+        
         numberTitleLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(dateTitleLabel.snp.top)
         }
+        
         fromTitleLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-DeviceInfo.screenWidth * 0.05128205128)
             make.top.equalTo(numberTitleLabel.snp.top)
         }
+        
         dateLabel.snp.makeConstraints { make in
             make.left.equalTo(dateTitleLabel.snp.left)
             make.top.equalTo(dateTitleLabel.snp.bottom)
         }
+        
         numberLabel.snp.makeConstraints { make in
             make.left.equalTo(numberTitleLabel.snp.left)
             make.top.equalTo(numberTitleLabel.snp.bottom)
         }
+        
         fromLabel.snp.makeConstraints { make in
             make.right.equalTo(fromTitleLabel.snp.right)
             make.top.equalTo(fromTitleLabel.snp.bottom)
         }
+        
         bodyTextView.snp.makeConstraints { make in
             make.top.equalTo(DeviceInfo.screenHeight * 0.5639810426)
             make.centerX.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.8974358974)
             make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 0.05628095212)
         }
+        
         likebutton.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.05128205128)
             make.height.equalTo(DeviceInfo.screenHeight * 0.02191943128)
             make.right.equalTo(fromLabel.snp.right)
             make.centerY.equalTo(courseNameLabel.snp.centerY)
         }
+        
         flopButton.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.06153846154)
             make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)

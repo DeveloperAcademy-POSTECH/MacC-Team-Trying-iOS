@@ -17,14 +17,7 @@ final class LogHomeViewController: BaseViewController {
     
     var viewModel: LogHomeViewModel
     
-    private var currentIndex: Int = 0 {
-        didSet {
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.setConstellationButtonOption()
-            }
-        }
-    }
+    private var currentIndex: Int = 0
     
     lazy var previousConstellationButton: UIButton = {
         let button = UIButton(type: .custom)
@@ -140,7 +133,6 @@ extension LogHomeViewController: UICollectionViewDelegate, UICollectionViewDataS
 
 extension LogHomeViewController: UIScrollViewDelegate {
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        
         let layout = self.logCollectionView.collectionViewLayout as! UICollectionViewFlowLayout
         let cellWidthIncludingSpacing = layout.itemSize.width + layout.minimumLineSpacing
         
@@ -155,6 +147,10 @@ extension LogHomeViewController: UIScrollViewDelegate {
         }
         offset = CGPoint(x: CGFloat(currentIndex) * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
         targetContentOffset.pointee = offset
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        setConstellationButtonOption()
     }
 }
 
@@ -240,7 +236,7 @@ extension LogHomeViewController {
     
     @objc
     func tapConstellationDetailButton() {
-        viewModel.presentTicketView()
+        viewModel.presentTicketView(course: viewModel.courses[currentIndex], currentIndex: currentIndex)
     }
     
     @objc
@@ -259,6 +255,7 @@ extension LogHomeViewController {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.logCollectionView.scrollToItem(at: IndexPath(row: max(0, self.currentIndex), section: 0), at: .left, animated: true)
+            self.setConstellationButtonOption()
         }
     }
     
@@ -268,6 +265,7 @@ extension LogHomeViewController {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.logCollectionView.scrollToItem(at: IndexPath(row: min(self.currentIndex, self.viewModel.courses.count - 1), section: 0), at: .left, animated: true)
+            self.setConstellationButtonOption()
         }
     }
     

@@ -25,9 +25,9 @@ final class LogCoordinator: Coordinator,
         let viewController = LogHomeViewController(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }
-    
-    func presentTicketViewController() {
-        let viewModel = LogTicketViewModel(coordinator: self)
+    // TicketView로 전환
+    func presentTicketViewController(course: CourseEntity, currentIndex: Int) {
+        let viewModel = LogTicketViewModel(coordinator: self, course: course, currentIndex: currentIndex)
         let viewController = LogTicketViewController(viewModel: viewModel)
         navigationController?.present(viewController, animated: true)
     }
