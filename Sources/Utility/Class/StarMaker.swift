@@ -109,7 +109,7 @@ struct StarMaker {
             let image = UIImage(named: "star")
             imageView.contentMode = .scaleAspectFit
             imageView.image = image
-            imageView.frame = CGRect(x: adjustedLatitude[index] + xOffset, y: adjustedLongtitude[index] + yOffset, width: 50, height: 50)
+            imageView.frame = CGRect(x: adjustedLatitude[index] + xOffset, y: adjustedLongtitude[index] + yOffset, width: 35, height: 35)
             imageView.layer.shadowOffset = .zero
             imageView.layer.shadowRadius = 10
             imageView.layer.shadowColor = UIColor.red.cgColor
