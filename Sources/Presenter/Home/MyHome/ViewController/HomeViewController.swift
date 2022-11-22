@@ -168,7 +168,6 @@ final class HomeViewController: BaseViewController {
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.isHidden = true
         setHomviewUI()
-
     }
     
     override func viewWillDisappear(_ animated: Bool) {

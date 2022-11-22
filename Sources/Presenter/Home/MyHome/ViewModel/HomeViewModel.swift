@@ -67,6 +67,7 @@ final class HomeViewModel: BaseViewModel {
          }
         UserDefaults.standard.set(myUserInfo.me.name, forKey: "name")
         UserDefaults.standard.set(myUserInfo.planet?.image, forKey: "planetImageString")
+        UserDefaults.standard.set(myUserInfo.mate?.name, forKey: "mateName")
         self.user = myUserInfo
     }
     

@@ -5,7 +5,6 @@
 //  Created by 김승창 on 2022/10/12.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
-
 import UIKit
 
 final class LogCoordinator: Coordinator,
@@ -15,6 +14,8 @@ final class LogCoordinator: Coordinator,
                             Popable {
     
     weak var navigationController: UINavigationController?
+    
+    weak var parentCoordinator: MoveToHomeTap?
     
     init(navigationController: UINavigationController) { self.navigationController = navigationController }
     
@@ -26,8 +27,8 @@ final class LogCoordinator: Coordinator,
         navigationController.pushViewController(viewController, animated: true)
     }
     // TicketView로 전환
-    func presentTicketViewController(course: CourseEntity, currentIndex: Int) {
-        let viewModel = LogTicketViewModel(coordinator: self, course: course, currentIndex: currentIndex)
+    func presentTicketViewController(courses: [CourseEntity], currentIndex: Int) {
+        let viewModel = LogTicketViewModel(coordinator: self, courses: courses, currentIndex: currentIndex)
         let viewController = LogTicketViewController(viewModel: viewModel)
         navigationController?.present(viewController, animated: true)
     }
@@ -45,8 +46,19 @@ final class LogCoordinator: Coordinator,
     func pushLogMapViewController(courses: [CourseEntity]) {
         let viewModel = LogMapViewModel(coordinator: self, courses: courses)
         let viewController = LogMapViewController(viewModel: viewModel)
-        
-        viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
+    }
+}
+
+protocol MoveFromLogToHome {
+    func goToHomeView(course: CourseEntity)
+}
+
+extension LogCoordinator: MoveFromLogToHome {
+    func goToHomeView(course: CourseEntity) {
+        DispatchQueue.main.async {
+            self.navigationController?.dismiss(animated: true)
+            self.parentCoordinator?.moveToHomeTap(course: course)
+        }
     }
 }

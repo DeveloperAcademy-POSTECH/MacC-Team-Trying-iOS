@@ -5,14 +5,13 @@
 //  Created by YeongJin Jeong on 2022/11/07.
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
-
 import Combine
 import CoreLocation
 
 import CancelBag
 
 protocol TicketViewCoodinating {
-    func presentTicketViewController(course: CourseEntity, currentIndex: Int)
+    func presentTicketViewController(courses: [CourseEntity], currentIndex: Int)
 }
 
 protocol MyConstellationViewCoordinating {
@@ -59,12 +58,12 @@ extension LogHomeViewModel {
     // 티켓뷰로 전환
     func presentTicketView(course: CourseEntity, currentIndex: Int) {
         guard let coordinator = coordinator as? TicketViewCoodinating else { return }
-        coordinator.presentTicketViewController(course: course, currentIndex: currentIndex)
+        coordinator.presentTicketViewController(courses: courses, currentIndex: currentIndex)
     }
     // 지도화면으로 전환
-    func pushLogMapViewController() {
+    func pushLogMapViewController(courses: [CourseEntity]) {
         guard let coordinator = coordinator as? LogMapViewCoordinating else { return }
-        coordinator.pushLogMapViewController(courses: self.courses)
+        coordinator.pushLogMapViewController(courses: courses)
     }
 }
 
@@ -83,14 +82,14 @@ extension LogHomeViewModel {
     
     @objc
     private func getNotification(_ notification: Notification) {
-        //MARK: DTO는 필요시 다른 모델에 매핑하여 사용
+        // MARK: DTO는 필요시 다른 모델에 매핑하여 사용
         guard let reviewId = notification.object as? String else { return }
         Task {
-                let alarmCourse = try await alarmCourseReviewUseCase.getCourseWith(id: reviewId)
-                guard let index = self.courses.firstIndex(where: { course in
-                    course.id == alarmCourse.courseId
-                }) else { return }
-                alarmIndex = index
-            }
+            let alarmCourse = try await alarmCourseReviewUseCase.getCourseWith(id: reviewId)
+            guard let index = self.courses.firstIndex(where: { course in
+                course.id == alarmCourse.courseId
+            }) else { return }
+            alarmIndex = index
+        }
     }
 }

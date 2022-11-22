@@ -14,6 +14,9 @@ protocol Popable {
 protocol MainCoordinatorDelegate: AnyObject {
     func coordinateToLoginSceneFromProfile()
 }
+protocol MoveToHomeTap: AnyObject {
+    func moveToHomeTap(course: CourseEntity)
+}
 
 final class MainCoordinator: Coordinator {
     
@@ -109,6 +112,7 @@ extension MainCoordinator {
         } else if item == .log {
             if let coordinator = coordinator as? LogCoordinator {
                 logCoordinator = coordinator
+                coordinator.parentCoordinator = self
             }
         }
         
@@ -150,5 +154,32 @@ extension MainCoordinator: ProfileCoordinatorDelegate {
 extension LogCoordinator {
     func popToRootViewController() {
         navigationController?.popToRootViewController(animated: false)
+    }
+}
+
+extension MainCoordinator: MoveToHomeTap {
+    func moveToHomeTap(course: CourseEntity) {
+        tabBarController.selectedIndex = 0
+        logCoordinator?.navigationController?.popToRootViewController(animated: false)
+
+        let places = course.places.map { place in
+            let resultPlace = Place(
+                id: place.id,
+                title: place.title,
+                category: place.category,
+                address: place.address,
+                location: place.coordinate
+            )
+            return resultPlace
+        }
+
+        let courseRequestDTO = CourseRequestDTO(
+            id: course.id,
+            title: course.courseTitle,
+            date: course.date,
+            places: places
+        )
+
+        homeCoordinator?.startRegisterReviewFlow(courseRequestDTO: courseRequestDTO)
     }
 }

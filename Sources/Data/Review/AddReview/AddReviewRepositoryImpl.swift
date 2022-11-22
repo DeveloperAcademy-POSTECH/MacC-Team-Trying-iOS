@@ -30,10 +30,7 @@ final class AddReviewRepositoryImpl: AddReviewRepository {
         data.append("--\(boundary)\r\n".data(using: .utf8)!)
         data.append("Content-Disposition: form-data; name=content\r\n\r\n".data(using: .utf8)!)
         
-        guard let encodedContent = try? JSONEncoder().encode(content) else {
-            throw NetworkingError.encodeError
-        }
-        data.append("\(encodedContent)\r\n".data(using: .utf8)!)
+        data.append("\(content)\r\n".data(using: .utf8)!)
         
         images.forEach { image in
             data.append("--\(boundary)\r\n".data(using: .utf8)!)

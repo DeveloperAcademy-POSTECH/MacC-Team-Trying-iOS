@@ -5,7 +5,6 @@
 //  Created by YeongJin Jeong on 2022/11/07.
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
-
 import Combine
 import UIKit
 
@@ -100,13 +99,14 @@ final class LogHomeViewController: BaseViewController {
         self.navigationController?.isNavigationBarHidden = true
         Task {
             try await viewModel.fetchConstellation()
+            logCollectionView.reloadData()
+            setConstellationButtonOption()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        bind()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -252,7 +252,7 @@ extension LogHomeViewController {
     
     @objc
     func tapMapButton() {
-        viewModel.pushLogMapViewController()
+        viewModel.pushLogMapViewController(courses: viewModel.courses)
     }
     
     @objc
