@@ -17,7 +17,7 @@ enum LogRequestError: Error {
 
 final class FetchConstellationRepositoryImpl {
     
-    let url = "https://comeit.site/courses/log?page=0&size=10"
+    let url = "\(APIManager.baseURL)/courses/log?page=0&size=10"
     
     private let token = UserDefaults.standard.string(forKey: "accessToken")
     

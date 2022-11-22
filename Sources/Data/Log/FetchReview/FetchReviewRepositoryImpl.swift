@@ -20,7 +20,7 @@ final class FetchReviewRepositoryImpl {
 
 extension FetchReviewRepositoryImpl: FetchReviewRepository {
     func fetchReviewAsync(courseId: Int) async throws -> [ReviewEntity] {
-        let url = "https://comeit.site/courses/\(courseId)/review"
+        let url = "\(APIManager.baseURL)/courses/\(courseId)/review"
         
         guard let fetchReviewUrl = URL(string: url) else {
             print("⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️")

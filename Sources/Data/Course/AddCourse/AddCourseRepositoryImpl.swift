@@ -11,7 +11,7 @@ import UIKit
 final class AddCourseRepositoryImpl: AddCourseRepository {
     func addCourse(courseRequestDTO: CourseRequestDTO) async throws -> Int {
         let token = UserDefaults.standard.string(forKey: "accessToken")
-        let urlString = "https://comeit.site/courses"
+        let urlString = "\(APIManager.baseURL)/courses"
         
         guard let url = URL(string: urlString) else { throw NetworkingError.urlError }
         var request = URLRequest(url: url)

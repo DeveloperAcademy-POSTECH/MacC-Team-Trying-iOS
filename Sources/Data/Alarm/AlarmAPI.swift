@@ -18,7 +18,7 @@ class AlarmAPI {
 
     private var token = UserDefaults().string(forKey: "accessToken") ?? ""
     
-    private let host = "https://comeit.site/"
+    private let host = APIManager.baseURL
     
     func deleteAlarm(type: AlarmApiType, id: Int) async throws -> Bool {
         let urlStr = encodeUrl(string: addStringParameter(type: type, id: id))
@@ -111,17 +111,17 @@ extension AlarmAPI {
         var urlString = host
         switch type {
         case .fetch:
-            urlString += "notifications"
+            urlString += "/notifications"
         case .check:
             guard let id = id else { return "" }
-            urlString += "notifications/\(id)"
+            urlString += "/notifications/\(id)"
         case .deleteAll:
-            urlString += "notifications"
+            urlString += "/notifications"
         case .togglePermission:
-            urlString += "users/notification"
+            urlString += "/users/notification"
         case .deleteOne:
             guard let id = id else { return "" }
-            urlString += "notifications/\(id)"
+            urlString += "/notifications/\(id)"
         }
         return urlString
     }
