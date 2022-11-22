@@ -160,7 +160,7 @@ extension LogTicketViewController {
         logTicketEmptyView.addCourseButton.isHidden = true
         logTicketEmptyView.logTicketEmptyViewLabel.text = "메이트의 후기가 아직 없어요!"
         
-        myTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "myName")
+        myTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "name")
         
         myTicketView.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -239,7 +239,7 @@ extension LogTicketViewController {
         myTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         mateTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         
-        myTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "myName")
+        myTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "name")
         
         myTicketView.snp.makeConstraints { make in
             make.top.equalToSuperview()
