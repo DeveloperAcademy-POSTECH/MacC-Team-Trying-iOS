@@ -91,6 +91,18 @@ final class RegisterReviewViewController: BaseViewController {
         setUI()
         bind()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.setNofifications()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        self.removeNotifications()
+    }
 }
 
 // MARK: - UI
@@ -135,12 +147,12 @@ extension RegisterReviewViewController: NavigationBarConfigurable {
         contentTextView.snp.makeConstraints { make in
             make.top.equalTo(imageCollectionView.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(435)
+            make.height.equalTo(DeviceInfo.screenHeight * 0.5105)
         }
         
         nextButton.snp.makeConstraints { make in
-            make.top.equalTo(contentTextView.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
 }
@@ -170,6 +182,73 @@ extension RegisterReviewViewController: UICollectionViewDataSource {
 
 // MARK: - User Interactions
 extension RegisterReviewViewController: UITextViewDelegate {
+    private func setNofifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    private func removeNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc
+    func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                UIView.animate(
+                    withDuration: 0.3,
+                    delay: 0,
+                    animations: {
+                        self.nextButton.snp.updateConstraints { make in
+                            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardHeight + Constants.Constraints.spaceBetweenkeyboardAndButton)
+                        }
+                        self.view.layoutIfNeeded()
+                    }
+                )
+            }
+        }
+    }
+
+    @objc
+    func keyboardWillHide(notification: NSNotification) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            UIView.animate(
+                withDuration: 0.3,
+                delay: 0,
+                animations: {
+                    self.nextButton.snp.updateConstraints { make in
+                        make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+                    }
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+    }
+    
     /// UIButton의 터치가 아닐 때, dismissAllActivatedComponents() 메소드를 호출합니다.
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if touch.view as? UIButton != nil { return false }
@@ -201,7 +280,7 @@ extension RegisterReviewViewController: UITextViewDelegate {
                 delay: 0,
                 animations: {
                     self.contentTextView.snp.updateConstraints { make in
-                        make.height.equalTo(370)
+                        make.height.equalTo(DeviceInfo.screenHeight * 0.42)
                     }
                     self.view.layoutIfNeeded()
                 }
@@ -227,7 +306,7 @@ extension RegisterReviewViewController: UITextViewDelegate {
                 delay: 0,
                 animations: {
                     self.contentTextView.snp.updateConstraints { make in
-                        make.height.equalTo(435)
+                        make.height.equalTo(DeviceInfo.screenHeight * 0.5105)
                     }
                     self.view.layoutIfNeeded()
                 }
