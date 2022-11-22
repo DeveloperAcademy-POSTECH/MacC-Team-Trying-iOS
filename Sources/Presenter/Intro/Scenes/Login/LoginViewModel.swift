@@ -47,7 +47,7 @@ final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
     }
 
     @Published var doneLogin: RouteStep?
-
+    
     init(
         coordinator: LoginCoordinatorLogic,
         kakaoLoginManager: KakaoLoginManager = KakaoLoginManagerImpl(),
@@ -87,10 +87,8 @@ final class LoginViewModel: BaseViewModel, LoginBusinessLogic {
                 let deviceToken = UserDefaults.standard.string(forKey: "fcmToken") ?? ""
                 let accessToken = try await signinServcee.signInWithKakao(.init(identifier: token, deviceToken: deviceToken))
                 UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
-
+                FcmCenter.shared.toggleAlarmAPI()
                 let userInformations = try await userService.getUserInformations()
-
-                print("✨ ", userInformations)
                 if userInformations.planet == nil {
                     self.doneLogin = .createPlanet
                 } else if userInformations.mate == nil {
@@ -176,7 +174,7 @@ extension LoginViewModel: AppleLoginManagerDelegate {
                 let deviceToken = UserDefaults.standard.string(forKey: "fcmToken") ?? ""
                 let accessToken = try await signinServcee.signInWithApple(.init(identifier: user.userIdentifier, deviceToken: deviceToken))
                 UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
-
+                FcmCenter.shared.toggleAlarmAPI()
                 self.doneLogin = .main
             } catch SignInError.nouser(let identifier) {
                 self.doneLogin = .serviceTerm(.apple(identifier))
