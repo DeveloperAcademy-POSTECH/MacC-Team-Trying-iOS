@@ -61,16 +61,19 @@ final class SignUpEnterNicknameViewModel: BaseViewModel, SignUpEnterNicknameBusi
                         .init(email: model.email, password: model.password, name: nickname, deviceToken: deviceToken)
                     )
                     UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
+                    FcmCenter.shared.toggleAlarmAPI()
                 case .apple(let identifier):
                     let accessToken = try await signUpService.signupWithApple(
                         .init(identifier: identifier, name: nickname, deviceToken: deviceToken)
                     )
                     UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
+                    FcmCenter.shared.toggleAlarmAPI()
                 case .kakao(let identifier):
                     let accessToken = try await signUpService.signupWitHKakao(
                         .init(identifier: identifier, name: nickname, deviceToken: deviceToken)
                     )
                     UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
+                    FcmCenter.shared.toggleAlarmAPI()
                 }
 
                 self.isLoading = false
