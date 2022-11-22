@@ -32,7 +32,7 @@ class LogTicketEmptyView: UIView {
         return label
     }()
     
-    let bottomButton: UIButton = {
+    let addCourseButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .designSystem(.mainYellow)
         button.setTitle("후기 등록", for: .normal)
@@ -65,7 +65,7 @@ extension LogTicketEmptyView {
             flopButton,
             heartImageView,
             logTicketEmptyViewLabel,
-            bottomButton
+            addCourseButton
         )
         
         heartImageView.snp.makeConstraints { make in
@@ -87,7 +87,7 @@ extension LogTicketEmptyView {
             make.top.equalTo(heartImageView.snp.bottom).offset(30)
         }
         
-        bottomButton.snp.makeConstraints { make in
+        addCourseButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 20 / 844)
             make.width.equalTo(DeviceInfo.screenWidth * 310 / 390)

@@ -12,7 +12,7 @@ import CoreLocation
 import CancelBag
 
 protocol TicketViewCoodinating {
-    func presentTicketViewController(course: CourseEntity, currentIndex: Int)
+    func presentTicketViewController(courses: [CourseEntity], currentIndex: Int)
 }
 
 protocol MyConstellationViewCoordinating {
@@ -20,7 +20,7 @@ protocol MyConstellationViewCoordinating {
 }
 
 protocol LogMapViewCoordinating {
-    func pushLogMapViewController(courses: [CourseEntity])
+    func pushLogMapViewController()
 }
 
 // MARK: ViewModel
@@ -59,12 +59,12 @@ extension LogHomeViewModel {
     // 티켓뷰로 전환
     func presentTicketView(course: CourseEntity, currentIndex: Int) {
         guard let coordinator = coordinator as? TicketViewCoodinating else { return }
-        coordinator.presentTicketViewController(course: course, currentIndex: currentIndex)
+        coordinator.presentTicketViewController(courses: courses, currentIndex: currentIndex)
     }
     // 지도화면으로 전환
     func pushLogMapViewController() {
         guard let coordinator = coordinator as? LogMapViewCoordinating else { return }
-        coordinator.pushLogMapViewController(courses: self.courses)
+        coordinator.pushLogMapViewController()
     }
 }
 
@@ -83,7 +83,7 @@ extension LogHomeViewModel {
     
     @objc
     private func getNotification(_ notification: Notification) {
-        //MARK: DTO는 필요시 다른 모델에 매핑하여 사용
+        // MARK: DTO는 필요시 다른 모델에 매핑하여 사용
         guard let reviewId = notification.object as? String else { return }
         Task {
                 let alarmCourse = try await alarmCourseReviewUseCase.getCourseWith(id: reviewId)

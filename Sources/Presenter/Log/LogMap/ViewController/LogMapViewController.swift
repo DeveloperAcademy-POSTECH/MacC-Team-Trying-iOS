@@ -20,22 +20,21 @@ final class LogMapViewController: BaseViewController {
     }
     
     var viewModel: LogMapViewModel
-    private let locationManager = LocationManager.shared
     
-    private lazy var dismissButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: Constants.Image.navBarDeleteButton), for: .normal)
-        button.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
-        return button
+    private lazy var locationManager: CLLocationManager = {
+        let manager = CLLocationManager()
+        manager.delegate = self
+        manager.requestWhenInUseAuthorization()
+        manager.desiredAccuracy = .infinity
+        manager.startUpdatingLocation()
+        manager.startUpdatingHeading()
+        manager.startMonitoringSignificantLocationChanges()
+        return manager
     }()
-
-    private lazy var popButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: Constants.Image.navBarPopButton), for: .normal)
-        button.addTarget(self, action: #selector(popButtonPressed(_:)), for: .touchUpInside)
-        button.isHidden = true
-        return button
-    }()
+    
+    var currentLocation: CLLocation!
+    
+    private lazy var dismissButton = UIButton()
     
     private lazy var mapView: MKMapView = {
         let map = MKMapView()
@@ -45,18 +44,16 @@ final class LogMapViewController: BaseViewController {
         map.setRegion(
             MKCoordinateRegion(
                 center: CLLocationCoordinate2D(
-                    latitude: locationManager.latitude,
-                    longitude: locationManager.longitude
+                    latitude: currentLocation.coordinate.latitude,
+                    longitude: currentLocation.coordinate.longitude
                 ),
                 span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
             ),
             animated: true
         )
         map.showsUserLocation = true
-        map.setUserTrackingMode(.follow, animated: true)
+        map.setUserTrackingMode(.followWithHeading, animated: true)
         map.showsCompass = false
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(mapViewPressed(_:)))
-        map.addGestureRecognizer(tapGestureRecognizer)
         return map
     }()
     
@@ -69,14 +66,29 @@ final class LogMapViewController: BaseViewController {
         return button
     }()
     
-    private let reviewButton = ReviewButton()
-    
-    private let placeDetailView = PlaceInformationView()
+    private let ticketImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: Constants.Image.ticketIcon)
+        return imageView
+    }()
+    private lazy var recordButton: UIButton = {
+        let button = UIButton()
+        let title = NSAttributedString(string: "별자리 후기", attributes: [.font: UIFont.designSystem(weight: .bold, size: ._13)])
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
+        button.setAttributedTitle(title, for: .normal)
+        button.layer.cornerRadius = 17
+        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
+        button.backgroundColor = .designSystem(.black)
+        button.layer.borderColor = .designSystem(.mainYellow)
+        button.layer.borderWidth = 1
+        button.addTarget(self, action: #selector(recordButtonPressed(_:)), for: .touchUpInside)
+        button.sizeToFit()
+        return button
+    }()
     
     /// View Model과 bind 합니다.
     private func bind() {
         // input
-        
         // output
     }
     
@@ -89,17 +101,48 @@ final class LogMapViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: Life-Cycle
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        // FIXME: 탭바 코드 삭제하기
+        navigationController?.tabBarController?.tabBar.isHidden = true
+        currentLocation = locationManager.location
         setUI()
         bind()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        self.navigationController?.isNavigationBarHidden = true
+        if CLLocationManager.locationServicesEnabled() {
+            if CLLocationManager.authorizationStatus() == .denied || CLLocationManager.authorizationStatus() == .restricted {
+                let alert = UIAlertController(title: "Error", message: "위치 서비스 기능이 꺼져있습니다.", preferredStyle: .alert)
+                let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
+                alert.addAction(confirmAction)
+                self.present(alert, animated: true, completion: nil)
+            } else {
+                locationManager.desiredAccuracy = kCLLocationAccuracyBest
+                locationManager.delegate = self
+                locationManager.requestWhenInUseAuthorization()
+                currentLocation = locationManager.location
+            }
+        } else {
+            let alert = UIAlertController(title: "Error", message: "위치 서비스 제공을 할 수 없습니다.", preferredStyle: .alert)
+            let confirmAction = UIAlertAction(title: "확인", style: UIAlertAction.Style.default, handler: nil)
+            alert.addAction(confirmAction)
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.tabBarController?.tabBar.isHidden = false
+        navigationController?.navigationBar.isHidden = false
     }
 }
 
@@ -107,19 +150,19 @@ final class LogMapViewController: BaseViewController {
 extension LogMapViewController {
     private func setUI() {
         presentConstellationAnnotations()
+        setDismissButton(type: .dismiss)
         setLayout()
     }
     
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
         mapView.addSubview(userTrackingButton)
+        recordButton.addSubview(ticketImageView)
         
         view.addSubviews(
             mapView,
             dismissButton,
-            popButton,
-            reviewButton,
-            placeDetailView
+            recordButton
         )
         
         mapView.snp.makeConstraints { make in
@@ -136,23 +179,16 @@ extension LogMapViewController {
             make.leading.equalToSuperview().inset(20)
         }
         
-        popButton.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.leading.equalToSuperview().inset(20)
+        ticketImageView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(10)
+            make.centerY.equalToSuperview()
         }
         
-        reviewButton.snp.makeConstraints { make in
+        recordButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().inset(-reviewButton.height)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(-80)
             make.width.equalTo(110)
-            make.height.equalTo(reviewButton.height)
-        }
-        
-        placeDetailView.snp.makeConstraints { make in
-            make.leading
-                .trailing.equalToSuperview()
-            make.bottom.equalToSuperview().inset(-placeDetailView.height)
-            make.height.equalTo(placeDetailView.height)
+            make.height.equalTo(34)
         }
     }
     
@@ -161,16 +197,20 @@ extension LogMapViewController {
         mapView.addAnnotations(viewModel.fetchConstellationAnnotations())
     }
     
-    private func presentStarAnnotations(selectedCourseID: Int) {
+    private func presentStarAnnotations(selectedCourseTitle: String) {
         mapView.removeAnnotations(mapView.annotations)
-        let starAnnotations = viewModel.fetchStarAnnotations(with: selectedCourseID)
+        let starAnnotations = viewModel.fetchStarAnnotations(with: selectedCourseTitle)
         mapView.addAnnotations(starAnnotations)
         mapView.showAnnotations(starAnnotations, animated: true)
     }
     
-    private func presentReviewButton() {
-        DispatchQueue.main.async {
-            self.reviewButton.present()
+    private func presentRecordButton() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.recordButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(20)
+            }
             
             UIView.animate(
                 withDuration: 0.4,
@@ -182,54 +222,39 @@ extension LogMapViewController {
         }
     }
     
-    private func dismissReviewButton() {
-        DispatchQueue.main.async {
-            self.reviewButton.hide()
+    private func dismissRecordButton() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.recordButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(-80)
+            }
             
             UIView.animate(
-                withDuration: 0.3,
+                withDuration: 0.4,
                 delay: 0,
                 animations: {
                     self.view.layoutIfNeeded()
                 }
             )
+        }
+    }
+    
+    private func setDismissButton(type: DismissButtonType) {
+        switch type {
+        case .dismiss:
+            dismissButton.setImage(UIImage(named: Constants.Image.navBarDeleteButton), for: .normal)
+            dismissButton.addTarget(self, action: #selector(dismissButtonPressed(_:)), for: .touchUpInside)
+            
+        case .pop:
+            dismissButton.setImage(UIImage(named: Constants.Image.navBarPopButton), for: .normal)
+            dismissButton.addTarget(self, action: #selector(popButtonPressed(_:)), for: .touchUpInside)
         }
     }
     
     private func presentLocation(latitude: CLLocationDegrees, longitude: CLLocationDegrees, span: Double) {
         let spanValue = MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
         mapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: spanValue), animated: true)
-    }
-    
-    private func presentPlaceDetailView(with place: PlaceEntity) {
-        self.placeDetailView.selectedPlace = place
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.placeDetailView.present()
-            
-            UIView.animate(
-                withDuration: 0.3,
-                delay: 0,
-                animations: {
-                    self.view.layoutIfNeeded()
-                }
-            )
-        }
-    }
-    
-    private func hidePlaceDetailView() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.placeDetailView.hide()
-            
-            UIView.animate(
-                withDuration: 0.3,
-                delay: 0,
-                animations: {
-                    self.view.layoutIfNeeded()
-                }
-            )
-        }
     }
 }
 
@@ -250,7 +275,9 @@ extension LogMapViewController: MKMapViewDelegate {
             guard let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: ConstellationAnnotationView.identifier) else { return nil }
             
             annotationView.annotation = constellationAnnotation
-            annotationView.image = self.makeConstellationAnnotationViewImage(courseID: constellationAnnotation.courseId)
+            
+            // FIXME: 별자리 그리는 메소드를 통해 Constellation Annotation마다 각자의 annotation image를 가지게 해야합니다.
+            annotationView.image = UIImage(named: "mock_cluster")
             
             return annotationView
         } else {
@@ -259,19 +286,36 @@ extension LogMapViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        if let starAnnotation = view.annotation as? StarAnnotation {
-            
-            guard let place = viewModel.places.first(where: { $0.id == starAnnotation.placeId }) else { return }
-            self.presentPlaceDetailView(with: place)
-            
-        } else if let constellationAnnotation = view.annotation as? ConstellationAnnotation {
-            
-            self.toggleDismissButton()
-            self.presentStarAnnotations(selectedCourseID: constellationAnnotation.courseId)
-            self.presentReviewButton()
-            
-        } else {
-            return
+        guard let view = view as? ConstellationAnnotationView,
+              let title = view.annotation?.title! else { return }
+        
+        setDismissButton(type: .pop)
+        presentStarAnnotations(selectedCourseTitle: title)
+        presentRecordButton()
+    }
+}
+
+// MARK: - CLLocationManagerDelegate
+extension LogMapViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        locationManager = manager
+        currentLocation = locationManager.location
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse:
+            self.currentLocation = locationManager.location
+        case .authorizedAlways:
+            self.currentLocation = locationManager.location
+        case .restricted:
+            break
+        case .denied:
+            break
+        default:
+            break
         }
     }
 }
@@ -280,71 +324,20 @@ extension LogMapViewController: MKMapViewDelegate {
 extension LogMapViewController {
     @objc
     private func dismissButtonPressed(_ sender: UIButton) {
-        self.viewModel.dismissButtonPressed()
+        // TODO: dismiss
+        viewModel.tapDismissButton()
     }
     
     @objc
     private func popButtonPressed(_ sender: UIButton) {
-        self.hidePlaceDetailView()
-        self.toggleDismissButton()
-        self.dismissReviewButton()
-        self.presentConstellationAnnotations()
+        setDismissButton(type: .dismiss)
+        dismissRecordButton()
+        presentConstellationAnnotations()
         presentLocation(latitude: mapView.region.center.latitude, longitude: mapView.region.center.longitude, span: 0.05)
     }
     
     @objc
     private func recordButtonPressed(_ sender: UIButton) {
         // TODO: record button pressed
-    }
-    
-    @objc
-    private func mapViewPressed(_ sender: UITapGestureRecognizer) {
-        self.hidePlaceDetailView()
-    }
-}
-
-// MARK: - Helper
-extension LogMapViewController {
-    private func toggleDismissButton() {
-        self.dismissButton.isHidden.toggle()
-        self.popButton.isHidden.toggle()
-    }
-    
-    private func makeConstellationAnnotationViewImage(courseID: Int) -> UIImage {
-        guard let course = viewModel.courses.first(where: { $0.id == courseID }) else { return UIImage() }
-        guard let constellationImage = StarMaker.makeStars(places: course.places)?.resizeImageTo(size: CGSize(width: 15, height: 15)) else { return UIImage() }
-    
-        let font = UIFont.systemFont(ofSize: 11)
-        let imageAttachment = NSTextAttachment()
-        imageAttachment.bounds = CGRect(x: 0, y: (font.capHeight - constellationImage.size.height).rounded() / 2, width: constellationImage.size.width, height: constellationImage.size.height)
-        imageAttachment.image = constellationImage
-        let imageString = NSAttributedString(attachment: imageAttachment)
-        
-        let courseTitleString = NSAttributedString(
-            string: course.courseTitle,
-            attributes: [
-                .foregroundColor: UIColor.designSystem(.white) as Any,
-                .font: UIFont.designSystem(weight: .bold, size: ._11)
-            ]
-        )
-        
-        let attributedString = NSMutableAttributedString(string: "")
-        attributedString.append(imageString)
-        attributedString.append(NSAttributedString(string: " "))
-        attributedString.append(courseTitleString)
-        
-        let customAnnotationView = PaddingLabel(padding: UIEdgeInsets(top: 0, left: 10, bottom: 2, right: 10))
-        customAnnotationView.numberOfLines = 1
-        
-        customAnnotationView.attributedText = attributedString
-        
-        customAnnotationView.backgroundColor = .designSystem(.black)
-        customAnnotationView.layer.cornerRadius = 15
-        customAnnotationView.layer.masksToBounds = true
-        
-        customAnnotationView.frame.size = customAnnotationView.intrinsicContentSize
-        customAnnotationView.frame.size.height = 30
-        
-        return customAnnotationView.asImage()
     }
 }

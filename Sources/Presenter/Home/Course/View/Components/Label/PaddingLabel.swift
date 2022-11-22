@@ -27,5 +27,5 @@ final class PaddingLabel: UILabel {
            contentSize.width += padding.left + padding.right
            
            return contentSize
-    }
+       }
 }

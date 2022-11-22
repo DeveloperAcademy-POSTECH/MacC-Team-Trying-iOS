@@ -33,8 +33,6 @@ struct FetchConstellationDTO: Codable {
     struct Place: Codable {
         let placeId: Int
         let name: String
-        let address: String
-        let category: String
         let coordinate: Coordinate
     }
 

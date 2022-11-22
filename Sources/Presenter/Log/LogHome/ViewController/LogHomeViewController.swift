@@ -100,13 +100,14 @@ final class LogHomeViewController: BaseViewController {
         self.navigationController?.isNavigationBarHidden = true
         Task {
             try await viewModel.fetchConstellation()
+            logCollectionView.reloadData()
+            setConstellationButtonOption()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
-        bind()
     }
     
     override func viewWillDisappear(_ animated: Bool) {

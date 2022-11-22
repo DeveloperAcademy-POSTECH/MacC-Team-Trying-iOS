@@ -27,8 +27,8 @@ final class PlaceSearchResultMapViewController: BaseViewController {
     private var recentAnnotation: MKAnnotation?
     private let presentLocation: CLLocationCoordinate2D
     
-    private lazy var placeDetailView: AddPlaceDetailView = {
-        let view = AddPlaceDetailView()
+    private lazy var placeDetailView: PlaceDetailView = {
+        let view = PlaceDetailView()
         view.memoTextField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
         view.addCourseButton.addTarget(self, action: #selector(addCourseButtonPressed(_:)), for: .touchUpInside)
         return view
@@ -123,7 +123,7 @@ extension PlaceSearchResultMapViewController: NavigationBarConfigurable {
         
         if self.searchedPlaces.count == 1 {
             self.selectedPlace = searchedPlaces[0]
-            self.addStarAnnotation(place: selectedPlace!)
+            self.addStarAnnotation(latitude: selectedPlace!.location.latitude, longitude: selectedPlace!.location.longitude)
             self.presentPlaceDetailView(with: selectedPlace!)
         }
         
@@ -180,29 +180,12 @@ extension PlaceSearchResultMapViewController: NavigationBarConfigurable {
         }
     }
     
-    private func addStarAnnotation(place: Place) {
-        let starAnnotation = StarAnnotation(
-            coordinate: CLLocationCoordinate2D(
-                latitude: place.location.latitude,
-                longitude: place.location.longitude
-            ),
-            placeId: place.id
-        )
-        
-        self.recentAnnotation = starAnnotation
-        DispatchQueue.main.async {
-            self.mapView.addAnnotation(starAnnotation)
-        }
-    }
-    
-    /*
     private func addStarAnnotation(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
         let starAnnotation = StarAnnotation(
             coordinate: CLLocationCoordinate2D(
                 latitude: latitude,
                 longitude: longitude
-            ),
-            placeId: <#T##Int#>
+            )
         )
         
         self.recentAnnotation = starAnnotation
@@ -210,7 +193,6 @@ extension PlaceSearchResultMapViewController: NavigationBarConfigurable {
             self.mapView.addAnnotation(starAnnotation)
         }
     }
-     */
     
     private func removeRecentAnnotation() {
         guard let recentAnnotation = recentAnnotation else { return }
@@ -287,7 +269,7 @@ extension PlaceSearchResultMapViewController: MKMapViewDelegate {
         }
         
         guard let selectedPlace = selectedPlace else { return }
-        self.addStarAnnotation(place: selectedPlace)
+        self.addStarAnnotation(latitude: selectedPlace.location.latitude, longitude: selectedPlace.location.longitude)
         self.presentPlaceDetailView(with: selectedPlace)
     }
 }
