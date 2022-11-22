@@ -13,7 +13,7 @@ extension Double {
         if self < 1 {
             return "\(Int(self * 1000))m"
         } else {
-            let str = String(format: "%.1f", self)
+            let str = String(format: "%.0f", self)
             return "\(str)km"
         }
     }

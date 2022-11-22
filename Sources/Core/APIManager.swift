@@ -15,5 +15,3 @@ final class APIManager {
     static let baseURL = "https://wouldulike.site"
 #endif
 }
-
-
