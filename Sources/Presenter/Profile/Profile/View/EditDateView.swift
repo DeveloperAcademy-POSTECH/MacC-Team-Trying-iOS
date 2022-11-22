@@ -138,7 +138,11 @@ extension EditDateView: BottomHidable {
     
     func present() {
         self.snp.updateConstraints { make in
-            make.bottom.equalToSuperview().inset(180)
+            if UIDevice.current.hasNotch {
+                make.bottom.equalToSuperview().inset(190)
+            } else {
+                make.bottom.equalToSuperview().inset(70)
+            }
         }
     }
 }
