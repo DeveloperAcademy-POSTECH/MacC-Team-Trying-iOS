@@ -12,6 +12,11 @@ import UIKit
 class AlarmViewController: BaseViewController {
 
     let alarmViewModel: AlarmViewModel
+    private lazy var refreshControl: UIRefreshControl = {
+        let rc = UIRefreshControl()
+        rc.addTarget(self, action: #selector(refreshAlarmData), for: .valueChanged)
+        return rc
+    }()
     
     init(alarmViewModel: AlarmViewModel) {
         self.alarmViewModel = alarmViewModel
@@ -22,12 +27,18 @@ class AlarmViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let tableView: UITableView = {
+    @objc
+    private func refreshAlarmData(_ sender: Any) {
+        alarmViewModel.fetchAlamrs()
+    }
+    
+    private lazy var tableView: UITableView = {
         let tv = UITableView()
         tv.separatorColor = .designSystem(.gray818181)
         tv.register(AlarmTableViewcell.self, forCellReuseIdentifier: AlarmTableViewcell.cellID)
         tv.backgroundColor = .clear
         tv.tableHeaderView = UIView()
+        tv.addSubview(refreshControl)
         return tv
     }()
 
@@ -69,9 +80,30 @@ class AlarmViewController: BaseViewController {
         alarmViewModel.popToBackViewController()
     }
     
+    func setAuthAlertAction() {
+        let authAlertController = UIAlertController(title: "알림", message: "알림을 전체 삭제 하시겠어요?", preferredStyle: .alert)
+
+        let getAuthAction = UIAlertAction(
+            title: "삭제할래요",
+            style: .destructive,
+            handler: { _ in
+                self.alarmViewModel.allDeleteTap()
+            }
+        )
+        let cancelAction = UIAlertAction(
+            title: "아니요",
+            style: .cancel
+        )
+            authAlertController.addAction(getAuthAction)
+            authAlertController.addAction(cancelAction)
+            self.present(authAlertController, animated: true, completion: nil)
+        }
+    
     @objc
     func allDeleteTap() {
-        alarmViewModel.allDeleteTap()
+        DispatchQueue.main.async {
+            self.setAuthAlertAction()
+        }
     }
     
     override func viewDidLoad() {
@@ -91,7 +123,6 @@ class AlarmViewController: BaseViewController {
         tableView.snp.makeConstraints { make in
             make.trailing.leading.bottom.top.equalTo(self.view.safeAreaLayoutGuide)
         }
-        
     }
 
     private func bind() {
@@ -101,6 +132,7 @@ class AlarmViewController: BaseViewController {
             .sink { alamrs in
                 self.noAlarmStackView.isHidden = alamrs.isEmpty ? false : true
                 self.tableView.reloadData()
+                self.refreshControl.endRefreshing()
             }
             .cancel(with: cancelBag)
     }
@@ -160,4 +192,12 @@ extension AlarmViewController {
             action: #selector(allDeleteTap)
         )
     }
+}
+
+extension AlarmViewController {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+           if editingStyle == .delete {
+               alarmViewModel.deleteAlarmAt(indexPath.row)
+           }
+       }
 }

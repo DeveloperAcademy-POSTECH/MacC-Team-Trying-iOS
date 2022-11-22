@@ -15,7 +15,7 @@ import SnapKit
 final class ProfileViewController: BaseViewController {
     private let sections = ["활동내역", "회원설정", "고객센터"]
     private let userSetting = ["내 정보 수정", "디데이 수정", "푸쉬 설정"]
-    private let services = ["공지사항", "서비스 약관", "자주 묻는 질문"]
+    private let services = ["공지사항", "서비스 약관", "1대1 문의"]
     
     var viewModel: ProfileViewModel
     
@@ -27,7 +27,7 @@ final class ProfileViewController: BaseViewController {
     
     private let contentView = UIView()
     
-    private lazy var profilePlanetView = ProfilePlanetView(type: .alone)
+    private lazy var profilePlanetView = ProfilePlanetView()
     
     private lazy var profileTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -44,6 +44,21 @@ final class ProfileViewController: BaseViewController {
         tableView.separatorInset = .init(top: 0, left: 20, bottom: 0, right: 20)
         return tableView
     }()
+    
+    private lazy var blackBackgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .designSystem(.black)?.withAlphaComponent(0.6)
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(blackBackgroundViewPressed(_:)))
+        view.addGestureRecognizer(tapGestureRecognizer)
+        return view
+    }()
+    private lazy var editDateView: EditDateView = {
+        let view = EditDateView()
+        view.datePicker.addTarget(self, action: #selector(dateSelected(_:)), for: .valueChanged)
+        view.dismissButton.addTarget(self, action: #selector(editDateDismissButtonPressed(_:)), for: .touchUpInside)
+        view.doneButton.addTarget(self, action: #selector(editDateDoneButtonPressed(_:)), for: .touchUpInside)
+        return view
+    }()
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -56,6 +71,23 @@ final class ProfileViewController: BaseViewController {
         // input
         
         // output
+        viewModel.$planetImageName
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] imageName in
+                guard let self = self else { return }
+                self.profilePlanetView.planetImageView.image = UIImage(named: imageName)
+            }
+            .cancel(with: cancelBag)
+        
+        viewModel.$planetName
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] name in
+                guard let self = self else { return }
+                self.profilePlanetView.planetNameLabel.text = name
+            }
+            .cancel(with: cancelBag)
+        
+        /*
         viewModel.$numberOfPlaces
             .receive(on: DispatchQueue.main)
             .sink { [weak self] number in
@@ -73,20 +105,16 @@ final class ProfileViewController: BaseViewController {
                 self.profilePlanetView.placeLabel.attributedText = string
             }
             .cancel(with: cancelBag)
+         */
         
-        viewModel.$planetImageName
+        viewModel.$activities
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] imageName in
-                guard let self = self else { return }
-                self.profilePlanetView.planetImageView.image = UIImage(named: imageName)
-            }
-            .cancel(with: cancelBag)
-        
-        viewModel.$planetName
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] name in
-                guard let self = self else { return }
-                self.profilePlanetView.planetNameLabel.text = name
+            .sink { [weak self] numberOfCourses, numberOfLikedCourses in
+                guard let self = self,
+                      let activityCell = self.profileTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileTableViewActivityCell else { return }
+                
+                activityCell.numberOfConstellationLabel.text = "\(numberOfCourses)개"
+                activityCell.numberOfLikedCourseLabel.text = "\(numberOfLikedCourses)개"
             }
             .cancel(with: cancelBag)
     }
@@ -104,7 +132,6 @@ final class ProfileViewController: BaseViewController {
         super.viewDidLoad()
         
         setUI()
-        setButtonTarget()
         bind()
     }
 }
@@ -112,13 +139,18 @@ final class ProfileViewController: BaseViewController {
 // MARK: - UI
 extension ProfileViewController: NavigationBarConfigurable {
     private func setUI() {
-        navigationItem.backButtonTitle = ""
-        navigationController?.navigationBar.tintColor = .white
         configureProfileNavigationBar(target: self, settingAction: #selector(settingButtonPressed(_:)))
-        
-        view.addSubview(scrollView)
+        setBackgroundGyroMotion()
+        setLayout()
+        navigationItem.backButtonTitle = ""
+    }
+    
+    private func setLayout() {
+        view.addSubviews(
+            scrollView,
+            editDateView
+        )
         scrollView.snp.makeConstraints { make in
-//            make.edges.equalToSuperview()
             make.top.bottom.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
         }
@@ -137,44 +169,80 @@ extension ProfileViewController: NavigationBarConfigurable {
         profilePlanetView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(290)
+            make.height.equalTo(260)
         }
         
         profileTableView.snp.makeConstraints { make in
-            make.top.equalTo(profilePlanetView.snp.bottom).offset(20)
+            make.top.equalTo(profilePlanetView.snp.bottom).offset(15)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(600)
             make.bottom.equalToSuperview()
         }
+
+        editDateView.snp.makeConstraints { make in
+            make.leading
+                .trailing.equalToSuperview().inset(30)
+            make.height.equalTo(editDateView.height)
+            make.bottom.equalToSuperview().inset(-editDateView.height)
+        }
+    }
+    
+    private func hideEditDateView() {
+        DispatchQueue.main.async {
+            self.editDateView.hide()
+            
+            UIView.animate(
+                withDuration: 0.4,
+                delay: 0,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+            
+            self.blackBackgroundView.removeFromSuperview()
+        }
+        
+        self.toggleSettingButtonEnable()
+    }
+    
+    private func presentEditDateView() {
+        self.view.addSubview(self.blackBackgroundView)
+        self.blackBackgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        self.view.bringSubviewToFront(self.editDateView)
+        DispatchQueue.main.async {
+            self.editDateView.present()
+            
+            UIView.animate(
+                withDuration: 0.7,
+                delay: 0,
+                usingSpringWithDamping: 0.75,
+                initialSpringVelocity: 0.5,
+                options: .curveEaseInOut,
+                animations: {
+                    self.view.layoutIfNeeded()
+                }
+            )
+        }
+        
+        self.toggleSettingButtonEnable()
     }
 }
 
 // MARK: - User Interactions
 extension ProfileViewController {
-    private func setButtonTarget() {
-        switch self.profilePlanetView.type {
-        case .noPlanet:
-            profilePlanetView.enterPlanetButton.addTarget(self, action: #selector(enterPlanetButtonPressed(_:)), for: .touchUpInside)
-            profilePlanetView.createPlanetButton.addTarget(self, action: #selector(createPlanetButtonPressed(_:)), for: .touchUpInside)
-            
-        case .alone:
-            profilePlanetView.inviteMateButton.addTarget(self, action: #selector(inviteMateButtonPressed(_:)), for: .touchUpInside)
-            
-        case .couple:
-            break
-        }
-    }
-    
     @objc
     private func settingButtonPressed(_ sender: UIButton) {
         HapticManager.instance.selection()
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { [weak self] action in
+        let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { [weak self] _ in
             self?.viewModel.coordinateToEditPlanet()
         }
-        let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { action in
-            // TODO: logic 추가
+        let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { [weak self] action in
+            self?.viewModel.coordinateToExitPlanet()
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         
@@ -186,21 +254,29 @@ extension ProfileViewController {
     }
     
     @objc
-    private func enterPlanetButtonPressed(_ sender: UIButton) {
-        // TODO: Enter Planet
-        HapticManager.instance.selection()
+    private func dateSelected(_ sender: UIDatePicker) {
+        self.viewModel.date = sender.date.dateToString()
     }
     
     @objc
-    private func createPlanetButtonPressed(_ sender: UIButton) {
-        // TODO: Create Planet
-        HapticManager.instance.selection()
+    private func editDateDismissButtonPressed(_ sender: UIButton) {
+        self.hideEditDateView()
     }
     
     @objc
-    private func inviteMateButtonPressed(_ sender: UIButton) {
-        // TODO: Invite Mate
-        HapticManager.instance.selection()
+    private func editDateDoneButtonPressed(_ sender: UIButton) {
+        self.viewModel.editDate()
+        self.hideEditDateView()
+    }
+    
+    @objc
+    private func blackBackgroundViewPressed(_ sender: UITapGestureRecognizer) {
+        self.hideEditDateView()
+    }
+    
+    private func toggleSettingButtonEnable() {
+        guard let settingButton = self.navigationItem.rightBarButtonItem?.customView as? UIButton else { return }
+        settingButton.isEnabled.toggle()
     }
 }
 
@@ -238,10 +314,6 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         case 0:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewActivityCell.identifier, for: indexPath)
                     as? ProfileTableViewActivityCell else { return UITableViewCell() }
-            
-            // FIXME: Data binding
-            cell.numberOfConstellationLabel.text = "13개"
-            cell.numberOfCourseLabel.text = "3개"
             return cell
             
         case 1:
@@ -282,7 +354,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             case 0:
                 viewModel.editProfileButtonDidTapped()
             case 1:
-                viewModel.pushToEditDayView()
+                self.presentEditDateView()
             case 2:
                 viewModel.pushToEditNotificationView()
             default:
@@ -296,10 +368,9 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
                 // TODO: 공지사항
                 break
             case 1:
-                // TODO: 서비스 약관
-                break
+                self.viewModel.pushToServiceTermView()
             case 2:
-                // TODO: 자주 묻는 질문
+                // TODO: 1대1 문의
                 break
             default:
                 break

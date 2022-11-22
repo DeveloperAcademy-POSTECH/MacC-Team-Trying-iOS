@@ -37,6 +37,7 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
             .compactMap { $0 }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] step in
+                print(step)
                 switch step {
                 case .serviceTerm(let type):
                     self?.leaveAnimator?.addCompletion { [weak self] _ in
@@ -47,6 +48,31 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
                 case .main:
                     self?.leaveAnimator?.addCompletion { [weak self] _ in
                         self?.viewModel.gotoMain()
+                    }
+
+                    self?.leaveAnimator?.startAnimation()
+
+                case .createPlanet:
+                    self?.leaveAnimator?.addCompletion { [weak self] _ in
+                        self?.viewModel.gotoCreatPlanet()
+                    }
+
+                    self?.leaveAnimator?.startAnimation()
+
+                case .waitingMate(let image, let name, let code):
+                    self?.leaveAnimator?.addCompletion { [weak self] _ in
+                        self?.viewModel.gotoWaitMate(
+                            selectedPlanet: image,
+                            planetName: name,
+                            code: code
+                        )
+                    }
+
+                    self?.leaveAnimator?.startAnimation()
+
+                case .warning:
+                    self?.leaveAnimator?.addCompletion { [weak self] _ in
+                        self?.viewModel.gotoWarning()
                     }
 
                     self?.leaveAnimator?.startAnimation()

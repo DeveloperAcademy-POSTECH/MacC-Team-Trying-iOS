@@ -10,42 +10,46 @@
 import Combine
 import Foundation
 
+protocol DisMissCoordinating {
+    func dismissTicketViewController()
+}
+
 final class LogTicketViewModel: BaseViewModel {
     
     var coordinator: Coordinator
     
-    init(coordinator: Coordinator) {
-        self.coordinator = coordinator
-        super.init()
-        fetchData()
-    }
+    private var fetchReviewUseCase: FetchReviewUseCase
     
-    var data: TestModel?
-    // TODO: MOCK용 임시 함수
-    func fetchData() {
-        self.data = TestModel(
-            id: 1,
-            planet: "우디네 행성",
-            planetImage: "woodyPlanetImage",
-            title: "부산풀코스",
-            body: "배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이  온다.배가 많이 고프다, 잠이 온다.배가 많이 고프다, 잠이 온다.",
-            date: "2022년 10월 20일",
-            tag: ["삐갈레브레드", "포항공과대학교", "귀여운승창이"],
-            images: ["KyuandWoody", "lakeImage", "KyuandWoody", "lakeImage"]
-        )
+    private var fetchConstellationUseCase: FetchConstellationsUseCase
+    
+    private var tapCourseLikeUseCase: TapCourseLikeUseCase
+    
+    @Published var courses: [CourseEntity]
+    
+    let currentIndex: Int
+    
+    @Published var reviews = [ReviewEntity]()
+    
+    init(
+        coordinator: Coordinator,
+        courses: [CourseEntity],
+        currentIndex: Int,
+        fetchReviewUseCase: FetchReviewUseCase = FetchReviewUseCaseImpl(),
+        tapCourseLikeUseCase: TapCourseLikeUseCase = TapCourseLikeUseCaseImpl(),
+        fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()
+    ) {
+        self.currentIndex = currentIndex
+        self.courses = courses
+        self.coordinator = coordinator
+        self.fetchReviewUseCase = fetchReviewUseCase
+        self.tapCourseLikeUseCase = tapCourseLikeUseCase
+        self.fetchConstellationUseCase = FetchConstellationsUseCaseImpl()
+        super.init()
     }
     
     func tapDismissButton() {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
-    }
-    
-    func tapLikeButton() {
-        // TODO: UI 수정되어야하고 API 호출
-    }
-    
-    func tapFlopButton() {
-        // TODO: 카드가 뒤집히는 애니매이션
     }
 }
 
@@ -59,4 +63,26 @@ struct TestModel {
     let date: String
     let tag: [String]
     let images: [String]
+}
+
+extension LogTicketViewModel {
+    // MARK: 리뷰 API UseCase 호출
+    func fetchReviews() async throws {
+        reviews = try await
+        fetchReviewUseCase.fetchReviewAsync(courseId: courses[currentIndex].id)
+    }
+    
+    func fetchConstellation() async throws {
+        courses = try await fetchConstellationUseCase.fetchLogAsync()
+    }
+    
+    func moveToHomeTab() {
+        guard let coordinator = coordinator as? MoveFromLogToHome else { return }
+        coordinator.goToHomeView(course: courses[currentIndex])
+    }
+    
+    func tapLikeCourse() async throws {
+        try await tapCourseLikeUseCase.setCourseLike(courseId: courses[currentIndex].id, isLike: courses[currentIndex].isLike)
+        courses[currentIndex].isLike.toggle()
+    }
 }

@@ -32,8 +32,10 @@ protocol AlarmViewCoordinatingInAlarmViewCoordinating {
 
 extension HomeCoordinator: AlarmViewCoordinatingInAlarmViewCoordinating {
     func goToLogView() {
-        navigationController?.popViewController(animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.parentCoordinator?.moveToLogTab()
         }
     }
@@ -53,6 +55,7 @@ extension HomeCoordinator: goToRootViewControllerDelegate, AlarmViewCoordinating
     }
     
     func pushToAlarmViewController() {
+        guard !(navigationController?.topViewController is AlarmViewController) else { return }
         let alarmViewController = AlarmViewController(alarmViewModel: AlarmViewModel(coordinator: self))
         self.navigationController?.pushViewController(alarmViewController, animated: true)
     }

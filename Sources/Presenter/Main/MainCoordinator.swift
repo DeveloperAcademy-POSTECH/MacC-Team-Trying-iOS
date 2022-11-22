@@ -14,8 +14,18 @@ protocol Popable {
 protocol MainCoordinatorDelegate: AnyObject {
     func coordinateToLoginSceneFromProfile()
 }
+protocol MoveToHomeTap: AnyObject {
+    func moveToHomeTap(course: CourseEntity)
+}
 
 final class MainCoordinator: Coordinator {
+    
+    //MARK: 알림에서 log로 이동해야하는 로직이 있을때 필요. refactoring todo
+    var logCoordinator: LogCoordinator?
+    
+    //MARK: 알림 푸쉬왔을때 Home root로 오기위해 필요. HomeCoordinator에서 weak으로 되어있음. refactoring todo
+    var homeCoordinator: HomeCoordinator?
+    
     enum TabBarItem: CaseIterable {
         case home
         case log
@@ -92,10 +102,18 @@ extension MainCoordinator {
         if item == .home {
             if let coordinator = coordinator as? HomeCoordinator {
                 coordinator.parentCoordinator = self
+                //MARK: 서로 참조. 하나는 weak. refactoring 필요.
+                homeCoordinator = coordinator
+                print(coordinator, coordinator.parentCoordinator)
             }
         } else if item == .profile {
             if let coordinator = coordinator as? ProfileCoordinator {
                 coordinator.delegate = self
+            }
+        } else if item == .feed {
+            if let coordinator = coordinator as? LogCoordinator {
+                logCoordinator = coordinator
+                coordinator.parentCoordinator = self
             }
         }
         
@@ -122,12 +140,46 @@ protocol MoveToAnotherTab: AnyObject {
 
 extension MainCoordinator: MoveToAnotherTab {
     func moveToLogTab() {
-        tabBarController.selectedIndex = 1
+        tabBarController.selectedIndex = 2
+        logCoordinator?.navigationController?.popToRootViewController(animated: false)
     }
 }
 
 extension MainCoordinator: ProfileCoordinatorDelegate {
     func coordinateToLoginScene() {
         delegate?.coordinateToLoginSceneFromProfile()
+    }
+}
+
+extension LogCoordinator {
+    func popToRootViewController() {
+        navigationController?.popToRootViewController(animated: false)
+    }
+}
+
+extension MainCoordinator: MoveToHomeTap {
+    func moveToHomeTap(course: CourseEntity) {
+        tabBarController.selectedIndex = 0
+        logCoordinator?.navigationController?.popToRootViewController(animated: false)
+        
+        let places = course.places.map { place in
+            let resultPlace = Place(
+                id: place.id,
+                title: place.title,
+                category: place.category,
+                address: place.address,
+                location: place.coordinate
+            )
+            return resultPlace
+        }
+        
+        let courseRequestDTO = CourseRequestDTO(
+            id: course.id,
+            title: course.courseTitle,
+            date: course.date,
+            places: places
+        )
+        
+        homeCoordinator?.startRegisterReviewFlow(courseRequestDTO: courseRequestDTO)
     }
 }

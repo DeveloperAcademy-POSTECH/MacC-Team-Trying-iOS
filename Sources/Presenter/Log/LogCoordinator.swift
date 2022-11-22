@@ -16,6 +16,8 @@ final class LogCoordinator: Coordinator,
     
     weak var navigationController: UINavigationController?
     
+    weak var parentCoordinator: MoveToHomeTap?
+    
     init(navigationController: UINavigationController) { self.navigationController = navigationController }
     
     // MARK: Coordinating functions
@@ -25,12 +27,10 @@ final class LogCoordinator: Coordinator,
         let viewController = LogHomeViewController(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }
-    
-    func presentTicketViewController() {
-        let viewModel = LogTicketViewModel(coordinator: self)
+    // TicketView로 전환
+    func presentTicketViewController(courses: [CourseEntity], currentIndex: Int) {
+        let viewModel = LogTicketViewModel(coordinator: self, courses: courses, currentIndex: currentIndex)
         let viewController = LogTicketViewController(viewModel: viewModel)
-        viewController.view.backgroundColor = .clear
-        viewController.modalPresentationStyle = .popover
         navigationController?.present(viewController, animated: true)
     }
     
@@ -48,5 +48,18 @@ final class LogCoordinator: Coordinator,
         let viewModel = LogMapViewModel(coordinator: self)
         let viewController = LogMapViewController(viewModel: viewModel)
         self.navigationController?.pushViewController(viewController, animated: true)
+    }
+}
+
+protocol MoveFromLogToHome {
+    func goToHomeView(course: CourseEntity)
+}
+
+extension LogCoordinator: MoveFromLogToHome {
+    func goToHomeView(course: CourseEntity) {
+        DispatchQueue.main.async {
+            self.navigationController?.dismiss(animated: true)
+            self.parentCoordinator?.moveToHomeTap(course: course)
+        }
     }
 }

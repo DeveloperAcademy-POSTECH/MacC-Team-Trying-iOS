@@ -14,6 +14,8 @@ protocol ActionSheetDelegate: AnyObject {
     func showSettingActionSheet(alert: UIAlertController)
     func presentModifyViewController()
     func presentRegisterReviewViewController()
+    func deleteSelectedCourse()
+    func reloadHomeView()
 }
 
 enum PathType {
@@ -59,7 +61,7 @@ class PathTableViewCell: UITableViewCell {
             title.text = data.title
             comment.text = data.comment
             guard let distance = data.distance else { return }
-            self.distance.text = Int(distance).changeDistance()
+            self.distance.text = distance.changeDistance()
         }
     }
     
@@ -142,7 +144,7 @@ class PathTableViewCell: UITableViewCell {
         
         pointCircle.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(18)
-            make.leading.equalToSuperview().inset(48)
+            make.leading.equalToSuperview().inset(53)
             make.size.equalTo(12)
         }
         

@@ -16,6 +16,11 @@ enum MainButtonType {
     /// - Height : 58
     case addCourse
     
+    /// 코스 수정하기 버튼
+    /// - Title : 코스 수정하러 가기
+    /// - Height : 58
+    case editCourse
+    
     /// 다음 버튼
     /// - Title : 다음
     /// - Height : 58
@@ -62,6 +67,9 @@ final class MainButton: UIButton {
         switch type {
         case .addCourse:
             self.setTitle("코스 추가하러 가기", for: .normal)
+            
+        case .editCourse:
+            self.setTitle("코스 수정하러 가기", for: .normal)
             
         case .next:
             self.setTitle("다음", for: .normal)

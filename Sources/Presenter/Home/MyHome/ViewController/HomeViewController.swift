@@ -13,37 +13,12 @@ import CancelBag
 import SnapKit
 import Lottie
 
-enum AddCourseFlowType: Int {
-    // 과거에 계획을 안한경우 -> 계획,후기를 등록합니다0
-    case addCourse = 0
-    
-    // 후기등록건드려야함
-    // 과거인데 계획을 했을경우 -> 후기만 등록합니다
-    // 미래인데 계획을 했을경우 -> 버튼 비활성화되어야함
-    case registerReview
-    
-    // 수정버튼 건드려야함
-    // 과거인데 계획이 되어있고 수정을 하는경우 -> 타이틀과 장소를 수정합니다0
-    case editCourse
-    
-    // 미래인데 계획이 안되어있는 경우 -> 버튼 title을 바꿔야합니다0
-    case addPlan
-    
-    // 수정버튼 건드려야함
-    // 미래인데 계획이 되어있고 수정을 하는 경우 -> 타이틀하고 장소를 수정합니다0
-    case editPlan
-    
-    // 이전에있던 addCourseFlowType Case
-    case plan
-    case record
-}
-
 final class HomeViewController: BaseViewController {
     
     var myCancelBag = Set<AnyCancellable>()
     let viewModel: HomeViewModel
     var dateInfoIsHidden: Bool = false
-    
+    var selectedDate: Date = YearMonthDayDate.today.asDate()
     
     let homeTitle: UILabel = {
         let label = UILabel()
@@ -66,19 +41,6 @@ final class HomeViewController: BaseViewController {
         return label
     }()
     
-    lazy var inviteMateButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("메이트 초대하기", for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 10, weight: .bold)
-        button.layer.borderWidth = 1
-        button.layer.borderColor = .designSystem(.mainYellow)
-        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
-        button.clipsToBounds = true
-        button.layer.cornerRadius = 10
-        button.addTarget(self, action: #selector(inviteButtonTapped), for: .touchUpInside)
-        return button
-    }()
-    
     let nextDateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .light, size: ._13)
@@ -87,32 +49,14 @@ final class HomeViewController: BaseViewController {
         return label
     }()
     
-    lazy var moreButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.setImage(UIImage(named: "MoreButtonForOpen"), for: .normal)
-        button.addTarget(self, action: #selector(moreButtonTapped), for: .touchUpInside)
-        return button
+    let homeScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.isScrollEnabled = true
+        return scrollView
     }()
     
-    lazy var dateTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.register(DateTableViewCell.self, forCellReuseIdentifier: DateTableViewCell.cellId)
-        tableView.rowHeight = 20
-        tableView.isHidden = true
-        tableView.isScrollEnabled = false
-        tableView.backgroundColor = .clear
-        tableView.clipsToBounds = true
-        tableView.layer.cornerRadius = 10
-        tableView.contentInset = UIEdgeInsets(top: 15, left: 0, bottom: 15, right: 0)
-        tableView.separatorStyle = .none
-        tableView.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
-        tableView.layer.borderWidth = 0.5
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.light)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        tableView.backgroundView = blurEffectView
-        return tableView
-    }()
+    let contentView = UIView()
     
     lazy var calendarView = CalendarView(today: .init(), frame: .init(origin: .zero, size: .init(width: DeviceInfo.screenWidth - 40, height: 0)))
     
@@ -167,13 +111,16 @@ final class HomeViewController: BaseViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] receivedValue in
                 guard let self = self else { return }
-                if receivedValue?.mate != nil {
-                    print("메이트 있음")
-                    self.setHasMateUI()
-                } else {
-                    print("메이트 없음")
-                    self.setNoMateUI()
-                }
+                guard let mate = receivedValue?.mate else { return }
+                guard let dday = receivedValue?.planet?.dday else { return }
+                self.homeTitle.attributedText = String.makeAtrributedString(
+                    name: mate.name,
+                    appendString: " 님과 함께",
+                    changeAppendStringSize: ._15,
+                    changeAppendStringWieght: .light,
+                    changeAppendStringColor: .white
+                )
+                self.ddayLabel.text = "D+\(dday)"
             }
             .store(in: &myCancelBag)
         
@@ -191,38 +138,49 @@ final class HomeViewController: BaseViewController {
                 guard let self = self else { return }
                 guard let receivedValue = receivedValue else { return }
                 self.pathTableView.isHidden = false
-                self.pathTableView.snp.makeConstraints { make in
+                self.pathTableView.snp.remakeConstraints { make in
                     make.top.equalTo(self.calendarView.snp.bottom).offset(10)
                     make.centerX.equalToSuperview()
                     make.leading.trailing.equalToSuperview().inset(20)
                     // MARK: - 하나의 cell높이(59), Header의 높이 43, Footer의 높이(60)에서 자연스럽게 10추가
                     make.height.equalTo(receivedValue.courseList.count * 59 + 43 + 70)
+                    
                 }
                 self.pathTableView.reloadData()
+                
+                self.contentView.snp.remakeConstraints { make in
+                    make.top.equalToSuperview()
+                    make.width.equalToSuperview()
+                    if receivedValue.courseList.count > 2 {
+                        make.height.equalToSuperview().inset(-(receivedValue.courseList.count - 2) * 40)
+                    } else {
+                        make.height.equalToSuperview()
+                    }
+                    
+                    make.bottom.equalToSuperview()
+                }
             }
             .store(in: &myCancelBag)
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-        if let touch = touches.first, touch.view == self.backgroundView {
-            self.dateInfoIsHidden = false
-            self.moreButton.setImage(UIImage(named: "MoreButtonForOpen"), for: .normal)
-            self.dateTableView.isHidden = true
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.isHidden = true
+        UserDefaults.standard.set(viewModel.user?.me.name, forKey: "myName")
+        UserDefaults.standard.set(viewModel.user?.mate?.name, forKey: "mateName")
+        
         Task {
-            let currentDateRange = getCurrentDateRange()
+            let currentDateRange = getDateRange(currentDate: viewModel.selectedDate)
             try await viewModel.fetchUserInfo()
             try await viewModel.fetchDateRange(dateRange: currentDateRange)
-            try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
-            self.dateCoureRegisterButton.isHidden = true
-            
+            if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
+                try await viewModel.fetchSelectedDateCourse(selectedDate: viewModel.selectedDate.dateToString())
+                self.calendarView.selectDateDirectly(viewModel.selectedDate)
+                self.dateCoureRegisterButton.isHidden = true
+            } else {
+                setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
+            }
         }
     }
     
@@ -236,62 +194,28 @@ final class HomeViewController: BaseViewController {
         bind()
         setAttributes()
         setUI()
-    }
-    
-    private func setNoMateUI() {
-        guard let user = self.viewModel.user else { return }
-        self.homeTitle.attributedText = String.makeAtrributedString(
-            name: user.me.name,
-            appendString: " 님 반갑습니다",
-            changeAppendStringSize: ._15,
-            changeAppendStringWieght: .light,
-            changeAppendStringColor: .white
-        )
         
-        self.view.addSubviews(self.inviteMateButton)
-        self.inviteMateButton.snp.makeConstraints { make in
-            make.leading.equalTo(self.homeTitle.snp.leading)
-            make.top.equalTo(self.homeTitle.snp.bottom).offset(5)
-            make.width.equalTo(90)
-            make.height.equalTo(25)
+        Task {
+            let currentDateRange = getDateRange(currentDate: viewModel.selectedDate)
+            try await viewModel.fetchDateRange(dateRange: currentDateRange)
+            if viewModel.dateCalendarList.map({ $0.asDate() }).contains(viewModel.selectedDate) {
+                try await viewModel.fetchSelectedDateCourse(selectedDate: Date.currentDateString)
+                self.dateCoureRegisterButton.isHidden = true
+            } else {
+                setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
+                self.contentView.snp.remakeConstraints { make in
+                    make.top.equalToSuperview()
+                    make.width.equalToSuperview()
+                    make.height.equalToSuperview()
+                    make.bottom.equalToSuperview()
+                }
+            }
         }
-        
-        self.nextDateLabel.snp.remakeConstraints { make in
-            make.top.equalTo(self.inviteMateButton.snp.bottom).offset(10)
-            make.leading.equalTo(self.homeTitle.snp.leading)
-            make.height.equalTo(15)
-        }
-        
-        self.ddayLabel.isHidden = true
-        self.inviteMateButton.isHidden = false
-    }
-    
-    private func setHasMateUI() {
-        guard let userMate = self.viewModel.user?.mate else { return }
-        guard let dday = self.viewModel.user?.planet?.dday else { return }
-        self.homeTitle.attributedText = String.makeAtrributedString(
-            name: userMate.name,
-            appendString: " 님과 함께",
-            changeAppendStringSize: ._15,
-            changeAppendStringWieght: .light,
-            changeAppendStringColor: .white
-        )
-        
-        self.ddayLabel.isHidden = false
-        self.inviteMateButton.isHidden = true
-        self.ddayLabel.text = "D+\(dday)"
     }
     
     @objc
     func alarmButtonTapped() {
         viewModel.pushToAlarmView()
-    }
-    
-    @objc
-    func moreButtonTapped() {
-        dateInfoIsHidden.toggle()
-        dateTableView.isHidden.toggle()
-        moreButton.setImage(dateInfoIsHidden ? UIImage(named: "MoreButtonForClose") : UIImage(named: "MoreButtonForOpen"), for: .normal)
     }
     
     @objc
@@ -313,13 +237,12 @@ extension HomeViewController {
         view.addSubview(alarmButton)
         view.addSubview(ddayLabel)
         view.addSubview(nextDateLabel)
-        view.addSubview(moreButton)
-        view.addSubview(pathTableView)
-        view.addSubview(calendarView)
-        // MARK: - DateTableView가 맨위에 있어야 Layer가 가장 위쪽으로 적용이 된다
-        view.addSubview(dateTableView)
-        view.addSubview(dateCoureRegisterButton)
-        dateTableView.dataSource = self
+        view.addSubview(homeScrollView)
+        homeScrollView.addSubview(contentView)
+        
+        homeScrollView.addSubview(pathTableView)
+        homeScrollView.addSubview(calendarView)
+        homeScrollView.addSubview(dateCoureRegisterButton)
         pathTableView.delegate = self
         pathTableView.dataSource = self
         calendarView.delegate = self
@@ -351,24 +274,18 @@ extension HomeViewController {
             make.height.equalTo(15)
         }
         
-        moreButton.snp.makeConstraints { make in
-            make.centerY.equalTo(nextDateLabel.snp.centerY)
-            make.leading.equalTo(nextDateLabel.snp.trailing).offset(5)
-            make.size.equalTo(16)
-        }
-        
-        dateTableView.snp.makeConstraints { make in
-            make.leading.equalTo(homeTitle.snp.leading)
-            make.top.equalTo(nextDateLabel.snp.bottom).offset(5)
-            make.width.equalTo(150)
-            make.height.equalTo(viewModel.ddayDateList.count * 20 + 30)
+        homeScrollView.snp.makeConstraints { make in
+            make.top.equalTo(nextDateLabel.snp.bottom).offset(10)
+            make.leading.trailing.equalToSuperview()
+            make.width.equalToSuperview()
+            make.bottom.equalToSuperview().inset(80)
         }
         
         calendarView.snp.makeConstraints { make in
-            make.top.equalTo(nextDateLabel.snp.bottom).offset(20)
+            make.top.equalToSuperview().inset(20)
             make.leading.trailing.equalToSuperview().inset(20)
         }
-
+        
         dateCoureRegisterButton.snp.makeConstraints { make in
             make.top.equalTo(calendarView.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview().inset(20)
@@ -379,42 +296,42 @@ extension HomeViewController {
 
 extension HomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionCount = (tableView == dateTableView ? viewModel.ddayDateList.count : viewModel.dateCourse?.courseList.count)
-        guard let sectionCount = sectionCount else { return 0 }
+        guard let sectionCount = viewModel.dateCourse?.courseList.count else { return 0 }
         return sectionCount
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: PathTableViewCell.cellId, for: indexPath) as? PathTableViewCell else { return UITableViewCell() }
+        cell.delegate = self
+        guard let courseList = viewModel.dateCourse?.courseList else { return UITableViewCell() }
         
-        if tableView == dateTableView {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: DateTableViewCell.cellId, for: indexPath) as? DateTableViewCell else { return UITableViewCell() }
-            cell.selectionStyle = .none
-            cell.dateData = viewModel.ddayDateList[indexPath.row]
-            return cell
-        } else if tableView == pathTableView {
-            
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: PathTableViewCell.cellId, for: indexPath) as? PathTableViewCell else { return UITableViewCell() }
-            cell.delegate = self
-            guard let course = viewModel.dateCourse else { return UITableViewCell() }
-            switch indexPath.row {
-            case 0:
-                cell.lineUpper.isHidden = true
-                // MARK: - 코스가 하나일때 분기처리
-                if course.courseList.count == 1 {
-                    cell.lineLower.isHidden = true
-                }
-            case course.courseList.index(before: course.courseList.endIndex):
-                cell.lineLower.isHidden = true
-            default:
-                cell.lineLower.isHidden = false
-                cell.lineUpper.isHidden = false
-            }
-            cell.data = viewModel.dateCourse?.courseList[indexPath.row]
+        switch indexPath.row {
+        case 0:
+            cell.data = courseList[indexPath.row]
             cell.backgroundColor = .clear
             cell.selectionStyle = .none
+            cell.lineUpper.isHidden = true
+            cell.lineLower.isHidden = false
+            cell.distance.isHidden = false
+            return cell
+        case courseList.count - 1:
+            cell.data = courseList[indexPath.row]
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
+            cell.lineLower.isHidden = true
+            cell.lineUpper.isHidden = false
+            cell.distance.isHidden = true
+            return cell
+        default:
+            cell.data = courseList[indexPath.row]
+            cell.backgroundColor = .clear
+            cell.selectionStyle = .none
+            cell.lineLower.isHidden = false
+            cell.lineUpper.isHidden = false
+            cell.distance.isHidden = false
             return cell
         }
-        return UITableViewCell()
+        return cell
     }
 }
 
@@ -449,6 +366,10 @@ extension HomeViewController: UITableViewDelegate {
 }
 
 extension HomeViewController: ActionSheetDelegate {
+    func reloadHomeView() {
+        self.viewWillAppear(true)
+    }
+    
     func presentModifyViewController() {
         viewModel.startAddCourseFlow(type: self.viewModel.selectedDate > Date() ? .editPlan : .editCourse)
     }
@@ -463,7 +384,7 @@ extension HomeViewController: ActionSheetDelegate {
             viewModel.startAddCourseFlow(type: .registerReview)
         }
     }
-
+    
     func showPathActionSheet(alert: UIAlertController) {
         self.present(alert, animated: true)
     }
@@ -471,12 +392,21 @@ extension HomeViewController: ActionSheetDelegate {
     func showSettingActionSheet(alert: UIAlertController) {
         self.present(alert, animated: true)
     }
+    
+    func deleteSelectedCourse() {
+        self.viewModel.deleteSelectedCourse()
+    }
 }
 
 extension HomeViewController: CalendarViewDelegate {
     func changeCalendarPage(startDate: String, endDate: String) {
         Task {
-            try await viewModel.fetchDateRange(dateRange: [startDate, endDate])
+            try await viewModel.fetchDateRange(
+                dateRange: [
+                    viewModel.selectedDate.month2Before.dateToString(),
+                    viewModel.selectedDate.month2After.dateToString()
+                ]
+            )
         }
     }
     
@@ -490,20 +420,26 @@ extension HomeViewController: CalendarViewDelegate {
     /// - Parameter date: 내가 누른 날짜
     func selectDate(_ date: Date?) {
         guard let date = date else { return }
-        self.viewModel.selectedDate = date
-        let selectedDate = date.dateToString()
+
         Task {
+            self.viewModel.selectedDate = date
             // MARK: - 내가 누른 날짜가 처음에 조회한 데이트가 존재하는 날짜에 포함되어있는지를 판단
             // 데이트가 존재하지 않는날짜를 누르면 api자체를 호출하지 않게끔 하기 위한 분기처리 - 서버에서 데이터를 안주게 처리
-            if viewModel.hasCourse(selectedDate: selectedDate) {
-                try await viewModel.fetchSelectedDateCourse(selectedDate: selectedDate)
+            if viewModel.dateCalendarList.map({ $0.asDate() }).contains(date) {
+                try await viewModel.fetchSelectedDateCourse(selectedDate: date.dateToString())
                 self.dateCoureRegisterButton.isHidden = true
             } else {
                 setRegisterButton(date > Date() ? .addPlan : .addCourse)
+                self.contentView.snp.remakeConstraints { make in
+                    make.top.equalToSuperview()
+                    make.width.equalToSuperview()
+                    make.height.equalToSuperview()
+                    make.bottom.equalToSuperview()
+                }
             }
         }
     }
-
+    
     func scrollViewDidEndDecelerating() {
         UIView.animate(withDuration: 0.2, delay: 0) {
             self.view.layoutIfNeeded()
@@ -511,7 +447,7 @@ extension HomeViewController: CalendarViewDelegate {
     }
     
     /// 데이트가 없다면 데이트추가하기 버튼을 보여주는 분기처리 함수
-    private func setRegisterButton(_ type: AddCourseFlowType) {
+    private func setRegisterButton(_ type: CourseFlowType) {
         switch type {
         case .addCourse:
             dateCoureRegisterButton.setTitle(" 별자리 등록하기", for: .normal)
@@ -522,14 +458,13 @@ extension HomeViewController: CalendarViewDelegate {
         default:
             break
         }
-
+        
         self.dateCoureRegisterButton.isHidden = false
         self.pathTableView.isHidden = true
     }
-
-    private func getCurrentDateRange() -> [String] {
-        let currentDate = Date()
-        let beforeDate = Date().monthBefore
+    
+    private func getDateRange(currentDate: Date) -> [String] {
+        let beforeDate = currentDate.month2Before
         let nextDate = currentDate.month2After
         let beforeDateString = beforeDate.dateToString()
         let afterDateString = nextDate.dateToString()

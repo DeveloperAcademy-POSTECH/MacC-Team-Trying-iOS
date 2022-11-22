@@ -12,7 +12,7 @@ import CoreLocation
 import CancelBag
 
 protocol TicketViewCoodinating {
-    func presentTicketViewController()
+    func presentTicketViewController(courses: [CourseEntity], currentIndex: Int)
 }
 
 protocol MyConstellationViewCoordinating {
@@ -29,8 +29,10 @@ final class LogHomeViewModel: BaseViewModel {
     var coordinator: Coordinator
     
     private var fetchConstellationsUseCase: FetchConstellationsUseCase
+    let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     
     @Published var courses = [CourseEntity]()
+    @Published var alarmIndex = 0
     
     init(coordinator: Coordinator, fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()) {
         self.coordinator = coordinator
@@ -39,6 +41,7 @@ final class LogHomeViewModel: BaseViewModel {
         Task {
             try await fetchConstellation()
         }
+        setNotification()
     }
 }
 
@@ -54,9 +57,9 @@ extension LogHomeViewModel {
         coordinator.pushMyConstellationViewController(courses: courses)
     }
     // 티켓뷰로 전환
-    func presentTicketView() {
+    func presentTicketView(course: CourseEntity, currentIndex: Int) {
         guard let coordinator = coordinator as? TicketViewCoodinating else { return }
-        coordinator.presentTicketViewController()
+        coordinator.presentTicketViewController(courses: courses, currentIndex: currentIndex)
     }
     // 지도화면으로 전환
     func pushLogMapViewController() {
@@ -70,5 +73,24 @@ extension LogHomeViewModel {
     // MARK: 별자리 API UseCase 호출
     func fetchConstellation() async throws {
         courses = try await fetchConstellationsUseCase.fetchLogAsync()
+    }
+}
+
+extension LogHomeViewModel {
+    func setNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(getNotification), name: NSNotification.Name("REVIEW"), object: nil)
+    }
+    
+    @objc
+    private func getNotification(_ notification: Notification) {
+        // MARK: DTO는 필요시 다른 모델에 매핑하여 사용
+        guard let reviewId = notification.object as? String else { return }
+        Task {
+                let alarmCourse = try await alarmCourseReviewUseCase.getCourseWith(id: reviewId)
+                guard let index = self.courses.firstIndex(where: { course in
+                    course.id == alarmCourse.courseId
+                }) else { return }
+                alarmIndex = index
+            }
     }
 }

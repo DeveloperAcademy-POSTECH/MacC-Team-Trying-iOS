@@ -82,7 +82,25 @@ extension EditProfileViewController {
         setLayout()
     }
 
+
+    private func setNavigationBar() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .black
+        appearance.titleTextAttributes = [
+            NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._17),
+            NSAttributedString.Key.foregroundColor: UIColor.white
+        ]
+        appearance.shadowColor = .clear
+        self.navigationController?.navigationBar.standardAppearance = appearance
+        self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationItem.backButtonTitle = ""
+        navigationController?.navigationBar.tintColor = .white
+    }
+
     private func setAttributes() {
+
+        setNavigationBar()
         navigationItem.backButtonTitle = ""
         navigationItem.title = "내 정보 수정"
 
