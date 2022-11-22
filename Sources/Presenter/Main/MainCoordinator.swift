@@ -17,28 +17,24 @@ protocol MainCoordinatorDelegate: AnyObject {
 
 final class MainCoordinator: Coordinator {
     
-    //MARK: 알림에서 log로 이동해야하는 로직이 있을때 필요. refactoring todo
+    // MARK: 알림에서 log로 이동해야하는 로직이 있을때 필요. refactoring todo
     var logCoordinator: LogCoordinator?
     
-    //MARK: 알림 푸쉬왔을때 Home root로 오기위해 필요. HomeCoordinator에서 weak으로 되어있음. refactoring todo
+    // MARK: 알림 푸쉬왔을때 Home root로 오기위해 필요. HomeCoordinator에서 weak으로 되어있음. refactoring todo
     var homeCoordinator: HomeCoordinator?
     
     enum TabBarItem: CaseIterable {
         case home
-        case search
-        case feed
+        case log
         case profile
         
         var title: String {
             switch self {
             case .home:
                 return Constants.Coordinator.home
-                
-            case .search:
-                return Constants.Coordinator.search
-                
-            case .feed:
-                return Constants.Coordinator.feed
+
+            case .log:
+                return Constants.Coordinator.log
                 
             case .profile:
                 return Constants.Coordinator.profile
@@ -50,11 +46,8 @@ final class MainCoordinator: Coordinator {
             case .home:
                 return Constants.Coordinator.homeIcon
                 
-            case .search:
-                return Constants.Coordinator.searchIcon
-                
-            case .feed:
-                return Constants.Coordinator.feedIcon
+            case .log:
+                return Constants.Coordinator.logIcon
                 
             case .profile:
                 return Constants.Coordinator.profileIcon
@@ -66,10 +59,7 @@ final class MainCoordinator: Coordinator {
             case .home:
                 return HomeCoordinator(navigationController: navigationController)
                 
-            case .search:
-                return SearchCoordinator(navigationController: navigationController)
-                
-            case .feed:
+            case .log:
                 return LogCoordinator(navigationController: navigationController)
                 
             case .profile:
@@ -82,7 +72,7 @@ final class MainCoordinator: Coordinator {
     weak var delegate: MainCoordinatorDelegate?
 
     let tabBarController: UITabBarController
-    let tabBarItems: [TabBarItem] = [ .home, .search, .feed, .profile]
+    let tabBarItems: [TabBarItem] = [.home, .log, .profile]
 
     init(navigationController: UINavigationController?) {
         self.navigationController = navigationController
@@ -109,16 +99,14 @@ extension MainCoordinator {
         if item == .home {
             if let coordinator = coordinator as? HomeCoordinator {
                 coordinator.parentCoordinator = self
-                //MARK: 서로 참조. 하나는 weak. refactoring 필요.
+                // MARK: 서로 참조. 하나는 weak. refactoring 필요.
                 homeCoordinator = coordinator
-                print(coordinator, coordinator.parentCoordinator)
             }
         } else if item == .profile {
             if let coordinator = coordinator as? ProfileCoordinator {
                 coordinator.delegate = self
-                print(coordinator, coordinator.delegate)
             }
-        } else if item == .feed {
+        } else if item == .log {
             if let coordinator = coordinator as? LogCoordinator {
                 logCoordinator = coordinator
             }
