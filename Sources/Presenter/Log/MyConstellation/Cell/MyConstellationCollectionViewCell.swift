@@ -16,7 +16,7 @@ class MyConstellationCollectionViewCell: UICollectionViewCell {
         didSet {
             guard let course = course else { return }
             courseNameLabel.text = course.courseTitle
-            constellationImage.image = StarMaker.makeConstellation(places: course.places).asImage()
+            constellationImage.image = StarMaker.makeStars(places: course.places)
             dateLabel.text = course.date
         }
     }
