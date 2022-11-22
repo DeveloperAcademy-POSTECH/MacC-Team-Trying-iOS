@@ -366,6 +366,10 @@ extension HomeViewController: UITableViewDelegate {
 }
 
 extension HomeViewController: ActionSheetDelegate {
+    func reloadHomeView() {
+        self.viewWillAppear(true)
+    }
+    
     func presentModifyViewController() {
         viewModel.startAddCourseFlow(type: self.viewModel.selectedDate > Date() ? .editPlan : .editCourse)
     }

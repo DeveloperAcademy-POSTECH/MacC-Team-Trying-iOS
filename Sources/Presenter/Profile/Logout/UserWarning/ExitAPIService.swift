@@ -13,8 +13,8 @@ enum ExitApiError: Error {
     case urlResponseError
 }
 
-private let exitPlanetUrl = "https://comeit.site/planets"
-private let membershipWithdrawalUrl = "https://comeit.site/users"
+private let exitPlanetUrl = "\(APIManager.baseURL)/planets"
+private let membershipWithdrawalUrl = "\(APIManager.baseURL)/users"
 
 final class ExitAPIService {
     static func exitPlanet() async throws {

@@ -32,6 +32,7 @@ final class LogHomeViewModel: BaseViewModel {
     let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     
     @Published var courses = [CourseEntity]()
+    @Published var alarmIndex = 0
     
     init(coordinator: Coordinator, fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()) {
         self.coordinator = coordinator
@@ -85,8 +86,11 @@ extension LogHomeViewModel {
         // MARK: DTO는 필요시 다른 모델에 매핑하여 사용
         guard let reviewId = notification.object as? String else { return }
         Task {
-            let course = try await alarmCourseReviewUseCase.getCourseWith(id: reviewId)
-            print("notification course:", course)
-        }
+                let alarmCourse = try await alarmCourseReviewUseCase.getCourseWith(id: reviewId)
+                guard let index = self.courses.firstIndex(where: { course in
+                    course.id == alarmCourse.courseId
+                }) else { return }
+                alarmIndex = index
+            }
     }
 }

@@ -67,6 +67,7 @@ class PathTableFooter: UITableViewHeaderFooterView {
         }
         let delete = UIAlertAction(title: "별자리 삭제하기", style: .default) { _ in
             self.delegate?.deleteSelectedCourse()
+            self.delegate?.reloadHomeView()
         }
         let cancel = UIAlertAction(title: "취소", style: .cancel)
         actionSheet.addAction(modify)

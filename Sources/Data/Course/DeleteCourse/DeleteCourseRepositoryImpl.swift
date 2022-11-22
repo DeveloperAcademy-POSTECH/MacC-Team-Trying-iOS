@@ -12,7 +12,7 @@ final class DeleteCourseRepositoryImpl: DeleteCourseRepository {
     func deleteCourse(_ courseId: Int) async throws {
         let token = UserDefaults.standard.string(forKey: "accessToken")
         
-        let urlString = "https://comeit.site/courses/\(courseId)"
+        let urlString = "\(APIManager.baseURL)/courses/\(courseId)"
         
         guard let url = URL(string: urlString) else { throw NetworkingError.urlError }
         var request = URLRequest(url: url)

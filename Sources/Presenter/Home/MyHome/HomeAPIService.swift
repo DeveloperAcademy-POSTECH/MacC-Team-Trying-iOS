@@ -22,7 +22,7 @@ enum TokenType {
     case noMate
 }
 
-private let fetchUserUrl = "https://comeit.site/users"
+private let fetchUserUrl = "\(APIManager.baseURL)/users"
 
 class HomeAPIService {
     
@@ -45,7 +45,7 @@ class HomeAPIService {
     }
     
     static func fetchDateList(dateRange: [String]) async throws -> Data {
-        let dateRangeFetchUrl = "https://comeit.site/courses/dates?start=\(dateRange[0])&end=\(dateRange[1])"
+        let dateRangeFetchUrl = "\(APIManager.baseURL)/courses/dates?start=\(dateRange[0])&end=\(dateRange[1])"
         guard let url = URL(string: dateRangeFetchUrl) else {
             throw HomeApiError.urlResponse
         }
@@ -59,7 +59,7 @@ class HomeAPIService {
     }
     
     static func fetchCourseList(selectedDate: String) async throws -> Data {
-        let selectedDateCourseFetchUrl = "https://comeit.site/courses/dates/\(selectedDate)"
+        let selectedDateCourseFetchUrl = "\(APIManager.baseURL)/courses/dates/\(selectedDate)"
         guard let url = URL(string: selectedDateCourseFetchUrl) else {
             throw HomeApiError.urlResponse
         }
