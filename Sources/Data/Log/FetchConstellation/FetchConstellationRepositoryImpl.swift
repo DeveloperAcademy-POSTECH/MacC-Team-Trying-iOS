@@ -84,6 +84,7 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
                 id: course.courseId,
                 courseTitle: course.title,
                 date: course.date,
+                isLike: course.liked,
                 places: places
             )
             courses.append(tempCource)

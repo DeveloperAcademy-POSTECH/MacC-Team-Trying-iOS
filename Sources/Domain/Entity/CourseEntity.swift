@@ -12,5 +12,6 @@ struct CourseEntity {
     let id: Int
     let courseTitle: String
     let date: String
+    var isLike: Bool
     var places: [PlaceEntity]
 }

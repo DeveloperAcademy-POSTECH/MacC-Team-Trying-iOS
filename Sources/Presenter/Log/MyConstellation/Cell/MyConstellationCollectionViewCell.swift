@@ -5,7 +5,6 @@
 //  Created by YeongJin Jeong on 2022/11/15.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
-
 import UIKit
 import SnapKit
 
@@ -17,7 +16,7 @@ class MyConstellationCollectionViewCell: UICollectionViewCell {
         didSet {
             guard let course = course else { return }
             courseNameLabel.text = course.courseTitle
-            constellationImage.image = StarMaker.makeStars(places: course.places)
+            constellationImage.image = StarMaker.makeConstellation(places: course.places).asImage()
             dateLabel.text = course.date
         }
     }

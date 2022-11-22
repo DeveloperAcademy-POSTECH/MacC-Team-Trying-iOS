@@ -5,7 +5,6 @@
 //  Created by YeongJin Jeong on 2022/11/07.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
-
 import UIKit
 import SnapKit
 
@@ -107,7 +106,8 @@ extension LogTicketView: UIScrollViewDelegate {
             let imageView = UIImageView()
             let xPos = ImageScrollView.frame.width * CGFloat(index)
             imageView.frame = CGRect(x: xPos, y: 0, width: ImageScrollView.bounds.width, height: ImageScrollView.bounds.height)
-            imageView.image = UIImage(named: imageUrl[index])
+            guard let url = URL(string: imageUrl[index]) else { return }
+            imageView.load(url: url)
             ImageScrollView.addSubview(imageView)
             ImageScrollView.contentSize.width = imageView.frame.width * CGFloat(index + 1)
             ImageScrollView.delegate = self
