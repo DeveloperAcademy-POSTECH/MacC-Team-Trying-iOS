@@ -47,7 +47,7 @@ final class HomeViewModel: BaseViewModel {
         DateDday(title: "서울데이트", dday: 40)
     ]
     
-    let alarmAPI = AlarmAPI()
+    private let alarmAPI = AlarmAPI()
     
     init(
         coordinator: Coordinator,
