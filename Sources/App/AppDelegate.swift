@@ -83,6 +83,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let _ = notification.request.content.userInfo
         completionHandler([.badge, .banner, .list])
         // 앱이 foreground 상태일 때 push가 온 경우
+        NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
