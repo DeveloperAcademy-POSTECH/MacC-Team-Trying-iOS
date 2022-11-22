@@ -15,6 +15,7 @@ protocol ActionSheetDelegate: AnyObject {
     func presentModifyViewController()
     func presentRegisterReviewViewController()
     func deleteSelectedCourse()
+    func reloadHomeView()
 }
 
 enum PathType {
@@ -143,7 +144,7 @@ class PathTableViewCell: UITableViewCell {
         
         pointCircle.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(18)
-            make.leading.equalToSuperview().inset(48)
+            make.leading.equalToSuperview().inset(53)
             make.size.equalTo(12)
         }
         
