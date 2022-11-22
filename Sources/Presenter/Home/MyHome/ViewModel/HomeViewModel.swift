@@ -47,6 +47,8 @@ final class HomeViewModel: BaseViewModel {
         DateDday(title: "서울데이트", dday: 40)
     ]
     
+    let alarmAPI = AlarmAPI()
+    
     init(
         coordinator: Coordinator,
         deleteCourseUseCase: DeleteCourseUseCase = DeleteCourseUseCaseImpl(
@@ -159,5 +161,11 @@ extension HomeViewModel {
 //            dateCourse = course
         }
   
+    }
+}
+
+extension HomeViewModel {
+    private func applyPermission() {
+        alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: UserDefaults().bool(forKey: "alarmPermssion"))
     }
 }
