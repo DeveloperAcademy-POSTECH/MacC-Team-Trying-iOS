@@ -37,7 +37,7 @@ final class CourseMapViewController: BaseViewController {
             animated: true
         )
         map.showsUserLocation = true
-        map.setUserTrackingMode(.followWithHeading, animated: true)
+        map.setUserTrackingMode(.follow, animated: true)
         map.showsCompass = false
         // let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapMapView(_:)))
         // map.addGestureRecognizer(tapGestureRecognizer)
@@ -52,8 +52,8 @@ final class CourseMapViewController: BaseViewController {
         return button
     }()
     /*
-    private lazy var placeDetailView: PlaceDetailView = {
-        let view = PlaceDetailView()
+    private lazy var placeDetailView: AddPlaceDetailView = {
+        let view = AddPlaceDetailView()
         view.memoTextField.addTarget(self, action: #selector(dismissKeyboard(_:)), for: .editingDidEndOnExit)
         view.addCourseButton.addTarget(self, action: #selector(didTapAddCourseButton(_:)), for: .touchUpInside)
         return view
@@ -144,19 +144,6 @@ final class CourseMapViewController: BaseViewController {
         setNofifications()
     }
     */
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        // self.removeNotifications()
-        
-        // self.removeTemporaryAnnotations()
-        DispatchQueue.main.async {
-            // self.placeDetailView.hide()
-            self.placeListView.hide()
-            self.nextButton.hide()
-        }
-    }
 }
 
 // MARK: - UI
@@ -217,15 +204,21 @@ extension CourseMapViewController: NavigationBarConfigurable {
     }
     
     private func setLastAnnotations() {
-        self.lastAnnotations = viewModel.places.map { StarAnnotation(coordinate: $0.location) }
+        self.lastAnnotations = viewModel.places.map { StarAnnotation(coordinate: $0.location, placeId: $0.id) }
     }
     
     private func drawPlaceAnnotations(places: [Place]) {
         self.placeMapView.removeAnnotations(lastAnnotations)
-        let newAnnotations = places.map { StarAnnotation(coordinate: $0.location) }
+        let newAnnotations = places.map { StarAnnotation(coordinate: $0.location, placeId: $0.id) }
         self.placeMapView.addAnnotations(newAnnotations)
         
         self.lastAnnotations = newAnnotations
+    }
+    
+    private func presentLocation(latitude: CLLocationDegrees, longitude: CLLocationDegrees, span: Double) {
+        let spanValue = MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
+        
+        placeMapView.setRegion(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: spanValue), animated: true)
     }
 }
 
@@ -512,6 +505,10 @@ extension CourseMapViewController: AddPlaceDelegate {
             self.present(alertController, animated: true)
         } else {
             self.viewModel.addPlace(place)
+            
+            DispatchQueue.main.async {
+                self.presentLocation(latitude: place.location.latitude, longitude: place.location.longitude, span: 0.05)
+            }
         }
     }
 }

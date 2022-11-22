@@ -25,10 +25,14 @@ final class ConstellationAnnotationView: MKAnnotationView {
 }
 
 final class ConstellationAnnotation: NSObject, MKAnnotation {
-    var title: String?
     let coordinate: CLLocationCoordinate2D
+    var courseId: Int
     
-    init(coordinate: CLLocationCoordinate2D) {
+    init(
+        coordinate: CLLocationCoordinate2D,
+        courseId: Int
+    ) {
         self.coordinate = coordinate
+        self.courseId = courseId
     }
 }
