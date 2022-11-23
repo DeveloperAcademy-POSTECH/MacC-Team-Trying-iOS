@@ -147,7 +147,6 @@ final class HomeViewController: BaseViewController {
                     
                 }
                 self.pathTableView.reloadData()
-                
                 self.contentView.snp.remakeConstraints { make in
                     make.top.equalToSuperview()
                     make.width.equalToSuperview()
@@ -167,7 +166,7 @@ final class HomeViewController: BaseViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.isHidden = true
-        setHomviewUI()
+        setHomeViewUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -180,10 +179,10 @@ final class HomeViewController: BaseViewController {
         bind()
         setAttributes()
         setUI()
-        setHomviewUI()
+        setHomeViewUI()
     }
     
-    func setHomviewUI() {
+    func setHomeViewUI() {
         Task {
             self.contentView.snp.remakeConstraints { make in
                 make.top.equalToSuperview()
@@ -352,6 +351,7 @@ extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         if tableView == pathTableView {
             guard let footer = tableView.dequeueReusableHeaderFooterView(withIdentifier: PathTableFooter.cellId) as? PathTableFooter else { return UIView() }
+            footer.registerReviewButton.setTitle(viewModel.hasReview ? " 후기 등록" : " 후기가 있습니다", for: .normal)
             footer.delegate = self
             return footer
         }
@@ -380,7 +380,11 @@ extension HomeViewController: ActionSheetDelegate {
             alert.addAction(okAction)
             present(alert, animated: false, completion: nil)
         } else {
-            viewModel.startAddCourseFlow(type: .registerReview)
+            if viewModel.hasReview {
+                viewModel.startAddCourseFlow(type: .registerReview)
+            } else {
+                print("이미 리뷰가 있음")
+            }
         }
     }
     
