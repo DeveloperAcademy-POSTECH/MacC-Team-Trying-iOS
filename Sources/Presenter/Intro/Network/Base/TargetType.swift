@@ -58,9 +58,9 @@ extension TargetType {
     
     var baseURL: String {
 #if DEBUG
-        return "https://wouldulike.site" //return "https://comeit.site"
+        return "https://comeit.site"
 #else
-        return "https://wouldulike.site"
+        return "https://www.wouldulike.site"
 #endif
     }
 }
