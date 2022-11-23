@@ -94,10 +94,10 @@ class AlarmViewController: BaseViewController {
             title: "아니요",
             style: .cancel
         )
-            authAlertController.addAction(getAuthAction)
-            authAlertController.addAction(cancelAction)
-            self.present(authAlertController, animated: true, completion: nil)
-        }
+        authAlertController.addAction(getAuthAction)
+        authAlertController.addAction(cancelAction)
+        self.present(authAlertController, animated: true, completion: nil)
+    }
     
     @objc
     func allDeleteTap() {
