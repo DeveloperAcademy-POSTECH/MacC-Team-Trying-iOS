@@ -50,11 +50,17 @@ extension TargetType {
         print(token)
         return ["accessToken": token]
     }
-
+    
     var body: RequestBody? { nil }
 }
 
 extension TargetType {
-
-    var baseURL: String { "https://comeit.site" }
+    
+    var baseURL: String {
+#if DEBUG
+        return "https://comeit.site"
+#else
+        return "https://wouldulike.site"
+#endif
+    }
 }

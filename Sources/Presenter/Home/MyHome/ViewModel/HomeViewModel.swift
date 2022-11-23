@@ -42,6 +42,8 @@ final class HomeViewModel: BaseViewModel {
     
     let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     
+    private let alarmAPI = AlarmAPI()
+    
     init(
         coordinator: Coordinator,
         deleteCourseUseCase: DeleteCourseUseCase = DeleteCourseUseCaseImpl(
@@ -162,5 +164,11 @@ extension HomeViewModel {
 //            dateCourse = course
         }
   
+    }
+}
+
+extension HomeViewModel {
+    private func applyPermission() {
+        alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: UserDefaults().bool(forKey: "alarmPermssion"))
     }
 }

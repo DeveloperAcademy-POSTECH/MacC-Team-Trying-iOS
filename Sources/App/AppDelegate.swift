@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if bool {
                 if let options = launchOptions {
                     if let remoteNotification = options[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
-                        self.getget(userInfo: remoteNotification)
+                        self.goToAnotherTab(userInfo: remoteNotification)
                     }
                 }
             }
@@ -47,33 +47,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if (AuthApi.isKakaoTalkLoginUrl(url)) {
             return AuthController.handleOpenUrl(url: url)
         }
-
         return false
     }
 }
 
-class FpnCenter {
-    static let messaging = Messaging.messaging()
-    static let notificationCenter = UNUserNotificationCenter.current()
-    public init() { }
-}
 // MARK: - Push Notifications
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
     private func registerForRemoteNotifications() {
         FirebaseApp.configure()
         
-        FpnCenter.messaging.delegate = self
-        FpnCenter.notificationCenter.delegate = self
-        FpnCenter.notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+        FcmCenter.shared.messaging.delegate = self
+        FcmCenter.shared.notificationCenter.delegate = self
+        
+        FcmCenter.shared.notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             guard granted else {
                 UserDefaults().set(false, forKey: "alarmPermission")
                 return
             }
-            
-            DispatchQueue.main.async { [weak self] in
-                UserDefaults().set(true, forKey: "alarmPermission")
-                self?.alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: true)
+            UserDefaults().set(true, forKey: "alarmPermssion")
+            DispatchQueue.main.async {
                 UIApplication.shared.registerForRemoteNotifications()
             }
         }
@@ -88,10 +81,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
-        getget(userInfo: userInfo)
+        goToAnotherTab(userInfo: userInfo)
     }
     
-    private func getget(userInfo: [AnyHashable: Any]) {
+    private func goToAnotherTab(userInfo: [AnyHashable: Any]) {
         let _ = UIApplication.shared
         guard let target = userInfo["target"] as? String,
               let targetId = userInfo["targetId"] as? String,
@@ -107,8 +100,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 }
             }
             // MARK: 🛑 추후 홈뷰로 이동할때 🛑
-//            mainCoordinator.homeCoordinator?.navigationController?.popToRootViewController(animated: true)
-//            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: targetId)
+            // mainCoordinator.homeCoordinator?.navigationController?.popToRootViewController(animated: true)
+            // NotificationCenter.default.post(name: Notification.Name("COURSE"), object: targetId)
             
         } else if target == "REVIEW" {
             Task {
@@ -118,28 +111,22 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     NotificationCenter.default.post(name: Notification.Name("REVIEW"), object: targetId)
                 }
             }
-            
         }
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         // 디바이스 토큰 등록 성공 시
-        let deviceTokenString = deviceToken.map { String(format: "%02x", $0) }.joined()
-        print(deviceToken, deviceTokenString)
-        FpnCenter.messaging.apnsToken = deviceToken
+        // let deviceTokenString = deviceToken.map { String(format: "%02x", $0) }.joined()
+        FcmCenter.shared.messaging.apnsToken = deviceToken
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         // 디바이스 토큰 등록 실패 시
-        print("!!Failed to register for notifications: \(error.localizedDescription)")
     }
 }
 // MARK: - MessagingDelegate
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        // TODO: 로그인 시 FCM Token을 서버에 넘겨주세요. (FCM 토큰은 앱이 지웠다가 다시 설치하면 토큰값이 바뀝니다.)
-        print("✨FCM Token : \(fcmToken)")
         UserDefaults.standard.set(fcmToken, forKey: "fcmToken")
     }
 }
-

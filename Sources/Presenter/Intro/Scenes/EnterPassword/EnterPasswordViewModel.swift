@@ -57,10 +57,8 @@ final class EnterPasswordViewModel: BaseViewModel, EnterPasswordBusinessLogic {
                 let deviceToken = UserDefaults.standard.string(forKey: "fcmToken") ?? ""
                 let accessToken = try await signInService.signIn(.init(email: email, password: password, deviceToken: deviceToken))
                 UserDefaults.standard.set(accessToken.accessToken, forKey: "accessToken")
-
+                FcmCenter.shared.toggleAlarmAPI()
                 let userInformations = try await userService.getUserInformations()
-
-                print("✨ ", userInformations)
 
                 self.isLoading = false
 

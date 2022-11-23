@@ -83,7 +83,6 @@ class AlarmAPI {
     }
     
     func toggleAlarmPermission(type: AlarmApiType, isPermission: Bool) {
-        print("accessToken:", token)
         let urlStr = encodeUrl(string: addStringParameter(type: type))
         guard let url = URL(string: urlStr) else { return }
 
