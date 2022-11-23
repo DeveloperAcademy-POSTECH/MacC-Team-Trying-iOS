@@ -98,6 +98,7 @@ extension ProfileCoordinator: EditNotificationCoordinating {
     func pushToEditNotificationView() {
         let viewModel = PushNotificationsViewModel(coordinator: self)
         let viewController = PushSettingsViewController(viewModel: viewModel)
+        viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
     }
 }
