@@ -115,8 +115,29 @@ extension WaitingInvitationViewController {
 
     @objc
     func deleteButtonDidTapped() {
-        viewModel.deletePlanet()
+        self.present(alertController(), animated: true, completion: nil)
     }
+
+    private func alertController() -> UIAlertController {
+        let controller = UIAlertController(title: "행성 삭제", message: "정말 정말로 행성을 삭제할까요?", preferredStyle: .alert)
+
+        let getAuthAction = UIAlertAction(
+            title: "삭제할래요",
+            style: .destructive,
+            handler: { [weak self] _ in
+                self?.viewModel.deletePlanet()
+            }
+        )
+        let cancelAction = UIAlertAction(
+            title: "아니요",
+            style: .cancel
+        )
+        controller.addAction(getAuthAction)
+        controller.addAction(cancelAction)
+
+        return controller
+    }
+
 }
 
 extension WaitingInvitationViewController {
