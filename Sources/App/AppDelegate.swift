@@ -65,7 +65,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 UserDefaults().set(false, forKey: "alarmPermission")
                 return
             }
-            UserDefaults().set(true, forKey: "alarmPermssion")
+            UserDefaults().set(true, forKey: "alarmPermission")
             DispatchQueue.main.async {
                 UIApplication.shared.registerForRemoteNotifications()
             }

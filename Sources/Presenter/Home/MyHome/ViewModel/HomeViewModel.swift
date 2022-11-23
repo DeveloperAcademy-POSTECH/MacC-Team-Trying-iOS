@@ -169,6 +169,6 @@ extension HomeViewModel {
 
 extension HomeViewModel {
     private func applyPermission() {
-        alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: UserDefaults().bool(forKey: "alarmPermssion"))
+        alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: UserDefaults().bool(forKey: "alarmPermission"))
     }
 }
