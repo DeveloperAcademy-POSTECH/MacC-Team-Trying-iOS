@@ -166,7 +166,7 @@ final class HomeViewController: BaseViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.isHidden = true
-        setHomviewUI()
+        setHomeViewUI()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -179,10 +179,10 @@ final class HomeViewController: BaseViewController {
         bind()
         setAttributes()
         setUI()
-        setHomviewUI()
+        setHomeViewUI()
     }
     
-    func setHomviewUI() {
+    func setHomeViewUI() {
         Task {
             self.contentView.snp.remakeConstraints { make in
                 make.top.equalToSuperview()
