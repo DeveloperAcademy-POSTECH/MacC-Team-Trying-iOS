@@ -19,9 +19,16 @@ enum ReviewState {
     case noReview
 }
 
+enum RootViewState {
+    case LogHome
+    case LogMap
+}
+
 final class LogTicketViewController: BaseViewController {
     
     private var reviewState = ReviewState.noReview
+    
+    private var rootViewState: RootViewState
     
     private var didTapLikeButton: Bool = false
     
@@ -32,8 +39,12 @@ final class LogTicketViewController: BaseViewController {
     private var secondView = UIView()
     
     // MARK: Initializer
-    init(viewModel: LogTicketViewModel) {
+    init(
+        viewModel: LogTicketViewModel,
+        rootViewState: RootViewState
+    ) {
         self.viewModel = viewModel
+        self.rootViewState = rootViewState
         super.init(nibName: nil, bundle: nil)
         self.navigationController?.isNavigationBarHidden = true
         view.backgroundColor = .clear
@@ -48,7 +59,6 @@ final class LogTicketViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         Task {
-            try await viewModel.fetchConstellation()
             try await viewModel.fetchReviews()
             setReviewState()
             setUI()
@@ -122,14 +132,14 @@ extension LogTicketViewController {
     private func configureTicketView(ticketView: LogTicketView, index: Int) {
         ticketView.imageUrl = viewModel.reviews[index].imagesURL
         ticketView.bodyTextView.text = viewModel.reviews[index].content
-        ticketView.courseNameLabel.text = viewModel.courses[viewModel.currentIndex].courseTitle
-        ticketView.dateLabel.text = viewModel.courses[viewModel.currentIndex].date
-        ticketView.numberLabel.text = "\(viewModel.currentIndex + 1)번째"
+        ticketView.courseNameLabel.text = viewModel.course.courseTitle
+        ticketView.dateLabel.text = viewModel.course.date
+        ticketView.numberLabel.text = "\(viewModel.selectedCourseIndex + 1)번째"
         ticketView.fromLabel.text = "수정"
     }
     
     private func setLikeButtonImage(_ button: UIButton) {
-        switch viewModel.courses[viewModel.currentIndex].isLike {
+        switch viewModel.course.isLike {
         case true:
             button.setImage(UIImage(named: "like_image"), for: .normal)
         case false:
@@ -142,6 +152,9 @@ extension LogTicketViewController {
         let myTicketView = LogTicketView()
         let logTicketEmptyView = LogTicketEmptyView()
         
+        myTicketView.rootViewState = rootViewState
+        logTicketEmptyView.rootViewState = rootViewState
+        
         firstView.addSubview(myTicketView)
         secondView.addSubview(logTicketEmptyView)
         
@@ -149,7 +162,8 @@ extension LogTicketViewController {
         myTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         logTicketEmptyView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         
-        viewModel.$courses.receive(on: DispatchQueue.main)
+        viewModel.$course
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.setLikeButtonImage(myTicketView.likebutton)
@@ -178,15 +192,20 @@ extension LogTicketViewController {
     }
     
     private func setOnlyMateReview() {
+        
         let logTicketEmptyView = LogTicketEmptyView()
         let mateTicketView = LogTicketView()
+        
+        logTicketEmptyView.rootViewState = rootViewState
+        mateTicketView.rootViewState = rootViewState
         
         firstView.addSubview(mateTicketView)
         secondView.addSubview(logTicketEmptyView)
         
         configureTicketView(ticketView: mateTicketView, index: 1)
         
-        viewModel.$courses.receive(on: DispatchQueue.main)
+        viewModel.$course
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.setLikeButtonImage(mateTicketView.likebutton)
@@ -220,13 +239,17 @@ extension LogTicketViewController {
         let myTicketView = LogTicketView()
         let mateTicketView = LogTicketView()
         
+        myTicketView.rootViewState = rootViewState
+        mateTicketView.rootViewState = rootViewState
+        
         firstView.addSubview(myTicketView)
         secondView.addSubview(mateTicketView)
         
         configureTicketView(ticketView: myTicketView, index: 0)
         configureTicketView(ticketView: mateTicketView, index: 1)
         
-        viewModel.$courses.receive(on: DispatchQueue.main)
+        viewModel.$course
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
             guard let self = self else { return }
                 self.setLikeButtonImage(myTicketView.likebutton)

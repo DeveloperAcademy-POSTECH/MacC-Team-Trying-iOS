@@ -57,6 +57,7 @@ extension HomeCoordinator: goToRootViewControllerDelegate, AlarmViewCoordinating
     func pushToAlarmViewController() {
         guard !(navigationController?.topViewController is AlarmViewController) else { return }
         let alarmViewController = AlarmViewController(alarmViewModel: AlarmViewModel(coordinator: self))
+        alarmViewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(alarmViewController, animated: true)
     }
 }

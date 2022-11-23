@@ -49,7 +49,7 @@ final class LogHomeViewController: BaseViewController {
         button.isHidden = true
         return button
     }()
-
+    
     private var mapButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "ic_map"), for: .normal)
@@ -182,14 +182,18 @@ extension LogHomeViewController {
             .cancel(with: cancelBag)
         
         viewModel.$alarmIndex
-                    .receive(on: DispatchQueue.main)
-                    .sink { _ in
-                    } receiveValue: { [weak self] index in
-                        self?.logCollectionView.scrollToItem(at: IndexPath(row: max(0, index), section: 0), at: .left, animated: true)
-                        guard let course = self?.viewModel.courses[index] else { return }
-                        self?.viewModel.presentTicketView(course: course, currentIndex: index)
-                    }
-                    .cancel(with: cancelBag)
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+            } receiveValue: { [weak self] index in
+                self?.logCollectionView.scrollToItem(at: IndexPath(row: max(0, index), section: 0), at: .left, animated: true)
+                guard let course = self?.viewModel.courses[index] else { return }
+                self?.viewModel.presentTicketView(
+                    course: course,
+                    selectedCourseIndex: index,
+                    rootViewState: RootViewState.LogHome
+                )
+            }
+            .cancel(with: cancelBag)
     }
     
     private func setUI() {
@@ -283,7 +287,7 @@ extension LogHomeViewController {
     
     @objc
     func tapConstellationDetailButton() {
-        viewModel.presentTicketView(course: viewModel.courses[currentIndex], currentIndex: currentIndex)
+        viewModel.presentTicketView(course: viewModel.courses[currentIndex], selectedCourseIndex: currentIndex, rootViewState: RootViewState.LogHome)
     }
     
     @objc

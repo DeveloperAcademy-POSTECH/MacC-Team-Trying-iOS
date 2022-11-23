@@ -27,15 +27,16 @@ final class LogCoordinator: Coordinator,
         navigationController.pushViewController(viewController, animated: true)
     }
     // TicketView로 전환
-    func presentTicketViewController(courses: [CourseEntity], currentIndex: Int) {
-        let viewModel = LogTicketViewModel(coordinator: self, courses: courses, currentIndex: currentIndex)
-        let viewController = LogTicketViewController(viewModel: viewModel)
+    func presentTicketViewController(course: CourseEntity, selectedCourseIndex: Int, rootViewState: RootViewState) {
+        let viewModel = LogTicketViewModel(coordinator: self, course: course, selectedCourseIndex: selectedCourseIndex)
+        let viewController = LogTicketViewController(viewModel: viewModel, rootViewState: rootViewState)
         navigationController?.present(viewController, animated: true)
     }
     
     func pushMyConstellationViewController(courses: [CourseEntity]) {
         let viewModel = MyConstellationViewModel(coordinator: self, courses: courses)
         let viewController = MyConstellationViewController(viewModel: viewModel)
+        viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
@@ -46,6 +47,7 @@ final class LogCoordinator: Coordinator,
     func pushLogMapViewController(courses: [CourseEntity]) {
         let viewModel = LogMapViewModel(coordinator: self, courses: courses)
         let viewController = LogMapViewController(viewModel: viewModel)
+        viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

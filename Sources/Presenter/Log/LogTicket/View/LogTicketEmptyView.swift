@@ -12,6 +12,12 @@ import SnapKit
 
 class LogTicketEmptyView: UIView {
     
+    var rootViewState = RootViewState.LogHome {
+        didSet {
+            setBlur()
+        }
+    }
+    
     lazy var flopButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "refresh"), for: .normal)
@@ -45,7 +51,6 @@ class LogTicketEmptyView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setLayouts()
-        setBlur()
     }
     
     required init?(coder: NSCoder) {
@@ -152,7 +157,14 @@ extension LogTicketEmptyView {
     private func setBlur() {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.regular)
         let outerVisualEffectView = UIVisualEffectView(effect: blurEffect)
-        outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.5).cgColor
+        
+        switch rootViewState {
+        case .LogHome:
+            outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.5).cgColor
+        case .LogMap:
+            outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.black)?.withAlphaComponent(0.75).cgColor
+        }
+        
         outerVisualEffectView.layer.opacity = 0.5
         outerVisualEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
         self.addSubview(outerVisualEffectView)

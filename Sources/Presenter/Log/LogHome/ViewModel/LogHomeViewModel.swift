@@ -11,7 +11,7 @@ import CoreLocation
 import CancelBag
 
 protocol TicketViewCoodinating {
-    func presentTicketViewController(courses: [CourseEntity], currentIndex: Int)
+    func presentTicketViewController(course: CourseEntity, selectedCourseIndex: Int, rootViewState: RootViewState)
 }
 
 protocol MyConstellationViewCoordinating {
@@ -56,9 +56,9 @@ extension LogHomeViewModel {
         coordinator.pushMyConstellationViewController(courses: courses)
     }
     // 티켓뷰로 전환
-    func presentTicketView(course: CourseEntity, currentIndex: Int) {
+    func presentTicketView(course: CourseEntity, selectedCourseIndex: Int, rootViewState: RootViewState) {
         guard let coordinator = coordinator as? TicketViewCoodinating else { return }
-        coordinator.presentTicketViewController(courses: courses, currentIndex: currentIndex)
+        coordinator.presentTicketViewController(course: course, selectedCourseIndex: selectedCourseIndex, rootViewState: rootViewState)
     }
     // 지도화면으로 전환
     func pushLogMapViewController(courses: [CourseEntity]) {

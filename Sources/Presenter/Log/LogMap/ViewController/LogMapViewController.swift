@@ -69,7 +69,11 @@ final class LogMapViewController: BaseViewController {
         return button
     }()
     
-    private let reviewButton = ReviewButton()
+    private lazy var reviewButton: ReviewButton = {
+        let button = ReviewButton()
+        button.addTarget(self, action: #selector(presentTicketView), for: .touchUpInside)
+        return button
+    }()
     
     private let placeDetailView = PlaceInformationView()
     
@@ -265,7 +269,7 @@ extension LogMapViewController: MKMapViewDelegate {
             self.presentPlaceDetailView(with: place)
             
         } else if let constellationAnnotation = view.annotation as? ConstellationAnnotation {
-            
+            viewModel.getCourseIndex(courseId: constellationAnnotation.courseId)
             self.toggleDismissButton()
             self.presentStarAnnotations(selectedCourseID: constellationAnnotation.courseId)
             self.presentReviewButton()
@@ -290,11 +294,6 @@ extension LogMapViewController {
         self.dismissReviewButton()
         self.presentConstellationAnnotations()
         presentLocation(latitude: mapView.region.center.latitude, longitude: mapView.region.center.longitude, span: 0.05)
-    }
-    
-    @objc
-    private func recordButtonPressed(_ sender: UIButton) {
-        // TODO: record button pressed
     }
     
     @objc
@@ -346,5 +345,11 @@ extension LogMapViewController {
         customAnnotationView.frame.size.height = 30
         
         return customAnnotationView.asImage()
+    }
+    
+    @objc
+    func presentTicketView() {
+        guard let selectedCourseIndex = viewModel.selectedCourseIndex else { return }
+        viewModel.presentTicketView(course: viewModel.courses[selectedCourseIndex], selectedCourseIndex: selectedCourseIndex)
     }
 }
