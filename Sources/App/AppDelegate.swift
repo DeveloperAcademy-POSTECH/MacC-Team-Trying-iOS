@@ -67,12 +67,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         FpnCenter.notificationCenter.delegate = self
         FpnCenter.notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
             guard granted else {
-                UserDefaults().set(false, forKey: "alarmPermssion")
+                UserDefaults().set(false, forKey: "alarmPermission")
                 return
             }
             
             DispatchQueue.main.async { [weak self] in
-                UserDefaults().set(true, forKey: "alarmPermssion")
+                UserDefaults().set(true, forKey: "alarmPermission")
                 self?.alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: true)
                 UIApplication.shared.registerForRemoteNotifications()
             }
