@@ -29,7 +29,6 @@ final class HomeViewController: BaseViewController {
     
     lazy var alarmButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.setImage(UIImage(named: "AlarmButton_notEmpty"), for: .normal)
         button.addTarget(self, action: #selector(alarmButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -113,6 +112,8 @@ final class HomeViewController: BaseViewController {
                 guard let self = self else { return }
                 guard let mate = receivedValue?.mate else { return }
                 guard let dday = receivedValue?.planet?.dday else { return }
+                guard let hasAlarm = receivedValue?.hasNotification else { return }
+                self.alarmButton.setImage(UIImage(named: hasAlarm ? "AlarmButton_notEmpty" : "AlarmButton_empty"), for: .normal)
                 self.homeTitle.attributedText = String.makeAtrributedString(
                     name: mate.name,
                     appendString: " 님과 함께",
@@ -236,6 +237,7 @@ extension HomeViewController {
         pathTableView.delegate = self
         pathTableView.dataSource = self
         calendarView.delegate = self
+        viewModel.delegate = self
         
     }
     
@@ -472,5 +474,11 @@ extension HomeViewController: CalendarViewDelegate {
         let beforeDateString = beforeDate.dateToString()
         let afterDateString = nextDate.dateToString()
         return [beforeDateString, afterDateString]
+    }
+}
+
+extension HomeViewController: AlarmResponseDelegate {
+    func fetchAlarm() {
+        viewWillAppear(true)
     }
 }
