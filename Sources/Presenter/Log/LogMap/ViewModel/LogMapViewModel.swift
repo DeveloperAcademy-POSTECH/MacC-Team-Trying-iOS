@@ -18,6 +18,7 @@ final class LogMapViewModel: BaseViewModel {
     
     var courses: [CourseEntity]
     var places: [PlaceEntity]
+    var selectedCourseIndex: Int?
     
     init(
         coordinator: Coordinator,
@@ -70,11 +71,22 @@ extension LogMapViewModel {
         let annotation = ConstellationAnnotation(coordinate: CLLocationCoordinate2D(latitude: averageLatitude, longitude: averageLongitude), courseId: course.id)
         return annotation
     }
+    
+    func getCourseIndex(courseId: Int) {
+        self.selectedCourseIndex = courses.firstIndex { course in
+            courseId == course.id
+        }
+    }
 }
 // MARK: - Coordinator
 extension LogMapViewModel {
     func dismissButtonPressed() {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
+    }
+    
+    func presentTicketView(course: CourseEntity, selectedCourseIndex: Int) {
+        guard let coordinator = coordinator as? TicketViewCoodinating else { return }
+        coordinator.presentTicketViewController(course: course, selectedCourseIndex: selectedCourseIndex, rootViewState: RootViewState.LogMap)
     }
 }

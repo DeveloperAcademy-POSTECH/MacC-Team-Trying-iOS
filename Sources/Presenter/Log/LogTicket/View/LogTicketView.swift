@@ -10,6 +10,12 @@ import SnapKit
 
 class LogTicketView: UIView {
     
+    var rootViewState = RootViewState.LogHome {
+        didSet {
+            setBlur()
+        }
+    }
+    
     var imageUrl: [String] = [] {
         didSet {
             setScrollView()
@@ -54,7 +60,7 @@ class LogTicketView: UIView {
     var fromLabel = LogTicketLabel(color: .designSystem(Palette.grayC5C5C5) ?? .white)
     
     private let pageControl = UIPageControl()
-    
+
     private var ImageScrollView: UIScrollView = {
         var scrollView = UIScrollView(
             frame: CGRect(
@@ -87,7 +93,7 @@ class LogTicketView: UIView {
             flopButton
         )
         setLayouts()
-        setBlur()
+        
     }
     
     required init?(coder: NSCoder) {
@@ -261,7 +267,14 @@ extension LogTicketView {
     private func setBlur() {
         let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.regular)
         let outerVisualEffectView = UIVisualEffectView(effect: blurEffect)
-        outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.5).cgColor
+        
+        switch rootViewState {
+        case .LogHome:
+            outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.5).cgColor
+        case .LogMap:
+            outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.black)?.withAlphaComponent(0.75).cgColor
+        }
+        
         outerVisualEffectView.layer.opacity = 0.5
         outerVisualEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
         self.addSubview(outerVisualEffectView)
