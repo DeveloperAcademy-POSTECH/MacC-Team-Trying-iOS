@@ -13,8 +13,9 @@ class FcmCenter {
     static let shared = FcmCenter()
     let messaging = Messaging.messaging()
     let notificationCenter = UNUserNotificationCenter.current()
+    let alarmAPI = AlarmAPI()
     func toggleAlarmAPI() {
-        AlarmAPI().toggleAlarmPermission(type: .togglePermission, isPermission: UserDefaults().bool(forKey: "alarmPermssion"))
+        alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: UserDefaults().bool(forKey: "alarmPermission"))
     }
     private init() { }
 }

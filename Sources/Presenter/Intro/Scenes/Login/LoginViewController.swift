@@ -139,7 +139,7 @@ final class LoginViewController: PlanetAnimatedViewController<LoginViewModel> {
         heightConstraint2.isActive = true
 
         emailLoginButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(20)
+            make.leading.trailing.equalToSuperview().inset(10)
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(100)
         }
         let heightConstraint3 = emailLoginButton.heightAnchor.constraint(equalTo: emailLoginButton.widthAnchor, multiplier: 58 / 350)

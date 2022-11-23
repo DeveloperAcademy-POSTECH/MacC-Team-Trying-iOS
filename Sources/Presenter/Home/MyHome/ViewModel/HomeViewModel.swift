@@ -38,14 +38,9 @@ final class HomeViewModel: BaseViewModel {
     @Published var dateCourse: HomeCourse?
     @Published var places: [Place] = []
     @Published var selectedDate: Date = YearMonthDayDate.today.asDate()
-    let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
+    @Published var hasReview: Bool = false
     
-    let ddayDateList = [
-        DateDday(title: "인천데이트", dday: 10),
-        DateDday(title: "부산데이트", dday: 20),
-        DateDday(title: "강릉데이트", dday: 30),
-        DateDday(title: "서울데이트", dday: 40)
-    ]
+    let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     
     private let alarmAPI = AlarmAPI()
     
@@ -58,7 +53,13 @@ final class HomeViewModel: BaseViewModel {
         self.coordinator = coordinator
         self.deleteCourseUseCase = deleteCourseUseCase
         super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(getAllNotification), name: NSNotification.Name("NewAlarmHomeView"), object: nil)
         setNotification()
+    }
+    
+    @objc
+    func getAllNotification() {
+        print("알람이 왔어용")
     }
     
     func fetchUserInfo() async throws {
@@ -102,6 +103,8 @@ final class HomeViewModel: BaseViewModel {
             Place(id: element.place.placeId, title: element.place.name, category: element.place.category, address: element.place.address, location: .init(latitude: element.place.coordinate.latitude, longitude: element.place.coordinate.longitude), memo: element.memo)
         }
         dateCourse = HomeCourse(courseId: selectedDateCourse.courseId, courseDate: selectedDateCourse.date, courseTitle: selectedDateCourse.title, courseList: placeList)
+        
+        hasReview = selectedDateCourse.canReview
     }
     
     func deleteSelectedCourse() {
@@ -166,6 +169,6 @@ extension HomeViewModel {
 
 extension HomeViewModel {
     private func applyPermission() {
-        alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: UserDefaults().bool(forKey: "alarmPermssion"))
+        alarmAPI.toggleAlarmPermission(type: .togglePermission, isPermission: UserDefaults().bool(forKey: "alarmPermission"))
     }
 }

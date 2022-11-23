@@ -13,6 +13,7 @@ struct SelectedDateCourseDTO: Codable {
     let courseId: Int
     let title, date: String
     let liked: Bool
+    let canReview: Bool
     let places: [PlaceElement]
     // MARK: - PlaceElement
     struct PlaceElement: Codable {

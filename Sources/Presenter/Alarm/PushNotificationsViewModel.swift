@@ -15,7 +15,7 @@ class PushNotificationsViewModel: BaseViewModel {
     let coordinator: Coordinator
     private let alarmUseCase: AlarmUseCaseDelegate = AlarmUseCase(alarmInterface: AlarmRepository())
     
-    @Published var permission = UserDefaults().bool(forKey: "alarmPermssion")
+    @Published var permission = UserDefaults().bool(forKey: "alarmPermission")
     
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
@@ -26,7 +26,7 @@ class PushNotificationsViewModel: BaseViewModel {
     func bind() {
         
         $permission.sink { permission in
-            UserDefaults().set(permission, forKey: "alarmPermssion")
+            UserDefaults().set(permission, forKey: "alarmPermission")
             self.alarmUseCase.toggleAlarmPermission(isPermission: permission)
         }
         .cancel(with: cancelBag)
