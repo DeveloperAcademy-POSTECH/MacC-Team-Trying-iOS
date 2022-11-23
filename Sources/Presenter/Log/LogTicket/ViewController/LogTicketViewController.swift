@@ -122,8 +122,8 @@ extension LogTicketViewController {
     private func configureTicketView(ticketView: LogTicketView, index: Int) {
         ticketView.imageUrl = viewModel.reviews[index].imagesURL
         ticketView.bodyTextView.text = viewModel.reviews[index].content
-        ticketView.courseNameLabel.text = viewModel.courses[index].courseTitle
-        ticketView.dateLabel.text = viewModel.courses[index].date
+        ticketView.courseNameLabel.text = viewModel.courses[viewModel.currentIndex].courseTitle
+        ticketView.dateLabel.text = viewModel.courses[viewModel.currentIndex].date
         ticketView.numberLabel.text = "\(viewModel.currentIndex + 1)번째"
         ticketView.fromLabel.text = "수정"
     }
