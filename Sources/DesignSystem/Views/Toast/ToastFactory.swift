@@ -20,24 +20,27 @@ final class ToastFactory {
             switch self {
             case .error:
                 return .systemRed
-            default:
-                return .systemGreen
+            case .success:
+                return .designSystem(.mainYellow)
+            case .information:
+                return .designSystem(.mainYellow)
             }
         }
         var messageColor: UIColor? {
             switch self {
             case .error:
-                return .designSystem(.gray818181)
+                return .designSystem(.white)
             case .success:
-                return .designSystem(.gray818181)
+                return .designSystem(.black)
             case .information:
-                return .designSystem(.gray818181)
+                return .designSystem(.black)
             }
+
         }
         var subTitleMessageColor: UIColor? {
             switch self {
             case .error:
-                return .designSystem(.black)
+                return .designSystem(.white)
             case .success:
                 return .designSystem(.black)
             case .information:
@@ -70,7 +73,6 @@ final class ToastFactory {
 
         toastView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.leading.trailing.equalToSuperview()
         }
 
         toastView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9).translatedBy(x: 0, y: CGFloat(-toastArea * 2))

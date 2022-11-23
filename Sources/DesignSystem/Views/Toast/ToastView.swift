@@ -14,12 +14,12 @@ final class ToastView: UIView {
     init(
         message: String,
         subTitle: String? = nil,
-        backgroundColor: UIColor? = .systemRed,
-        messageColor: UIColor? = .white
+        backgroundColor: UIColor? = .designSystem(.mainYellow),
+        messageColor: UIColor? = .black
     ) {
         super.init(frame: .zero)
 
-        self.messageLabel.textColor = .white
+        self.messageLabel.textColor = messageColor
         self.messageLabel.text = message
         self.backgroundColor = backgroundColor
 
@@ -36,7 +36,7 @@ final class ToastView: UIView {
 
 extension ToastView {
     private func setUI() {
-        self.messageLabel.font = .designSystem(weight: .bold, size: ._17)
+        self.messageLabel.font = .designSystem(weight: .bold, size: ._13)
         self.messageLabel.textAlignment = .center
         self.titleStackView.axis = .vertical
         self.titleStackView.spacing = 0
@@ -45,12 +45,14 @@ extension ToastView {
 
         self.addSubview(titleStackView)
         self.titleStackView.addArrangedSubview(messageLabel)
+        self.layer.cornerRadius = 23
+        self.layer.masksToBounds = true
         self.snp.makeConstraints { make in
-            make.height.equalTo(60)
+            make.height.equalTo(46)
         }
         self.titleStackView.snp.makeConstraints { make in
-            make.verticalEdges.equalToSuperview()
-            make.horizontalEdges.equalToSuperview()
+            make.verticalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(27)
         }
     }
 }

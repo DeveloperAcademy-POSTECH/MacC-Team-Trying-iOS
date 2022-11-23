@@ -10,7 +10,7 @@ import Foundation
 
 final class APIManager {
 #if DEBUG
-    static let baseURL = "https://comeit.site"
+    static let baseURL = "https://wouldulike.site"//static let baseURL = "https://comeit.site"
 #else
     static let baseURL = "https://wouldulike.site"
 #endif

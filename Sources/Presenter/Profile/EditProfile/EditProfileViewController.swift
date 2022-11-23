@@ -210,7 +210,7 @@ extension EditProfileViewController {
             make.leading.equalToSuperview().offset(20)
         }
         passwordChangeButton.snp.makeConstraints { make in
-            make.centerY.equalTo(passwordSubTitleLabel).offset(4)
+            make.bottom.equalTo(passwordLabel)
             make.trailing.equalToSuperview().inset(20)
             make.width.equalTo(49)
             make.height.equalTo(25)
@@ -233,7 +233,7 @@ extension EditProfileViewController {
             make.leading.equalToSuperview().offset(20)
         }
         nicknameChangeButton.snp.makeConstraints { make in
-            make.centerY.equalTo(nicknameSubTitleLabel).offset(4)
+            make.bottom.equalTo(nicknameLabel)
             make.trailing.equalToSuperview().inset(20)
             make.width.equalTo(49)
             make.height.equalTo(25)
