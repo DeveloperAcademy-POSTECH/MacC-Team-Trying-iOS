@@ -29,6 +29,10 @@ struct DatePath {
     let location: CLLocationCoordinate2D
 }
 
+protocol AlarmResponseDelegate {
+    func fetchAlarm()
+}
+
 final class HomeViewModel: BaseViewModel {
     var coordinator: Coordinator
     private let deleteCourseUseCase: DeleteCourseUseCase
@@ -43,6 +47,7 @@ final class HomeViewModel: BaseViewModel {
     let alarmCourseReviewUseCase: AlarmCourseReviewUseCaseDelegate = AlarmCourseReviewUseCase(alarmCourseReviewInterface: AlarmCourseReviewRepository())
     
     private let alarmAPI = AlarmAPI()
+    var delegate: AlarmResponseDelegate?
     
     init(
         coordinator: Coordinator,
@@ -60,6 +65,7 @@ final class HomeViewModel: BaseViewModel {
     @objc
     func getAllNotification() {
         print("알람이 왔어용")
+        self.delegate?.fetchAlarm()
     }
     
     func fetchUserInfo() async throws {
