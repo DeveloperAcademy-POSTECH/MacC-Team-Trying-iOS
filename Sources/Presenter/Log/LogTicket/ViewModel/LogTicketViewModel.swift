@@ -9,7 +9,7 @@
 import Combine
 import Foundation
 
-protocol DisMissCoordinating {
+protocol DismissCoordinating {
     func dismissTicketViewController()
 }
 
@@ -19,30 +19,26 @@ final class LogTicketViewModel: BaseViewModel {
     
     private var fetchReviewUseCase: FetchReviewUseCase
     
-    private var fetchConstellationUseCase: FetchConstellationsUseCase
-    
     private var tapCourseLikeUseCase: TapCourseLikeUseCase
     
-    @Published var courses: [CourseEntity]
+    let selectedCourseIndex: Int
     
-    let currentIndex: Int
+    @Published var course: CourseEntity
     
     @Published var reviews = [ReviewEntity]()
     
     init(
         coordinator: Coordinator,
-        courses: [CourseEntity],
-        currentIndex: Int,
+        course: CourseEntity,
+        selectedCourseIndex: Int,
         fetchReviewUseCase: FetchReviewUseCase = FetchReviewUseCaseImpl(),
-        tapCourseLikeUseCase: TapCourseLikeUseCase = TapCourseLikeUseCaseImpl(),
-        fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()
+        tapCourseLikeUseCase: TapCourseLikeUseCase = TapCourseLikeUseCaseImpl()
     ) {
-        self.currentIndex = currentIndex
-        self.courses = courses
+        self.course = course
+        self.selectedCourseIndex = selectedCourseIndex
         self.coordinator = coordinator
         self.fetchReviewUseCase = fetchReviewUseCase
         self.tapCourseLikeUseCase = tapCourseLikeUseCase
-        self.fetchConstellationUseCase = FetchConstellationsUseCaseImpl()
         super.init()
     }
     
@@ -52,36 +48,19 @@ final class LogTicketViewModel: BaseViewModel {
     }
 }
 
-// MARK: MOCK
-struct TestModel {
-    let id: Int
-    let planet: String
-    let planetImage: String
-    let title: String
-    let body: String
-    let date: String
-    let tag: [String]
-    let images: [String]
-}
-
 extension LogTicketViewModel {
-    // MARK: 리뷰 API UseCase 호출
     func fetchReviews() async throws {
         reviews = try await
-        fetchReviewUseCase.fetchReviewAsync(courseId: courses[currentIndex].id)
-    }
-    
-    func fetchConstellation() async throws {
-        courses = try await fetchConstellationUseCase.fetchLogAsync()
+        fetchReviewUseCase.fetchReviewAsync(courseId: course.id)
     }
     
     func moveToHomeTab() {
         guard let coordinator = coordinator as? MoveFromLogToHome else { return }
-        coordinator.goToHomeView(course: courses[currentIndex])
+        coordinator.goToHomeView(course: course)
     }
     
     func tapLikeCourse() async throws {
-        try await tapCourseLikeUseCase.setCourseLike(courseId: courses[currentIndex].id, isLike: courses[currentIndex].isLike)
-        courses[currentIndex].isLike.toggle()
+        try await tapCourseLikeUseCase.setCourseLike(courseId: course.id, isLike: course.isLike)
+        course.isLike.toggle()
     }
 }
