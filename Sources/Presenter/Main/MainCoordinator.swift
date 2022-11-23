@@ -139,7 +139,7 @@ protocol MoveToAnotherTab: AnyObject {
 
 extension MainCoordinator: MoveToAnotherTab {
     func moveToLogTab() {
-        tabBarController.selectedIndex = 2
+        tabBarController.selectedIndex = 1
         logCoordinator?.navigationController?.popToRootViewController(animated: false)
     }
 }

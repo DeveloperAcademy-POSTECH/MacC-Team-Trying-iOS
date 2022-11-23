@@ -1,10 +1,11 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
+let productName: String = "우주라이크"
 let projectName: String = "ComeIt"
 
 let project = Project(
-    name: projectName,
+    name: productName,
     organizationName: "Try-ing",
     options: .options(
         disableBundleAccessors: true,
@@ -20,7 +21,7 @@ let project = Project(
     ),
     targets: [
         Target(
-            name: projectName,
+            name: productName,
             platform: .iOS,
             product: .app,
             bundleId: "com.Try-ing.\(projectName)",
@@ -39,13 +40,13 @@ let project = Project(
             ]
         ),
         Target(
-            name: "\(projectName)Tests",
+            name: "\(productName)Tests",
             platform: .iOS,
             product: .unitTests,
             bundleId: "com.Try-ing.\(projectName)Tests",
             infoPlist: .default,
             sources: ["Tests/**"],
-            dependencies: [.target(name: projectName)]
+            dependencies: [.target(name: productName)]
         )
     ]
 )

@@ -106,7 +106,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         } else if target == "REVIEW" {
             Task {
                 if try await alarmAPI.checkAlarm(type: .check, id: notificationId) {
-                    mainCoordinator.tabBarController.selectedIndex = 2
+                    mainCoordinator.tabBarController.selectedIndex = 1
                     mainCoordinator.logCoordinator?.navigationController?.popToRootViewController(animated: true)
                     NotificationCenter.default.post(name: Notification.Name("REVIEW"), object: targetId)
                 }
