@@ -83,6 +83,15 @@ final class LogHomeViewController: BaseViewController {
         return collectionView
     }()
     
+    private lazy var logHomeEmptyView = LogHomeEmptyView()
+    
+    private lazy var logHomeEmptyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "아직 행성에 별자리가 없어요!"
+        label.font = .designSystem(weight: .regular, size: ._13)
+        return label
+    }()
+    
     // MARK: Initializer
     init(viewModel: LogHomeViewModel) {
         self.viewModel = viewModel
@@ -99,14 +108,20 @@ final class LogHomeViewController: BaseViewController {
         self.navigationController?.isNavigationBarHidden = true
         Task {
             try await viewModel.fetchConstellation()
-            logCollectionView.reloadData()
-            setConstellationButtonOption()
+            self.logCollectionView.reloadData()
+            self.setConstellationButtonOption()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setUI()
+        viewModel.$courses.receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.setEmptyView()
+            }
+            .cancel(with: cancelBag)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -188,6 +203,14 @@ extension LogHomeViewController {
         setConstellationButtonOption()
     }
     
+    private func setEmptyView() {
+        mapButton.isHidden = viewModel.courses.isEmpty ? true : false
+        listButton.isHidden = viewModel.courses.isEmpty ? true : false
+        logCollectionView.isHidden = viewModel.courses.isEmpty ? true : false
+        logHomeEmptyView.isHidden = viewModel.courses.isEmpty ? false : true
+        logHomeEmptyLabel.isHidden = viewModel.courses.isEmpty ? false : true
+    }
+    
     private func setButtonTarget() {
         mapButton.addTarget(self, action: #selector(tapMapButton), for: .touchUpInside)
         listButton.addTarget(self, action: #selector(tapListButton), for: .touchUpInside)
@@ -203,7 +226,9 @@ extension LogHomeViewController {
             logCollectionView,
             previousConstellationButton,
             currentConstellationButton,
-            nextConstellationButton
+            nextConstellationButton,
+            logHomeEmptyView,
+            logHomeEmptyLabel
         )
         
         mapButton.snp.makeConstraints { make in
@@ -242,6 +267,17 @@ extension LogHomeViewController {
             make.width.height.equalTo(currentConstellationButton.snp.width).multipliedBy(0.6)
             make.centerY.equalTo(currentConstellationButton.snp.centerY)
             make.left.equalTo(currentConstellationButton.snp.right).offset(DeviceInfo.screenWidth * 20 / 390)
+        }
+        
+        logHomeEmptyView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.equalTo(100)
+            make.height.equalTo(85)
+        }
+        
+        logHomeEmptyLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(logHomeEmptyView.snp.top).offset(-20)
         }
     }
     
