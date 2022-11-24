@@ -43,7 +43,7 @@ final class HomeViewController: BaseViewController {
     let nextDateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .light, size: ._13)
-        label.text = "⭐️ 포항데이트 D-3"
+        label.text = "        "
         label.textColor = .white
         return label
     }()
