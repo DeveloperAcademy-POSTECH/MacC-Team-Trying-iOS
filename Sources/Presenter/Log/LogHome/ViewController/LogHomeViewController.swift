@@ -332,6 +332,7 @@ extension LogHomeViewController {
             return
         } else {
             previousConstellationButton.isHidden = (currentIndex == 0) ? true : false
+            currentConstellationButton.isHidden = false
             nextConstellationButton.isHidden = (currentIndex == viewModel.courses.count - 1) ? true : false
         }
         

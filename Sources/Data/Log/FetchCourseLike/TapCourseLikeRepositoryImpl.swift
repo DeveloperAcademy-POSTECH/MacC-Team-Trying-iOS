@@ -22,7 +22,7 @@ extension TapCourseLikeRepositoryImpl: TapCourseLikeRepository {
     
     func setCourseLike(courseId: Int, isLike: Bool) async throws {
         
-        let url = "https://comeit.site/courses/\(courseId)/like"
+        let url = "\(APIManager.baseURL)/courses/\(courseId)/like"
         
         guard let setCourseLikeUrl = URL(string: url) else {
             print("⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️")
