@@ -171,26 +171,37 @@ extension AlarmViewController: UITableViewDataSource {
 
 extension AlarmViewController {
     private func setNavigation() {
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont(name: "GmarketSansTTFBold", size: 15)!]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._15)]
+        
+        let configure = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold, scale: .default)
+        
         title = "알림"
-        guard let chevronImage = UIImage(named: "chevron_left"),
-              let trashImage = UIImage(named: "deletetong") else { return }
+        
+        let chevronImage = UIImage(systemName: "chevron.left", withConfiguration: configure)
+        
+        let trashImage = UIImage(systemName: "trash", withConfiguration: configure)
 
-        let resizedChevronImage = chevronImage.resizeImageTo(size: .init(width: 16, height: 26))?.withTintColor(.white, renderingMode: .alwaysOriginal)
+        let resizedChevronImage = chevronImage?.resizeImageTo(size: .init(width: 20, height: 30))
+        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: resizedChevronImage,
             style: .plain,
             target: self,
             action: #selector(backTap)
         )
+        
+        navigationItem.leftBarButtonItem?.tintColor = .white
 
-        let resizedTrashImage = trashImage.resizeImageTo(size: .init(width: 21, height: 21))?.withTintColor(.white, renderingMode: .alwaysOriginal)
+        let resizedTrashImage = trashImage?.resizeImageTo(size: .init(width: 25, height: 25))
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: resizedTrashImage,
             style: .plain,
             target: self,
             action: #selector(allDeleteTap)
         )
+        
+        navigationItem.rightBarButtonItem?.tintColor = .white
     }
 }
 

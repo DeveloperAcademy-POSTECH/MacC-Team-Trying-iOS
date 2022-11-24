@@ -70,15 +70,15 @@ extension MyConstellationViewController {
     func setNavigationBar() {
         // MARK: 네비게이션 title의 font변경
         self.title = "내 별자리"
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20)]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._15)]
         
         // MARK: 네비게이션 rightButton, leftButton커스텀
-        let configure = UIImage.SymbolConfiguration(pointSize: 23, weight: .light, scale: .default)
+        let configure = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold, scale: .default)
         
         let mapButton = UIButton(type: .custom)
         mapButton.setImage(UIImage(systemName: "map", withConfiguration: configure), for: .normal)
         mapButton.tintColor = .white
-        mapButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+        mapButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         mapButton.addTarget(self, action: #selector(tapMapButton), for: .touchUpInside)
         
         let dismissButton = UIButton(type: .custom)
