@@ -33,7 +33,7 @@ struct UserInfoDTO: Codable {
     // MARK: - Me
     struct Me: Codable {
         let name: String
-        let email: String
+        let email: String?
     }
 
     // MARK: - Planet
