@@ -20,6 +20,9 @@ final class HomeViewController: BaseViewController {
     var dateInfoIsHidden: Bool = false
     var selectedDate: Date = YearMonthDayDate.today.asDate()
     
+    let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterial)
+    lazy var blurEffectView = UIVisualEffectView(effect: self.blurEffect)
+    
     let homeTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .bold, size: ._20)
@@ -47,6 +50,7 @@ final class HomeViewController: BaseViewController {
         label.textColor = .white
         return label
     }()
+    
     
     let homeScrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -89,6 +93,10 @@ final class HomeViewController: BaseViewController {
         tableView.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.2)
         tableView.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
         tableView.layer.borderWidth = 0.3
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterial)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        tableView.backgroundView = blurEffectView
         return tableView
     }()
     
@@ -233,6 +241,7 @@ extension HomeViewController {
         
         self.contentView.addSubview(pathTableView)
         self.contentView.addSubview(calendarView)
+        calendarView.backgroundView = blurEffectView
         self.contentView.addSubview(dateCoureRegisterButton)
         pathTableView.delegate = self
         pathTableView.dataSource = self
