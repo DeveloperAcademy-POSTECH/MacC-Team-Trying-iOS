@@ -22,7 +22,7 @@ final class CalendarView: BaseView {
     static let cellHeight: CGFloat = (DeviceInfo.screenWidth - 80 - 1 - CalendarView.inset * 6) / 7
     
     lazy var blurEffectView: UIVisualEffectView = {
-        let blurEffectView = UIVisualEffectView.myBlurEffectView
+        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark))
         blurEffectView.clipsToBounds = true
         blurEffectView.layer.cornerRadius = 15
         return blurEffectView

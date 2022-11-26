@@ -40,8 +40,6 @@ final class HomeViewController: BaseViewController {
         return label
     }()
     
-    let testView = UIView()
-    
     let nextDateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .light, size: ._13)
@@ -91,10 +89,7 @@ final class HomeViewController: BaseViewController {
         tableView.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.5)
         tableView.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
         tableView.layer.borderWidth = 0.3
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        tableView.backgroundView = blurEffectView
+        tableView.backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark))
         return tableView
     }()
     
@@ -230,11 +225,6 @@ final class HomeViewController: BaseViewController {
 // MARK: - UI
 extension HomeViewController {
     func setAttributes() {
-        view.addSubview(testView)
-//        testView.backgroundColor = .red
-        testView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(60)
-        }
         view.addSubview(homeTitle)
         view.addSubview(alarmButton)
         view.addSubview(ddayLabel)
@@ -492,12 +482,4 @@ extension HomeViewController: AlarmResponseDelegate {
     func fetchAlarm() {
         viewWillAppear(true)
     }
-}
-
-extension UIBlurEffect {
-    static let myBlurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
-}
-
-extension UIVisualEffectView {
-    static let myBlurEffectView = UIVisualEffectView(effect: UIBlurEffect.myBlurEffect)
 }
