@@ -20,7 +20,14 @@ final class CalendarView: BaseView {
   
     static let inset: CGFloat = 0
     static let cellHeight: CGFloat = (DeviceInfo.screenWidth - 80 - 1 - CalendarView.inset * 6) / 7
-
+    
+    lazy var blurEffectView: UIVisualEffectView = {
+        let blurEffectView = UIVisualEffectView.myBlurEffectView
+        blurEffectView.clipsToBounds = true
+        blurEffectView.layer.cornerRadius = 15
+        return blurEffectView
+    }()
+    
     // MARK: - Properties
 
     weak var delegate: CalendarViewDelegate?
@@ -159,7 +166,7 @@ final class CalendarView: BaseView {
         self.layer.cornerRadius = 15
         self.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
         self.layer.borderWidth = 0.3
-        self.backgroundColor = .designSystem(.calendarRed)?.withAlphaComponent(0.2)
+        self.backgroundColor = .designSystem(.calendarRed)?.withAlphaComponent(0.5)
 
         monthView.delegate = self
         scrollView.delegate = self
@@ -173,6 +180,10 @@ final class CalendarView: BaseView {
     }
 
     override func setLayout() {
+        addSubview(blurEffectView)
+        blurEffectView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         addSubview(monthView)
         
         addSubview(weekdayView)

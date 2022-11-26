@@ -20,9 +20,6 @@ final class HomeViewController: BaseViewController {
     var dateInfoIsHidden: Bool = false
     var selectedDate: Date = YearMonthDayDate.today.asDate()
     
-    let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterial)
-    lazy var blurEffectView = UIVisualEffectView(effect: self.blurEffect)
-    
     let homeTitle: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .bold, size: ._20)
@@ -43,6 +40,8 @@ final class HomeViewController: BaseViewController {
         return label
     }()
     
+    let testView = UIView()
+    
     let nextDateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .light, size: ._13)
@@ -50,8 +49,7 @@ final class HomeViewController: BaseViewController {
         label.textColor = .white
         return label
     }()
-    
-    
+        
     let homeScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -90,10 +88,10 @@ final class HomeViewController: BaseViewController {
         tableView.clipsToBounds = true
         tableView.layer.cornerRadius = 15
         tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
-        tableView.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.2)
+        tableView.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.5)
         tableView.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
         tableView.layer.borderWidth = 0.3
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterial)
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         tableView.backgroundView = blurEffectView
@@ -232,6 +230,11 @@ final class HomeViewController: BaseViewController {
 // MARK: - UI
 extension HomeViewController {
     func setAttributes() {
+        view.addSubview(testView)
+//        testView.backgroundColor = .red
+        testView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(60)
+        }
         view.addSubview(homeTitle)
         view.addSubview(alarmButton)
         view.addSubview(ddayLabel)
@@ -241,7 +244,6 @@ extension HomeViewController {
         
         self.contentView.addSubview(pathTableView)
         self.contentView.addSubview(calendarView)
-        calendarView.backgroundView = blurEffectView
         self.contentView.addSubview(dateCoureRegisterButton)
         pathTableView.delegate = self
         pathTableView.dataSource = self
@@ -490,4 +492,12 @@ extension HomeViewController: AlarmResponseDelegate {
     func fetchAlarm() {
         viewWillAppear(true)
     }
+}
+
+extension UIBlurEffect {
+    static let myBlurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
+}
+
+extension UIVisualEffectView {
+    static let myBlurEffectView = UIVisualEffectView(effect: UIBlurEffect.myBlurEffect)
 }
