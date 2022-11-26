@@ -40,6 +40,7 @@ final class HomeViewController: BaseViewController {
         return label
     }()
     
+    // MARK: - 추후 api연결
     let nextDateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .light, size: ._13)
