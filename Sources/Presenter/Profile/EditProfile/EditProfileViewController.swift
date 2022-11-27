@@ -43,6 +43,7 @@ final class EditProfileViewController: BaseViewController {
     lazy var nicknameChangeButton = UIButton(type: .system)
     lazy var logoutButton = UIButton(type: .system)
     lazy var deregisterButton = UIButton(type: .system)
+    lazy var seperatedLine = UIView()
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -109,6 +110,7 @@ extension EditProfileViewController {
         emailLabel.font = .designSystem(weight: .regular, size: ._15)
         emailSubtitleLabel.font = .designSystem(weight: .regular, size: ._13)
         emailSubtitleLabel.textColor = .designSystem(.grayC5C5C5)
+        seperatedLine.backgroundColor = .designSystem(.grayC5C5C5)
         lineView1.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
 
         passwordSubTitleLabel.text = "비밀번호"
@@ -158,6 +160,7 @@ extension EditProfileViewController {
         view.addSubview(stackView)
         view.addSubview(logoutButton)
         view.addSubview(deregisterButton)
+        view.addSubview(seperatedLine)
         stackView.addArrangedSubview(containerView1)
         stackView.addArrangedSubview(containerView2)
         stackView.addArrangedSubview(containerView3)
@@ -246,6 +249,13 @@ extension EditProfileViewController {
         deregisterButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(20)
             make.top.equalTo(stackView.snp.bottom).offset(20)
+        }
+        
+        seperatedLine.snp.makeConstraints { make in
+            make.top.equalTo(deregisterButton.snp.top).offset(6)
+            make.bottom.equalTo(deregisterButton.snp.bottom).offset(-6)
+            make.width.equalTo(1)
+            make.trailing.equalTo(deregisterButton.snp.leading).offset(-10)
         }
         logoutButton.snp.makeConstraints { make in
             make.trailing.equalTo(deregisterButton.snp.leading).offset(-20)

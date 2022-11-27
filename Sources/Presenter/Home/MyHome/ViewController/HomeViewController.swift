@@ -40,6 +40,7 @@ final class HomeViewController: BaseViewController {
         return label
     }()
     
+    // MARK: - 추후 api연결
     let nextDateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .light, size: ._13)
@@ -47,7 +48,7 @@ final class HomeViewController: BaseViewController {
         label.textColor = .white
         return label
     }()
-    
+        
     let homeScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -86,9 +87,10 @@ final class HomeViewController: BaseViewController {
         tableView.clipsToBounds = true
         tableView.layer.cornerRadius = 15
         tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
-        tableView.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.2)
+        tableView.backgroundColor = .designSystem(.mainYellow)?.withAlphaComponent(0.5)
         tableView.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
         tableView.layer.borderWidth = 0.3
+        tableView.backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark))
         return tableView
     }()
     
