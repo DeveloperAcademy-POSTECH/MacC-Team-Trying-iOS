@@ -60,7 +60,7 @@ extension TargetType {
 #if DEBUG
         return "https://comeit.site"
 #else
-        return "https://www.wouldulike.site"
+        return "https://wouldulike.site"
 #endif
     }
 }
