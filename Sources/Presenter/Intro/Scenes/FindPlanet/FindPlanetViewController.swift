@@ -35,6 +35,7 @@ final class FindPlanetViewController: IntroBaseViewController<FindPlanetViewMode
             .sink { [weak self] planetName in
                 self?.planetNameLabel.text = planetName
                 self?.nextButton.title = "\(planetName) 궤도로 진입!"
+                self?.titleLabels.subTitle = "\(planetName)행성을 발견했어요!"
             }
             .cancel(with: cancelBag)
 
@@ -53,7 +54,6 @@ final class FindPlanetViewController: IntroBaseViewController<FindPlanetViewMode
         navigationItem.title = "코드입력"
 
         titleLabels.title = "환영합니다 🎉"
-        titleLabels.subTitle = "우디행성을 발견했어요!"
 
         planetNameLabel.font = .designSystem(weight: .bold, size: ._20)
 
