@@ -15,7 +15,7 @@ import SnapKit
 final class ProfileViewController: BaseViewController {
     private let sections = ["활동내역", "회원설정", "고객센터"]
     private let userSetting = ["내 정보 수정", "디데이 수정", "푸쉬 설정"]
-    private let services = ["공지사항", "서비스 약관", "1대1 문의"]
+    private let services = ["서비스 약관", "1대1 문의"]
     
     var viewModel: ProfileViewModel
     
@@ -241,7 +241,7 @@ extension ProfileViewController {
         let editPlanetNameAction = UIAlertAction(title: "행성 이름 변경", style: .default) { [weak self] _ in
             self?.viewModel.coordinateToEditPlanet()
         }
-        let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { [weak self] action in
+        let exitPlanetAction = UIAlertAction(title: "행성 나가기", style: .default) { [weak self] _ in
             self?.viewModel.coordinateToExitPlanet()
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
@@ -293,7 +293,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         case 1:
             return 3
         case 2:
-            return 3
+            return 2
         default:
             return -1
         }
@@ -365,16 +365,11 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         case 2:
             switch indexPath.row {
             case 0:
-                // TODO: 공지사항
-                break
-            case 1:
                 self.viewModel.pushToServiceTermView()
-            case 2:
-                // TODO: 1대1 문의
-                break
+            case 1:
+                self.viewModel.presentInquiryView()
             default:
                 break
-                
             }
             
         default:

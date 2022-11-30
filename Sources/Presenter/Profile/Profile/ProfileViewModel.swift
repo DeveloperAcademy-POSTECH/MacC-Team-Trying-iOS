@@ -88,6 +88,10 @@ extension ProfileViewModel {
     func pushToServiceTermView() {
         self.coordinator.pushToServiceTermView()
     }
+    
+    func presentInquiryView() {
+        // TODO: 카카오톡 1대1 문의
+    }
 }
 
 extension ProfileViewModel {
