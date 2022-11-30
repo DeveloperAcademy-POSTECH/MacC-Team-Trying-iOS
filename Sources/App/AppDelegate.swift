@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         coordinator = AppCoordinator(window: window!)
         
-        coordinator?.start()
+        coordinator?.presentSplashView()
         
         coordinator?.$isMainCoordinatorMade.sink(receiveCompletion: { _ in
             
