@@ -367,7 +367,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             case 0:
                 self.viewModel.pushToServiceTermView()
             case 1:
-                self.viewModel.presentInquiryView()
+                self.viewModel.presentKakaoInquiry()
             default:
                 break
             }

@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import UIKit
 
 import CancelBag
 
@@ -89,8 +90,10 @@ extension ProfileViewModel {
         self.coordinator.pushToServiceTermView()
     }
     
-    func presentInquiryView() {
-        // TODO: 카카오톡 1대1 문의
+    func presentKakaoInquiry() {
+        if let url = URL(string: "http://pf.kakao.com/_YxbrPxj") {
+            UIApplication.shared.open(url, options: [:])
+        }
     }
 }
 
