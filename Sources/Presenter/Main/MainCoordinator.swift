@@ -80,6 +80,7 @@ final class MainCoordinator: Coordinator {
     init(navigationController: UINavigationController?) {
         self.navigationController = navigationController
         self.tabBarController = UITabBarController()
+        tabBarController.tabBar.itemPositioning = .centered
     }
     
     func start() {
