@@ -112,6 +112,7 @@ final class RegisterReviewViewController: BaseViewController {
         super.viewWillDisappear(animated)
         
         self.removeNotifications()
+        self.viewModel.deleteCourse()
     }
 }
 
