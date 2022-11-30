@@ -18,7 +18,7 @@ final class SplashViewController: UIViewController {
     private lazy var lottieView: LottieAnimationView = {
         let view = LottieAnimationView(name: "splash")
         view.contentMode = .scaleAspectFit
-        view.animationSpeed = 2.0
+        view.animationSpeed = 1.0
         return view
     }()
     
