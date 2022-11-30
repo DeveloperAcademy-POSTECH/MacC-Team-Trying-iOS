@@ -17,6 +17,7 @@ final class RegisterReviewViewModel: BaseViewModel {
     var courseRequestDTO: CourseRequestDTO
     @Published var images: [UIImage]
     @Published var reviewContent: String?
+    @Published var isLoading: Bool = false
     
     init(
         coordinator: CourseFlowCoordinator,
@@ -58,7 +59,9 @@ extension RegisterReviewViewModel {
                 guard let courseId = self.courseRequestDTO.id,
                       let reviewContent = reviewContent else { return }
                 do {
+                    self.isLoading = true
                     _ = try await self.addReviewUseCase.addReview(courseId: courseId, content: reviewContent, images: self.images)
+                    self.isLoading = false
                     
                     DispatchQueue.main.async {
                         coordinator.pushToCompleteView(self.courseRequestDTO)
@@ -74,7 +77,9 @@ extension RegisterReviewViewModel {
                 guard let courseId = self.courseRequestDTO.id,
                       let reviewContent = reviewContent else { return }
                 do {
+                    self.isLoading = true
                     _ = try await self.addReviewUseCase.addReview(courseId: courseId, content: reviewContent, images: self.images)
+                    self.isLoading = false
                     
                     DispatchQueue.main.async {
                         coordinator.pushToCompleteView(self.courseRequestDTO)

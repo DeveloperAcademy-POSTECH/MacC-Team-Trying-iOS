@@ -74,6 +74,16 @@ final class RegisterReviewViewController: BaseViewController {
                 self.imageCollectionView.reloadData()
             }
             .cancel(with: cancelBag)
+        
+        self.viewModel.$isLoading
+            .sink { isLoading in
+                if isLoading {
+                    LoadingIndicator.showIndicator()
+                } else {
+                    LoadingIndicator.hideIndicator()
+                }
+            }
+            .cancel(with: cancelBag)
     }
     
     init(viewModel: RegisterReviewViewModel) {
