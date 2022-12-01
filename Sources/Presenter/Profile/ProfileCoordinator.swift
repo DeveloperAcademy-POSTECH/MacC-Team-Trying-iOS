@@ -78,11 +78,15 @@ extension ProfileCoordinator: ProfileCoordinatorLogic, Popable, EditProfileCoord
     
     func coordinateToDeRegisterScene() {
         let withdrwalViewController = UserWarningViewController(outgoingType: .membershipWithdrawal)
+        withdrwalViewController.hidesBottomBarWhenPushed = true
+        
         self.navigationController?.pushViewController(withdrwalViewController, animated: true)
     }
     
     func coordinateToExitPlanet(type: OutgoingType) {
         let exitPlanetViewController = UserWarningViewController(outgoingType: .exitPlanet)
+        exitPlanetViewController.hidesBottomBarWhenPushed = true
+        
         self.navigationController?.pushViewController(exitPlanetViewController, animated: true)
     }
     
