@@ -21,13 +21,22 @@
 |:---:|:---:|:---:|:---:|
 | <img width="200" src="https://user-images.githubusercontent.com/77485339/204939399-603e3a44-fe06-4dc6-bdaa-d1c3fbd393d4.jpeg"> |  <img width="200" src="https://user-images.githubusercontent.com/85096805/202517592-ad820262-f321-4adb-9c4e-1bb01ea62644.png"> | <img width="200" src="https://user-images.githubusercontent.com/77485339/204938912-958bad88-a982-420e-bf3e-78fc7766f2d0.jpeg"> |  <img width="200" src="https://user-images.githubusercontent.com/77485339/204939630-413c55e9-9845-4902-a6d8-77fbd6a121af.jpeg"> |
 
+
 <br/>
 
-## Built With
+## Tech Stack
 
-* [![Swift][Swift.com]][Swift-url]
-* [![Spring][Spring.com]][Spring-url]
-<br/>
+
+
+<div align="left">
+	<img src="https://img.shields.io/badge/Swift-F05138?style=flat&logo=Swift&logoColor=white" />
+	<img src="https://img.shields.io/badge/Spring-6DB33F?style=flat&logo=Spring&logoColor=white" />
+    <img src="https://img.shields.io/badge/Combine-A100FF?style=flat&logo=Combine&logoColor=white" />
+    <img src="https://img.shields.io/badge/Tuist-00BC8E?style=flat&logo=Tuist&logoColor=white" />
+    <img src="https://img.shields.io/badge/Coordinator Pattern-FC8019?style=flat&logo=&logoColor=white" />
+    <img src="https://img.shields.io/badge/Async Await-990000?style=flat&logo=Async&logoColor=white" />
+    <img src="https://img.shields.io/badge/MapKit-004B93?style=flat&logo=MapKit&logoColor=white" />
+</div>
 
 ## Getting Started
 
@@ -152,9 +161,9 @@ Use this space to list resources you find helpful and would like to give credit 
 [Bootstrap-url]: https://getbootstrap.com
 [JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
 [JQuery-url]: https://jquery.com 
-[Swift.com]: https://img.shields.io/badge/Swift-FF2D20?style=for-the-badge&logo=swift&logoColor=white
+[Swift.com]: https://img.shields.io/badge/Swift-F05138?style=for-the-badge&logo=swift&logoColor=white
 [Swift-url]: https://developer.apple.com/kr/swift/
-[Spring.com]: https://img.shields.io/badge/Spring-00FF00?style=for-the-badge&logo=Spring&logoColor=white
+[Spring.com]: https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white
 [Spring-url]: https://spring.io/
 
 
