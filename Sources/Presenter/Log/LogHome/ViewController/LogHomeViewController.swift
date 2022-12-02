@@ -115,11 +115,14 @@ final class LogHomeViewController: BaseViewController {
     // MARK: Life Cycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.setGyroMotion()
         self.navigationController?.isNavigationBarHidden = true
         Task {
             try await viewModel.fetchConstellation()
-            self.logCollectionView.reloadData()
-            self.setConstellationButtonOption()
+            DispatchQueue.main.async {
+                self.logCollectionView.reloadData()
+                self.setConstellationButtonOption()
+            }
         }
     }
     
@@ -215,7 +218,6 @@ extension LogHomeViewController {
         logCollectionView.delegate = self
         setButtonTarget()
         setConstellationButtonOption()
-        self.setGyroMotion()
     }
     
     private func setEmptyView() {
@@ -236,6 +238,7 @@ extension LogHomeViewController {
     private func setConstraints() {
         
         view.addSubviews(
+            mediumStarBackgroundView,
             mapButton,
             listButton,
             logCollectionView,
@@ -324,8 +327,8 @@ extension LogHomeViewController {
             
             if let cell = self.logCollectionView.cellForItem(at: IndexPath(row: self.currentIndex, section: 0)) as? LogCollectionViewCell {
                 cell.constellationView.center = CGPoint(
-                    x: cell.center.x - self.lastYOffset * constellationOffsetRate,
-                    y: cell.center.y - self.lastXOffset * constellationOffsetRate - 100
+                    x: (DeviceInfo.screenWidth / 2) - (self.lastYOffset * constellationOffsetRate),
+                    y: (cell.center.y) - (self.lastXOffset * constellationOffsetRate) - 80.0
                 )
             }
         })
