@@ -15,7 +15,7 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
     let userService: UserService = UserService()
     var mainCoordinator: MainCoordinator?
     
-    //MARK: 동작은 하나, 이쁘지 않은 코드 isGone
+    // MARK: 동작은 하나, 이쁘지 않은 코드
     @Published var isMainCoordinatorMade: Bool = false
     
     init(window: UIWindow) {
@@ -56,6 +56,16 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
                 await coordinateToLogincScene()
             }
         }
+    }
+    
+    func presentSplashView() {
+        let viewModel = SplashViewModel(coordinator: self)
+        let viewController = SplashViewController(viewModel: viewModel)
+        
+        self.navigationController?.setViewControllers([viewController], animated: false)
+        
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
     }
 
     @MainActor

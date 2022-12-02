@@ -24,6 +24,7 @@ final class CourseMapViewModel: BaseViewModel {
             self.courseRequestDTO.places = self.places
         }
     }
+    @Published var isLoading: Bool = false
     // @Published var memo: String?
     
     init(
@@ -119,7 +120,9 @@ extension CourseMapViewModel {
             guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
             Task {
                 do {
+                    self.isLoading = true
                     self.courseRequestDTO.id = try await self.addCourseUseCase.addCourse(courseRequestDTO: self.courseRequestDTO)
+                    self.isLoading = false
                     
                     DispatchQueue.main.async {
                         coordinator.pushToRegisterReviewView(self.courseRequestDTO)
@@ -133,7 +136,9 @@ extension CourseMapViewModel {
             guard let coordinator = self.coordinator as? EditCourseCoordinator else { return }
             Task {
                 do {
+                    self.isLoading = true
                     _ = try await self.editCourseUseCase.editCourse(editCourseDTO: self.courseRequestDTO)
+                    self.isLoading = false
                     
                     DispatchQueue.main.async {
                         coordinator.pushToCompleteView(self.courseRequestDTO)
@@ -147,7 +152,9 @@ extension CourseMapViewModel {
             guard let coordinator = self.coordinator as? AddPlanCoordinator else { return }
             Task {
                 do {
+                    self.isLoading = true
                     _ = try await self.addCourseUseCase.addCourse(courseRequestDTO: self.courseRequestDTO)
+                    self.isLoading = false
                     
                     DispatchQueue.main.async {
                         coordinator.pushToCompleteView(self.courseRequestDTO)
@@ -161,7 +168,9 @@ extension CourseMapViewModel {
             guard let coordinator = self.coordinator as? EditPlanCoordinator else { return }
             Task {
                 do {
+                    self.isLoading = true
                     _ = try await self.editCourseUseCase.editCourse(editCourseDTO: self.courseRequestDTO)
+                    self.isLoading = false
                     
                     DispatchQueue.main.async {
                         coordinator.pushToCompleteView(self.courseRequestDTO)

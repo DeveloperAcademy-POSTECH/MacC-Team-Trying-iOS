@@ -117,6 +117,16 @@ final class CourseMapViewController: BaseViewController {
                 }
             })
             .cancel(with: cancelBag)
+        
+        self.viewModel.$isLoading
+            .sink { isLoading in
+                if isLoading {
+                    LoadingIndicator.showIndicator()
+                } else {
+                    LoadingIndicator.hideIndicator()
+                }
+            }
+            .cancel(with: cancelBag)
     }
     
     init(type: CourseFlowType, viewModel: CourseMapViewModel) {

@@ -13,21 +13,25 @@ final class RegisterReviewViewModel: BaseViewModel {
     var coordinator: CourseFlowCoordinator
     private let addCourseUseCase: AddCourseUseCase
     private let addReviewUseCase: AddReviewUseCase
+    private let deleteCourseUseCase: DeleteCourseUseCase
     
     var courseRequestDTO: CourseRequestDTO
     @Published var images: [UIImage]
     @Published var reviewContent: String?
+    @Published var isLoading: Bool = false
     
     init(
         coordinator: CourseFlowCoordinator,
         addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(addCourseRepository: AddCourseRepositoryImpl()),
         addReviewUseCase: AddReviewUseCase = AddReviewUseCaseImpl(addReviewRepository: AddReviewRepositoryImpl()),
+        deleteCourseUseCase: DeleteCourseUseCase = DeleteCourseUseCaseImpl(deleteCourseRepository: DeleteCourseRepositoryImpl()),
         courseRequestDTO: CourseRequestDTO,
         images: [UIImage] = []
     ) {
         self.coordinator = coordinator
         self.addCourseUseCase = addCourseUseCase
         self.addReviewUseCase = addReviewUseCase
+        self.deleteCourseUseCase = deleteCourseUseCase
         self.courseRequestDTO = courseRequestDTO
         self.images = images
     }
@@ -58,7 +62,9 @@ extension RegisterReviewViewModel {
                 guard let courseId = self.courseRequestDTO.id,
                       let reviewContent = reviewContent else { return }
                 do {
+                    self.isLoading = true
                     _ = try await self.addReviewUseCase.addReview(courseId: courseId, content: reviewContent, images: self.images)
+                    self.isLoading = false
                     
                     DispatchQueue.main.async {
                         coordinator.pushToCompleteView(self.courseRequestDTO)
@@ -74,7 +80,9 @@ extension RegisterReviewViewModel {
                 guard let courseId = self.courseRequestDTO.id,
                       let reviewContent = reviewContent else { return }
                 do {
+                    self.isLoading = true
                     _ = try await self.addReviewUseCase.addReview(courseId: courseId, content: reviewContent, images: self.images)
+                    self.isLoading = false
                     
                     DispatchQueue.main.async {
                         coordinator.pushToCompleteView(self.courseRequestDTO)
@@ -98,5 +106,17 @@ extension RegisterReviewViewModel {
     
     func deleteImage(_ index: Int) {
         images.remove(at: index)
+    }
+    
+    func deleteCourse() {
+        Task {
+            do {
+                self.isLoading = true
+                try await self.deleteCourseUseCase.deleteCourse(courseRequestDTO.id!)
+                self.isLoading = false
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
 }
