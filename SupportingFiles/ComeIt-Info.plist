@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen.storyboard</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -47,7 +45,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>사용자의 위치 정보에 접근을 허용합니다.</string>
+	<string>사용자의 현재 위치가 지도상에 표시되며, 현재 위치 주변의 장소에 빠르게 접근할 수 있습니다.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>앨범 접근 권한이 필요합니다.</string>
 	<key>UIAppFonts</key>
@@ -61,6 +59,8 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen.storyboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
