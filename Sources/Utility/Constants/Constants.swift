@@ -11,9 +11,9 @@ import UIKit
 struct Constants {
     // Coordinator에서 사용하는 문자열 상수들입니다.
     struct Coordinator {
-        static let home = "Home"
-        static let log = "Log"
-        static let profile = "Profile"
+        static let home = "홈"
+        static let log = "기록"
+        static let profile = "마이"
         
         static let homeIcon = "ic_home"
         static let logIcon = "ic_log"

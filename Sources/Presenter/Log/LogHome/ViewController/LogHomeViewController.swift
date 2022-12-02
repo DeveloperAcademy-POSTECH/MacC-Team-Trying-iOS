@@ -6,6 +6,7 @@
 //  Copyright (c) 2022 Try-ing. All rights reserved.
 //
 import Combine
+import CoreMotion
 import UIKit
 
 import CancelBag
@@ -17,6 +18,15 @@ final class LogHomeViewController: BaseViewController {
     var viewModel: LogHomeViewModel
     
     private var currentIndex: Int = 0
+    
+    private lazy var mediumStarBackgroundView = MediumStarBackgroundView(
+        frame: CGRect(
+            x: 0,
+            y: 0,
+            width: view.frame.width + 30,
+            height: view.frame.height + 30
+        )
+    )
     
     lazy var previousConstellationButton: UIButton = {
         let button = UIButton(type: .custom)
@@ -105,11 +115,14 @@ final class LogHomeViewController: BaseViewController {
     // MARK: Life Cycle
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.setGyroMotion()
         self.navigationController?.isNavigationBarHidden = true
         Task {
             try await viewModel.fetchConstellation()
-            self.logCollectionView.reloadData()
-            self.setConstellationButtonOption()
+            DispatchQueue.main.async {
+                self.logCollectionView.reloadData()
+                self.setConstellationButtonOption()
+            }
         }
     }
     
@@ -225,6 +238,7 @@ extension LogHomeViewController {
     private func setConstraints() {
         
         view.addSubviews(
+            mediumStarBackgroundView,
             mapButton,
             listButton,
             logCollectionView,
@@ -283,6 +297,41 @@ extension LogHomeViewController {
             make.centerX.equalToSuperview()
             make.bottom.equalTo(logHomeEmptyView.snp.top).offset(-20)
         }
+    }
+    
+    private func setGyroMotion() {
+        motionManager = CMMotionManager()
+        
+        motionManager?.gyroUpdateInterval = 0.01
+        motionManager?.startGyroUpdates(to: .main, withHandler: { [weak self] data, _ in
+            guard let self = self,
+                  let data = data else { return }
+            
+            let offsetRate = 0.2
+            self.lastXOffset += data.rotationRate.x * offsetRate
+            self.lastYOffset += data.rotationRate.y * offsetRate
+            
+            let backgroundOffsetRate = 0.3
+            let mediumStarBackgroundOffsetRate = 1.0
+            let constellationOffsetRate = 2.0
+
+            self.backgroundView.center = CGPoint(
+                x: DeviceInfo.screenWidth / 2 + self.lastYOffset * backgroundOffsetRate,
+                y: DeviceInfo.screenHeight / 2 + self.lastXOffset * backgroundOffsetRate
+            )
+            
+            self.mediumStarBackgroundView.center = CGPoint(
+                x: DeviceInfo.screenWidth / 2 + self.lastYOffset * mediumStarBackgroundOffsetRate,
+                y: DeviceInfo.screenHeight / 2 + self.lastXOffset * mediumStarBackgroundOffsetRate
+            )
+            
+            if let cell = self.logCollectionView.cellForItem(at: IndexPath(row: self.currentIndex, section: 0)) as? LogCollectionViewCell {
+                cell.constellationView.center = CGPoint(
+                    x: (DeviceInfo.screenWidth / 2) - (self.lastYOffset * constellationOffsetRate),
+                    y: (cell.center.y) - (self.lastXOffset * constellationOffsetRate) - 80.0
+                )
+            }
+        })
     }
     
     @objc

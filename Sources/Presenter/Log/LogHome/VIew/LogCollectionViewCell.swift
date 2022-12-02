@@ -15,6 +15,8 @@ class LogCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "LogCollectionViewCell"
     
+    lazy var constellationView = UIView()
+    
     let courseNameButton: UIButton = {
         var button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -61,14 +63,12 @@ extension LogCollectionViewCell {
             }
             .forEach { $0.removeFromSuperview() }
         
-        let courseView = StarMaker.makeConstellation(places: course.places)
+        constellationView = StarMaker.makeConstellation(places: course.places)
         
-        contentView.addSubview(courseView)
+        contentView.addSubview(constellationView)
         
-        courseView.snp.makeConstraints { make in
+        constellationView.snp.makeConstraints { make in
             make.width.height.equalTo(200)
-            make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().multipliedBy(0.6)
         }
         
         dateLabel.text = course.date
