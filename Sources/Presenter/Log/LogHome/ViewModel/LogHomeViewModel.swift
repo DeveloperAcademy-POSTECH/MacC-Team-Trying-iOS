@@ -82,7 +82,7 @@ extension LogHomeViewModel {
     
     @objc
     private func getNotification(_ notification: Notification) {
-        // MARK: DTO는 필요시 다른 모델에 매핑하여 사용
+        
         guard let reviewId = notification.object as? String else { return }
         Task {
             let alarmCourse = try await alarmCourseReviewUseCase.getCourseWith(id: reviewId)

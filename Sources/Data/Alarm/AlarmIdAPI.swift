@@ -16,7 +16,9 @@ class AlarmIdAPI {
     
     //TODO: token 수정
 
-    private var token = UserDefaults().string(forKey: "accessToken") ?? ""
+    private var token: String {
+        UserDefaults().string(forKey: "accessToken") ?? ""
+    }
     
     private let host = APIManager.baseURL
     
