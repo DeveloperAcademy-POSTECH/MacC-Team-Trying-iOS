@@ -16,6 +16,8 @@ final class MyConstellationViewController: BaseViewController {
 
     var viewModel: MyConstellationViewModel
     
+    weak var homeView: LogHomeViewController?
+    
     lazy var myConstellationCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: (DeviceInfo.screenWidth - 40 - 10) / 2, height: 225)
@@ -58,6 +60,7 @@ extension MyConstellationViewController {
     private func setUI() {
         view.addSubview(myConstellationCollectionView)
         myConstellationCollectionView.register(MyConstellationCollectionViewCell.self, forCellWithReuseIdentifier: MyConstellationCollectionViewCell.cellId)
+        myConstellationCollectionView.delegate = self
         myConstellationCollectionView.dataSource = self
         myConstellationCollectionView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
@@ -111,7 +114,16 @@ extension MyConstellationViewController {
 }
 
 // MARK: CollectionView - DataSource
-extension MyConstellationViewController: UICollectionViewDataSource {
+extension MyConstellationViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedIndex = indexPath.row
+        homeView?.currentIndex = selectedIndex
+        homeView?.logCollectionView.scrollToItem(at: IndexPath(row: selectedIndex, section: 0), at: .left, animated: true)
+        homeView?.setConstellationButtonOption()
+        viewModel.popToCurrentConstellation()
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.courses.count
     }
@@ -119,6 +131,7 @@ extension MyConstellationViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyConstellationCollectionViewCell.cellId, for: indexPath) as? MyConstellationCollectionViewCell else { return UICollectionViewCell() }
         cell.course = viewModel.courses[indexPath.row]
+        
         return cell
     }
 }

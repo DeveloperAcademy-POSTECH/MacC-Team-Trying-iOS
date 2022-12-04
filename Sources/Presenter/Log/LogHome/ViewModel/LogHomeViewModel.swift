@@ -15,7 +15,7 @@ protocol TicketViewCoodinating {
 }
 
 protocol MyConstellationViewCoordinating {
-    func pushMyConstellationViewController(courses: [CourseEntity])
+    func pushMyConstellationViewController(courses: [CourseEntity], homeView: LogHomeViewController)
 }
 
 protocol LogMapViewCoordinating {
@@ -51,9 +51,9 @@ extension LogHomeViewModel {
         coordinator.popViewController()
     }
     // 별자리 콜렉션뷰 2X2로 전환
-    func pushMyConstellationView(courses: [CourseEntity]) {
+    func pushMyConstellationView(courses: [CourseEntity], homeView: LogHomeViewController) {
         guard let coordinator = coordinator as? MyConstellationViewCoordinating else { return }
-        coordinator.pushMyConstellationViewController(courses: courses)
+        coordinator.pushMyConstellationViewController(courses: courses, homeView: homeView)
     }
     // 티켓뷰로 전환
     func presentTicketView(course: CourseEntity, selectedCourseIndex: Int, rootViewState: RootViewState) {

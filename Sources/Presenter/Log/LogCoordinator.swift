@@ -33,9 +33,10 @@ final class LogCoordinator: Coordinator,
         navigationController?.present(viewController, animated: true)
     }
     
-    func pushMyConstellationViewController(courses: [CourseEntity]) {
+    func pushMyConstellationViewController(courses: [CourseEntity], homeView: LogHomeViewController) {
         let viewModel = MyConstellationViewModel(coordinator: self, courses: courses)
         let viewController = MyConstellationViewController(viewModel: viewModel)
+        viewController.homeView = homeView
         viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
     }

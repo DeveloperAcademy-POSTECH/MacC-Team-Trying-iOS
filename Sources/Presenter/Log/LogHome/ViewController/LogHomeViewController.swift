@@ -17,7 +17,7 @@ final class LogHomeViewController: BaseViewController {
     
     var viewModel: LogHomeViewModel
     
-    private var currentIndex: Int = 0
+    var currentIndex: Int = 0
     
     private lazy var mediumStarBackgroundView = MediumStarBackgroundView(
         frame: CGRect(
@@ -83,7 +83,7 @@ final class LogHomeViewController: BaseViewController {
         return layout
     }()
     
-    private lazy var logCollectionView: UICollectionView = {
+    lazy var logCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         collectionView.backgroundColor = .clear
         collectionView.register(LogCollectionViewCell.self, forCellWithReuseIdentifier: LogCollectionViewCell.identifier)
@@ -346,7 +346,7 @@ extension LogHomeViewController {
     
     @objc
     func tapListButton() {
-        viewModel.pushMyConstellationView(courses: viewModel.courses)
+        viewModel.pushMyConstellationView(courses: viewModel.courses, homeView: self)
     }
     
     @objc
