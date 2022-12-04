@@ -51,6 +51,8 @@ class LogTicketView: UIView {
         return textView
     }()
     
+    private let emptyImageView = EmptyImageView()
+    
     private let dateTitleLabel = LogTicketLabel(title: "Date", color: .white)
     private let numberTitleLabel = LogTicketLabel(title: "No.", color: .white)
     private let fromTitleLabel = LogTicketLabel(title: "From", color: .white)
@@ -108,15 +110,27 @@ class LogTicketView: UIView {
 extension LogTicketView: UIScrollViewDelegate {
     
     private func setScrollView() {
-        for index in 0..<imageUrl.count {
-            let imageView = UIImageView()
-            let xPos = ImageScrollView.frame.width * CGFloat(index)
-            imageView.frame = CGRect(x: xPos, y: 0, width: ImageScrollView.bounds.width, height: ImageScrollView.bounds.height)
-            guard let url = URL(string: imageUrl[index]) else { return }
-            imageView.load(url: url)
-            ImageScrollView.addSubview(imageView)
-            ImageScrollView.contentSize.width = imageView.frame.width * CGFloat(index + 1)
-            ImageScrollView.delegate = self
+        
+        switch imageUrl.isEmpty {
+        case true:
+            addSubview(emptyImageView)
+            emptyImageView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+                make.height.equalTo(DeviceInfo.screenHeight * 0.3471563981)
+                make.centerX.equalToSuperview()
+                make.top.equalToSuperview()
+            }
+        case false:
+            for index in 0..<imageUrl.count {
+                let imageView = UIImageView()
+                let xPos = ImageScrollView.frame.width * CGFloat(index)
+                imageView.frame = CGRect(x: xPos, y: 0, width: ImageScrollView.bounds.width, height: ImageScrollView.bounds.height)
+                guard let url = URL(string: imageUrl[index]) else { return }
+                imageView.load(url: url)
+                ImageScrollView.addSubview(imageView)
+                ImageScrollView.contentSize.width = imageView.frame.width * CGFloat(index + 1)
+                ImageScrollView.delegate = self
+            }
         }
     }
     
