@@ -73,15 +73,17 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        let _ = notification.request.content.userInfo
-        completionHandler([.badge, .banner, .list])
-        // 앱이 foreground 상태일 때 push가 온 경우
-        NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
         let userInfo = notification.request.content.userInfo
+        
         guard let _ = userInfo["target"] as? String else {
             goToAnotherTab(userInfo: userInfo)
             return
         }
+        
+        completionHandler([.badge, .banner, .list])
+        // 앱이 foreground 상태일 때 push가 온 경우
+        NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
+        
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
