@@ -76,16 +76,17 @@ extension MyConstellationViewController {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._15)]
         
         // MARK: 네비게이션 rightButton, leftButton커스텀
-        let configure = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold, scale: .default)
+        let dissmissButtonConfigure = UIImage.SymbolConfiguration(pointSize: 22, weight: .bold, scale: .default)
+        let mapButtonConfigure = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold, scale: .default)
         
         let mapButton = UIButton(type: .custom)
-        mapButton.setImage(UIImage(systemName: "map", withConfiguration: configure), for: .normal)
+        mapButton.setImage(UIImage(systemName: "map", withConfiguration: mapButtonConfigure), for: .normal)
         mapButton.tintColor = .white
         mapButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         mapButton.addTarget(self, action: #selector(tapMapButton), for: .touchUpInside)
         
         let dismissButton = UIButton(type: .custom)
-        dismissButton.setImage( UIImage(systemName: "chevron.backward", withConfiguration: configure), for: .normal)
+        dismissButton.setImage( UIImage(systemName: "chevron.backward", withConfiguration: dissmissButtonConfigure), for: .normal)
         dismissButton.tintColor = .white
         dismissButton.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
         dismissButton.addTarget(self, action: #selector(tapDismissButton), for: .touchUpInside)
