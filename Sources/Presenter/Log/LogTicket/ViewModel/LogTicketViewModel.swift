@@ -13,6 +13,10 @@ protocol DismissCoordinating {
     func dismissTicketViewController()
 }
 
+protocol LogFullImageCoordinating {
+    func presentImageFullScreenViewController(imageUrl: [String], rootViewState: RootViewState, course: CourseEntity, selectedCourseIndex: Int, currentImageIndex: Int)
+}
+
 final class LogTicketViewModel: BaseViewModel {
     
     var coordinator: Coordinator
@@ -43,8 +47,13 @@ final class LogTicketViewModel: BaseViewModel {
     }
     
     func tapDismissButton() {
-        guard let coordinator = coordinator as? Popable else { return }
-        coordinator.popViewController()
+        guard let coordinator = coordinator as? DismissCoordinating else { return }
+        coordinator.dismissTicketViewController()
+    }
+    
+    func presentImageFullScreenViewController(imageUrl: [String], rootViewState: RootViewState, currentImageIndex: Int) {
+        guard let coordinator = coordinator as? LogFullImageCoordinating else { return }
+        coordinator.presentImageFullScreenViewController(imageUrl: imageUrl, rootViewState: rootViewState, course: course, selectedCourseIndex: selectedCourseIndex, currentImageIndex: currentImageIndex)
     }
 }
 

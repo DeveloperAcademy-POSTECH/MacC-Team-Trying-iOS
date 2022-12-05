@@ -10,6 +10,8 @@ import SnapKit
 
 class LogTicketView: UIView {
     
+    var currentIndex: Int = 0
+    
     var rootViewState = RootViewState.LogHome {
         didSet {
             setBlur()
@@ -18,10 +20,12 @@ class LogTicketView: UIView {
     
     var imageUrl: [String] = [] {
         didSet {
-            setScrollView()
+            setCollectionView()
             setPageControl()
         }
     }
+    
+    private let viewModel: LogTicketViewModel
     
     var courseNameLabel: UILabel = {
         let label = UILabel()
@@ -62,27 +66,37 @@ class LogTicketView: UIView {
     var fromLabel = LogTicketLabel(color: .designSystem(Palette.grayC5C5C5) ?? .white)
     
     private let pageControl = UIPageControl()
+    
+    private let flowLayout: UICollectionViewFlowLayout = {
+        let width = DeviceInfo.screenWidth * 0.8974358974
+        let height = DeviceInfo.screenHeight * 0.3471563981
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.itemSize = CGSize(width: width, height: height)
 
-    private var ImageScrollView: UIScrollView = {
-        var scrollView = UIScrollView(
-            frame: CGRect(
-                x: 0,
-                y: 0,
-                width: DeviceInfo.screenWidth * 0.8974358974,
-                height: DeviceInfo.screenHeight * 0.3471563981
-            )
-        )
-        scrollView.isPagingEnabled = true
-        scrollView.bounces = false
-        scrollView.showsHorizontalScrollIndicator = false
-        return scrollView
+        return layout
     }()
+    
+    private lazy var imageCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        collectionView.backgroundColor = .clear
+        collectionView.register(LogImageCollectionViewCell.self, forCellWithReuseIdentifier: LogImageCollectionViewCell.identifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isPagingEnabled = true
+        return collectionView
+    }()
+    
     // MARK: Initializer
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(viewModel: LogTicketViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
         self.addSubviews(
             courseNameLabel,
-            ImageScrollView,
+            imageCollectionView,
             dateTitleLabel,
             numberTitleLabel,
             fromTitleLabel,
@@ -95,7 +109,6 @@ class LogTicketView: UIView {
             flopButton
         )
         setLayouts()
-        
     }
     
     required init?(coder: NSCoder) {
@@ -107,12 +120,33 @@ class LogTicketView: UIView {
     }
 }
 
+// MARK: CollectionViewDelegate
+extension LogTicketView: UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return imageUrl.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LogImageCollectionViewCell.identifier, for: indexPath) as? LogImageCollectionViewCell else { return UICollectionViewCell() }
+        cell.configure(imageUrl: imageUrl[indexPath.row])
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        viewModel.tapDismissButton()
+        viewModel.presentImageFullScreenViewController(imageUrl: imageUrl, rootViewState: rootViewState, currentImageIndex: indexPath.row)
+    }
+}
+
+// MARK: UIScrollViewDelegate
 extension LogTicketView: UIScrollViewDelegate {
     
-    private func setScrollView() {
-        
+    private func setCollectionView() {
         switch imageUrl.isEmpty {
         case true:
+            imageCollectionView.isHidden = true
             addSubview(emptyImageView)
             emptyImageView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
@@ -121,16 +155,7 @@ extension LogTicketView: UIScrollViewDelegate {
                 make.top.equalToSuperview()
             }
         case false:
-            for index in 0..<imageUrl.count {
-                let imageView = UIImageView()
-                let xPos = ImageScrollView.frame.width * CGFloat(index)
-                imageView.frame = CGRect(x: xPos, y: 0, width: ImageScrollView.bounds.width, height: ImageScrollView.bounds.height)
-                guard let url = URL(string: imageUrl[index]) else { return }
-                imageView.load(url: url)
-                ImageScrollView.addSubview(imageView)
-                ImageScrollView.contentSize.width = imageView.frame.width * CGFloat(index + 1)
-                ImageScrollView.delegate = self
-            }
+            imageCollectionView.isHidden = false
         }
     }
     
@@ -138,10 +163,25 @@ extension LogTicketView: UIScrollViewDelegate {
         pageControl.currentPage = currentPage
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let value = scrollView.contentOffset.x / scrollView.frame.size.width
-        setPageControlSelectedPage(currentPage: Int(round(value)))
+    func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
+        let layout = self.imageCollectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        let cellWidthIncludingSpacing = layout.itemSize.width + layout.minimumLineSpacing
+        
+        var offset = targetContentOffset.pointee
+        let index = (offset.x + scrollView.contentInset.left) / cellWidthIncludingSpacing
+        
+        currentIndex = Int(round(index))
+        
+        offset = CGPoint(x: CGFloat(currentIndex) * cellWidthIncludingSpacing - scrollView.contentInset.left, y: -scrollView.contentInset.top)
+        targetContentOffset.pointee = offset
+        
+        setPageControlSelectedPage(currentPage: currentIndex)
     }
+    
     // MARK: PageControl 설정
     private func setPageControl() {
         pageControl.currentPage = 0
@@ -150,17 +190,17 @@ extension LogTicketView: UIScrollViewDelegate {
         pageControl.currentPageIndicatorTintColor = UIColor.designSystem(Palette.pinkFF0099)
         
         pageControl.snp.makeConstraints { make in
-            make.bottom.equalTo(ImageScrollView.snp.bottom)
+            make.bottom.equalTo(imageCollectionView.snp.bottom)
             make.centerX.equalToSuperview()
         }
     }
 }
 
 extension LogTicketView {
+    
     // Snapkit을 사용해 Component의 Layout을 배치합니다.
     private func setLayouts() {
-        
-        ImageScrollView.snp.makeConstraints { make in
+        imageCollectionView.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 0.8974358974)
             make.height.equalTo(DeviceInfo.screenHeight * 0.3471563981)
             make.top.centerX.equalToSuperview()
@@ -168,7 +208,7 @@ extension LogTicketView {
         
         courseNameLabel.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(DeviceInfo.screenWidth * 0.05128205128)
-            make.top.equalTo(ImageScrollView.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
+            make.top.equalTo(imageCollectionView.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
         }
         
         dateTitleLabel.snp.makeConstraints { make in
