@@ -12,7 +12,7 @@ class LogTicketView: UIView {
     
     var rootViewState = RootViewState.LogHome {
         didSet {
-            setBlur()
+//            setBlur()
         }
     }
     
@@ -22,6 +22,19 @@ class LogTicketView: UIView {
             setPageControl()
         }
     }
+    
+    var testView: UIView = {
+        let v = UIView()
+        v.backgroundColor = .red
+        return v
+    }()
+    
+    lazy var blurEffectView: UIVisualEffectView = {
+        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark))
+        blurEffectView.clipsToBounds = true
+        blurEffectView.layer.cornerRadius = 15
+        return blurEffectView
+    }()
     
     var courseNameLabel: UILabel = {
         let label = UILabel()
@@ -78,6 +91,12 @@ class LogTicketView: UIView {
     // MARK: Initializer
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+//        self.addSubview(testView)
+//        testView.snp.makeConstraints { make in
+//            make.edges.equalToSuperview()
+//        }
+
         self.addSubviews(
             courseNameLabel,
             ImageScrollView,
@@ -93,6 +112,11 @@ class LogTicketView: UIView {
             flopButton
         )
         setLayouts()
+        self.addSubview(blurEffectView)
+        self.sendSubviewToBack(blurEffectView)
+        blurEffectView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
     }
     
@@ -212,7 +236,8 @@ extension LogTicketView {
     // MARK: Ticket Drawing
     private func drawTicket() {
         layer.cornerRadius = 18
-        backgroundColor = .clear
+        // MARK: - 여기서 티켓뷰 백그라운드 색깔 분기처리
+        backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.4)
         let radious = DeviceInfo.screenWidth * 0.1282051282 / 2
         let ticketShapeLayer = CAShapeLayer()
         ticketShapeLayer.frame = self.bounds
@@ -265,19 +290,26 @@ extension LogTicketView {
     
     // MARK: Blur Effect 추가
     private func setBlur() {
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.regular)
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark)
         let outerVisualEffectView = UIVisualEffectView(effect: blurEffect)
+        
+        lazy var blurEffectView: UIVisualEffectView = {
+            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark))
+            blurEffectView.clipsToBounds = true
+            blurEffectView.layer.cornerRadius = 15
+            return blurEffectView
+        }()
         
         switch rootViewState {
         case .LogHome:
-            outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.5).cgColor
+            blurEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.5).cgColor
         case .LogMap:
-            outerVisualEffectView.layer.backgroundColor = UIColor.designSystem(.black)?.withAlphaComponent(0.75).cgColor
+            blurEffectView.layer.backgroundColor = UIColor.designSystem(.black)?.withAlphaComponent(0.75).cgColor
         }
         
-        outerVisualEffectView.layer.opacity = 0.5
-        outerVisualEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
-        self.addSubview(outerVisualEffectView)
-        self.sendSubviewToBack(outerVisualEffectView)
+        blurEffectView.layer.opacity = 0.5
+        blurEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
+        self.addSubview(blurEffectView)
+
     }
 }
