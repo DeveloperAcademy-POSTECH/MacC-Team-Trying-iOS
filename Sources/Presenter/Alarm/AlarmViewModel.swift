@@ -38,9 +38,9 @@ class AlarmViewModel: BaseViewModel {
     private func notificateAndMoveUi(index: Int) {
         let alarm = alarms[index]
         if alarm.type == .arrive {
-            NotificationCenter.default.post(name: Notification.Name("REVIEW"), object: "\(alarm.targetId)")
             guard let coordinator = coordinator as? AlarmViewCoordinatingInAlarmViewCoordinating else { return }
             coordinator.goToLogView()
+            NotificationCenter.default.post(name: Notification.Name("REVIEW"), object: "\(alarm.targetId)")
         } else {
             // MARK: 🛑 추후 홈뷰로 이동할때 🛑
 //            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: "\(alarm.targetId)")
