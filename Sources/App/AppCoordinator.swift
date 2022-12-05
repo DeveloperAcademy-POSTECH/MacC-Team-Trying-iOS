@@ -14,6 +14,7 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
     weak var navigationController: UINavigationController?
     let userService: UserService = UserService()
     var mainCoordinator: MainCoordinator?
+//    var go: Bool = false
     
     // MARK: 동작은 하나, 이쁘지 않은 코드
     @Published var isMainCoordinatorMade: Bool = false
@@ -70,6 +71,9 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
 
     @MainActor
     func coordinateToMainScene() {
+//        guard go == false else { return }
+//        go = true
+        if mainCoordinator != nil { return }
         mainCoordinator = MainCoordinator(navigationController: navigationController)
         guard let mainCoordinator = mainCoordinator else { return }
         mainCoordinator.start()

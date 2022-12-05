@@ -28,9 +28,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         coordinator = AppCoordinator(window: window!)
         
         coordinator?.presentSplashView()
-        
-        coordinator?.$isMainCoordinatorMade.sink(receiveCompletion: { _ in
-            
+        coordinator?.$isMainCoordinatorMade
+            .sink(receiveCompletion: { _ in
         }, receiveValue: { bool in
             if bool {
                 if let options = launchOptions {
@@ -40,6 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }).store(in: &cancelBag)
+        
         return true
     }
     
@@ -74,14 +74,28 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let _ = notification.request.content.userInfo
-        completionHandler([.badge, .banner, .list])
+//        completionHandler([.badge, .banner, .list])
         // 앱이 foreground 상태일 때 push가 온 경우
-        NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
+        
         let userInfo = notification.request.content.userInfo
-        guard let _ = userInfo["target"] as? String else {
-            goToAnotherTab(userInfo: userInfo)
+        
+        guard let target = userInfo["target"] as? String else {
             return
         }
+        if target == "JOIN" {
+            goToAnotherTab(userInfo: userInfo)
+            return
+        } else if target == "LEAVE" {
+            let vc = UserWarningViewController(outgoingType: .exitPlanet)
+            vc.navigationController?.navigationItem.setHidesBackButton(true, animated: true)
+//            coordinator?.mainCoordinator?.navigationController?.modalPresentationStyle =
+            coordinator?.mainCoordinator?.navigationController?.setViewControllers([vc], animated: false)
+        } else {
+            completionHandler([.badge, .banner, .list])
+            NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
+//            goToAnotherTab(userInfo: userInfo)
+        }
+        
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
@@ -97,9 +111,25 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
               let notificationId = Int(notificationIdString),
               let coordinator = coordinator,
               let mainCoordinator = coordinator.mainCoordinator else {
-            coordinator?.start()
-            return
+//                return
+            if let target = userInfo["target"] as? String,
+               let coordinator = coordinator {
+                if target == "JOIN" {
+                    coordinator.start()
+                    return
+                    
+                    //LEAVE
+                } else {
+                    let vc = UserWarningViewController(outgoingType: .exitPlanet)
+                    vc.navigationController?.navigationItem.setHidesBackButton(true, animated: true)
+                    coordinator.mainCoordinator?.navigationController?.setViewControllers([vc], animated: false)
+                    return
+                }
+            } else {
+                return
+            }
         }
+        
         if target == "COURSE" {
             Task {
                 if try await alarmAPI.checkAlarm(type: .check, id: notificationId) {
@@ -107,6 +137,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     mainCoordinator.homeCoordinator?.pushToAlarmViewController()
                 }
             }
+            
             // MARK: 🛑 추후 홈뷰로 이동할때 🛑
             // mainCoordinator.homeCoordinator?.navigationController?.popToRootViewController(animated: true)
             // NotificationCenter.default.post(name: Notification.Name("COURSE"), object: targetId)
