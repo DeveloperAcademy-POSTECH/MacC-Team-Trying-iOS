@@ -233,6 +233,7 @@ extension UserWarningViewController {
     
     private func setNavigation() {
         self.title = outgoingType == .exitPlanet ? "행성 나가기" : "회원 탈퇴"
+        self.navigationController?.navigationBar.tintColor = .white
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.gmarksans(weight: .bold, size: ._15)]
     }
     
