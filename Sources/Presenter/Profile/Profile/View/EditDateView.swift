@@ -14,15 +14,13 @@ import SnapKit
 final class EditDateView: UIView {
     var height: CGFloat = 500
     
-    private let blurBackgroundView: UIView = {
-        let blurEffect = UIBlurEffect(style: .regular)
-        let view = UIVisualEffectView(effect: blurEffect)
-        view.layer.cornerRadius = 15
-        view.layer.masksToBounds = true
-        view.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.8).cgColor
-        view.layer.opacity = 0.8
-        return view
+    lazy var blurEffectView: UIVisualEffectView = {
+        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark))
+        blurEffectView.clipsToBounds = true
+        blurEffectView.layer.cornerRadius = 15
+        return blurEffectView
     }()
+    
     lazy var dismissButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
@@ -70,7 +68,7 @@ final class EditDateView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        self.backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.3)
         setUI()
     }
     
@@ -84,7 +82,7 @@ extension EditDateView {
     private func setUI() {
         self.layer.cornerRadius = 15
         self.addSubviews(
-            blurBackgroundView,
+            blurEffectView,
             dismissButton,
             imageView,
             viewLabel,
@@ -92,7 +90,8 @@ extension EditDateView {
             doneButton
         )
         
-        blurBackgroundView.snp.makeConstraints { make in
+        self.sendSubviewToBack(blurEffectView)
+        blurEffectView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         

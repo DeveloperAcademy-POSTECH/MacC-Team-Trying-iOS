@@ -14,9 +14,16 @@ class LogTicketEmptyView: UIView {
     
     var rootViewState = RootViewState.LogHome {
         didSet {
-            setBlur()
+//            setBlur()
         }
     }
+    
+    lazy var blurEffectView: UIVisualEffectView = {
+        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark))
+        blurEffectView.clipsToBounds = true
+        blurEffectView.layer.cornerRadius = 15
+        return blurEffectView
+    }()
     
     lazy var flopButton: UIButton = {
         let button = UIButton()
@@ -69,8 +76,14 @@ extension LogTicketEmptyView {
             flopButton,
             heartImageView,
             logTicketEmptyViewLabel,
-            addCourseButton
+            addCourseButton,
+            blurEffectView
         )
+        
+        self.sendSubviewToBack(blurEffectView)
+        blurEffectView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         heartImageView.snp.makeConstraints { make in
             make.width.equalTo(DeviceInfo.screenWidth * 100 / 390)
@@ -102,7 +115,8 @@ extension LogTicketEmptyView {
     // MARK: Ticket Drawing
     private func drawTicket() {
         layer.cornerRadius = 18
-        backgroundColor = .clear
+        // MARK: - 배경화면 분기처리
+        backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.4)
         let radious = DeviceInfo.screenWidth * 0.1282051282 / 2
         let ticketShapeLayer = CAShapeLayer()
         ticketShapeLayer.frame = self.bounds
