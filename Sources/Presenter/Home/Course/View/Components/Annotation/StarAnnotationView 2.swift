@@ -1,0 +1,40 @@
+//
+//  StarAnnotationView.swift
+//  MatStar
+//
+//  Created by 김승창 on 2022/10/24.
+//  Copyright © 2022 Try-ing. All rights reserved.
+//
+
+import MapKit
+import UIKit
+
+import SnapKit
+
+final class StarAnnotationView: MKAnnotationView {
+    static let identifier = "StarAnnotationViewIdentifier"
+    
+    override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
+        super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        
+        displayPriority = .required
+        centerOffset = CGPoint(x: 0, y: -18)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+final class StarAnnotation: NSObject, MKAnnotation {
+    let coordinate: CLLocationCoordinate2D
+    var placeId: Int
+    
+    init(
+        coordinate: CLLocationCoordinate2D,
+        placeId: Int
+    ) {
+        self.coordinate = coordinate
+        self.placeId = placeId
+    }
+}

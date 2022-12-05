@@ -19,6 +19,13 @@ final class HomeViewController: BaseViewController {
     let viewModel: HomeViewModel
     var dateInfoIsHidden: Bool = false
     var selectedDate: Date = YearMonthDayDate.today.asDate()
+    var currentDate: Date = Date()
+    
+    func changeDateFormat(input: Date) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd 15:00:00"
+        return dateFormatter.date(from: dateFormatter.string(from: input))!
+    }
     
     let homeTitle: UILabel = {
         let label = UILabel()
@@ -201,7 +208,9 @@ final class HomeViewController: BaseViewController {
                 self.calendarView.selectDateDirectly(viewModel.selectedDate)
                 self.dateCoureRegisterButton.isHidden = true
             } else {
-                setRegisterButton(viewModel.selectedDate > Date() ? .addPlan : .addCourse)
+                print(viewModel.selectedDate)
+                print(changeDateFormat(input: currentDate))
+                setRegisterButton(viewModel.selectedDate >= changeDateFormat(input: currentDate) ? .addPlan : .addCourse)
             }
         }
     }
@@ -436,7 +445,7 @@ extension HomeViewController: CalendarViewDelegate {
                 try await viewModel.fetchSelectedDateCourse(selectedDate: date.dateToString())
                 self.dateCoureRegisterButton.isHidden = true
             } else {
-                setRegisterButton(date > Date() ? .addPlan : .addCourse)
+                setRegisterButton(date >= changeDateFormat(input: currentDate) ? .addPlan : .addCourse)
                 self.contentView.snp.remakeConstraints { make in
                     make.top.equalToSuperview()
                     make.width.equalToSuperview()
