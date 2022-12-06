@@ -14,6 +14,14 @@ import SnapKit
 final class ProfileTableViewActivityCell: UITableViewCell {
     static let identifier = "ProfileTableViewActivityCellIdentifier"
     
+    lazy var constellationStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.spacing = 10
+        stackView.alignment = .center
+        stackView.axis = .vertical
+        return stackView
+    }()
+    
     private let myConstellationLabel: UILabel = {
         let label = UILabel()
         label.text = "내 별자리"
@@ -27,6 +35,15 @@ final class ProfileTableViewActivityCell: UITableViewCell {
         label.font = .designSystem(weight: .bold, size: ._20)
         label.textColor = .designSystem(.mainYellow)
         return label
+    }()
+    
+    /*
+    lazy var likeCourseStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.spacing = 10
+        stackView.alignment = .center
+        stackView.axis = .vertical
+        return stackView
     }()
     
     private let courseLabel: UILabel = {
@@ -43,6 +60,7 @@ final class ProfileTableViewActivityCell: UITableViewCell {
         label.textColor = .designSystem(.mainYellow)
         return label
     }()
+     */
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -59,31 +77,27 @@ final class ProfileTableViewActivityCell: UITableViewCell {
         self.backgroundColor = .designSystem(.gray818181)?.withAlphaComponent(0.5)
         self.layer.cornerRadius = 10
         
-        self.addSubviews(
-            myConstellationLabel,
-            numberOfConstellationLabel,
-            courseLabel,
-            numberOfLikedCourseLabel
+        self.constellationStackView.addArrangedSubview(myConstellationLabel)
+        self.constellationStackView.addArrangedSubview(numberOfConstellationLabel)
+        
+        // self.likeCourseStackView.addArrangedSubview(courseLabel)
+        // self.likeCourseStackView.addArrangedSubview(numberOfLikedCourseLabel)
+        
+        self.contentView.addSubviews(
+            constellationStackView
+            // likeCourseStackView
         )
         
-        myConstellationLabel.snp.makeConstraints { make in
+        constellationStackView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(24)
-            make.leading.equalToSuperview().inset(50)
+            make.centerX.equalToSuperview()
         }
         
-        numberOfConstellationLabel.snp.makeConstraints { make in
-            make.top.equalTo(myConstellationLabel.snp.bottom).offset(10)
-            make.centerX.equalTo(myConstellationLabel)
-        }
-        
-        courseLabel.snp.makeConstraints { make in
+        /*
+        likeCourseStackView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(24)
             make.trailing.equalToSuperview().inset(50)
         }
-        
-        numberOfLikedCourseLabel.snp.makeConstraints { make in
-            make.top.equalTo(courseLabel.snp.bottom).offset(10)
-            make.centerX.equalTo(courseLabel)
-        }
+         */
     }
 }
