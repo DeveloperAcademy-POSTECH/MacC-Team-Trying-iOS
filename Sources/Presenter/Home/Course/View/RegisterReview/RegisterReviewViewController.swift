@@ -351,10 +351,8 @@ extension RegisterReviewViewController: UITextViewDelegate {
     @objc
     private func pickImage(_ sender: UIButton) {
         let imagePicker = UIImagePickerController()
-        imagePicker.fixCannotMoveEditingBox()
         imagePicker.sourceType = .photoLibrary
         imagePicker.delegate = self
-        imagePicker.allowsEditing = true
         self.present(imagePicker, animated: true)
     }
 }
@@ -368,7 +366,7 @@ extension RegisterReviewViewController: UINavigationControllerDelegate, UIImageP
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         picker.dismiss(animated: true)
         
-        guard let image = info[.editedImage] as? UIImage else { return }
+        guard let image = info[.originalImage] as? UIImage else { return }
         self.viewModel.addImage(image)
     }
 }
