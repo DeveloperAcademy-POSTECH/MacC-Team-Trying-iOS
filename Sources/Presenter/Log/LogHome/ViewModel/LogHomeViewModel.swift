@@ -33,13 +33,19 @@ final class LogHomeViewModel: BaseViewModel {
     @Published var courses = [CourseEntity]()
     @Published var alarmIndex = 0
     
+    private var hasNext: Bool = false {
+        didSet {
+            print("🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹")
+            print("detected")
+            print(hasNext)
+            print("🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹🕹")
+        }
+    }
+    
     init(coordinator: Coordinator, fetchConstellationUseCase: FetchConstellationsUseCase = FetchConstellationsUseCaseImpl()) {
         self.coordinator = coordinator
         self.fetchConstellationsUseCase = fetchConstellationUseCase
         super.init()
-        Task {
-            try await fetchConstellation()
-        }
         setNotification()
     }
 }
@@ -71,7 +77,20 @@ extension LogHomeViewModel {
 extension LogHomeViewModel {
     // MARK: 별자리 API UseCase 호출
     func fetchConstellation() async throws {
-        courses = try await fetchConstellationsUseCase.fetchLogAsync()
+        print("😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍😍")
+        Task {
+            let responseCourses: [CourseEntity]
+            (responseCourses, hasNext) = try await fetchConstellationsUseCase.fetchLogAsync()
+            await AddResponseCourses(courses: responseCourses)
+        }
+    }
+    
+    func removeAllCourses() {
+        courses.removeAll()
+    }
+    
+    func AddResponseCourses(courses: [CourseEntity]) async {
+        self.courses.append(contentsOf: courses)
     }
 }
 

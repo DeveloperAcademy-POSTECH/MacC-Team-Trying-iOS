@@ -25,7 +25,7 @@ final class FetchConstellationRepositoryImpl {
 
 extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
     
-    func fetchLogAsync() async throws -> [CourseEntity] {
+    func fetchLogAsync() async throws -> ([CourseEntity], Bool) {
         
         guard let url = URL(string: url) else {
             #if DEBUG
@@ -58,7 +58,7 @@ extension FetchConstellationRepositoryImpl: FetchConstellationRepository {
             throw LogRequestError.decoding
         }
         
-        return convertToCourseEntity(responseData)
+        return (convertToCourseEntity(responseData), responseData.hasNext)
     }
     
     // MARK: DTO를 Entity로 변환 -> 추후 수정예정

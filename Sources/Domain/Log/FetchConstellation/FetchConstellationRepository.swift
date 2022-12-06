@@ -9,5 +9,5 @@
 import Foundation
 
 protocol FetchConstellationRepository {
-    func fetchLogAsync() async throws -> [CourseEntity]
+    func fetchLogAsync() async throws -> ([CourseEntity], Bool)
 }
