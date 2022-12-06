@@ -93,12 +93,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         } else {
             completionHandler([.badge, .banner, .list])
             NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
-//            goToAnotherTab(userInfo: userInfo)
         }
-        
-        completionHandler([.badge, .banner, .list])
-        // 앱이 foreground 상태일 때 push가 온 경우
-        NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
         
     }
     
