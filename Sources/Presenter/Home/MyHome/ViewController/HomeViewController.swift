@@ -221,11 +221,6 @@ final class HomeViewController: BaseViewController {
     }
     
     @objc
-    func inviteButtonTapped() {
-        print("초대하기 버튼이 눌렸습니다")
-    }
-    
-    @objc
     func registerButtonTapped(_ sender: UIButton) {
         guard let courseType = CourseFlowType(rawValue: sender.tag) else { return }
         viewModel.startAddCourseFlow(type: courseType)

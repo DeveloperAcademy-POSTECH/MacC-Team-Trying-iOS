@@ -64,14 +64,12 @@ final class HomeViewModel: BaseViewModel {
     
     @objc
     func getAllNotification() {
-        print("알람이 왔어용")
         self.delegate?.fetchAlarm()
     }
     
     func fetchUserInfo() async throws {
         let data = try await HomeAPIService.fetchUserAsync()
         guard let myUserInfo = try? JSONDecoder().decode(UserInfoDTO.self, from: data) else {
-             print("Decoder오류")
              return
          }
         UserDefaults.standard.set(myUserInfo.me.name, forKey: "name")
@@ -85,7 +83,6 @@ final class HomeViewModel: BaseViewModel {
     func fetchDateRange(dateRange: [String]) async throws {
         let data = try await HomeAPIService.fetchDateList(dateRange: dateRange)
         guard let myDateListDTO = try? JSONDecoder().decode(DateList.self, from: data) else {
-            print("데이트날짜 범위 조회 Decoder오류")
             return
         }
         
@@ -99,7 +96,6 @@ final class HomeViewModel: BaseViewModel {
     func fetchSelectedDateCourse(selectedDate: String) async throws {
         let data = try await HomeAPIService.fetchCourseList(selectedDate: selectedDate)
         guard let selectedDateCourse = try? JSONDecoder().decode(SelectedDateCourseDTO.self, from: data) else {
-            print("선택한 날짜 데이트 코스 조회 Decoder오류")
             return
         }
         let placeList: [DatePath] = selectedDateCourse.places.map { placeElement in

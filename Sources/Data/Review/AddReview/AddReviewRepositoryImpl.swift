@@ -38,6 +38,7 @@ final class AddReviewRepositoryImpl: AddReviewRepository {
             data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
             data.append(image.jpegData(compressionQuality: 0.4)!)
             data.append("\r\n".data(using: .utf8)!)
+            print("✨이미지 크기 : \(image.jpegData(compressionQuality: 0.4)!)")
         }
         data.append("--\(boundary)--".data(using: .utf8)!)
         

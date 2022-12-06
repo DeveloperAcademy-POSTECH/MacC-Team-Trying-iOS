@@ -31,14 +31,12 @@ class HomeAPIService {
     static func fetchUserAsync() async throws -> Data {
         
         guard let url = URL(string: fetchUserUrl) else {
-            print("user url error")
             throw HomeApiError.urlResponse
         }
         var request = URLRequest(url: url)
         request.setValue(UserDefaults.standard.string(forKey: "accessToken"), forHTTPHeaderField: "accessToken")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-            print("api response error")
             throw HomeApiError.response
         }
         return data
