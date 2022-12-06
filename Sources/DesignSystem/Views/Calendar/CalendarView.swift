@@ -91,9 +91,10 @@ final class CalendarView: BaseView {
             if model.date == YearMonthDayDate.today {
                 cell.isToday()
                 collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
-            } else if model.date == self.selectedDate {
-                collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
             }
+//            else if model.date == self.selectedDate {
+//                collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .top)
+//            }
 
             return cell
         }

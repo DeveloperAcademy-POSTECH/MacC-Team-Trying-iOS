@@ -82,7 +82,7 @@ final class UserWarningViewController: BaseViewController {
         let label = UILabel()
         label.font = .designSystem(weight: .regular, size: ._13)
         label.textColor = .designSystem(.white)
-        label.numberOfLines = 2
+        label.numberOfLines = 0
         label.textAlignment = .left
         return label
     }()
@@ -223,7 +223,7 @@ extension UserWarningViewController {
         let membershipWithdrawalLabels = ["나와 메이트 둘 중 한명이라도 회원탈퇴를 하게 되면, 행성이 바로 삭제됩니다.", "행성에 기록된 모든 기록들이 전부 삭제됩니다.", "행성에 기록된 자료는 복구가 불가능합니다."]
         
         nextButton.setTitle(outgoingType == .exitPlanet ? "행성나가기" : "회원탈퇴", for: .normal)
-        summaryLabel.text = outgoingType == .exitPlanet ? "⭐행성이 없으면 앱의 모든기능을 사용할 수 없어요!\n⭐복구기간이 지나면 기록된 내용들이 사라져요!" :
+        summaryLabel.text = outgoingType == .exitPlanet ? "⭐행성이 없으면 앱의 기능을 사용할 수 없어요!\n⭐복구기간이 지나면 기록된 내용들이 사라져요!" :
         "⭐회원탈퇴 시 행성이 사라져요!\n⭐행성에 기록된 모든 정보가 삭제 돼요!"
         summaryLabel.setLineSpacing(spacing: 10)
         warningPhraseLabel.attributedText = bulletPointList(strings: outgoingType == .exitPlanet ? exitPlanetLabels : membershipWithdrawalLabels)
@@ -281,14 +281,14 @@ extension UserWarningViewController {
         
         subTitleLable.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(98)
-            make.leading.trailing.equalToSuperview().inset(90)
+            make.leading.trailing.equalToSuperview()
             make.height.equalTo(18)
         }
         
         summaryPhraseView.snp.makeConstraints { make in
             make.top.equalTo(subTitleLable.snp.bottom).offset(30)
             make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(72)
+            make.height.equalTo(80)
         }
         
         summaryLabel.snp.makeConstraints { make in
