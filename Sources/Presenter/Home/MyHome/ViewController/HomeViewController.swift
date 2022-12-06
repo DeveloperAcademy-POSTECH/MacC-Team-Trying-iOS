@@ -490,6 +490,6 @@ extension HomeViewController: CalendarViewDelegate {
 
 extension HomeViewController: AlarmResponseDelegate {
     func fetchAlarm() {
-        viewWillAppear(true)
+        setHomeViewUI()
     }
 }

@@ -65,14 +65,16 @@ class AlarmViewController: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.navigationBar.isHidden = false
+//        self.navigationController?.navigationBar.isHidden = false
         alarmViewModel.fetchAlamrs()
         setNavigation()
+        print("view will appear")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.isHidden = true
+        print("view will disappear")
     }
     
     @objc
