@@ -46,15 +46,6 @@ final class HomeViewController: BaseViewController {
         label.textColor = .white
         return label
     }()
-    
-    // MARK: - 추후 api연결
-    let nextDateLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.gmarksans(weight: .light, size: ._13)
-        label.text = "        "
-        label.textColor = .white
-        return label
-    }()
         
     let homeScrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -208,8 +199,6 @@ final class HomeViewController: BaseViewController {
                 self.calendarView.selectDateDirectly(viewModel.selectedDate)
                 self.dateCoureRegisterButton.isHidden = true
             } else {
-                print(viewModel.selectedDate)
-                print(changeDateFormat(input: currentDate))
                 setRegisterButton(viewModel.selectedDate >= changeDateFormat(input: currentDate) ? .addPlan : .addCourse)
             }
         }
@@ -238,7 +227,6 @@ extension HomeViewController {
         view.addSubview(homeTitle)
         view.addSubview(alarmButton)
         view.addSubview(ddayLabel)
-        view.addSubview(nextDateLabel)
         view.addSubview(homeScrollView)
         homeScrollView.addSubview(contentView)
         
@@ -249,7 +237,6 @@ extension HomeViewController {
         pathTableView.dataSource = self
         calendarView.delegate = self
         viewModel.delegate = self
-        
     }
     
     func setUI() {
@@ -271,14 +258,8 @@ extension HomeViewController {
             make.leading.equalTo(homeTitle.snp.leading)
         }
         
-        nextDateLabel.snp.makeConstraints { make in
-            make.top.equalTo(ddayLabel.snp.bottom).offset(10)
-            make.leading.equalTo(homeTitle.snp.leading)
-            make.height.equalTo(15)
-        }
-        
         homeScrollView.snp.makeConstraints { make in
-            make.top.equalTo(nextDateLabel.snp.bottom).offset(10)
+            make.top.equalTo(ddayLabel.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview()
             make.width.equalToSuperview()
             make.bottom.equalToSuperview()
