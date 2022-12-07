@@ -195,10 +195,12 @@ extension LogTicketView: UIScrollViewDelegate {
     
     // MARK: PageControl 설정
     private func setPageControl() {
+        
         pageControl.currentPage = 0
         pageControl.numberOfPages = imageUrl.count
-        pageControl.pageIndicatorTintColor = UIColor.designSystem(Palette.grayC5C5C5)
-        pageControl.currentPageIndicatorTintColor = UIColor.designSystem(Palette.pinkFF0099)
+        
+        pageControl.pageIndicatorTintColor = UIColor.designSystem(.grayC5C5C5)
+        pageControl.currentPageIndicatorTintColor = UIColor.designSystem(Palette.white)
         
         pageControl.snp.makeConstraints { make in
             make.bottom.equalTo(imageCollectionView.snp.bottom)
@@ -300,8 +302,7 @@ extension LogTicketView {
         layer.cornerRadius = 18
         switch rootViewState {
         case .LogHome:
-            backgroundColor = .clear
-//            backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.75)
+            backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.75)
         case .LogMap:
             backgroundColor = .designSystem(.black)?.withAlphaComponent(0.75)
         }
