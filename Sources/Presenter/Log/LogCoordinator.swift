@@ -11,8 +11,10 @@ final class LogCoordinator: Coordinator,
                             MyConstellationViewCoordinating,
                             TicketViewCoodinating,
                             LogMapViewCoordinating,
-                            Popable {
-    
+                            DismissCoordinating,
+                            Popable,
+                            LogFullImageCoordinating
+{
     weak var navigationController: UINavigationController?
     
     weak var parentCoordinator: MoveToHomeTap?
@@ -41,6 +43,10 @@ final class LogCoordinator: Coordinator,
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
+    func dismissTicketViewController() {
+        self.navigationController?.dismiss(animated: true)
+    }
+    
     func popViewController() {
         self.navigationController?.popViewController(animated: true)
     }
@@ -51,6 +57,14 @@ final class LogCoordinator: Coordinator,
         viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
     }
+    
+    func presentImageFullScreenViewController(imageUrl: [String], rootViewState: RootViewState, course: CourseEntity, selectedCourseIndex: Int, currentImageIndex: Int) {
+        let viewModel = LogImageFullScreenViewModel(coordinator: self, imageUrl: imageUrl, rootViewState: rootViewState, selectedCourseIndex: selectedCourseIndex, course: course )
+        let viewController = LogImageFullScreenViewController(viewModel: viewModel, currentImageIndex: currentImageIndex)
+        viewController.modalPresentationStyle = .fullScreen
+        navigationController?.present(viewController, animated: true)
+    }
+    
 }
 
 protocol MoveFromLogToHome {
