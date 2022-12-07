@@ -33,4 +33,9 @@ extension MyConstellationViewModel {
         guard let coordinator = coordinator as? LogMapViewCoordinating else { return }
         coordinator.pushLogMapViewController(courses: courses)
     }
+    
+    func popToCurrentConstellation() {
+        guard let coordinator = coordinator as? Popable else { return }
+        coordinator.popViewController()
+    }
 }
