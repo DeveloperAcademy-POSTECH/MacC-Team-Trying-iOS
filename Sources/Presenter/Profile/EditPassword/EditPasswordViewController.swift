@@ -59,7 +59,6 @@ final class EditPasswordViewController: BaseViewController {
                 self?.rePasswordChangeTextFieldView.updateState(currentState)
             }
             .cancel(with: cancelBag)
-
     }
 
     override func viewDidLoad() {
@@ -68,6 +67,19 @@ final class EditPasswordViewController: BaseViewController {
         setUI()
         bind()
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        setNotifications()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        removeNotifications()
+    }
+
 }
 
 // MARK: - UI
@@ -129,6 +141,66 @@ extension EditPasswordViewController: TextFieldWithMessageViewComponentDelegate 
             viewModel.textField3DidChange(text)
         } else {
             viewModel.textField2DidChange(text)
+        }
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        self.view.endEditing(true)
+    }
+
+    private func setNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    private func removeNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    @objc
+    func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+
+            self.nextButton.snp.updateConstraints { make in
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(keyboardHeight + Constants.Constraints.spaceBetweenkeyboardAndButton)
+            }
+
+            UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseOut, animations: {
+                self.view.layoutIfNeeded()
+            })
+        }
+    }
+
+    @objc
+    func keyboardWillHide(notification: NSNotification) {
+        self.nextButton.snp.updateConstraints { make in
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(16)
+        }
+
+        UIView.animate(withDuration: 1) {
+            self.view.layoutIfNeeded()
         }
     }
 }
