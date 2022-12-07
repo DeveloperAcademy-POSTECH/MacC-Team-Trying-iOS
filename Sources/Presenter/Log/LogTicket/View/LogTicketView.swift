@@ -14,14 +14,14 @@ class LogTicketView: UIView {
     
     var rootViewState = RootViewState.LogHome
     
+    private let viewModel: LogTicketViewModel
+    
     var imageUrl: [String] = [] {
         didSet {
             setCollectionView()
             setPageControl()
         }
     }
-    
-    private let viewModel: LogTicketViewModel
     
     lazy var blurEffectView: UIVisualEffectView = {
         let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark))
@@ -36,9 +36,16 @@ class LogTicketView: UIView {
         return label
     }()
     
-    lazy var likebutton: UIButton = {
+    lazy var editbutton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "unlike_image"), for: .normal)
+        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
+        button.titleLabel?.font = .designSystem(weight: .bold, size: ._11)
+        button.layer.borderColor = .designSystem(.mainYellow)
+        
+        button.backgroundColor = .clear
+        button.layer.cornerRadius = 5
+        button.layer.borderWidth = 1
+        button.setTitle("수정", for: .normal)
         return button
     }()
     
@@ -107,7 +114,7 @@ class LogTicketView: UIView {
             fromLabel,
             pageControl,
             bodyTextView,
-            likebutton,
+            editbutton,
             flopButton
         )
         setLayouts()
@@ -119,7 +126,7 @@ class LogTicketView: UIView {
         }
         
         setTextViewAttributedString()
-        
+        setEditButtonTarget()
     }
     
     required init?(coder: NSCoder) {
@@ -210,7 +217,6 @@ extension LogTicketView: UIScrollViewDelegate {
 }
 
 extension LogTicketView {
-    
     func setTextViewAttributedString() {
         guard let text = bodyTextView.text else { return }
         
@@ -282,9 +288,9 @@ extension LogTicketView {
             make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 0.05628095212)
         }
         
-        likebutton.snp.makeConstraints { make in
-            make.width.equalTo(DeviceInfo.screenWidth * 0.05128205128)
-            make.height.equalTo(DeviceInfo.screenHeight * 0.02191943128)
+        editbutton.snp.makeConstraints { make in
+            make.width.equalTo(35)
+            make.height.equalTo(20)
             make.right.equalTo(fromLabel.snp.right)
             make.centerY.equalTo(courseNameLabel.snp.centerY)
         }
@@ -353,5 +359,14 @@ extension LogTicketView {
         layer.shadowRadius = 10
         layer.shadowOffset = .zero
         layer.mask = ticketShapeLayer
+    }
+    
+    private func setEditButtonTarget() {
+        editbutton.addTarget(self, action: #selector(tapEditButton), for: .touchUpInside)
+    }
+    
+    @objc
+    func tapEditButton() {
+        print("tapEditButton")
     }
 }
