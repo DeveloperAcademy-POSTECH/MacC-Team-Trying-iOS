@@ -181,6 +181,7 @@ final class UserWarningViewController: BaseViewController {
             let defaultAction = UIAlertAction(title: "네 나가겠습니다", style: UIAlertAction.Style.default) { _ in
                 Task {
                     try await ExitAPIService.exitPlanet()
+                    UserDefaults().set(false, forKey: "hasMate")
                     UIApplication.shared.perform(#selector(NSXPCConnection.suspend))
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         exit(0)
