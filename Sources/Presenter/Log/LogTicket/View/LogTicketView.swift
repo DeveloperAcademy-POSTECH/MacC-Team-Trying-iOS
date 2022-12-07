@@ -52,9 +52,8 @@ class LogTicketView: UIView {
         return button
     }()
     
-    var bodyTextView: UITextView = {
+    lazy var bodyTextView: UITextView = {
         let textView = UITextView()
-        textView.font = UIFont.designSystem(weight: .regular, size: ._13)
         textView.textAlignment = .left
         textView.backgroundColor = .clear
         textView.showsVerticalScrollIndicator = false
@@ -124,6 +123,9 @@ class LogTicketView: UIView {
         blurEffectView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        setTextViewAttributedString()
+        
     }
     
     required init?(coder: NSCoder) {
@@ -213,6 +215,16 @@ extension LogTicketView: UIScrollViewDelegate {
 
 extension LogTicketView {
     
+    func setTextViewAttributedString() {
+        guard let text = bodyTextView.text else { return }
+        
+        let attributedString = NSMutableAttributedString(string: text, attributes: [.font: UIFont.gmarksans(weight: .medium, size: ._13), .foregroundColor: UIColor.designSystem(.white)])
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 4
+        attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, attributedString.length))
+        bodyTextView.attributedText = attributedString
+    }
+    
     // Snapkit을 사용해 Component의 Layout을 배치합니다.
     private func setLayouts() {
         imageCollectionView.snp.makeConstraints { make in
@@ -243,17 +255,17 @@ extension LogTicketView {
         
         dateLabel.snp.makeConstraints { make in
             make.left.equalTo(dateTitleLabel.snp.left)
-            make.top.equalTo(dateTitleLabel.snp.bottom)
+            make.top.equalTo(dateTitleLabel.snp.bottom).offset(5)
         }
         
         numberLabel.snp.makeConstraints { make in
             make.left.equalTo(numberTitleLabel.snp.left)
-            make.top.equalTo(numberTitleLabel.snp.bottom)
+            make.top.equalTo(numberTitleLabel.snp.bottom).offset(5)
         }
         
         fromLabel.snp.makeConstraints { make in
             make.right.equalTo(fromTitleLabel.snp.right)
-            make.top.equalTo(fromTitleLabel.snp.bottom)
+            make.top.equalTo(fromTitleLabel.snp.bottom).offset(5)
         }
         
         bodyTextView.snp.makeConstraints { make in

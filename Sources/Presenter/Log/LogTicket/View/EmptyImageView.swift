@@ -20,7 +20,7 @@ class EmptyImageView: UIView {
     
     let emptyImageViewTextLabel: UILabel = {
         let label = UILabel()
-        label.font = .gmarksans(weight: .regular, size: ._15)
+        label.font = .gmarksans(weight: .bold, size: ._15)
         label.text = "등록된 사진이 없어요!"
         return label
     }()

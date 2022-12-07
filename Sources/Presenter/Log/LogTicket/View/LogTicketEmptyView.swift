@@ -39,7 +39,7 @@ class LogTicketEmptyView: UIView {
     
     let logTicketEmptyViewLabel: UILabel = {
         let label = UILabel()
-        label.font = .gmarksans(weight: .regular, size: ._15)
+        label.font = .gmarksans(weight: .bold, size: ._15)
         label.text = "나의 후기가 없어요! 작성해주세요!"
         return label
     }()
@@ -49,7 +49,7 @@ class LogTicketEmptyView: UIView {
         button.backgroundColor = .designSystem(.mainYellow)
         button.setTitle("후기 등록", for: .normal)
         button.setTitleColor(.designSystem(.black), for: .normal)
-        button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+        button.titleLabel?.font = .gmarksans(weight: .bold, size: ._15)
         button.layer.cornerRadius = 15
         return button
     }()
