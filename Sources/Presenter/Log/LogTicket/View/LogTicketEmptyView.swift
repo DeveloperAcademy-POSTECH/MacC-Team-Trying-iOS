@@ -115,8 +115,13 @@ extension LogTicketEmptyView {
     // MARK: Ticket Drawing
     private func drawTicket() {
         layer.cornerRadius = 18
-        // MARK: - 배경화면 분기처리
-        backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.4)
+        switch rootViewState {
+        case .LogHome:
+            backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.4)
+        case .LogMap:
+            backgroundColor = .designSystem(.black)?.withAlphaComponent(0.75)
+        }
+        
         let radious = DeviceInfo.screenWidth * 0.1282051282 / 2
         let ticketShapeLayer = CAShapeLayer()
         ticketShapeLayer.frame = self.bounds

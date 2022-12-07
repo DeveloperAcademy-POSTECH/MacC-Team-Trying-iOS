@@ -12,11 +12,7 @@ class LogTicketView: UIView {
     
     var currentIndex: Int = 0
     
-    var rootViewState = RootViewState.LogHome {
-        didSet {
-//            setBlur()
-        }
-    }
+    var rootViewState = RootViewState.LogHome
     
     var imageUrl: [String] = [] {
         didSet {
@@ -81,7 +77,6 @@ class LogTicketView: UIView {
         layout.minimumLineSpacing = 0
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: width, height: height)
-
         return layout
     }()
     
@@ -97,7 +92,6 @@ class LogTicketView: UIView {
     }()
     
     // MARK: Initializer
-    
     init(viewModel: LogTicketViewModel) {
         self.viewModel = viewModel
         super.init(frame: .zero)
@@ -218,10 +212,21 @@ extension LogTicketView {
     func setTextViewAttributedString() {
         guard let text = bodyTextView.text else { return }
         
-        let attributedString = NSMutableAttributedString(string: text, attributes: [.font: UIFont.gmarksans(weight: .medium, size: ._13), .foregroundColor: UIColor.designSystem(.white)])
+        let attributedString = NSMutableAttributedString(
+            string: text,
+            attributes: [
+                .font: UIFont.gmarksans(weight: .medium, size: ._13),
+                .foregroundColor: UIColor.white
+            ]
+        )
         let paragraphStyle = NSMutableParagraphStyle()
+        
         paragraphStyle.lineSpacing = 4
-        attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, attributedString.length))
+        attributedString.addAttribute(
+            NSAttributedString.Key.paragraphStyle,
+            value: paragraphStyle,
+            range: NSRange(location: 0, length: attributedString.length)
+        )
         bodyTextView.attributedText = attributedString
     }
     
@@ -293,8 +298,13 @@ extension LogTicketView {
     // MARK: Ticket Drawing
     private func drawTicket() {
         layer.cornerRadius = 18
-        // MARK: - 여기서 티켓뷰 백그라운드 색깔 분기처리
-        backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.4)
+        switch rootViewState {
+        case .LogHome:
+            backgroundColor = .clear
+//            backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.75)
+        case .LogMap:
+            backgroundColor = .designSystem(.black)?.withAlphaComponent(0.75)
+        }
         let radious = DeviceInfo.screenWidth * 0.1282051282 / 2
         let ticketShapeLayer = CAShapeLayer()
         ticketShapeLayer.frame = self.bounds
@@ -342,31 +352,5 @@ extension LogTicketView {
         layer.shadowRadius = 10
         layer.shadowOffset = .zero
         layer.mask = ticketShapeLayer
-        
-    }
-    
-    // MARK: Blur Effect 추가
-    private func setBlur() {
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark)
-        let outerVisualEffectView = UIVisualEffectView(effect: blurEffect)
-        
-        lazy var blurEffectView: UIVisualEffectView = {
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark))
-            blurEffectView.clipsToBounds = true
-            blurEffectView.layer.cornerRadius = 15
-            return blurEffectView
-        }()
-        
-        switch rootViewState {
-        case .LogHome:
-            blurEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.5).cgColor
-        case .LogMap:
-            blurEffectView.layer.backgroundColor = UIColor.designSystem(.black)?.withAlphaComponent(0.75).cgColor
-        }
-        
-        blurEffectView.layer.opacity = 0.5
-        blurEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
-        self.addSubview(blurEffectView)
-
     }
 }
