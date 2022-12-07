@@ -25,6 +25,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         KakaoSDK.initSDK(appKey: "9c2a1e0b53a641cb78b1dfb36f00793d")
         self.window = UIWindow(frame: UIScreen.main.bounds)
 
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(moveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        
         coordinator = AppCoordinator(window: window!)
         
         coordinator?.presentSplashView()
@@ -54,6 +57,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 // MARK: - Push Notifications
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    @objc func moveToForeground() {
+        let userService = UserService()
+        Task {
+            let userInformations = try await userService.getUserInformations()
+            if let _ = userInformations.mate {
+            } else {
+                if UserDefaults.standard.bool(forKey: "hasMate") {
+                    presentUserWarningViewController()
+                }
+            }
+        }
+    }
+    
     private func registerForRemoteNotifications() {
         FirebaseApp.configure()
         
@@ -72,11 +89,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }
     }
     
+    private func presentUserWarningViewController() {
+        let vc = UserWarningViewController(outgoingType: .exitPlanet)
+        vc.navigationController?.navigationItem.setHidesBackButton(true, animated: true)
+        coordinator?.mainCoordinator?.navigationController?.setViewControllers([vc], animated: false)
+    }
+    
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        let _ = notification.request.content.userInfo
-//        completionHandler([.badge, .banner, .list])
         // 앱이 foreground 상태일 때 push가 온 경우
-        
         let userInfo = notification.request.content.userInfo
         
         guard let target = userInfo["target"] as? String else {
@@ -86,25 +106,16 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             goToAnotherTab(userInfo: userInfo)
             return
         } else if target == "LEAVE" {
-            let vc = UserWarningViewController(outgoingType: .exitPlanet)
-            vc.navigationController?.navigationItem.setHidesBackButton(true, animated: true)
-//            coordinator?.mainCoordinator?.navigationController?.modalPresentationStyle =
-            coordinator?.mainCoordinator?.navigationController?.setViewControllers([vc], animated: false)
+            presentUserWarningViewController()
         } else {
             completionHandler([.badge, .banner, .list])
             NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
-//            goToAnotherTab(userInfo: userInfo)
         }
         
         completionHandler([.badge, .banner, .list])
         // 앱이 foreground 상태일 때 push가 온 경우
         NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
         
-    }
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-        let userInfo = response.notification.request.content.userInfo
-        goToAnotherTab(userInfo: userInfo)
     }
     
     private func goToAnotherTab(userInfo: [AnyHashable: Any]) {
@@ -115,18 +126,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
               let notificationId = Int(notificationIdString),
               let coordinator = coordinator,
               let mainCoordinator = coordinator.mainCoordinator else {
-//                return
             if let target = userInfo["target"] as? String,
                let coordinator = coordinator {
                 if target == "JOIN" {
+                    UserDefaults().set(true, forKey: "hasMate")
                     coordinator.start()
                     return
-                    
-                    //LEAVE
                 } else {
-                    let vc = UserWarningViewController(outgoingType: .exitPlanet)
-                    vc.navigationController?.navigationItem.setHidesBackButton(true, animated: true)
-                    coordinator.mainCoordinator?.navigationController?.setViewControllers([vc], animated: false)
+                    presentUserWarningViewController()
                     return
                 }
             } else {
