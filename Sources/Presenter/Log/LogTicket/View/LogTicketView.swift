@@ -223,7 +223,7 @@ extension LogTicketView {
         let attributedString = NSMutableAttributedString(
             string: text,
             attributes: [
-                .font: UIFont.gmarksans(weight: .medium, size: ._13),
+                .font: UIFont.gmarksans(weight: .light, size: ._13),
                 .foregroundColor: UIColor.white
             ]
         )
@@ -247,7 +247,7 @@ extension LogTicketView {
         }
         
         courseNameLabel.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(DeviceInfo.screenWidth * 0.05128205128)
+            make.left.equalToSuperview().offset(DeviceInfo.screenWidth * 31 / 390)
             make.top.equalTo(imageCollectionView.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
         }
         
