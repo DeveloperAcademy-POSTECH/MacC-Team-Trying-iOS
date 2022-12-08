@@ -47,7 +47,6 @@ final class AppCoordinator: Coordinator, IntroCoordinatorDelegate, MainCoordinat
                             code: planet.code ?? ""
                         )
                     }
-
                     return
                 } else {
                     await coordinateToMainScene()

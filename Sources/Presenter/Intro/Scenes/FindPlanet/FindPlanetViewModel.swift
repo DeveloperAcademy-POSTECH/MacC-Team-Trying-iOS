@@ -51,6 +51,7 @@ final class FindPlanetViewModel: BaseViewModel, FindPlanetBusinessLogic {
 
                 DispatchQueue.main.async {
                     self.coordinator.coordinateToMainScene()
+                    UserDefaults().set(true, forKey: "hasMate")
                     LoadingView.shared.hide()
                 }
             } catch {
