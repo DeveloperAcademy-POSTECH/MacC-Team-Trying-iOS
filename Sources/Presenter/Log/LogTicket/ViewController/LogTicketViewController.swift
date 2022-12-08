@@ -132,6 +132,7 @@ extension LogTicketViewController {
     private func configureTicketView(ticketView: LogTicketView, index: Int) {
         ticketView.imageUrl = viewModel.reviews[index].imagesURL
         ticketView.bodyTextView.text = viewModel.reviews[index].content
+        ticketView.setTextViewAttributedString()
         ticketView.courseNameLabel.text = viewModel.course.courseTitle
         ticketView.dateLabel.text = viewModel.course.date
         ticketView.numberLabel.text = "\(viewModel.selectedCourseIndex + 1)번째"
@@ -159,16 +160,7 @@ extension LogTicketViewController {
         secondView.addSubview(logTicketEmptyView)
         
         myTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
-        myTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         logTicketEmptyView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
-        
-        viewModel.$course
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.setLikeButtonImage(myTicketView.likebutton)
-            }
-            .cancel(with: cancelBag)
         
         configureTicketView(ticketView: myTicketView, index: 0)
         logTicketEmptyView.addCourseButton.isHidden = true
@@ -204,18 +196,9 @@ extension LogTicketViewController {
         
         configureTicketView(ticketView: mateTicketView, index: 1)
         
-        viewModel.$course
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.setLikeButtonImage(mateTicketView.likebutton)
-            }
-        .cancel(with: cancelBag)
-        
         logTicketEmptyView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         logTicketEmptyView.addCourseButton.addTarget(self, action: #selector(tapAddCourseButton), for: .touchUpInside)
         mateTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
-        mateTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         
         mateTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "mateName")
         
@@ -248,19 +231,8 @@ extension LogTicketViewController {
         configureTicketView(ticketView: myTicketView, index: 0)
         configureTicketView(ticketView: mateTicketView, index: 1)
         
-        viewModel.$course
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-            guard let self = self else { return }
-                self.setLikeButtonImage(myTicketView.likebutton)
-                self.setLikeButtonImage(mateTicketView.likebutton)
-            }
-        .cancel(with: cancelBag)
-        
         myTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
         mateTicketView.flopButton.addTarget(self, action: #selector(tapFlopButton), for: .touchUpInside)
-        myTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
-        mateTicketView.likebutton.addTarget(self, action: #selector(tapLikeButton), for: .touchUpInside)
         
         myTicketView.fromLabel.text = UserDefaults.standard.string(forKey: "name")
         

@@ -14,7 +14,13 @@ protocol DismissCoordinating {
 }
 
 protocol LogFullImageCoordinating {
-    func presentImageFullScreenViewController(imageUrl: [String], rootViewState: RootViewState, course: CourseEntity, selectedCourseIndex: Int, currentImageIndex: Int)
+    func presentImageFullScreenViewController(
+        imageUrl: [String],
+        rootViewState: RootViewState,
+        course: CourseEntity,
+        selectedCourseIndex: Int,
+        currentImageIndex: Int
+    )
 }
 
 final class LogTicketViewModel: BaseViewModel {
@@ -51,9 +57,19 @@ final class LogTicketViewModel: BaseViewModel {
         coordinator.dismissTicketViewController()
     }
     
-    func presentImageFullScreenViewController(imageUrl: [String], rootViewState: RootViewState, currentImageIndex: Int) {
+    func presentImageFullScreenViewController(
+        imageUrl: [String],
+        rootViewState: RootViewState,
+        currentImageIndex: Int
+    ) {
         guard let coordinator = coordinator as? LogFullImageCoordinating else { return }
-        coordinator.presentImageFullScreenViewController(imageUrl: imageUrl, rootViewState: rootViewState, course: course, selectedCourseIndex: selectedCourseIndex, currentImageIndex: currentImageIndex)
+        coordinator.presentImageFullScreenViewController(
+            imageUrl: imageUrl,
+            rootViewState: rootViewState,
+            course: course,
+            selectedCourseIndex: selectedCourseIndex,
+            currentImageIndex: currentImageIndex
+        )
     }
 }
 

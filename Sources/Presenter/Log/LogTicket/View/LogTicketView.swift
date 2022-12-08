@@ -12,11 +12,9 @@ class LogTicketView: UIView {
     
     var currentIndex: Int = 0
     
-    var rootViewState = RootViewState.LogHome {
-        didSet {
-//            setBlur()
-        }
-    }
+    var rootViewState = RootViewState.LogHome
+    
+    private let viewModel: LogTicketViewModel
     
     var imageUrl: [String] = [] {
         didSet {
@@ -25,10 +23,12 @@ class LogTicketView: UIView {
         }
     }
     
-    private let viewModel: LogTicketViewModel
-    
     lazy var blurEffectView: UIVisualEffectView = {
-        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark))
+        let blurEffectView = UIVisualEffectView(
+            effect: UIBlurEffect(
+                style: UIBlurEffect.Style.systemUltraThinMaterialDark
+            )
+        )
         blurEffectView.clipsToBounds = true
         blurEffectView.layer.cornerRadius = 15
         return blurEffectView
@@ -40,9 +40,16 @@ class LogTicketView: UIView {
         return label
     }()
     
-    lazy var likebutton: UIButton = {
+    lazy var editbutton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "unlike_image"), for: .normal)
+        button.setTitleColor(.designSystem(.mainYellow), for: .normal)
+        button.titleLabel?.font = .designSystem(weight: .bold, size: ._11)
+        button.layer.borderColor = .designSystem(.mainYellow)
+        
+        button.backgroundColor = .clear
+        button.layer.cornerRadius = 5
+        button.layer.borderWidth = 1
+        button.setTitle("수정", for: .normal)
         return button
     }()
     
@@ -52,9 +59,16 @@ class LogTicketView: UIView {
         return button
     }()
     
-    var bodyTextView: UITextView = {
+    private let dismissButton: UIButton = {
+        let button = UIButton()
+        let configure = UIImage.SymbolConfiguration(pointSize: 22, weight: .bold, scale: .default)
+        button.setImage(UIImage(systemName: "xmark", withConfiguration: configure), for: .normal)
+        button.tintColor = .designSystem(.white)
+        return button
+    }()
+    
+    lazy var bodyTextView: UITextView = {
         let textView = UITextView()
-        textView.font = UIFont.designSystem(weight: .regular, size: ._13)
         textView.textAlignment = .left
         textView.backgroundColor = .clear
         textView.showsVerticalScrollIndicator = false
@@ -82,7 +96,6 @@ class LogTicketView: UIView {
         layout.minimumLineSpacing = 0
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: width, height: height)
-
         return layout
     }()
     
@@ -92,13 +105,13 @@ class LogTicketView: UIView {
         collectionView.register(LogImageCollectionViewCell.self, forCellWithReuseIdentifier: LogImageCollectionViewCell.identifier)
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isPagingEnabled = true
         return collectionView
     }()
     
     // MARK: Initializer
-    
     init(viewModel: LogTicketViewModel) {
         self.viewModel = viewModel
         super.init(frame: .zero)
@@ -114,16 +127,20 @@ class LogTicketView: UIView {
             fromLabel,
             pageControl,
             bodyTextView,
-            likebutton,
-            flopButton
+            editbutton,
+            flopButton,
+            dismissButton
         )
         setLayouts()
+        setButtonTarget()
         
         self.addSubview(blurEffectView)
         self.sendSubviewToBack(blurEffectView)
+        
         blurEffectView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
     }
     
     required init?(coder: NSCoder) {
@@ -151,7 +168,11 @@ extension LogTicketView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         viewModel.tapDismissButton()
-        viewModel.presentImageFullScreenViewController(imageUrl: imageUrl, rootViewState: rootViewState, currentImageIndex: indexPath.row)
+        viewModel.presentImageFullScreenViewController(
+            imageUrl: imageUrl,
+            rootViewState: rootViewState,
+            currentImageIndex: indexPath.row
+        )
     }
 }
 
@@ -161,8 +182,9 @@ extension LogTicketView: UIScrollViewDelegate {
     private func setCollectionView() {
         switch imageUrl.isEmpty {
         case true:
-            imageCollectionView.isHidden = true
             addSubview(emptyImageView)
+            imageCollectionView.isHidden = true
+
             emptyImageView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
                 make.height.equalTo(DeviceInfo.screenHeight * 0.3471563981)
@@ -199,10 +221,12 @@ extension LogTicketView: UIScrollViewDelegate {
     
     // MARK: PageControl 설정
     private func setPageControl() {
+        
         pageControl.currentPage = 0
         pageControl.numberOfPages = imageUrl.count
-        pageControl.pageIndicatorTintColor = UIColor.designSystem(Palette.grayC5C5C5)
-        pageControl.currentPageIndicatorTintColor = UIColor.designSystem(Palette.pinkFF0099)
+        
+        pageControl.pageIndicatorTintColor = UIColor.designSystem(.grayC5C5C5)
+        pageControl.currentPageIndicatorTintColor = UIColor.designSystem(Palette.white)
         
         pageControl.snp.makeConstraints { make in
             make.bottom.equalTo(imageCollectionView.snp.bottom)
@@ -212,6 +236,26 @@ extension LogTicketView: UIScrollViewDelegate {
 }
 
 extension LogTicketView {
+    func setTextViewAttributedString() {
+        guard let text = bodyTextView.text else { return }
+        
+        let attributedString = NSMutableAttributedString(
+            string: text,
+            attributes: [
+                .font: UIFont.gmarksans(weight: .light, size: ._13),
+                .foregroundColor: UIColor.white
+            ]
+        )
+        let paragraphStyle = NSMutableParagraphStyle()
+        
+        paragraphStyle.lineSpacing = 4
+        attributedString.addAttribute(
+            NSAttributedString.Key.paragraphStyle,
+            value: paragraphStyle,
+            range: NSRange(location: 0, length: attributedString.length)
+        )
+        bodyTextView.attributedText = attributedString
+    }
     
     // Snapkit을 사용해 Component의 Layout을 배치합니다.
     private func setLayouts() {
@@ -222,7 +266,7 @@ extension LogTicketView {
         }
         
         courseNameLabel.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(DeviceInfo.screenWidth * 0.05128205128)
+            make.left.equalToSuperview().offset(DeviceInfo.screenWidth * 31 / 390)
             make.top.equalTo(imageCollectionView.snp.bottom).offset(DeviceInfo.screenHeight * 0.02369668246)
         }
         
@@ -243,17 +287,17 @@ extension LogTicketView {
         
         dateLabel.snp.makeConstraints { make in
             make.left.equalTo(dateTitleLabel.snp.left)
-            make.top.equalTo(dateTitleLabel.snp.bottom)
+            make.top.equalTo(dateTitleLabel.snp.bottom).offset(5)
         }
         
         numberLabel.snp.makeConstraints { make in
             make.left.equalTo(numberTitleLabel.snp.left)
-            make.top.equalTo(numberTitleLabel.snp.bottom)
+            make.top.equalTo(numberTitleLabel.snp.bottom).offset(5)
         }
         
         fromLabel.snp.makeConstraints { make in
             make.right.equalTo(fromTitleLabel.snp.right)
-            make.top.equalTo(fromTitleLabel.snp.bottom)
+            make.top.equalTo(fromTitleLabel.snp.bottom).offset(5)
         }
         
         bodyTextView.snp.makeConstraints { make in
@@ -263,26 +307,36 @@ extension LogTicketView {
             make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 0.05628095212)
         }
         
-        likebutton.snp.makeConstraints { make in
-            make.width.equalTo(DeviceInfo.screenWidth * 0.05128205128)
-            make.height.equalTo(DeviceInfo.screenHeight * 0.02191943128)
+        editbutton.snp.makeConstraints { make in
+            make.width.equalTo(35)
+            make.height.equalTo(20)
             make.right.equalTo(fromLabel.snp.right)
             make.centerY.equalTo(courseNameLabel.snp.centerY)
         }
         
         flopButton.snp.makeConstraints { make in
-            make.width.equalTo(DeviceInfo.screenWidth * 0.06153846154)
-            make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)
+            make.width.height.equalTo(30)
             make.right.equalToSuperview().offset(-DeviceInfo.screenWidth * 0.05128205128)
             make.bottom.equalToSuperview().offset(-DeviceInfo.screenHeight * 0.02369668246)
+        }
+        
+        dismissButton.snp.makeConstraints { make in
+            make.right.equalToSuperview().inset(DeviceInfo.screenWidth * 20 / 390)
+            make.top.equalToSuperview().inset(DeviceInfo.screenHeight * 20 / 844)
+            make.width.equalTo(DeviceInfo.screenWidth * 22 / 390)
+            make.height.equalTo(DeviceInfo.screenHeight * 24 / 844)
         }
     }
     
     // MARK: Ticket Drawing
     private func drawTicket() {
         layer.cornerRadius = 18
-        // MARK: - 여기서 티켓뷰 백그라운드 색깔 분기처리
-        backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.4)
+        switch rootViewState {
+        case .LogHome:
+            backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.75)
+        case .LogMap:
+            backgroundColor = .designSystem(.black)?.withAlphaComponent(0.75)
+        }
         let radious = DeviceInfo.screenWidth * 0.1282051282 / 2
         let ticketShapeLayer = CAShapeLayer()
         ticketShapeLayer.frame = self.bounds
@@ -330,31 +384,21 @@ extension LogTicketView {
         layer.shadowRadius = 10
         layer.shadowOffset = .zero
         layer.mask = ticketShapeLayer
-        
     }
     
-    // MARK: Blur Effect 추가
-    private func setBlur() {
-        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark)
-        let outerVisualEffectView = UIVisualEffectView(effect: blurEffect)
-        
-        lazy var blurEffectView: UIVisualEffectView = {
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark))
-            blurEffectView.clipsToBounds = true
-            blurEffectView.layer.cornerRadius = 15
-            return blurEffectView
-        }()
-        
-        switch rootViewState {
-        case .LogHome:
-            blurEffectView.layer.backgroundColor = UIColor.designSystem(.pinkF09BA1)?.withAlphaComponent(0.5).cgColor
-        case .LogMap:
-            blurEffectView.layer.backgroundColor = UIColor.designSystem(.black)?.withAlphaComponent(0.75).cgColor
-        }
-        
-        blurEffectView.layer.opacity = 0.5
-        blurEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
-        self.addSubview(blurEffectView)
-
+    private func setButtonTarget() {
+        editbutton.addTarget(self, action: #selector(tapEditButton), for: .touchUpInside)
+        dismissButton.addTarget(self, action: #selector(tapDismissButton), for: .touchUpInside)
+    }
+    
+    @objc
+    func tapEditButton() {
+        // MARK: 수정 버튼 클릭시 Action
+        print("tapEditButton")
+    }
+    
+    @objc
+    func tapDismissButton() {
+        viewModel.tapDismissButton()
     }
 }

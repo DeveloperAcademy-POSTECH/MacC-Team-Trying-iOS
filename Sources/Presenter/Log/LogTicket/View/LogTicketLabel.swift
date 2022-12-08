@@ -12,14 +12,14 @@ class LogTicketLabel: UILabel {
     init(title: String, color: UIColor) {
         super.init(frame: .zero)
         self.text = title
-        self.font = UIFont.designSystem(weight: .medium, size: ._13)
+        self.font = UIFont.gmarksans(weight: .medium, size: ._13)
         self.textColor = color
         self.textAlignment = .left
     }
     
     init(color: UIColor) {
         super.init(frame: .zero)
-        self.font = UIFont.designSystem(weight: .medium, size: ._13)
+        self.font = UIFont.gmarksans(weight: .medium, size: ._13)
         self.textColor = color
         self.textAlignment = .left
     }

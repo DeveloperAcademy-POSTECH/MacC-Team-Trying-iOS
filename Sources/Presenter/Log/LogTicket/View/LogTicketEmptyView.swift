@@ -39,7 +39,7 @@ class LogTicketEmptyView: UIView {
     
     let logTicketEmptyViewLabel: UILabel = {
         let label = UILabel()
-        label.font = .gmarksans(weight: .regular, size: ._15)
+        label.font = .gmarksans(weight: .bold, size: ._15)
         label.text = "나의 후기가 없어요! 작성해주세요!"
         return label
     }()
@@ -49,7 +49,7 @@ class LogTicketEmptyView: UIView {
         button.backgroundColor = .designSystem(.mainYellow)
         button.setTitle("후기 등록", for: .normal)
         button.setTitleColor(.designSystem(.black), for: .normal)
-        button.titleLabel?.font = .designSystem(weight: .bold, size: ._15)
+        button.titleLabel?.font = .gmarksans(weight: .bold, size: ._15)
         button.layer.cornerRadius = 15
         return button
     }()
@@ -115,8 +115,13 @@ extension LogTicketEmptyView {
     // MARK: Ticket Drawing
     private func drawTicket() {
         layer.cornerRadius = 18
-        // MARK: - 배경화면 분기처리
-        backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.4)
+        switch rootViewState {
+        case .LogHome:
+            backgroundColor = .designSystem(.pinkEB97D9)?.withAlphaComponent(0.4)
+        case .LogMap:
+            backgroundColor = .designSystem(.black)?.withAlphaComponent(0.75)
+        }
+        
         let radious = DeviceInfo.screenWidth * 0.1282051282 / 2
         let ticketShapeLayer = CAShapeLayer()
         ticketShapeLayer.frame = self.bounds
