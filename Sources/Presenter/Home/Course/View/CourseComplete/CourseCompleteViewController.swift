@@ -257,21 +257,18 @@ extension CourseCompleteViewController {
             let backgroundOffsetRate = 0.3
             let mediumStarBackgroundOffsetRate = 1.0
             let constellationOffsetRate = 2.0
-
-            self.backgroundView.center = CGPoint(
-                x: DeviceInfo.screenWidth / 2 + self.lastYOffset * backgroundOffsetRate,
-                y: DeviceInfo.screenHeight / 2 + self.lastXOffset * backgroundOffsetRate
-            )
             
-            self.mediumStarBackgroundView.center = CGPoint(
-                x: DeviceInfo.screenWidth / 2 + self.lastYOffset * mediumStarBackgroundOffsetRate,
-                y: DeviceInfo.screenHeight / 2 + self.lastXOffset * mediumStarBackgroundOffsetRate
-            )
+            if abs(self.lastYOffset) < 50 {
+                self.backgroundView.center.x = DeviceInfo.screenWidth / 2 + self.lastYOffset * backgroundOffsetRate
+                self.mediumStarBackgroundView.center.x = DeviceInfo.screenWidth / 2 + self.lastYOffset * mediumStarBackgroundOffsetRate
+                self.constellationView.center.x = DeviceInfo.screenWidth / 2 - self.lastYOffset * constellationOffsetRate
+            }
             
-            self.constellationView.center = CGPoint(
-                x: DeviceInfo.screenWidth / 2 - self.lastYOffset * constellationOffsetRate,
-                y: (DeviceInfo.screenHeight / 2) - (self.lastXOffset * constellationOffsetRate)
-            )
+            if abs(self.lastXOffset) < 50 {
+                self.backgroundView.center.y = DeviceInfo.screenHeight / 2 + self.lastXOffset * backgroundOffsetRate
+                self.mediumStarBackgroundView.center.y = DeviceInfo.screenHeight / 2 + self.lastXOffset * mediumStarBackgroundOffsetRate
+                self.constellationView.center.y = (DeviceInfo.screenHeight / 2) - (self.lastXOffset * constellationOffsetRate)
+            }
         })
     }
 }

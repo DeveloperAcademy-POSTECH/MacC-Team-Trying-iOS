@@ -22,6 +22,22 @@ final class RegisterReviewViewController: BaseViewController {
         return scrollView
     }()
     private let contentView = UIView()
+    private lazy var addImageButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 10
+        button.backgroundColor = .designSystem(.gray252632)
+        button.setImage(UIImage(systemName: Constants.Image.photoIcon), for: .normal)
+        button.tintColor = .designSystem(.white)
+        button.addTarget(self, action: #selector(pickImage(_:)), for: .touchUpInside)
+        
+        if #available(iOS 15.0, *) {
+            let imageConfiguration = UIImage.SymbolConfiguration(pointSize: 18)
+            var buttonConfiguration = UIButton.Configuration.plain()
+            buttonConfiguration.preferredSymbolConfigurationForImage = imageConfiguration
+            button.configuration = buttonConfiguration
+        }
+        return button
+    }()
     private let flowLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -34,8 +50,9 @@ final class RegisterReviewViewController: BaseViewController {
     private lazy var imageCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         collectionView.dataSource = self
+        collectionView.dragDelegate = self
+        collectionView.dropDelegate = self
         collectionView.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: ImageCollectionViewCell.identifier)
-        collectionView.register(AddImageCell.self, forCellWithReuseIdentifier: AddImageCell.identifier)
         collectionView.showsHorizontalScrollIndicator = false
         return collectionView
     }()
@@ -129,6 +146,7 @@ extension RegisterReviewViewController: NavigationBarConfigurable {
     /// 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
     private func setLayout() {
         contentView.addSubviews(
+            addImageButton,
             imageCollectionView,
             contentTextView,
             nextButton
@@ -146,9 +164,21 @@ extension RegisterReviewViewController: NavigationBarConfigurable {
             make.height.greaterThanOrEqualTo(view.snp.height).priority(.low)
         }
         
-        imageCollectionView.snp.makeConstraints { make in
+        addImageButton.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(10)
             make.leading.equalToSuperview().inset(20)
+            make.width.equalTo(DeviceInfo.screenWidth / 3 - 20)
+            
+            if UIDevice.current.hasNotch {
+                make.height.equalTo(DeviceInfo.screenHeight * 0.1943)
+            } else {
+                make.height.equalTo(DeviceInfo.screenHeight * 0.24)
+            }
+        }
+        
+        imageCollectionView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(10)
+            make.leading.equalTo(addImageButton.snp.trailing).offset(10)
             make.trailing.equalToSuperview()
             if UIDevice.current.hasNotch {
                 make.height.equalTo(DeviceInfo.screenHeight * 0.1943)
@@ -173,22 +203,52 @@ extension RegisterReviewViewController: NavigationBarConfigurable {
 // MARK: - UICollectionViewDataSource
 extension RegisterReviewViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.images.count + 1
+        return viewModel.images.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.row == 0 {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddImageCell.identifier, for: indexPath) as? AddImageCell else { return UICollectionViewCell() }
-            cell.addImageButton.addTarget(self, action: #selector(pickImage(_:)), for: .touchUpInside)
-            return cell
-        } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCollectionViewCell.identifier, for: indexPath) as? ImageCollectionViewCell else { return UICollectionViewCell() }
-            
-            cell.placeImageView.image = viewModel.images[indexPath.row - 1]
-            cell.deleteButton.tag = indexPath.row - 1
-            cell.deleteButton.addTarget(self, action: #selector(deleteButtonPressed(_:)), for: .touchUpInside)
-            
-            return cell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCollectionViewCell.identifier, for: indexPath) as? ImageCollectionViewCell else { return UICollectionViewCell() }
+        
+        cell.placeImageView.image = viewModel.images[indexPath.row]
+        cell.deleteButton.tag = indexPath.row
+        cell.deleteButton.addTarget(self, action: #selector(deleteButtonPressed(_:)), for: .touchUpInside)
+        
+        return cell
+    }
+}
+
+// MARK: - UICollectionViewDragDelegate, UICollectionViewDropDelegate
+extension RegisterReviewViewController: UICollectionViewDragDelegate, UICollectionViewDropDelegate {
+    func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
+        true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        let itemProvider = NSItemProvider(object: "" as NSString)
+        let dragItem = UIDragItem(itemProvider: itemProvider)
+        
+        return [dragItem]
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        return UICollectionViewDropProposal(
+            operation: .move,
+            intent: .insertAtDestinationIndexPath
+        )
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        guard let destinationIndexPath = coordinator.destinationIndexPath else { return }
+        
+        coordinator.items.forEach { dropItem in
+            guard let sourceIndexPath = dropItem.sourceIndexPath else { return }
+            collectionView.performBatchUpdates {
+                collectionView.deleteItems(at: [sourceIndexPath])
+                collectionView.insertItems(at: [destinationIndexPath])
+            } completion: { _ in
+                coordinator.drop(dropItem.dragItem, toItemAt: destinationIndexPath)
+                self.viewModel.swapImage(sourceIndex: sourceIndexPath.row, destinationIndex: destinationIndexPath.row)
+            }
         }
     }
 }
@@ -351,10 +411,8 @@ extension RegisterReviewViewController: UITextViewDelegate {
     @objc
     private func pickImage(_ sender: UIButton) {
         let imagePicker = UIImagePickerController()
-        imagePicker.fixCannotMoveEditingBox()
         imagePicker.sourceType = .photoLibrary
         imagePicker.delegate = self
-        imagePicker.allowsEditing = true
         self.present(imagePicker, animated: true)
     }
 }
@@ -368,7 +426,7 @@ extension RegisterReviewViewController: UINavigationControllerDelegate, UIImageP
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         picker.dismiss(animated: true)
         
-        guard let image = info[.editedImage] as? UIImage else { return }
+        guard let image = info[.originalImage] as? UIImage else { return }
         self.viewModel.addImage(image)
     }
 }

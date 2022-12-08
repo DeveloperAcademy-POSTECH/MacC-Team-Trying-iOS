@@ -26,7 +26,6 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         super.viewDidLoad()
         
         view.addSubview(backgroundView)
-        // view.backgroundColor = .designSystem(.black)                                // 화면 배경 색상을 설정합니다.
         navigationController?.interactivePopGestureRecognizer?.delegate = self      // Swipe-gesture를 통해 pop을 합니다.
     }
     
@@ -48,7 +47,14 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
             self.lastXOffset += data.rotationRate.x * offsetRate
             self.lastYOffset += data.rotationRate.y * offsetRate
 
-            self.backgroundView.center = CGPoint(x: DeviceInfo.screenWidth / 2 + self.lastYOffset, y: DeviceInfo.screenHeight / 2 + self.lastXOffset)
+            if abs(self.lastYOffset) < 50 {
+                self.backgroundView.center.x = DeviceInfo.screenWidth / 2 + self.lastYOffset
+                
+            }
+            
+            if abs(self.lastXOffset) < 50 {
+                self.backgroundView.center.y = DeviceInfo.screenHeight / 2 + self.lastXOffset
+            }
         })
     }
 }

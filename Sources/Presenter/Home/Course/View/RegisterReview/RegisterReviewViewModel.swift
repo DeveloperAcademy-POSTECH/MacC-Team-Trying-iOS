@@ -108,6 +108,11 @@ extension RegisterReviewViewModel {
         images.remove(at: index)
     }
     
+    func swapImage(sourceIndex: Int, destinationIndex: Int) {
+        let sourceImage = images.remove(at: sourceIndex)
+        images.insert(sourceImage, at: destinationIndex)
+    }
+    
     func deleteCourse() {
         Task {
             do {

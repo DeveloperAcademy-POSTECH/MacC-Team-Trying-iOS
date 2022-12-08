@@ -114,7 +114,7 @@ final class ProfileViewController: BaseViewController {
                       let activityCell = self.profileTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileTableViewActivityCell else { return }
                 
                 activityCell.numberOfConstellationLabel.text = "\(numberOfCourses)개"
-                activityCell.numberOfLikedCourseLabel.text = "\(numberOfLikedCourses)개"
+                // activityCell.numberOfLikedCourseLabel.text = "\(numberOfLikedCourses)개"
             }
             .cancel(with: cancelBag)
     }
