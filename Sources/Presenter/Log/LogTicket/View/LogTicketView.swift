@@ -24,7 +24,11 @@ class LogTicketView: UIView {
     }
     
     lazy var blurEffectView: UIVisualEffectView = {
-        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark))
+        let blurEffectView = UIVisualEffectView(
+            effect: UIBlurEffect(
+                style: UIBlurEffect.Style.systemUltraThinMaterialDark
+            )
+        )
         blurEffectView.clipsToBounds = true
         blurEffectView.layer.cornerRadius = 15
         return blurEffectView
@@ -52,6 +56,14 @@ class LogTicketView: UIView {
     lazy var flopButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "refresh"), for: .normal)
+        return button
+    }()
+    
+    private let dismissButton: UIButton = {
+        let button = UIButton()
+        let configure = UIImage.SymbolConfiguration(pointSize: 22, weight: .bold, scale: .default)
+        button.setImage(UIImage(systemName: "xmark", withConfiguration: configure), for: .normal)
+        button.tintColor = .designSystem(.white)
         return button
     }()
     
@@ -93,6 +105,7 @@ class LogTicketView: UIView {
         collectionView.register(LogImageCollectionViewCell.self, forCellWithReuseIdentifier: LogImageCollectionViewCell.identifier)
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isPagingEnabled = true
         return collectionView
@@ -115,18 +128,19 @@ class LogTicketView: UIView {
             pageControl,
             bodyTextView,
             editbutton,
-            flopButton
+            flopButton,
+            dismissButton
         )
         setLayouts()
+        setButtonTarget()
         
         self.addSubview(blurEffectView)
         self.sendSubviewToBack(blurEffectView)
+        
         blurEffectView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
-        setTextViewAttributedString()
-        setEditButtonTarget()
     }
     
     required init?(coder: NSCoder) {
@@ -154,7 +168,11 @@ extension LogTicketView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         viewModel.tapDismissButton()
-        viewModel.presentImageFullScreenViewController(imageUrl: imageUrl, rootViewState: rootViewState, currentImageIndex: indexPath.row)
+        viewModel.presentImageFullScreenViewController(
+            imageUrl: imageUrl,
+            rootViewState: rootViewState,
+            currentImageIndex: indexPath.row
+        )
     }
 }
 
@@ -164,8 +182,9 @@ extension LogTicketView: UIScrollViewDelegate {
     private func setCollectionView() {
         switch imageUrl.isEmpty {
         case true:
-            imageCollectionView.isHidden = true
             addSubview(emptyImageView)
+            imageCollectionView.isHidden = true
+
             emptyImageView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
                 make.height.equalTo(DeviceInfo.screenHeight * 0.3471563981)
@@ -296,10 +315,16 @@ extension LogTicketView {
         }
         
         flopButton.snp.makeConstraints { make in
-            make.width.equalTo(DeviceInfo.screenWidth * 0.06153846154)
-            make.height.equalTo(DeviceInfo.screenHeight * 0.02843601896)
+            make.width.height.equalTo(30)
             make.right.equalToSuperview().offset(-DeviceInfo.screenWidth * 0.05128205128)
             make.bottom.equalToSuperview().offset(-DeviceInfo.screenHeight * 0.02369668246)
+        }
+        
+        dismissButton.snp.makeConstraints { make in
+            make.right.equalToSuperview().inset(DeviceInfo.screenWidth * 20 / 390)
+            make.top.equalToSuperview().inset(DeviceInfo.screenHeight * 20 / 844)
+            make.width.equalTo(DeviceInfo.screenWidth * 22 / 390)
+            make.height.equalTo(DeviceInfo.screenHeight * 24 / 844)
         }
     }
     
@@ -361,12 +386,19 @@ extension LogTicketView {
         layer.mask = ticketShapeLayer
     }
     
-    private func setEditButtonTarget() {
+    private func setButtonTarget() {
         editbutton.addTarget(self, action: #selector(tapEditButton), for: .touchUpInside)
+        dismissButton.addTarget(self, action: #selector(tapDismissButton), for: .touchUpInside)
     }
     
     @objc
     func tapEditButton() {
+        // MARK: 수정 버튼 클릭시 Action
         print("tapEditButton")
+    }
+    
+    @objc
+    func tapDismissButton() {
+        viewModel.tapDismissButton()
     }
 }
