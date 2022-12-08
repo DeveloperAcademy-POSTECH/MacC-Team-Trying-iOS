@@ -51,7 +51,10 @@ protocol AlarmViewCoordinating {
 
 extension HomeCoordinator: goToRootViewControllerDelegate, AlarmViewCoordinating {
     func popToRootViewController() {
-        navigationController?.popViewController(animated: true)
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
+
     }
     
     func pushToAlarmViewController() {

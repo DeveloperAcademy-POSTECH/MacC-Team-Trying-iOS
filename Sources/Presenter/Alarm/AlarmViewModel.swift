@@ -43,8 +43,8 @@ class AlarmViewModel: BaseViewModel {
             NotificationCenter.default.post(name: Notification.Name("REVIEW"), object: "\(alarm.targetId)")
         } else {
             // MARK: 🛑 추후 홈뷰로 이동할때 🛑
-//            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: "\(alarm.targetId)")
-//            popToBackViewController()
+            NotificationCenter.default.post(name: Notification.Name("COURSE"), object: "\(alarm.targetId)")
+            popToBackViewController()
         }
     }
     
