@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = UIWindow(frame: UIScreen.main.bounds)
 
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(moveToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(checkUserMatefromBackgroundToForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         
         coordinator = AppCoordinator(window: window!)
         
@@ -66,7 +66,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             if let _ = userInformations.mate {
             } else {
                 if UserDefaults.standard.bool(forKey: "hasMate") {
-                    presentUserWarningViewController()
+                    presentExitView()
                 }
             }
         }
@@ -107,7 +107,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             goToAnotherTab(userInfo: userInfo)
             return
         } else if target == "LEAVE" {
-            presentUserWarningViewController()
+            presentExitView()
         } else {
             completionHandler([.badge, .banner, .list])
             NotificationCenter.default.post(name: Notification.Name("NewAlarmHomeView"), object: nil)
@@ -130,7 +130,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     coordinator.start()
                     return
                 } else {
-                    presentUserWarningViewController()
+                    presentExitView()
                     return
                 }
             } else {
@@ -145,11 +145,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     mainCoordinator.homeCoordinator?.pushToAlarmViewController()
                 }
             }
-            
             // MARK: 🛑 추후 홈뷰로 이동할때 🛑
-            // mainCoordinator.homeCoordinator?.navigationController?.popToRootViewController(animated: true)
-            // NotificationCenter.default.post(name: Notification.Name("COURSE"), object: targetId)
-            
+             mainCoordinator.homeCoordinator?.navigationController?.popToRootViewController(animated: true)
+             NotificationCenter.default.post(name: Notification.Name("COURSE"), object: targetId)
         } else if target == "REVIEW" {
             Task {
                 if try await alarmAPI.checkAlarm(type: .check, id: notificationId) {
