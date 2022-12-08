@@ -58,7 +58,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
     
-    @objc func moveToForeground() {
+    @objc 
+    func checkUserMatefromBackgroundToForeground() {
         let userService = UserService()
         Task {
             let userInformations = try await userService.getUserInformations()
@@ -89,7 +90,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         }
     }
     
-    private func presentUserWarningViewController() {
+    private func presentExitView() {
         let vc = UserWarningViewController(outgoingType: .exitPlanet)
         vc.navigationController?.navigationItem.setHidesBackButton(true, animated: true)
         coordinator?.mainCoordinator?.navigationController?.setViewControllers([vc], animated: false)
