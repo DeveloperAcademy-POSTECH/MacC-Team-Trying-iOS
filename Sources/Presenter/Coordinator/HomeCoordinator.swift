@@ -39,6 +39,11 @@ extension HomeCoordinator: AlarmViewCoordinatingInAlarmViewCoordinating {
             self.parentCoordinator?.moveToLogTab()
         }
     }
+    
+    func startLogMapFlow(courses: [CourseEntity]) {
+        let coordinator = LogMapCoordinator(navigationController: navigationController)
+        coordinator.start(courses: courses)
+    }
 }
 
 protocol goToRootViewControllerDelegate: AnyObject {

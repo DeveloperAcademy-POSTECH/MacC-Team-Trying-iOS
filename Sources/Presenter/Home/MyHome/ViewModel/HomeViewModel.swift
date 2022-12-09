@@ -148,6 +148,35 @@ extension HomeViewModel {
         guard let coordinator = coordinator as? AlarmViewCoordinating else { return }
         coordinator.pushToAlarmViewController()
     }
+    
+    func presentMapView() {
+        guard let coordinator = coordinator as? HomeCoordinator,
+                let dateCourse = dateCourse else { return }
+        
+        var placeEntities: [PlaceEntity] = []
+        
+        places.forEach { place in
+            let entity = PlaceEntity(
+                id: place.id,
+                title: place.title,
+                category: place.category,
+                address: place.address,
+                coordinate: place.location
+            )
+            
+            placeEntities.append(entity)
+        }
+        
+        let courseEntity = CourseEntity(
+            id: dateCourse.courseId!,
+            courseTitle: dateCourse.courseTitle,
+            date: dateCourse.courseDate,
+            isLike: false,
+            places: placeEntities
+        )
+        
+        coordinator.startLogMapFlow(courses: [courseEntity])
+    }
 }
 
 extension HomeViewModel {
@@ -157,7 +186,7 @@ extension HomeViewModel {
     
     @objc
     private func getNotification(_ notification: Notification) {
-        //MARK: DTO는 필요시 다른 모델에 매핑하여 사용
+        // MARK: DTO는 필요시 다른 모델에 매핑하여 사용
         guard let courseId = notification.object as? String else { return }
         Task {
             let course = try await alarmCourseReviewUseCase.getCourseWith(id: courseId)

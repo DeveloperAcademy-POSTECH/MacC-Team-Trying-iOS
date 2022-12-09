@@ -214,6 +214,11 @@ final class HomeViewController: BaseViewController {
         guard let courseType = CourseFlowType(rawValue: sender.tag) else { return }
         viewModel.startAddCourseFlow(type: courseType)
     }
+    
+    @objc
+    private func presentCourseOnMap(_ sender: UIButton) {
+        self.viewModel.presentMapView()
+    }
 }
 
 // MARK: - UI
@@ -326,7 +331,8 @@ extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if tableView == pathTableView {
             guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: PathTableHeader.cellId) as? PathTableHeader else { return UIView() }
-            header.title.text = viewModel.dateCourse?.courseTitle
+            header.titleLabel.text = viewModel.dateCourse?.courseTitle
+            header.mapButton.addTarget(self, action: #selector(presentCourseOnMap(_:)), for: .touchUpInside)
             return header
         }
         return nil

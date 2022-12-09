@@ -12,24 +12,51 @@ import SnapKit
 class PathTableHeader: UITableViewHeaderFooterView {
     static let cellId = "PathTableHeader"
     
-    let title: UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.gmarksans(weight: .bold, size: ._15)
         label.textColor = .white
         return label
     }()
     
+    let mapButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "map"), for: .normal)
+        button.tintColor = .designSystem(.white)
+        return button
+    }()
+    
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
-        addSubview(title)
-        title.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(20)
-            make.leading.equalToSuperview().inset(20)
-            make.height.equalTo(20)
-        }
+        
+        setUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - UI
+extension PathTableHeader {
+    private func setUI() {
+        addSubview(titleLabel)
+        self.addSubviews(
+            titleLabel,
+            mapButton
+        )
+        
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(20)
+            make.leading.equalToSuperview().inset(20)
+            make.height.equalTo(20)
+        }
+        
+        mapButton.snp.makeConstraints { make in
+            make.centerY.equalTo(titleLabel)
+            make.trailing.equalToSuperview().inset(20)
+            make.width
+                .height.equalTo(30)
+        }
     }
 }
