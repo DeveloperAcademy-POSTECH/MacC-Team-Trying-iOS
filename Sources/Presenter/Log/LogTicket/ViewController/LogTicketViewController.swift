@@ -151,7 +151,7 @@ extension LogTicketViewController {
     private func setOnlyMyReview() {
         
         let myTicketView = LogTicketView(viewModel: viewModel, imageUrl: viewModel.reviews[0].imagesURL)
-        let logTicketEmptyView = LogTicketEmptyView()
+        let logTicketEmptyView = LogTicketEmptyView(viewModel: viewModel)
         
         myTicketView.rootViewState = rootViewState
         logTicketEmptyView.rootViewState = rootViewState
@@ -185,7 +185,7 @@ extension LogTicketViewController {
     
     private func setOnlyMateReview() {
         
-        let logTicketEmptyView = LogTicketEmptyView()
+        let logTicketEmptyView = LogTicketEmptyView(viewModel: viewModel)
         let mateTicketView = LogTicketView(viewModel: viewModel, imageUrl: viewModel.reviews[1].imagesURL)
         
         logTicketEmptyView.rootViewState = rootViewState

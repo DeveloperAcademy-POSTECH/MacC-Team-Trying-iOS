@@ -12,17 +12,23 @@ import SnapKit
 
 class LogTicketEmptyView: UIView {
     
-    var rootViewState = RootViewState.LogHome {
-        didSet {
-//            setBlur()
-        }
-    }
+    var rootViewState = RootViewState.LogHome
+    
+    private let viewModel: LogTicketViewModel
     
     lazy var blurEffectView: UIVisualEffectView = {
         let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.systemUltraThinMaterialDark))
         blurEffectView.clipsToBounds = true
         blurEffectView.layer.cornerRadius = 15
         return blurEffectView
+    }()
+    
+    private let dismissButton: UIButton = {
+        let button = UIButton()
+        let configure = UIImage.SymbolConfiguration(pointSize: 22, weight: .bold, scale: .default)
+        button.setImage(UIImage(systemName: "xmark", withConfiguration: configure), for: .normal)
+        button.tintColor = .designSystem(.white)
+        return button
     }()
     
     lazy var flopButton: UIButton = {
@@ -55,9 +61,11 @@ class LogTicketEmptyView: UIView {
     }()
     
     // MARK: Initializer
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(viewModel: LogTicketViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
         setLayouts()
+        setButtonTarget()
     }
     
     required init?(coder: NSCoder) {
@@ -77,7 +85,8 @@ extension LogTicketEmptyView {
             heartImageView,
             logTicketEmptyViewLabel,
             addCourseButton,
-            blurEffectView
+            blurEffectView,
+            dismissButton
         )
         
         self.sendSubviewToBack(blurEffectView)
@@ -109,6 +118,13 @@ extension LogTicketEmptyView {
             make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 20 / 844)
             make.width.equalTo(DeviceInfo.screenWidth * 310 / 390)
             make.height.equalTo(DeviceInfo.screenHeight * 58 / 844)
+        }
+        
+        dismissButton.snp.makeConstraints { make in
+            make.right.equalToSuperview().inset(DeviceInfo.screenWidth * 20 / 390)
+            make.top.equalToSuperview().inset(DeviceInfo.screenHeight * 20 / 844)
+            make.width.equalTo(DeviceInfo.screenWidth * 22 / 390)
+            make.height.equalTo(DeviceInfo.screenHeight * 24 / 844)
         }
     }
     
@@ -188,5 +204,14 @@ extension LogTicketEmptyView {
         outerVisualEffectView.frame = CGRect(x: 0, y: 0, width: DeviceInfo.screenWidth, height: DeviceInfo.screenHeight)
         self.addSubview(outerVisualEffectView)
         self.sendSubviewToBack(outerVisualEffectView)
+    }
+    
+    private func setButtonTarget() {
+        dismissButton.addTarget(self, action: #selector(tapDismissButton), for: .touchUpInside)
+    }
+    
+    @objc
+    func tapDismissButton() {
+        viewModel.tapDismissButton()
     }
 }

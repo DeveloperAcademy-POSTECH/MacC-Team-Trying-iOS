@@ -180,7 +180,6 @@ extension LogTicketView: UIScrollViewDelegate {
     private func setCollectionView() {
         switch imageUrl.isEmpty {
         case true:
-            emptyImageView.backgroundColor = .red
             addSubview(emptyImageView)
             imageCollectionView.isHidden = true
 
