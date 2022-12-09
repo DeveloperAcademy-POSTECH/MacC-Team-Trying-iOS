@@ -16,7 +16,6 @@ import Lottie
 import SnapKit
 
 final class CourseCompleteViewController: BaseViewController {
-    private let type: CourseFlowType
     var viewModel: CourseCompleteViewModel
     
     private lazy var mediumStarBackgroundView = MediumStarBackgroundView(
@@ -32,13 +31,7 @@ final class CourseCompleteViewController: BaseViewController {
         label.numberOfLines = 0
         let attributedString = NSMutableAttributedString()
         let firstString = NSAttributedString(string: "새로운 별자리가", attributes: [.font: UIFont.gmarksans(weight: .light, size: ._15)])
-        var labelString: String
-        switch type {
-        case .addCourse, .editCourse, .registerReview:
-            labelString = "\n기록"
-        case .addPlan, .editPlan:
-            labelString = "\n계획"
-        }
+        var labelString = "\n기록"
         let secondString = NSAttributedString(string: labelString, attributes: [.font: UIFont.gmarksans(weight: .bold, size: ._15)])
         let thirdString = NSAttributedString(string: "됐습니다!", attributes: [.font: UIFont.gmarksans(weight: .medium, size: ._15)])
         attributedString.append(firstString)
@@ -50,14 +43,6 @@ final class CourseCompleteViewController: BaseViewController {
         attributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, attributedString.length))
         label.attributedText = attributedString
         return label
-    }()
-    private lazy var starLottie: LottieAnimationView = {
-        let lottie = LottieAnimationView(name: Constants.Lottie.starLottie)
-        lottie.contentMode = .scaleAspectFit
-        lottie.animationSpeed = 0.5
-        lottie.loopMode = .loop
-        lottie.play()
-        return lottie
     }()
     private lazy var constellationView: UIView = {
         let view = self.makeConstellation(places: viewModel.courseRequestDTO.places)
@@ -82,14 +67,10 @@ final class CourseCompleteViewController: BaseViewController {
     
     /// View Model과 bind 합니다.
     private func bind() {
-        // input
-        
-        // output
         self.courseTitleLabel.text = self.viewModel.courseRequestDTO.title
     }
     
-    init(type: CourseFlowType, viewModel: CourseCompleteViewModel) {
-        self.type = type
+    init(viewModel: CourseCompleteViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -119,12 +100,7 @@ final class CourseCompleteViewController: BaseViewController {
 extension CourseCompleteViewController {
     private func setUI() {
         setGyroMotion()
-        
-        if type == .addCourse {
-            self.setRecordCompleteViewLayout()
-        } else {
-            self.setPlanCompleteViewLayout()
-        }
+        self.setRecordCompleteViewLayout()
     }
     
     /// RecordComplete 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
@@ -146,32 +122,6 @@ extension CourseCompleteViewController {
             make.centerX.equalToSuperview()
             make.bottom.equalTo(doneButton.snp.top).offset(-100)
             make.height.equalTo(25)
-        }
-        
-        doneButton.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
-        }
-    }
-    
-    /// PlanComplete 화면에 그려질 View들을 추가하고 SnapKit을 사용하여 Constraints를 설정합니다.
-    private func setPlanCompleteViewLayout() {
-        view.addSubviews(
-            completeLabel,
-            starLottie,
-            doneButton
-        )
-        
-        completeLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(180)
-            make.centerX.equalToSuperview()
-        }
-        
-        starLottie.snp.makeConstraints { make in
-            make.top.equalTo(completeLabel.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(105)
-            make.height.equalTo(170)
         }
         
         doneButton.snp.makeConstraints { make in

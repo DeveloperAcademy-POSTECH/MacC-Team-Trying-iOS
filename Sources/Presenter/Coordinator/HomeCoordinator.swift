@@ -73,7 +73,7 @@ extension HomeCoordinator {
     }
     
     func startRegisterReviewFlow(courseRequestDTO: CourseRequestDTO) {
-        let registerReviewCoordinator = RegisterReviewCoordinator(navigationController: navigationController)
+        let registerReviewCoordinator = RegisterReviewCoordinator(navigationController: navigationController, type: .add)
         registerReviewCoordinator.start(courseRequestDTO)
     }
     

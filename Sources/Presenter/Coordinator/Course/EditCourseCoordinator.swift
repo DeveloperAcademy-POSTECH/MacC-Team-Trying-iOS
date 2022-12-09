@@ -1,15 +1,16 @@
 //
-//  AddCourseCoordinator.swift
-//  MatStar
+//  EditCourseCoordinator.swift
+//  ComeIt
 //
-//  Created by 김승창 on 2022/10/24.
+//  Created by 김승창 on 2022/11/19.
 //  Copyright © 2022 Try-ing. All rights reserved.
 //
 
 import CoreLocation
+import Foundation
 import UIKit
 
-protocol AddCourseFlowCoordinating: CourseFlowCoordinator {
+protocol EditCourseCoordinating: CourseFlowCoordinator {
     /// 장소를 선택하기 위한 지도 화면으로 이동합니다.
     /// - Parameter courseRequestDTO: 코스 관련 API 통신을 위한 DTO
     func pushToCourseMapView(_ courseRequestDTO: CourseRequestDTO)
@@ -27,10 +28,6 @@ protocol AddCourseFlowCoordinating: CourseFlowCoordinator {
     /// 장소 검색 결과를 보여주는 지도 화면에서 선택한 장소들을 볼 수 있는 지도 화면으로 이동합니다.
     func dismissToPlaceSearchMapView()
     
-    /// 후기 등록 화면으로 이동합니다.
-    /// - Parameter courseRequestDTO: 코스 관련 API 통신을 위한 DTO
-    func pushToRegisterReviewView(_ courseRequestDTO: CourseRequestDTO)
-    
     /// 완료 화면으로 이동합니다.
     /// - Parameter courseRequestDTO: 코스 관련 API 통신을 위한 DTO
     func pushToCompleteView(_ courseRequestDTO: CourseRequestDTO)
@@ -42,7 +39,7 @@ protocol AddCourseFlowCoordinating: CourseFlowCoordinator {
     func popViewController()
 }
 
-final class AddCourseCoordinator: CourseFlowCoordinator {
+final class EditCourseCoordinator: CourseFlowCoordinator {
     weak var navigationController: UINavigationController?
     
     init(navigationController: UINavigationController?) {
@@ -51,7 +48,7 @@ final class AddCourseCoordinator: CourseFlowCoordinator {
     
     func start(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseTitleViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseTitleViewController(type: .addCourse, viewModel: viewModel)
+        let viewController = CourseTitleViewController(type: .editCourse, viewModel: viewModel)
         
         viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.navigationBar.isHidden = false
@@ -61,10 +58,10 @@ final class AddCourseCoordinator: CourseFlowCoordinator {
 }
 
 // MARK: - Coordinating
-extension AddCourseCoordinator: AddCourseFlowCoordinating {
+extension EditCourseCoordinator: EditCourseCoordinating {
     func pushToCourseMapView(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseMapViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseMapViewController(type: .addCourse, viewModel: viewModel)
+        let viewController = CourseMapViewController(type: .editCourse, viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }
@@ -91,18 +88,10 @@ extension AddCourseCoordinator: AddCourseFlowCoordinating {
         self.navigationController?.popViewController(animated: false)
     }
     
-    func pushToRegisterReviewView(_ courseRequestDTO: CourseRequestDTO) {
-        let viewModel = RegisterReviewViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = RegisterReviewViewController(viewModel: viewModel)
-        
-        self.navigationController?.pushViewController(viewController, animated: true)
-    }
-    
     func pushToCompleteView(_ courseRequestDTO: CourseRequestDTO) {
-        let viewModel = CourseCompleteViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseCompleteViewController(type: .addCourse, viewModel: viewModel)
+        let registerReviewCoordinator = RegisterReviewCoordinator(navigationController: navigationController, type: .add)
         
-        self.navigationController?.pushViewController(viewController, animated: true)
+        registerReviewCoordinator.start(courseRequestDTO)
     }
     
     func popToHomeView() {

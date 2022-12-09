@@ -62,7 +62,7 @@ final class RegisterReviewViewController: BaseViewController {
         return textView
     }()
     private lazy var nextButton: MainButton = {
-        let button = MainButton(type: .next)
+        let button = self.viewModel.coordinator.type == .add ? MainButton(type: .next) : MainButton(type: .editReview)
         button.addTarget(self, action: #selector(nextButtonPressed(_:)), for: .touchUpInside)
         return button
     }()

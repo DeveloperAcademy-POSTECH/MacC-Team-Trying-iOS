@@ -13,8 +13,7 @@ final class LogCoordinator: Coordinator,
                             LogMapViewCoordinating,
                             DismissCoordinating,
                             Popable,
-                            LogFullImageCoordinating
-{
+                            LogFullImageCoordinating {
     weak var navigationController: UINavigationController?
     
     weak var parentCoordinator: MoveToHomeTap?

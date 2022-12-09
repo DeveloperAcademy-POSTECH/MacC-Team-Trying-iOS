@@ -7,6 +7,7 @@
 //
 
 import Combine
+import Foundation
 import MapKit
 import UIKit
 
@@ -235,6 +236,13 @@ extension LogMapViewController {
             )
         }
     }
+    
+    private func presentPlacesOnMap(courseId: Int) {
+        self.viewModel.getCourseIndex(courseId: courseId)
+        self.toggleDismissButton()
+        self.presentStarAnnotations(selectedCourseID: courseId)
+        self.presentReviewButton()
+    }
 }
 
 // MARK: - MKMapViewDelegate
@@ -257,6 +265,7 @@ extension LogMapViewController: MKMapViewDelegate {
             annotationView.image = self.makeConstellationAnnotationViewImage(courseID: constellationAnnotation.courseId)
             
             return annotationView
+            
         } else {
             return nil
         }
@@ -269,10 +278,8 @@ extension LogMapViewController: MKMapViewDelegate {
             self.presentPlaceDetailView(with: place)
             
         } else if let constellationAnnotation = view.annotation as? ConstellationAnnotation {
-            viewModel.getCourseIndex(courseId: constellationAnnotation.courseId)
-            self.toggleDismissButton()
-            self.presentStarAnnotations(selectedCourseID: constellationAnnotation.courseId)
-            self.presentReviewButton()
+            
+            self.presentPlacesOnMap(courseId: constellationAnnotation.courseId)
             
         } else {
             return
@@ -305,8 +312,10 @@ extension LogMapViewController {
 // MARK: - Helper
 extension LogMapViewController {
     private func toggleDismissButton() {
-        self.dismissButton.isHidden.toggle()
-        self.popButton.isHidden.toggle()
+        DispatchQueue.main.async {
+            self.dismissButton.isHidden.toggle()
+            self.popButton.isHidden.toggle()
+        }
     }
     
     private func makeConstellationAnnotationViewImage(courseID: Int) -> UIImage {
