@@ -16,12 +16,7 @@ class LogTicketView: UIView {
     
     private let viewModel: LogTicketViewModel
     
-    var imageUrl: [String] = [] {
-        didSet {
-            setCollectionView()
-            setPageControl()
-        }
-    }
+    var imageUrl: [String] = []
     
     lazy var blurEffectView: UIVisualEffectView = {
         let blurEffectView = UIVisualEffectView(
@@ -112,8 +107,9 @@ class LogTicketView: UIView {
     }()
     
     // MARK: Initializer
-    init(viewModel: LogTicketViewModel) {
+    init(viewModel: LogTicketViewModel, imageUrl: [String]) {
         self.viewModel = viewModel
+        self.imageUrl = imageUrl
         super.init(frame: .zero)
         
         self.addSubviews(
@@ -133,6 +129,8 @@ class LogTicketView: UIView {
         )
         setLayouts()
         setButtonTarget()
+        setCollectionView()
+        setPageControl()
         
         self.addSubview(blurEffectView)
         self.sendSubviewToBack(blurEffectView)
@@ -186,7 +184,7 @@ extension LogTicketView: UIScrollViewDelegate {
             imageCollectionView.isHidden = true
 
             emptyImageView.snp.makeConstraints { make in
-                make.width.equalToSuperview()
+                make.width.equalToSuperview().multipliedBy(0.6)
                 make.height.equalTo(DeviceInfo.screenHeight * 0.3471563981)
                 make.centerX.equalToSuperview()
                 make.top.equalToSuperview()
