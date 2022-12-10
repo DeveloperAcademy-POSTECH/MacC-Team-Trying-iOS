@@ -36,6 +36,11 @@ enum MainButtonType {
     /// - Height : 58
     case home
     
+    /// 후기 수정하기 버튼
+    /// - Title : 수정 완료
+    /// - Height : 58
+    case editReview
+    
     /// 타이틀이 정해지지 않은 버튼
     /// - Height : 58
     case empty
@@ -79,6 +84,9 @@ final class MainButton: UIButton {
             
         case .home:
             self.setTitle("홈으로 돌아가기", for: .normal)
+            
+        case .editReview:
+            self.setTitle("수정 완료", for: .normal)
             
         case .empty:
             break

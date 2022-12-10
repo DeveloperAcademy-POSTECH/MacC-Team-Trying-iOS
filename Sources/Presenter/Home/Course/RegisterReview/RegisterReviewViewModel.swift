@@ -10,9 +10,10 @@ import Combine
 import UIKit
 
 final class RegisterReviewViewModel: BaseViewModel {
-    var coordinator: CourseFlowCoordinator
+    var coordinator: RegisterReviewCoordinator
     private let addCourseUseCase: AddCourseUseCase
     private let addReviewUseCase: AddReviewUseCase
+    private let editReviewUseCase: EditReviewUseCase
     private let deleteCourseUseCase: DeleteCourseUseCase
     
     var courseRequestDTO: CourseRequestDTO
@@ -21,43 +22,35 @@ final class RegisterReviewViewModel: BaseViewModel {
     @Published var isLoading: Bool = false
     
     init(
-        coordinator: CourseFlowCoordinator,
+        coordinator: RegisterReviewCoordinator,
         addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(addCourseRepository: AddCourseRepositoryImpl()),
         addReviewUseCase: AddReviewUseCase = AddReviewUseCaseImpl(addReviewRepository: AddReviewRepositoryImpl()),
+        editReviewUseCase: EditReviewUseCase = EditReviewUseCaseImpl(editReviewRepository: EditReviewRepositoryImpl()),
         deleteCourseUseCase: DeleteCourseUseCase = DeleteCourseUseCaseImpl(deleteCourseRepository: DeleteCourseRepositoryImpl()),
         courseRequestDTO: CourseRequestDTO,
-        images: [UIImage] = []
+        images: [UIImage] = [],
+        reviewContent: String? = nil
     ) {
         self.coordinator = coordinator
         self.addCourseUseCase = addCourseUseCase
         self.addReviewUseCase = addReviewUseCase
+        self.editReviewUseCase = editReviewUseCase
         self.deleteCourseUseCase = deleteCourseUseCase
         self.courseRequestDTO = courseRequestDTO
         self.images = images
+        self.reviewContent = reviewContent
     }
 }
 
 // MARK: - Coordinating
 extension RegisterReviewViewModel {
     func pop() {
-        switch self.coordinator {
-        case is AddCourseCoordinator:
-            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
-            coordinator.popViewController()
-            
-        case is RegisterReviewCoordinator:
-            guard let coordinator = self.coordinator as? RegisterReviewCoordinator else { return }
-            coordinator.popViewController()
-            
-        default:
-            break
-        }
+        coordinator.popViewController()
     }
     
     func pushToNextView() {
-        switch self.coordinator {
-        case is AddCourseCoordinator:
-            guard let coordinator = self.coordinator as? AddCourseCoordinator else { return }
+        switch coordinator.type {
+        case .add:
             Task {
                 guard let courseId = self.courseRequestDTO.id,
                       let reviewContent = reviewContent else { return }
@@ -67,33 +60,23 @@ extension RegisterReviewViewModel {
                     self.isLoading = false
                     
                     DispatchQueue.main.async {
-                        coordinator.pushToCompleteView(self.courseRequestDTO)
+                        self.coordinator.pushToCompleteView(self.courseRequestDTO)
                     }
                 } catch {
                     print(error.localizedDescription)
                 }
             }
             
-        case is RegisterReviewCoordinator:
-            guard let coordinator = self.coordinator as? RegisterReviewCoordinator else { return }
+        case .edit:
             Task {
-                guard let courseId = self.courseRequestDTO.id,
-                      let reviewContent = reviewContent else { return }
                 do {
                     self.isLoading = true
-                    _ = try await self.addReviewUseCase.addReview(courseId: courseId, content: reviewContent, images: self.images)
+                    try await self.editReviewUseCase.editReview(reviewId: 1, content: reviewContent!, images: images)
                     self.isLoading = false
-                    
-                    DispatchQueue.main.async {
-                        coordinator.pushToCompleteView(self.courseRequestDTO)
-                    }
                 } catch {
                     print(error.localizedDescription)
                 }
             }
-            
-        default:
-            break
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  AddPlanCoordinator.swift
+//  EditPlanCoordinator.swift
 //  ComeIt
 //
 //  Created by 김승창 on 2022/11/19.
@@ -10,7 +10,7 @@ import CoreLocation
 import Foundation
 import UIKit
 
-protocol AddPlanCoordinating: CourseFlowCoordinator {
+protocol EditPlanCoordinating: CourseFlowCoordinator {
     /// 장소를 선택하기 위한 지도 화면으로 이동합니다.
     /// - Parameter courseRequestDTO: 코스 관련 API 통신을 위한 DTO
     func pushToCourseMapView(_ courseRequestDTO: CourseRequestDTO)
@@ -39,7 +39,7 @@ protocol AddPlanCoordinating: CourseFlowCoordinator {
     func popViewController()
 }
 
-final class AddPlanCoordinator: CourseFlowCoordinator {
+final class EditPlanCoordinator: CourseFlowCoordinator {
     weak var navigationController: UINavigationController?
     
     init(navigationController: UINavigationController?) {
@@ -48,7 +48,7 @@ final class AddPlanCoordinator: CourseFlowCoordinator {
     
     func start(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseTitleViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseTitleViewController(type: .addPlan, viewModel: viewModel)
+        let viewController = CourseTitleViewController(type: .editPlan, viewModel: viewModel)
         
         viewController.hidesBottomBarWhenPushed = true
         
@@ -57,10 +57,10 @@ final class AddPlanCoordinator: CourseFlowCoordinator {
 }
 
 // MARK: - Coordinating
-extension AddPlanCoordinator: AddPlanCoordinating {
+extension EditPlanCoordinator: EditPlanCoordinating {
     func pushToCourseMapView(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseMapViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseMapViewController(type: .addPlan, viewModel: viewModel)
+        let viewController = CourseMapViewController(type: .editPlan, viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }
@@ -88,10 +88,9 @@ extension AddPlanCoordinator: AddPlanCoordinating {
     }
     
     func pushToCompleteView(_ courseRequestDTO: CourseRequestDTO) {
-        let viewModel = CourseCompleteViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseCompleteViewController(type: .addPlan, viewModel: viewModel)
+        let registerReviewCoordinator = RegisterReviewCoordinator(navigationController: navigationController, type: .add)
         
-        self.navigationController?.pushViewController(viewController, animated: true)
+        registerReviewCoordinator.start(courseRequestDTO)
     }
     
     func popToHomeView() {

@@ -39,6 +39,11 @@ extension HomeCoordinator: AlarmViewCoordinatingInAlarmViewCoordinating {
             self.parentCoordinator?.moveToLogTab()
         }
     }
+    
+    func startLogMapFlow(courses: [CourseEntity]) {
+        let coordinator = LogMapCoordinator(navigationController: navigationController)
+        coordinator.start(courses: courses)
+    }
 }
 
 protocol goToRootViewControllerDelegate: AnyObject {
@@ -73,7 +78,7 @@ extension HomeCoordinator {
     }
     
     func startRegisterReviewFlow(courseRequestDTO: CourseRequestDTO) {
-        let registerReviewCoordinator = RegisterReviewCoordinator(navigationController: navigationController)
+        let registerReviewCoordinator = RegisterReviewCoordinator(navigationController: navigationController, type: .add)
         registerReviewCoordinator.start(courseRequestDTO)
     }
     

@@ -123,7 +123,7 @@ class LogTicketView: UIView {
             fromLabel,
             pageControl,
             bodyTextView,
-            editbutton,
+            // editbutton,
             flopButton,
             dismissButton
         )
@@ -305,12 +305,14 @@ extension LogTicketView {
             make.bottom.equalToSuperview().inset(DeviceInfo.screenHeight * 0.05628095212)
         }
         
+        /*
         editbutton.snp.makeConstraints { make in
             make.width.equalTo(35)
             make.height.equalTo(20)
             make.right.equalTo(fromLabel.snp.right)
             make.centerY.equalTo(courseNameLabel.snp.centerY)
         }
+         */
         
         flopButton.snp.makeConstraints { make in
             make.width.height.equalTo(30)
@@ -385,14 +387,14 @@ extension LogTicketView {
     }
     
     private func setButtonTarget() {
-        editbutton.addTarget(self, action: #selector(tapEditButton), for: .touchUpInside)
+        // editbutton.addTarget(self, action: #selector(tapEditButton), for: .touchUpInside)
         dismissButton.addTarget(self, action: #selector(tapDismissButton), for: .touchUpInside)
     }
     
     @objc
     func tapEditButton() {
-        // MARK: 수정 버튼 클릭시 Action
-        print("tapEditButton")
+        self.viewModel.tapDismissButton()
+        self.viewModel.presentEditReview()
     }
     
     @objc

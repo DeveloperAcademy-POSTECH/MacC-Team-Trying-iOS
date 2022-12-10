@@ -10,11 +10,9 @@ import UIKit
 final class LogCoordinator: Coordinator,
                             MyConstellationViewCoordinating,
                             TicketViewCoodinating,
-                            LogMapViewCoordinating,
                             DismissCoordinating,
                             Popable,
-                            LogFullImageCoordinating
-{
+                            LogFullImageCoordinating {
     weak var navigationController: UINavigationController?
     
     weak var parentCoordinator: MoveToHomeTap?
@@ -51,13 +49,6 @@ final class LogCoordinator: Coordinator,
         self.navigationController?.popViewController(animated: true)
     }
     
-    func pushLogMapViewController(courses: [CourseEntity]) {
-        let viewModel = LogMapViewModel(coordinator: self, courses: courses)
-        let viewController = LogMapViewController(viewModel: viewModel)
-        viewController.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(viewController, animated: true)
-    }
-    
     func presentImageFullScreenViewController(imageUrl: [String], rootViewState: RootViewState, course: CourseEntity, selectedCourseIndex: Int, currentImageIndex: Int) {
         let viewModel = LogImageFullScreenViewModel(coordinator: self, imageUrl: imageUrl, rootViewState: rootViewState, selectedCourseIndex: selectedCourseIndex, course: course )
         let viewController = LogImageFullScreenViewController(viewModel: viewModel, currentImageIndex: currentImageIndex)
@@ -65,6 +56,16 @@ final class LogCoordinator: Coordinator,
         navigationController?.present(viewController, animated: true)
     }
     
+    func startEditReviewCoordinator(courseRequestDTO: CourseRequestDTO, images: [UIImage], reviewContent: String?) {
+        let registerReviewCoordinator = RegisterReviewCoordinator(navigationController: navigationController, type: .edit)
+        
+        registerReviewCoordinator.start(courseRequestDTO, images: images, reviewContent: reviewContent)
+    }
+    
+    func startLogMapFlow(courses: [CourseEntity]) {
+        let coordinator = LogMapCoordinator(navigationController: navigationController)
+        coordinator.start(courses: courses)
+    }
 }
 
 protocol MoveFromLogToHome {

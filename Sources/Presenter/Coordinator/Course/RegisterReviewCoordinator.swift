@@ -9,6 +9,11 @@
 import Foundation
 import UIKit
 
+enum RegisterReviewType {
+    case add
+    case edit
+}
+
 protocol RegisterReviewCoordinating {
     /// 완료 화면으로 이동합니다.
     /// - Parameter courseRequestDTO: 코스 관련 API 통신을 위한 DTO
@@ -21,20 +26,33 @@ protocol RegisterReviewCoordinating {
     func popViewController()
 }
 
-final class RegisterReviewCoordinator: CourseFlowCoordinator {
+final class RegisterReviewCoordinator {
     weak var navigationController: UINavigationController?
+    let type: RegisterReviewType
     
-    init(navigationController: UINavigationController?) {
+    init(navigationController: UINavigationController?, type: RegisterReviewType) {
         self.navigationController = navigationController
+        self.type = type
     }
     
-    func start(_ courseRequestDTO: CourseRequestDTO) {
-        let viewModel = RegisterReviewViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = RegisterReviewViewController(viewModel: viewModel)
-        
-        viewController.hidesBottomBarWhenPushed = true
-        
-        self.navigationController?.pushViewController(viewController, animated: true)
+    func start(_ courseRequestDTO: CourseRequestDTO, images: [UIImage] = [], reviewContent: String? = nil) {
+        switch type {
+        case .add:
+            let viewModel = RegisterReviewViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
+            let viewController = RegisterReviewViewController(viewModel: viewModel)
+            
+            viewController.hidesBottomBarWhenPushed = true
+            
+            self.navigationController?.pushViewController(viewController, animated: true)
+            
+        case .edit:
+            let viewModel = RegisterReviewViewModel(coordinator: self, courseRequestDTO: courseRequestDTO, images: images, reviewContent: reviewContent)
+            let viewController = RegisterReviewViewController(viewModel: viewModel)
+            
+            viewController.hidesBottomBarWhenPushed = true
+            
+            self.navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 }
 
@@ -42,7 +60,7 @@ final class RegisterReviewCoordinator: CourseFlowCoordinator {
 extension RegisterReviewCoordinator: RegisterReviewCoordinating {
     func pushToCompleteView(_ courseRequestDTO: CourseRequestDTO) {
         let viewModel = CourseCompleteViewModel(coordinator: self, courseRequestDTO: courseRequestDTO)
-        let viewController = CourseCompleteViewController(type: .registerReview, viewModel: viewModel)
+        let viewController = CourseCompleteViewController(viewModel: viewModel)
         
         self.navigationController?.pushViewController(viewController, animated: true)
     }

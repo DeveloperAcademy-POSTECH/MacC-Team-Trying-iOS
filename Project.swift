@@ -12,7 +12,7 @@ let project = Project(
         disableSynthesizedResourceAccessors: true
     ),
     settings: .settings(
-        base: ["OTHER_LDFLAGS" : "$(OTHER_LDFLAGS) -ObjC"],
+        base: ["OTHER_LDFLAGS" : ["$(OTHER_LDFLAGS) -ObjC", "-all_load"]],
         configurations: [
             .debug(name: .debug),
             .release(name: .release)
@@ -34,6 +34,7 @@ let project = Project(
             dependencies: [
                 .external(name: "CancelBag"),
                 .external(name: "FirebaseMessaging"),
+                .external(name: "FirebaseAnalytics"),
                 .external(name: "Lottie"),
                 .external(name: "SnapKit"),
                 .external(name: "KakaoSDKUser")

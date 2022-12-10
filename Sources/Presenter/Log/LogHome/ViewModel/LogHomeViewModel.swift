@@ -18,10 +18,6 @@ protocol MyConstellationViewCoordinating {
     func pushMyConstellationViewController(courses: [CourseEntity], homeView: LogHomeViewController)
 }
 
-protocol LogMapViewCoordinating {
-    func pushLogMapViewController(courses: [CourseEntity])
-}
-
 // MARK: ViewModel
 final class LogHomeViewModel: BaseViewModel {
     
@@ -45,7 +41,7 @@ final class LogHomeViewModel: BaseViewModel {
 }
 
 extension LogHomeViewModel {
-    // 네이게이션 POP
+    // 네비게이션 POP
     func pop() {
         guard let coordinator = coordinator as? Popable else { return }
         coordinator.popViewController()
@@ -62,8 +58,8 @@ extension LogHomeViewModel {
     }
     // 지도화면으로 전환
     func pushLogMapViewController(courses: [CourseEntity]) {
-        guard let coordinator = coordinator as? LogMapViewCoordinating else { return }
-        coordinator.pushLogMapViewController(courses: courses)
+        guard let coordinator = coordinator as? LogCoordinator else { return }
+        coordinator.startLogMapFlow(courses: courses)
     }
 }
 
