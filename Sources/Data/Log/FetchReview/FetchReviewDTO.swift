@@ -13,6 +13,7 @@ struct FetchReviewDTO: Decodable {
     let mateReview: Review?
     
     struct Review: Codable {
+        let reviewId: Int
         let writerName, content: String
         let images: [String]
     }

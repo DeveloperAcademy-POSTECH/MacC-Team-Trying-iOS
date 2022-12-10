@@ -14,7 +14,7 @@ import UIKit
 import CancelBag
 
 final class LogMapViewModel: BaseViewModel {
-    private let coordinator: Coordinator
+    let coordinator: Coordinator
     
     var courses: [CourseEntity]
     var places: [PlaceEntity]

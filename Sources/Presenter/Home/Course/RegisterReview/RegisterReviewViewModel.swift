@@ -13,6 +13,7 @@ final class RegisterReviewViewModel: BaseViewModel {
     var coordinator: RegisterReviewCoordinator
     private let addCourseUseCase: AddCourseUseCase
     private let addReviewUseCase: AddReviewUseCase
+    private let editReviewUseCase: EditReviewUseCase
     private let deleteCourseUseCase: DeleteCourseUseCase
     
     var courseRequestDTO: CourseRequestDTO
@@ -24,6 +25,7 @@ final class RegisterReviewViewModel: BaseViewModel {
         coordinator: RegisterReviewCoordinator,
         addCourseUseCase: AddCourseUseCase = AddCourseUseCaseImpl(addCourseRepository: AddCourseRepositoryImpl()),
         addReviewUseCase: AddReviewUseCase = AddReviewUseCaseImpl(addReviewRepository: AddReviewRepositoryImpl()),
+        editReviewUseCase: EditReviewUseCase = EditReviewUseCaseImpl(editReviewRepository: EditReviewRepositoryImpl()),
         deleteCourseUseCase: DeleteCourseUseCase = DeleteCourseUseCaseImpl(deleteCourseRepository: DeleteCourseRepositoryImpl()),
         courseRequestDTO: CourseRequestDTO,
         images: [UIImage] = [],
@@ -32,6 +34,7 @@ final class RegisterReviewViewModel: BaseViewModel {
         self.coordinator = coordinator
         self.addCourseUseCase = addCourseUseCase
         self.addReviewUseCase = addReviewUseCase
+        self.editReviewUseCase = editReviewUseCase
         self.deleteCourseUseCase = deleteCourseUseCase
         self.courseRequestDTO = courseRequestDTO
         self.images = images
@@ -46,19 +49,33 @@ extension RegisterReviewViewModel {
     }
     
     func pushToNextView() {
-        Task {
-            guard let courseId = self.courseRequestDTO.id,
-                  let reviewContent = reviewContent else { return }
-            do {
-                self.isLoading = true
-                _ = try await self.addReviewUseCase.addReview(courseId: courseId, content: reviewContent, images: self.images)
-                self.isLoading = false
-                
-                DispatchQueue.main.async {
-                    self.coordinator.pushToCompleteView(self.courseRequestDTO)
+        switch coordinator.type {
+        case .add:
+            Task {
+                guard let courseId = self.courseRequestDTO.id,
+                      let reviewContent = reviewContent else { return }
+                do {
+                    self.isLoading = true
+                    _ = try await self.addReviewUseCase.addReview(courseId: courseId, content: reviewContent, images: self.images)
+                    self.isLoading = false
+                    
+                    DispatchQueue.main.async {
+                        self.coordinator.pushToCompleteView(self.courseRequestDTO)
+                    }
+                } catch {
+                    print(error.localizedDescription)
                 }
-            } catch {
-                print(error.localizedDescription)
+            }
+            
+        case .edit:
+            Task {
+                do {
+                    self.isLoading = true
+                    try await self.editReviewUseCase.editReview(reviewId: 1, content: reviewContent!, images: images)
+                    self.isLoading = false
+                } catch {
+                    print(error.localizedDescription)
+                }
             }
         }
     }

@@ -78,6 +78,7 @@ final class RegisterReviewViewController: BaseViewController {
                 guard let self = self else { return }
                 if let text = text {
                     self.nextButton.isEnabled = text.isEmpty ? false : true
+                    self.contentTextView.text = text
                 } else {
                     self.nextButton.isEnabled = false
                 }
@@ -129,7 +130,7 @@ final class RegisterReviewViewController: BaseViewController {
         super.viewWillDisappear(animated)
         
         self.removeNotifications()
-        if isMovingFromParent {
+        if self.viewModel.coordinator.type == .add && isMovingFromParent {
             self.viewModel.deleteCourse()
         }
     }

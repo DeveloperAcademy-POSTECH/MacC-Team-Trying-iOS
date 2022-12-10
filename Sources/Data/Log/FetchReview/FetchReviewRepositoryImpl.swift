@@ -56,10 +56,11 @@ extension FetchReviewRepositoryImpl: FetchReviewRepository {
     private func convertToReviewEntity(_ responseData: FetchReviewDTO) -> [ReviewEntity] {
         
         var reviews = [ReviewEntity]()
-        let emptyReview = ReviewEntity(name: "", imagesURL: [], content: "")
+        let emptyReview = ReviewEntity(id: 0, name: "", imagesURL: [], content: "")
         
         if let myReview = responseData.myReview {
             let myReviewEntity = ReviewEntity(
+                id: myReview.reviewId,
                 name: myReview.writerName,
                 imagesURL: myReview.images,
                 content: myReview.content
@@ -71,6 +72,7 @@ extension FetchReviewRepositoryImpl: FetchReviewRepository {
         
         if let mateReview = responseData.mateReview {
             let mateReviewEntity = ReviewEntity(
+                id: mateReview.reviewId,
                 name: mateReview.writerName,
                 imagesURL: mateReview.images,
                 content: mateReview.content
